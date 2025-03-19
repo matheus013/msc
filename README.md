@@ -46,18 +46,18 @@ Minimizar o custo total de transporte e produção e o tempo total de transporte
    \[
    \sum_{b \in S \cup M} x_{s,b,i} \leq ê_s(i), \quad \forall s \in S, i \in I_s
    \]
-   - A quantidade de itens produzidos não pode exceder a capacidade da fábrica:
+   - A quantidade de itens produzidos não pode exceder a capacidade da fábrica: <!-- capacidade de fabricação infinito -->
    \[
    y_{f,i} \leq Q_f, \quad \forall f \in F, i \in I_f
    \]
 
-2. **Atendimento da Demanda das Lojas**
+2. **Atendimento da Demanda das Lojas** <!-- capacidade de armazenamento infinito -->
    - A quantidade recebida pela loja deve ser suficiente para atender à sua demanda:
    \[
    \sum_{a \in S \cup F} x_{a,m,i} \geq O_m(i), \quad \forall m \in M, i \in I_m
    \]
 
-3. **Capacidade de Transporte**
+3. **Capacidade de Transporte** <!-- temos um transporte ideal de via unica, assumindo uma transportadora terceirizada -->
    - Existe uma capacidade máxima \( C_{a,b} \) para transporte entre dois locais \( a \) e \( b \):
    \[
    \sum_{i \in I_a \cap I_b} x_{a,b,i} \leq C_{a,b}, \quad \forall a, b \in S \cup M \cup F
@@ -74,10 +74,10 @@ Minimizar o custo total de transporte e produção e o tempo total de transporte
    \[
    x_{s,m,i} = 0, \quad \forall s \in S, m \in M, i \notin I_s, s \neq E_m
    \]
-   - Cada loja deve estar associada ao centro de estoque mais próximo: <!-- Talvez não seja aplicavel no mundo real -->
+   <!-- - Cada loja deve estar associada ao centro de estoque mais próximo: 
    \[
    E_m = \arg\min_{s \in S} d(m, s), \quad \forall m \in M
-   \]
+   \] -->
 
 6. **Não Negatividade**
    - As variáveis de decisão devem ser não negativas:
