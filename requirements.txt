@@ -1,0 +1,14 @@
+pandas
+pyarrow
+plotly
+boto3
+pyspark
+openpyxl
+modin[ray]
+ray
+modin[dask]
+dask
+distributed
+PuLP
+conda-forge
+deap
