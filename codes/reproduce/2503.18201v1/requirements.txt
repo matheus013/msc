@@ -1,0 +1,8 @@
+gymnasium
+jax
+flax
+numpy
+scipy
+matplotlib
+networkx
+PyYAML
