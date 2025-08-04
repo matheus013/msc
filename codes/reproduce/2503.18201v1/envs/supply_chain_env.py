@@ -1,4 +1,3 @@
-# Simulação do ambiente MEIO (simplificado)
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces

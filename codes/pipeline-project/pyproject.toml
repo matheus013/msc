@@ -1,0 +1,7 @@
+[tool.kedro]
+package_name = "demand_forecast_pipeline"
+project_name = "Pipeline Project"
+kedro_init_version = "1.0.0"
+
+[tool.kedro_telemetry]
+project_id = "ff9bdcb411da4fe29a1c048c2fc1e38f"

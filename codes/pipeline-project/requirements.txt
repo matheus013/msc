@@ -1,0 +1,25 @@
+# Framework principal
+kedro
+
+# Ciência de dados e manipulação de dados
+pandas
+numpy
+scikit-learn
+
+# Modelos de previsão
+lightgbm
+prophet
+xgboost
+statsmodels
+
+# Visualização
+matplotlib
+seaborn
+# Suporte a dados em parquet/arrow
+pyarrow
+
+# Serialização de modelos
+joblib
+
+# Testes
+pytest

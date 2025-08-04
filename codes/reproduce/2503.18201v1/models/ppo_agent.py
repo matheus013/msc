@@ -44,7 +44,7 @@ class PPOAgent:
             init=0.0,
             xs=deltas[::-1]
         )
-        return advantages[::-1]  # Inverter para a ordem original
+        return advantages[::-1]
 
     def update(self, batch):
         obs, actions, rewards, next_obs, dones = batch
