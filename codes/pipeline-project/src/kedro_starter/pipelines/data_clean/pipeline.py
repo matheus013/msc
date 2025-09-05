@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from kedro.pipeline import Pipeline, node
+
 from .nodes import filter_active_products, clean_products, clean_revendedor
 
 

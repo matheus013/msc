@@ -1,15 +1,18 @@
 # src/kedro_starter/pipelines/forecast_tune/nodes.py
 from __future__ import annotations
-from typing import Dict, Any, List, Tuple
+
 import itertools
+import warnings
+from typing import Dict, Any, Tuple
+
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from xgboost import XGBRegressor
-import warnings
 
-# -------- utilidades ----------
+
+# ---------- util ----------
 def _mape(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
@@ -28,29 +31,20 @@ def _prepare_series(vendas_enrich: pd.DataFrame, target_col: str = "qty") -> pd.
     return pd.to_numeric(s, errors="coerce").fillna(0.0)
 
 def _walk_forward_eval(y: pd.Series, horizon: int, fit_func) -> Tuple[np.ndarray, Dict[str, float]]:
-    """
-    Walk-forward (rolling-origin): para t em [start .. len(y)-horizon):
-      - treina em y[:t], prevê y[t:t+horizon] (um passo à frente por padrão)
-    Aqui usamos 1 passo por iteração e repetimos horizon vezes no final do histórico.
-    """
     preds, actuals = [], []
-    # janela inicial precisa ser maior que o horizonte
     start = max(horizon, 3)
     for t in range(start, len(y)):
         y_train = y.iloc[:t]
-        y_test = y.iloc[t:t+1]  # 1 passo à frente
-        yhat = fit_func(y_train, 1)  # prevê 1 passo
-        if np.size(yhat) == 1:
-            preds.append(float(yhat))
-        else:
-            preds.append(float(np.asarray(yhat).ravel()[0]))
+        y_test = y.iloc[t:t + 1]  # 1 passo
+        yhat = fit_func(y_train, 1)
+        yhat = float(np.asarray(yhat).ravel()[0])
+        preds.append(yhat)
         actuals.append(float(y_test.values[0]))
     metrics = _metrics(np.array(actuals, float), np.array(preds, float))
     return np.array(preds, float), metrics
 
-# -------- modelos básicos ----------
-def _fit_hw(y_train: pd.Series, steps: int, trend: str = "add",
-            seasonal: str | None = "add", seasonal_periods: int = 6):
+
+def _fit_hw(y_train: pd.Series, steps: int, trend="add", seasonal="add", seasonal_periods=6):
     model = ExponentialSmoothing(
         y_train.values,
         trend=trend,
@@ -59,8 +53,8 @@ def _fit_hw(y_train: pd.Series, steps: int, trend: str = "add",
     )
     return model.fit(optimized=True).forecast(steps)
 
-def _fit_sarimax(y_train: pd.Series, steps: int,
-                 order=(1, 1, 1), seasonal_order=(1, 0, 1, 6)):
+
+def _fit_sarimax(y_train: pd.Series, steps: int, order=(1, 1, 1), seasonal_order=(1, 0, 1, 6)):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         res = SARIMAX(y_train.values, order=order, seasonal_order=seasonal_order,
@@ -68,12 +62,7 @@ def _fit_sarimax(y_train: pd.Series, steps: int,
     return res.forecast(steps=steps)
 
 def _fit_xgb_lags(y_train: pd.Series, steps: int, lags: int = 6, **xgb_kwargs):
-    # constrói features defasadas a partir do histórico completo e faz previsão recursiva
-    def _make_feats(hist: List[float]) -> np.ndarray:
-        feats = [hist[-k] for k in range(1, lags + 1)]
-        return np.array(feats, dtype=float).reshape(1, -1)
-
-    # treina no histórico com muitas amostras (dropna nas janelas)
+    # treino
     df = pd.DataFrame({"y": y_train.values})
     for L in range(1, lags + 1):
         df[f"lag_{L}"] = df["y"].shift(L)
@@ -85,117 +74,137 @@ def _fit_xgb_lags(y_train: pd.Series, steps: int, lags: int = 6, **xgb_kwargs):
         objective="reg:squarederror", n_jobs=0, **xgb_kwargs
     )
     model.fit(X, y)
-
+    # previsão recursiva
     hist = list(y_train.values)
     preds = []
     for _ in range(steps):
-        Xh = _make_feats(hist)
+        feats = [hist[-k] for k in range(1, lags + 1)]
+        Xh = np.array(feats, float).reshape(1, -1)
         yhat = float(model.predict(Xh)[0])
         preds.append(yhat)
         hist.append(yhat)
     return np.array(preds, float)
 
-# -------- seleção e tuning ----------
+
+def _rmse_from_metrics_obj(m) -> float:
+    """
+    Aceita:
+      - dict no padrão MlflowMetricsHistoryDataset: {"RMSE": {"value": float, "step": int}, ...}
+        ou {"x.RMSE": {"value": ...}, ...}
+      - DataFrame com colunas ["metric","value"] (ou ["name","value"])
+    Retorna float(RMSE).
+    """
+    if isinstance(m, dict):
+        # chaves possíveis: "RMSE" ou "algo.RMSE"
+        # 1) direto
+        if "RMSE" in m and isinstance(m["RMSE"], dict) and "value" in m["RMSE"]:
+            return float(m["RMSE"]["value"])
+        # 2) procurar *.RMSE
+        for k, v in m.items():
+            if k.upper().endswith(".RMSE") and isinstance(v, dict) and "value" in v:
+                return float(v["value"])
+        # 3) plano: {"RMSE": 123}
+        if "RMSE" in m and isinstance(m["RMSE"], (int, float)):
+            return float(m["RMSE"])
+        raise ValueError("Não foi possível encontrar RMSE no dict de métricas.")
+    # DataFrame
+    df = pd.DataFrame(m).copy()
+    name_col = "metric" if "metric" in df.columns else ("name" if "name" in df.columns else None)
+    if name_col is None:
+        raise ValueError("DataFrame de métricas sem coluna 'metric' ou 'name'.")
+    key = df[name_col].str.upper() == "RMSE"
+    return float(df.loc[key, "value"].iloc[0])
+
+
+# ---------- node principal ----------
 def select_best_and_tune(
     vendas_enrich: pd.DataFrame,
     seasonal_periods: int,
     forecast_horizon: int,
-    # métricas e params salvos de cada método
-    metrics_naive: pd.DataFrame,
-    params_naive: Dict[str, Any],
-    metrics_holt_winters: pd.DataFrame,
-    params_holt_winters: Dict[str, Any],
-    metrics_sarimax: pd.DataFrame,
-    params_sarimax: Dict[str, Any],
-    metrics_xgboost_lags: pd.DataFrame,
-    params_xgboost_lags: Dict[str, Any],
-    # prophet é opcional: se não usar, passe DataFrame vazio e {}
-    metrics_prophet: pd.DataFrame | None = None,
-    params_prophet: Dict[str, Any] | None = None,
+
+        # métricas/params vinda EM MEMÓRIA dos nodes dos modelos
+        metrics_naive: dict | pd.DataFrame,
+        params_naive_out: Dict[str, Any],
+        metrics_holt_winters: dict | pd.DataFrame,
+        params_holt_winters_out: Dict[str, Any],
+        metrics_sarimax: dict | pd.DataFrame,
+        params_sarimax_out: Dict[str, Any],
+        metrics_xgb: dict | pd.DataFrame,
+        params_xgb_out: Dict[str, Any],
+        metrics_prophet: dict | pd.DataFrame | None = None,
+        params_prophet_out: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """
-    - decide o melhor método por RMSE
-    - roda tuning (walk-forward) numa grid pequena
-    - retorna artefatos para catalog: chosen_model, best_params, tuned_metrics
+    Seleciona melhor método por RMSE e faz tuning (walk-forward) com grid pequena.
+    Retorna dict com 3 saídas mapeadas no pipeline:
+      - chosen_model (json)
+      - best_params (json)
+      - tuned_metrics (DataFrame)
     """
-    # 1) junta métricas (espera colunas: metric, value)
-    def _rmse_of(df: pd.DataFrame) -> float:
-        df = df.copy()
-        key = df["metric"].str.upper() == "RMSE"
-        return float(df.loc[key, "value"].iloc[0])
-
     pools = {
-        "naive_last": (_rmse_of(metrics_naive), params_naive),
-        "holt_winters": (_rmse_of(metrics_holt_winters), params_holt_winters),
-        "sarimax": (_rmse_of(metrics_sarimax), params_sarimax),
-        "xgboost_lags": (_rmse_of(metrics_xgboost_lags), params_xgboost_lags),
+        "naive": (_rmse_from_metrics_obj(metrics_naive), params_naive_out or {}),
+        "holt_winters": (_rmse_from_metrics_obj(metrics_holt_winters), params_holt_winters_out or {}),
+        "sarimax": (_rmse_from_metrics_obj(metrics_sarimax), params_sarimax_out or {}),
+        "xgb": (_rmse_from_metrics_obj(metrics_xgb), params_xgb_out or {}),
     }
-    if metrics_prophet is not None and not metrics_prophet.empty:
-        pools["prophet"] = (_rmse_of(metrics_prophet), params_prophet or {})
+    if metrics_prophet is not None:
+        try:
+            pools["prophet"] = (_rmse_from_metrics_obj(metrics_prophet), params_prophet_out or {})
+        except Exception:
+            pass  # se não houver métricas válidas de prophet, ignora
 
     best_model = min(pools.items(), key=lambda kv: kv[1][0])[0]
-
-    # 2) série completa e função de treino para cada grade
     y = _prepare_series(vendas_enrich, target_col="qty")
 
     best_params: Dict[str, Any] = {}
-    best_score: float = np.inf
+    best_score = np.inf
     tuned_metrics: Dict[str, float] = {}
 
     if best_model == "holt_winters":
-        trend_opts = ["add", "mul"]
-        seasonal_opts = ["add", "mul", None]
-        grid = itertools.product(trend_opts, seasonal_opts)
-        for trend, seasonal in grid:
-            def _fitfunc(y_train, steps):
-                return _fit_hw(y_train, steps, trend=trend,
-                               seasonal=seasonal, seasonal_periods=seasonal_periods)
-            _, m = _walk_forward_eval(y, forecast_horizon, _fitfunc)
+        for trend, seasonal in itertools.product(["add", "mul"], ["add", "mul", None]):
+            def _fitf(yt, st, tr=trend, se=seasonal):
+                return _fit_hw(yt, st, trend=tr, seasonal=se, seasonal_periods=seasonal_periods)
+
+            _, m = _walk_forward_eval(y, forecast_horizon, _fitf)
             if m["RMSE"] < best_score:
-                best_score = m["RMSE"]
+                best_score, tuned_metrics = m["RMSE"], m
                 best_params = {"trend": trend, "seasonal": seasonal, "seasonal_periods": seasonal_periods}
-                tuned_metrics = m
 
     elif best_model == "sarimax":
-        # grade pequena e robusta
-        orders = [(1,1,1), (2,1,1)]
-        seas = [(1,0,1, seasonal_periods), (1,1,1, seasonal_periods)]
-        for o, so in itertools.product(orders, seas):
-            def _fitfunc(y_train, steps, order=o, seasonal_order=so):
-                return _fit_sarimax(y_train, steps, order=order, seasonal_order=seasonal_order)
-            _, m = _walk_forward_eval(y, forecast_horizon, _fitfunc)
-            if m["RMSE"] < best_score:
-                best_score = m["RMSE"]
-                best_params = {"order": o, "seasonal_order": so}
-                tuned_metrics = m
+        for o in [(1, 1, 1), (2, 1, 1)]:
+            for so in [(1, 0, 1, seasonal_periods), (1, 1, 1, seasonal_periods)]:
+                def _fitf(yt, st, order=o, seasonal_order=so):
+                    return _fit_sarimax(yt, st, order=order, seasonal_order=seasonal_order)
 
-    elif best_model == "xgboost_lags":
-        lags_opts = [max(3, min(6, seasonal_periods)), max(6, min(12, seasonal_periods))]
-        eta = [0.05, 0.1]
-        depth = [3, 4, 5]
-        for l, lr, md in itertools.product(lags_opts, eta, depth):
-            def _fitfunc(y_train, steps, lags=l, lr=lr, md=md):
-                return _fit_xgb_lags(y_train, steps, lags=lags, learning_rate=lr, max_depth=md)
-            _, m = _walk_forward_eval(y, forecast_horizon, _fitfunc)
-            if m["RMSE"] < best_score:
-                best_score = m["RMSE"]
-                best_params = {"lags": l, "learning_rate": lr, "max_depth": md}
-                tuned_metrics = m
+                _, m = _walk_forward_eval(y, forecast_horizon, _fitf)
+                if m["RMSE"] < best_score:
+                    best_score, tuned_metrics = m["RMSE"], m
+                    best_params = {"order": o, "seasonal_order": so}
+
+    elif best_model == "xgb":
+        for lags in [max(3, min(6, seasonal_periods)), max(6, min(12, seasonal_periods))]:
+            for lr in [0.05, 0.1]:
+                for md in [3, 4, 5]:
+                    def _fitf(yt, st, l=lags, lr_=lr, md_=md):
+                        return _fit_xgb_lags(yt, st, lags=l, learning_rate=lr_, max_depth=md_)
+
+                    _, m = _walk_forward_eval(y, forecast_horizon, _fitf)
+                    if m["RMSE"] < best_score:
+                        best_score, tuned_metrics = m["RMSE"], m
+                        best_params = {"lags": lags, "learning_rate": lr, "max_depth": md}
 
     else:
-        # naïve/prophet: sem tuning aqui
-        def _fit_naive(y_train, steps):
-            return np.repeat(y_train.iloc[-1], steps)
-        fitf = _fit_naive if best_model == "naive_last" else (lambda yt, st: np.repeat(yt.iloc[-1], st))
-        _, tuned_metrics = _walk_forward_eval(y, forecast_horizon, fitf)
-        best_params = pools[best_model][1] or {}
+        # naive/prophet: sem grid aqui; reavalia via walk-forward do naive
+        def _fit_naive(yt, st):
+            return np.repeat(yt.iloc[-1], st)
 
-    # 3) payloads de saída (para salvar no catálogo)
+        _, tuned_metrics = _walk_forward_eval(y, forecast_horizon, _fit_naive)
+        best_params = pools[best_model][1]
+
     chosen = {"model": best_model}
     tuned = {"model": best_model, "params": best_params}
-    tuned_metrics_df = pd.DataFrame(
-        [{"metric": k, "value": float(v)} for k, v in tuned_metrics.items()]
-    )
+    tuned_metrics_df = pd.DataFrame([{"metric": k, "value": float(v)} for k, v in tuned_metrics.items()])
+
     return {
         "chosen_model": chosen,
         "best_params": tuned,

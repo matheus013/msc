@@ -1,15 +1,155 @@
 [
   {
     "event": "before_pipeline_run",
-    "timestamp": "2025-09-05T19:15:36.600816+00:00"
+    "timestamp": "2025-09-05T19:38:44.521962+00:00"
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "raw_produto",
+    "node_id": "0df96a5b",
+    "status": "Available",
+    "size": 1520393
+  },
+  {
+    "event": "after_node_run",
+    "node": "clean_products",
+    "node_id": "6b8fa4f3",
+    "duration": 0.027840099995955825,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "produto_clean",
+    "node_id": "cfb0f6f3",
+    "status": "Available",
+    "size": 358754
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "raw_revendedor",
+    "node_id": "91d16c8e",
+    "status": "Available",
+    "size": 845977358
+  },
+  {
+    "event": "after_node_run",
+    "node": "clean_revendedor",
+    "node_id": "b233a106",
+    "duration": 3.5112049000454135,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "revendedor_clean",
+    "node_id": "868de871",
+    "status": "Available",
+    "size": 63091575
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "raw_vendas",
+    "node_id": "7d2f0ef7",
+    "status": "Available",
+    "size": 989838109
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "produto_clean",
+    "node_id": "cfb0f6f3",
+    "status": "Available",
+    "size": 358754
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:sample_frac",
+    "node_id": "4df01e75",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:random_seed",
+    "node_id": "992a7a41",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "filter_active_products",
+    "node_id": "20be9c23",
+    "duration": 10.58947679999983,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "vendas_clean",
+    "node_id": "3a5551f4",
+    "status": "Available",
+    "size": 17545493
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "vendas_clean",
+    "node_id": "3a5551f4",
+    "status": "Available",
+    "size": 17545493
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "revendedor_clean",
+    "node_id": "868de871",
+    "status": "Available",
+    "size": 63091575
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "produto_clean",
+    "node_id": "cfb0f6f3",
+    "status": "Available",
+    "size": 358754
+  },
+  {
+    "event": "after_node_run",
+    "node": "enrich_venda",
+    "node_id": "87eaf8aa",
+    "duration": 3.8163120000390336,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "vendas_enrich",
+    "node_id": "70b5829c",
+    "status": "Available",
+    "size": 19409804
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "vendas_enrich",
+    "node_id": "70b5829c",
+    "status": "Available",
+    "size": 19409804
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:forecast.holt_winters",
+    "node_id": "7c733c68",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "on_node_error",
+    "node": "forecast_holt_winters",
+    "node_id": "56695c95",
+    "error": "Cannot compute initial seasonals using heuristic method with less than two full seasonal cycles in the data.",
+    "timestamp": "2025-09-05T19:39:36.288309+00:00",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\task.py\", line 299, in _call_node_run\n    outputs = node.run(inputs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 451, in run\n    raise exc\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 439, in run\n    outputs = self._run_with_dict(inputs, self._inputs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 496, in _run_with_dict\n    return self._func(**kwargs)\n           ~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\nodes.py\", line 66, in forecast_holt_winters_node\n    y_true, y_pred = rolling_origin_forecast(\n                     ~~~~~~~~~~~~~~~~~~~~~~~^\n        y, h, _fitpredict_hw(params), min_train=params.get(\"min_train\")\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\utils.py\", line 49, in rolling_origin_forecast\n    y_hat = fit_and_forecast_fn(y_train, horizon)  # s\u00f3 treina com passado\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\nodes.py\", line 50, in _inner\n    model = ExponentialSmoothing(\n        y_train.values,\n    ...<2 lines>...\n        seasonal_periods=params.get(\"seasonal_periods\", None),\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\pandas\\util\\_decorators.py\", line 213, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 292, in __init__\n    self._initialize()\n    ~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 426, in _initialize\n    return self._initialize_simple()\n           ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 433, in _initialize_simple\n    lvl, trend, seas = _initialization_simple(\n                       ~~~~~~~~~~~~~~~~~~~~~~^\n        self._y, trend, seasonal, self.seasonal_periods\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\exponential_smoothing\\initialization.py\", line 26, in _initialization_simple\n    raise ValueError('Cannot compute initial seasonals using'\n                     ' heuristic method with less than two full'\n                     ' seasonal cycles in the data.')\nValueError: Cannot compute initial seasonals using heuristic method with less than two full seasonal cycles in the data.\n"
   },
   {
     "event": "on_pipeline_error",
-    "error": "Pipeline input(s) {'metrics_xgboost_lags', 'params_naive_last', 'params_prophet', 'params_xgboost_lags', 'params_sarimax', 'params_holt_winters', 'metrics_naive_last'} not found in the DataCatalogWithCatalogCommandsMixin",
-    "timestamp": "2025-09-05T19:15:37.059451+00:00",
-    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\framework\\session\\session.py\", line 409, in run\n    run_result = runner.run(\n        filtered_pipeline,\n    ...<3 lines>...\n        only_missing_outputs=only_missing_outputs,\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 103, in run\n    raise ValueError(\n        f\"Pipeline input(s) {unsatisfied} not found in the {catalog.__class__.__name__}\"\n    )\nValueError: Pipeline input(s) {'metrics_xgboost_lags', 'params_naive_last', 'params_prophet', 'params_xgboost_lags', 'params_sarimax', 'params_holt_winters', 'metrics_naive_last'} not found in the DataCatalogWithCatalogCommandsMixin\n",
-    "node": "clean_products",
-    "node_id": "6b8fa4f3",
-    "status": "not_started"
+    "error": "Cannot compute initial seasonals using heuristic method with less than two full seasonal cycles in the data.",
+    "timestamp": "2025-09-05T19:39:36.304818+00:00",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\framework\\session\\session.py\", line 409, in run\n    run_result = runner.run(\n        filtered_pipeline,\n    ...<3 lines>...\n        only_missing_outputs=only_missing_outputs,\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 115, in run\n    self._run(pipeline, catalog, hook_or_null_manager, run_id)  # type: ignore[arg-type]\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\sequential_runner.py\", line 63, in _run\n    super()._run(\n    ~~~~~~~~~~~~^\n        pipeline=pipeline,\n        ^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        run_id=run_id,\n        ^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 240, in _run\n    ).execute()\n      ~~~~~~~^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\task.py\", line 88, in execute\n    node = self._run_node_sequential(\n        self.node,\n    ...<2 lines>...\n        self.run_id,\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\task.py\", line 164, in _run_node_sequential\n    outputs = self._call_node_run(\n        node, catalog, inputs, is_async, hook_manager, run_id=run_id\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\task.py\", line 309, in _call_node_run\n    raise exc\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\task.py\", line 299, in _call_node_run\n    outputs = node.run(inputs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 451, in run\n    raise exc\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 439, in run\n    outputs = self._run_with_dict(inputs, self._inputs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 496, in _run_with_dict\n    return self._func(**kwargs)\n           ~~~~~~~~~~^^^^^^^^^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\nodes.py\", line 66, in forecast_holt_winters_node\n    y_true, y_pred = rolling_origin_forecast(\n                     ~~~~~~~~~~~~~~~~~~~~~~~^\n        y, h, _fitpredict_hw(params), min_train=params.get(\"min_train\")\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\utils.py\", line 49, in rolling_origin_forecast\n    y_hat = fit_and_forecast_fn(y_train, horizon)  # s\u00f3 treina com passado\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\src\\kedro_starter\\pipelines\\forecasting\\nodes.py\", line 50, in _inner\n    model = ExponentialSmoothing(\n        y_train.values,\n    ...<2 lines>...\n        seasonal_periods=params.get(\"seasonal_periods\", None),\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\pandas\\util\\_decorators.py\", line 213, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 292, in __init__\n    self._initialize()\n    ~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 426, in _initialize\n    return self._initialize_simple()\n           ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\holtwinters\\model.py\", line 433, in _initialize_simple\n    lvl, trend, seas = _initialization_simple(\n                       ~~~~~~~~~~~~~~~~~~~~~~^\n        self._y, trend, seasonal, self.seasonal_periods\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\statsmodels\\tsa\\exponential_smoothing\\initialization.py\", line 26, in _initialization_simple\n    raise ValueError('Cannot compute initial seasonals using'\n                     ' heuristic method with less than two full'\n                     ' seasonal cycles in the data.')\nValueError: Cannot compute initial seasonals using heuristic method with less than two full seasonal cycles in the data.\n",
+    "node": "forecast_holt_winters",
+    "node_id": "56695c95"
   }
 ]

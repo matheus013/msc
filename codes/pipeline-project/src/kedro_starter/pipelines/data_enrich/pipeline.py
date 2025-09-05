@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from kedro.pipeline import Pipeline, node
 
 from kedro_starter.pipelines.data_enrich.nodes import enrich_venda

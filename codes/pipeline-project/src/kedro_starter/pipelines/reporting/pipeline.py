@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 from kedro.pipeline import Pipeline, node
+
 from kedro_starter.pipelines.reporting.nodes import generate_sales_reports
+
 
 def create_pipeline() -> Pipeline:
     return Pipeline([

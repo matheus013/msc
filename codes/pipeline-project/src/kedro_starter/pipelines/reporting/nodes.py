@@ -1,8 +1,10 @@
 from __future__ import annotations
-import pandas as pd
-import matplotlib.pyplot as plt
+
 from pathlib import Path
-from typing import Optional
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
 
 # ---- helpers ---------------------------------------------------------------
 def _ensure_datetime(df: pd.DataFrame, col: str) -> pd.DataFrame:

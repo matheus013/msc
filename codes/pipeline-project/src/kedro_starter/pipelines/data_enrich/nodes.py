@@ -1,6 +1,9 @@
 from __future__ import annotations
-import pandas as pd
+
 from typing import List
+
+import pandas as pd
+
 
 def enrich_venda(vendas: pd.DataFrame, revendedor: pd.DataFrame, produto: pd.DataFrame) -> pd.DataFrame:
     """
