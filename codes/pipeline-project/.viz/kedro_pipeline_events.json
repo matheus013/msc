@@ -1,0 +1,15 @@
+[
+  {
+    "event": "before_pipeline_run",
+    "timestamp": "2025-09-05T19:15:36.600816+00:00"
+  },
+  {
+    "event": "on_pipeline_error",
+    "error": "Pipeline input(s) {'metrics_xgboost_lags', 'params_naive_last', 'params_prophet', 'params_xgboost_lags', 'params_sarimax', 'params_holt_winters', 'metrics_naive_last'} not found in the DataCatalogWithCatalogCommandsMixin",
+    "timestamp": "2025-09-05T19:15:37.059451+00:00",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\framework\\session\\session.py\", line 409, in run\n    run_result = runner.run(\n        filtered_pipeline,\n    ...<3 lines>...\n        only_missing_outputs=only_missing_outputs,\n    )\n  File \"C:\\Users\\mathe\\msc-2\\codes\\pipeline-project\\.venv\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 103, in run\n    raise ValueError(\n        f\"Pipeline input(s) {unsatisfied} not found in the {catalog.__class__.__name__}\"\n    )\nValueError: Pipeline input(s) {'metrics_xgboost_lags', 'params_naive_last', 'params_prophet', 'params_xgboost_lags', 'params_sarimax', 'params_holt_winters', 'metrics_naive_last'} not found in the DataCatalogWithCatalogCommandsMixin\n",
+    "node": "clean_products",
+    "node_id": "6b8fa4f3",
+    "status": "not_started"
+  }
+]

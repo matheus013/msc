@@ -1,107 +1,121 @@
 from __future__ import annotations
-
 import pandas as pd
-from typing import Optional
+from typing import List
 
+def enrich_venda(vendas: pd.DataFrame, revendedor: pd.DataFrame, produto: pd.DataFrame) -> pd.DataFrame:
+    """
+    Build an enriched sales fact table:
+    - Select only the requested columns from each source.
+    - Normalize key types.
+    - Join sales with resellers (revendedor) and products (produto).
+    - Return with simplified/shorter column names.
+    """
 
-def filter_active_products(
-        sales: pd.DataFrame,
-        products: pd.DataFrame,
-        sample_frac: Optional[float] = None,
-        random_seed: Optional[int] = 42,
-) -> pd.DataFrame:
-    # --- Coerce to DataFrame if a Series slipped in ---
-    if isinstance(sales, pd.Series):
-        sales = sales.to_frame()
-    if isinstance(products, pd.Series):
-        products = products.to_frame()
-
-    # --- Basic type & column checks ---
-    if not isinstance(sales, pd.DataFrame):
-        raise TypeError(f"'sales' must be a DataFrame, got {type(sales)}")
-    if not isinstance(products, pd.DataFrame):
-        raise TypeError(f"'products' must be a DataFrame, got {type(products)}")
-
-    required_cols_sales = {"produto_cod"}
-    required_cols_products = {"produto_cod", "produto_status"}
-    missing_sales = required_cols_sales - set(sales.columns)
-    missing_products = required_cols_products - set(products.columns)
-    if missing_sales:
-        raise KeyError(f"Missing columns in sales: {sorted(missing_sales)}")
-    if missing_products:
-        raise KeyError(f"Missing columns in products: {sorted(missing_products)}")
-
-    # --- somente vendas
-
-    sales = sales[sales['venda_tipo'] == 'Venda']
-
-    # --- Optional sampling (keeps DataFrame type) ---
-    if sample_frac is not None:
-        if not (0 < sample_frac <= 1):
-            raise ValueError("sample_frac must be in (0, 1].")
-        sales = sales.sample(frac=sample_frac, random_state=random_seed)
-
-    # --- Normalize dtypes/values used for the join & filter ---
-    sales = sales.copy()
-    sales["produto_cod"] = sales["produto_cod"].astype("string").str.strip()
-
-    products = products.copy()
-    products["produto_cod"] = products["produto_cod"].astype("string").str.strip()
-    products["produto_status"] = (
-        products["produto_status"].astype("string").str.strip().str.lower()
-    )
-
-    # Keep only active products
-    active_products = products.loc[
-        products["produto_status"].eq("ativo"), ["produto_cod", "produto_status"]
+    # --- Columns requested by you ---
+    r_columns: List[str] = [
+        "rev_id", "city", "state", "segment", "att_type", "filial", "praca", "gr"
+    ]
+    p_columns: List[str] = [
+        "produto_cod", "produto_grupo", "produto_categoria",
+        "produto_subcategoria", "produto_condicao", "produto_marca"
+    ]
+    v_columns: List[str] = [
+        "venda_data", "venda_qtd", "venda_vlr_receita_bruta",
+        "venda_vlr_receita_liquida", "venda_meio_entrega",
+        "venda_meio_captacao", "venda_ciclo", "produto_cod", "revendedor_cod"
     ]
 
-    # --- Merge as DataFrames ---
-    filtered_sales = sales.merge(active_products, on="produto_cod", how="inner")
-    return filtered_sales.reset_index(drop=True)
+    # --- Keep only requested columns that actually exist ---
+    vendas = vendas[[c for c in v_columns if c in vendas.columns]].copy()
+    revendedor = revendedor[[c for c in r_columns if c in revendedor.columns]].copy()
+    produto = produto[[c for c in p_columns if c in produto.columns]].copy()
 
+    # --- Normalize join keys as strings (robust merges) ---
+    if "produto_cod" in vendas.columns:
+        vendas["produto_cod"] = vendas["produto_cod"].astype("string").str.strip()
+    if "revendedor_cod" in vendas.columns:
+        vendas["revendedor_cod"] = vendas["revendedor_cod"].astype("string").str.strip()
 
-def clean_products(raw: pd.DataFrame) -> pd.DataFrame:
-    df = raw.copy()
-    # normalize columns you rely on downstream
-    if "produto_status" in df.columns:
-        df["produto_status"] = df["produto_status"].astype(str).str.strip().str.lower()
-    if "produto_cod" in df.columns:
-        df["produto_cod"] = df["produto_cod"].astype(str).str.strip()
-    return df
+    if "produto_cod" in produto.columns:
+        produto["produto_cod"] = produto["produto_cod"].astype("string").str.strip()
+    if "rev_id" in revendedor.columns:
+        revendedor["rev_id"] = revendedor["rev_id"].astype("string").str.strip()
 
+    # --- Merge sales + reseller (revendedor_cod -> rev_id) ---
+    # We keep the reseller's rev_id as the canonical id and drop sales.revendedor_cod afterwards.
+    if {"revendedor_cod"}.issubset(vendas.columns) and {"rev_id"}.issubset(revendedor.columns):
+        df = vendas.merge(
+            revendedor,
+            left_on="revendedor_cod",
+            right_on="rev_id",
+            how="left",
+            suffixes=("", "_rev")  # avoid collisions
+        )
+    else:
+        # If the key is missing, just carry vendas forward.
+        df = vendas.copy()
 
-def clean_revendedor(raw: pd.DataFrame) -> pd.DataFrame:
-    df = raw.copy()
-    renames = {
-        "revendedor_cod": "rev_id",
-        "revendedor_bloqueio_cadastro": "cad_blocked",
-        "revendedor_estrutura_comercial": "estrut_com",
-        "revendedor_genero": "gen",
-        "revendedor_cidade": "city",
-        "revendedor_bairro": "neighborhood",
-        "revendedor_uf": "state",
-        "revendedor_idade": "age",
-        "revendedor_dt_primeira_compra": "dt_first_purchase",
-        "revendedor_segmentacao": "segment",
-        "revendedor_dt_cadastro": "dt_signup",
-        "revendedor_status_comercial": "status_com",
-        "revendedor_origem_cadastro": "orig_signup",
-        "revendedor_cod_supervisor": "supervisor_id",
-        "revendedor_cod_coordenador": "coord_id",
-        "revendedor_tipo_atendimento": "att_type",
-        "revendedor_modelo_atendimento": "att_model",
-        "revendedor_filial": "filial",
-        "revendedor_praca": "praca",
-        "revendedor_gr": "gr",
-        "revendedor_supervisora": "supervisora",
-        "revendedor_coordenadora": "coordenadora",
-        "ciclos_inativos_atual_calculado": "inactive_cycles"
+    # --- Merge with product on produto_cod ---
+    if "produto_cod" in df.columns and "produto_cod" in produto.columns:
+        df = df.merge(
+            produto,
+            on="produto_cod",
+            how="left",
+            suffixes=("", "_prod")
+        )
+
+    # --- Drop redundant key (we keep rev_id) ---
+    if "revendedor_cod" in df.columns and "rev_id" in df.columns:
+        df = df.drop(columns=["revendedor_cod"])
+
+    # --- Final column simplification (snake_case, short names) ---
+    # Keep consistent snake_case per PEP 8 for readability. :contentReference[oaicite:1]{index=1}
+    rename_map = {
+        # sales
+        "venda_data": "date",
+        "venda_qtd": "qty",
+        "venda_vlr_receita_bruta": "rev_gross",
+        "venda_vlr_receita_liquida": "rev_net",
+        "venda_meio_entrega": "delivery_channel",
+        "venda_meio_captacao": "capture_channel",
+        "venda_ciclo": "cycle",
+        "produto_cod": "prod_id",
+        "rev_id": "rev_id",
+
+        # reseller
+        "city": "city",
+        "state": "state",
+        "segment": "segment",
+        "att_type": "att_type",
+        "filial": "branch",
+        "praca": "plaza",
+        "gr": "gr",
+
+        # product
+        "produto_grupo": "prod_group",
+        "produto_categoria": "prod_category",
+        "produto_subcategoria": "prod_subcategory",
+        "produto_condicao": "prod_condition",
+        "produto_marca": "prod_brand",
     }
-    df = df.drop(columns=["revendedor_nome", "revendedor_email", "revendedor_telefone"])
 
-    df = df.rename(columns=renames)
+    # Only rename columns that exist in df
+    rename_map = {k: v for k, v in rename_map.items() if k in df.columns}
+    df = df.rename(columns=rename_map)
 
-    df["rev_id"] = df["rev_id"].astype(str).str.strip()
-    df = df.drop_duplicates(subset=["rev_id"], keep="first")
+    # Optional: column order (sales core -> reseller -> product)
+    ordered_cols = [
+        # sales core
+        "date", "cycle", "qty", "rev_gross", "rev_net", "delivery_channel", "capture_channel",
+        # keys
+        "rev_id", "prod_id",
+        # reseller
+        "city", "state", "segment", "att_type", "branch", "plaza", "gr",
+        # product
+        "prod_group", "prod_category", "prod_subcategory", "prod_condition", "prod_brand",
+    ]
+    # Keep only those present, plus any extras at the end
+    final_cols = [c for c in ordered_cols if c in df.columns] + [c for c in df.columns if c not in ordered_cols]
+    df = df[final_cols]
+
     return df

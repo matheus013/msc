@@ -1,0 +1,6 @@
+{
+  "target_col": "qty",
+  "horizon": 1,
+  "min_train": 12,
+  "monthly_start": "2000-01-31"
+}

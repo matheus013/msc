@@ -1,0 +1,12 @@
+{
+  "target_col": "qty",
+  "horizon": 1,
+  "min_train": 18,
+  "lags": 6,
+  "n_estimators": 400,
+  "learning_rate": 0.05,
+  "max_depth": 4,
+  "subsample": 0.8,
+  "colsample_bytree": 0.9,
+  "random_seed": 123
+}

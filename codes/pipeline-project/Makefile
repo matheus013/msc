@@ -1,47 +1,25 @@
-###############################################################################
-# 📦 Makefile – Demand Forecast Pipeline
-# ---------------------------------------------------------------------------
-# Comandos básicos para desenvolvimento e execução do projeto Kedro
-###############################################################################
+.PHONY: venv install test run lint format clean
 
-PROJECT_NAME := demand_forecast_pipeline
-PYTHON       ?= python3
-VENV         ?= .venv
+venv:
+	python -m venv .venv
 
-.DEFAULT_GOAL := help
-
-## 🛠️ Criar ambiente virtual e instalar dependências
 install:
-	@echo "📦 Criando ambiente virtual..."
-	$(PYTHON) -m venv $(VENV)
-	@echo "📦 Instalando dependências..."
-	$(VENV)/bin/pip install --upgrade pip
-	$(VENV)/bin/pip install -r requirements.txt
+	. .venv/bin/activate && pip install -U pip && pip install kedro>=0.19.0 pandas pytest ruff
 
-## ▶️ Executar pipeline completo
-run:
-	@echo "🚀 Executando pipeline Kedro..."
-	$(VENV)/bin/kedro run
-
-## ▶️ Executar pipeline por tag
-run-tag:
-	@read -p "Digite a tag: " tag; \
-	$(VENV)/bin/kedro run --tag $$tag
-
-## 🧪 Executar testes
 test:
-	@echo "🧪 Rodando testes..."
-	$(VENV)/bin/pytest -q
+	. .venv/bin/activate && pytest -q
 
-## 🧹 Limpar arquivos temporários
+run:
+	. .venv/bin/activate && kedro run
+
+viz:
+	. .venv/bin/activate && kedro viz
+
+lint:
+	. .venv/bin/activate && ruff check src tests
+
+format:
+	. .venv/bin/activate && ruff format src tests
+
 clean:
-	@echo "🧹 Limpando cache e arquivos temporários..."
-	rm -rf .pytest_cache
-	rm -rf $(VENV)
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-
-## 📜 Mostrar ajuda
-help:
-	@echo "Comandos disponíveis:"
-	@grep -E '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) | \
-		sed 's/:.*##/ →/' | sort
+	rm -rf .pytest_cache __pycache__ */__pycache__ .kedro-*/ .ruff_cache

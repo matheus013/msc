@@ -1,1 +1,129 @@
-# Catálogo de datasets do Kedro
+# Catálogo de datasets
+# Referência: https://docs.kedro.org/en/stable/data/data_catalog.html
+
+# --- Camada RAW (entrada bruta) ---
+raw_vendas:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/vendas_completo.parquet
+  load_args:
+    engine: auto
+
+raw_ruptura:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/ruptura_completo.parquet
+  load_args:
+    engine: auto
+
+raw_credito:
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/credito_completo.parquet
+  load_args:
+    engine: auto
+
+raw_produto:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/produto.csv
+  load_args:
+    sep: ","            # separador adicionado
+    encoding: utf-8
+  save_args:
+    index: false
+
+raw_local:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/local.csv
+  load_args:
+    sep: ","            # separador adicionado
+    encoding: utf-8
+  save_args:
+    index: false
+
+raw_revendedor:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/revendedor.csv
+  load_args:
+    sep: ","            # separador adicionado
+    encoding: utf-8
+  save_args:
+    index: false
+
+vendas_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/vendas_clean.parquet
+
+ruptura_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/ruptura_clean.parquet
+
+credito_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/credito_clean.parquet
+
+produto_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/produto_clean.parquet
+
+local_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/local_clean.parquet
+
+revendedor_clean:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/revendedor_clean.parquet
+
+
+vendas_enrich:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/vendas_enrich.parquet
+
+
+
+# Métricas (serão logadas no MLflow)
+metrics_naive:
+  type: kedro_mlflow.io.metrics.MlflowMetricsHistoryDataset
+
+metrics_holt_winters:
+  type: kedro_mlflow.io.metrics.MlflowMetricsHistoryDataset
+
+metrics_sarimax:
+  type: kedro_mlflow.io.metrics.MlflowMetricsHistoryDataset
+
+metrics_xgb:
+  type: kedro_mlflow.io.metrics.MlflowMetricsHistoryDataset
+
+metrics_prophet:
+  type: kedro_mlflow.io.metrics.MlflowMetricsHistoryDataset
+
+# Parâmetros usados (guardamos um snapshot)
+params_naive_out:
+  type: json.JSONDataset
+  filepath: data/09_tracking/params_naive.json
+
+params_holt_winters_out:
+  type: json.JSONDataset
+  filepath: data/09_tracking/params_holt_winters.json
+
+params_sarimax_out:
+  type: json.JSONDataset
+  filepath: data/09_tracking/params_sarimax.json
+
+params_xgb_out:
+  type: json.JSONDataset
+  filepath: data/09_tracking/params_xgb.json
+
+params_prophet_out:
+  type: json.JSONDataset
+  filepath: data/09_tracking/params_prophet.json
+
+# conf/base/catalog.yml (apenas os novos; ajuste paths como preferir)
+chosen_model:
+  type: json.JSONDataset
+  filepath: data/08_reporting/chosen_model.json
+
+best_forecast_params:
+  type: json.JSONDataset
+  filepath: data/08_reporting/best_forecast_params.json
+
+tuned_metrics:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/tuned_metrics.csv

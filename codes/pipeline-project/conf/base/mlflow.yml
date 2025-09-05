@@ -1,0 +1,24 @@
+# conf/base/mlflow.yml
+server:
+  mlflow_tracking_uri: "mlruns"        # caminho local (padrão); pode ser "file://..." ou http(s)
+  mlflow_registry_uri: null            # opcional
+  credentials: null                    # opcional
+  request_header_provider:
+    type: null
+    pass_context: false
+    init_kwargs: {}
+
+tracking:
+  experiment:
+    name: "Default"
+    restore_if_deleted: true
+  run:
+    id: null
+    name: null
+    nested: true
+  params:
+    dict_params:
+      flatten: false
+      recursive: true
+      sep: "."
+    long_params_strategy: "fail"

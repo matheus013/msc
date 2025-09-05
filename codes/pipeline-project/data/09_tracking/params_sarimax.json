@@ -1,0 +1,17 @@
+{
+  "target_col": "qty",
+  "horizon": 1,
+  "min_train": 12,
+  "seasonal_periods": 6,
+  "order": [
+    1,
+    1,
+    1
+  ],
+  "seasonal_order": [
+    1,
+    0,
+    1,
+    6
+  ]
+}

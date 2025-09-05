@@ -1,7 +1,36 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kedro_starter"
+version = "0.1.0"
+description = "Kedro starter project"
+authors = [{ name = "Matheus Santos" }]
+requires-python = ">=3.9"
+dependencies = [
+  "kedro==1.0.0",
+  "pandas>=2.0.0"
+]
+
 [tool.kedro]
-package_name = "demand_forecast_pipeline"
-project_name = "Pipeline Project"
+# Must match your package folder under src/
+package_name = "kedro_starter"
+
+# Human-friendly display name
+project_name = "Kedro Starter"
+
+# Kedro version used to initialise the project
 kedro_init_version = "1.0.0"
 
+# Typically "src"
+source_dir = "src"
+
+# New in modern Kedro: list of project tools selected at init (can be empty)
+tools = []
+
+# Whether example pipeline code was included when the project was created
+example_pipeline = false
+
 [tool.kedro_telemetry]
-project_id = "ff9bdcb411da4fe29a1c048c2fc1e38f"
+project_id = "4cfa8a4dc7b84b37a0da79aeb05a074d"

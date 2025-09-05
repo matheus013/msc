@@ -1,1 +1,53 @@
-# Parâmetros globais
+# Parâmetros da pipeline
+sample_frac: null     # use um número (ex.: 0.1) para amostrar 10%, ou null para desligar
+reports_dir: "data/08_reporting"
+forecast_horizon: 6           # quantos cycles futuros avaliar (e quantos finais virarão teste)
+seasonal_periods: 12          # ajuste conforme a sazonalidade dos seus cycles
+random_seed: 123
+
+
+# parâmetros default compartilhados
+forecast:
+  target_col: qty
+  horizon: 1            # passos à frente em cada origem (p.ex. 1 cycle)
+  min_train: 12         # mínimo de ciclos para começar a avaliar
+  seasonal_periods: 6   # se fizer sentido para HW/SARIMAX
+  random_seed: 123
+  lags: 6               # p/ XGB
+
+# blocos por técnica (customize à vontade)
+naive_params: ${forecast}
+
+holt_winters_params:
+  target_col: qty
+  horizon: 1
+  min_train: 12
+  seasonal_periods: 6
+  trend: add
+  seasonal: add
+
+sarimax_params:
+  target_col: qty
+  horizon: 1
+  min_train: 12
+  seasonal_periods: 6
+  order: [ 1,1,1 ]
+  seasonal_order: [ 1,0,1,6 ]
+
+xgb_params:
+  target_col: qty
+  horizon: 1
+  min_train: 18
+  lags: 6
+  n_estimators: 400
+  learning_rate: 0.05
+  max_depth: 4
+  subsample: 0.8
+  colsample_bytree: 0.9
+  random_seed: 123
+
+prophet_params:
+  target_col: qty
+  horizon: 1
+  min_train: 12
+  monthly_start: "2000-01-31"

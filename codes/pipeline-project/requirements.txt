@@ -1,25 +1,40 @@
-# Framework principal
-kedro
+# Core framework
+kedro==1.0.0
+kedro-datasets[pandas-csvdataset,pandas-parquetdataset]
+kedro-datasets[tracking]
+kedro-mlflow
+kedro-viz==12.0.0
 
-# Ciência de dados e manipulação de dados
-pandas
-numpy
-scikit-learn
 
-# Modelos de previsão
-lightgbm
-prophet
-xgboost
-statsmodels
+# Data manipulation & modeling
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.1.0
+pyarrow>=10.0.0
+mlflow
 
-# Visualização
-matplotlib
-seaborn
-# Suporte a dados em parquet/arrow
-pyarrow
+# Forecasting & statistical modeling
+prophet>=1.0.0
+optuna
+statsmodels>=0.14.0
 
-# Serialização de modelos
-joblib
+# Gradient boosting libraries
+lightgbm>=3.3.0
+xgboost>=1.6.0
 
-# Testes
-pytest
+# Data serialization
+joblib>=1.2.0
+
+# Data formats
+pyarrow>=10.0.0
+
+# Visualization
+matplotlib>=3.6.0
+seaborn>=0.12.0
+
+# Testing
+pytest>=7.2.0
+
+plotly
+kaleido
+plotly[express]

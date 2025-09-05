@@ -1,0 +1,8 @@
+{
+  "target_col": "qty",
+  "horizon": 1,
+  "min_train": 12,
+  "seasonal_periods": 6,
+  "trend": "add",
+  "seasonal": "add"
+}

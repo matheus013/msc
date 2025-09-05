@@ -1,0 +1,8 @@
+{
+  "target_col": "qty",
+  "horizon": 1,
+  "min_train": 12,
+  "seasonal_periods": 6,
+  "random_seed": 123,
+  "lags": 6
+}
