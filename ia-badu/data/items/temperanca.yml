@@ -1,0 +1,16 @@
+id: burger_temperanca
+name: "Temperança"
+price: 23.90
+ingredients:
+  - "brioche bun"
+  - "grilled chicken patty"
+  - "prato cheese"
+  - "bacon"
+  - "salad"
+weight_g: 170   # estimativa
+is_vegan: false
+is_vegetarian: false
+is_spicy: false
+contains_lactose: true
+calories: null
+protein_g: null

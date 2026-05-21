@@ -1,0 +1,16 @@
+id: burger_inveja
+name: "Inveja"
+price: 25.90
+ingredients:
+  - "brioche bun"
+  - "angus burger 170g"
+  - "cheddar cheese Polenghi"
+  - "caramelized onion"
+  - "bacon"
+weight_g: 170
+is_vegan: false
+is_vegetarian: false
+is_spicy: false
+contains_lactose: true
+calories: null    # to fill later
+protein_g: null   # to fill later

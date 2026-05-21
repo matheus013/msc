@@ -1,0 +1,162 @@
+ \documentclass[dissertacao]{ic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hypersetup{
+    colorlinks = {true},
+    linktocpage = {false},
+    plainpages = {false},
+    linkcolor = {black},
+    citecolor = {Blue},
+    urlcolor = {Red}, 
+    unicode = {true}, 
+    pdftitle = {dissertacao matheus},
+    pdfauthor = {Matheus Inácio Batista Santos},
+    pdfsubject = {Dissertação de Mestrado},
+    pdfkeywords={Wireless Sensor Networks, Architecture},
+    pdfcreator = {LaTeX2e},
+    pdffitwindow = {false},
+    pdfstartview = {FitH}, 
+    pdftoolbar = {true},
+    pdfpagemode = {UseOutlines}, 
+    pdfview = {XYZ null null null}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{smartdiagram} 
+\usepackage{todonotes}
+\newtheorem{teo}{Teorema}[section]
+\newtheorem{prop}[teo]{Proposição} 
+\newtheorem{defi}[teo]{Definição} 
+\newtheorem{conj}[teo]{Conjectura} 
+\usepackage{dsfont}
+\renewcommand*\familydefault{\sfdefault}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{comment}
+\usepackage{enumerate}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows, automata, shapes, calc, fit, backgrounds}
+%\usepackage{algorithmic}
+%\parskip 3pt plus 2pt minus 1pt
+%\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+%\usepackage{algorithmic}     
+ 
+\titulo{
+% Optimizing 5G Networks Processes With Software-Defined Networks
+}
+%PROCESSOS DE HANDOVER EM REDES MÓVEIS 5G COM REDES DEFINIDAS POR SOFTWARE	
+
+\autor{Matheus Inácio Batista Santos}{mibs@ic.ufal.br}{}
+
+% \orientador{Dr. André Luiz Lins de Aquino}{}{Computing Institute}{Federal University of Alagoas}
+
+\orientadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+
+% \examinador{Dr. Erick de Andrade Barboza}{}{Computing Institute}{Federal University of Alagoas}
+
+% \examinadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+
+%\examinadorTres{Examinador 3}{}{unidade Acadêmica}{Instituição}
+ 
+\dataMesAno{June 18}{2020}
+
+%Rian
+\setlength{\marginparwidth}{2cm}
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\blue}{\textcolor{blue}}
+\usepackage{todonotes}
+\newcommand{\addref}{\todo[color=red!40]{Add referência.}}
+\newcommand{\rewrite}[1]{\todo[color=green!40]{#1}}
+\newcommand{\todoin}[1]{\todo[inline]{#1}}
+\newcommand{\estranho}{\todo{Estranho}}
+\newcommand{\arrumar}{\todo{Arrumar}}
+\newcommand{\pp}{\todo{1ª pessoa}}
+\newcommand{\ac}{\todo{Arrumar cite}}
+\newcommand{\veja}{\todo[color=green,fancyline]{Veja}}
+%Rian
+
+\begin{document}
+
+\selectlanguage{brazil}   
+
+\capa
+
+% \begin{agradecimentos}   
+
+% \vspace{2em}
+
+% \vspace*{\fill}
+% \begin{epigraph}{Perterson, \textit{J. B.}}{All hell is about to break loose and chaos is coming. When that is happening in your life, you might want be doing something that you regard as truly worthwhile.}
+
+% \end{epigraph}
+
+% \end{agradecimentos}
+
+\selectlanguage{brazil} 
+\begin{abstract}
+
+A gestão eficiente do abastecimento em redes varejistas geograficamente distribuídas representa um desafio central na engenharia de operações, especialmente quando múltiplos centros de estoque, fábricas e lojas interagem sob restrições logísticas e demanda estocástica. Esse problema se enquadra no domínio de Multi-Echelon Inventory Optimization (MEIO), no qual decisões de produção, transferência e reposição devem ser coordenadas entre diferentes níveis da cadeia de suprimentos para minimizar custos operacionais e garantir níveis adequados de serviço.
+
+Esta dissertação investiga a formulação e avaliação de métodos para otimização do abastecimento em redes varejistas multi-escalão representadas por grafos direcionados, considerando múltiplos produtos, restrições de capacidade e custos logísticos associados à distância e ao tempo de transporte. Inicialmente, é proposta uma formulação baseada em programação inteira mista (MILP/ILP) que integra decisões de produção e fluxo de itens na rede, servindo como modelo de referência para análise e interpretação das decisões logísticas.
+
+Devido à elevada escala dos dados e à complexidade combinatória do problema em ambientes reais, são investigadas abordagens complementares para melhoria de escalabilidade e desempenho computacional. Entre essas abordagens, incluem-se metaheurísticas clássicas, como Genetic Algorithm (GA), GRASP e Simulated Annealing (SA), além de métodos baseados em Deep Reinforcement Learning (DRL) e extensões multiagentes para decisão sequencial em ambientes dinâmicos.
+
+O estudo também incorpora um ambiente de simulação para avaliação de políticas em cenários multi-período sob demanda estocástica, utilizando um paradigma de horizonte rolante (rolling horizon) que integra previsão de demanda, otimização e execução operacional. Por meio de experimentos controlados e instâncias de grande escala, a pesquisa busca comparar o desempenho das diferentes abordagens segundo métricas operacionais e computacionais, incluindo custo total, nível de serviço e eficiência computacional.
+
+Espera-se que os resultados contribuam para a compreensão dos trade-offs entre métodos exatos, heurísticos e baseados em aprendizado de máquina no contexto de redes de abastecimento complexas, além de fornecer evidências empíricas sobre a aplicabilidade de técnicas modernas de aprendizado por reforço em problemas de otimização logística em larga escala.
+
+\vspace{2em} 
+\textbf{Keywords}: Multi-Echelon Inventory Optimization, Supply Chain Optimization, Mixed Integer Linear Programming, Metaheuristics, Deep Reinforcement Learning, Logistics Networks.
+
+\end{abstract}
+\selectlanguage{english}   
+
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{table}{Figure List}
+
+\listoftables
+\addcontentsline{toc}{table}{Table List}
+
+\listofalgorithms
+\addcontentsline{toc}{table}{Algorithm List}
+
+\inicio
+
+\include{capitulos/introducao}
+\include{capitulos/conceitos}
+\include{capitulos/proposta}
+\include{capitulos/resultados}
+\include{capitulos/conclusoes}
+
+\begin{raggedright}
+    \bibliographystyle{plainnat}
+    \renewcommand{\bibsection} {
+    \chapter*{\begin{flushright}References\end{flushright}}
+    \addcontentsline{toc}{chapter}{References}
+}
+
+\lhead{REFERENCES}
+\bibliography{referencias}
+\newpage\lhead{\rightmark}
+\end{raggedright}
+
+\end{document}

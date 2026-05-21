@@ -1,0 +1,525 @@
+\mychapter{Tecnologias e Conceitos}{cap:tec}\lhead{TECNOLOGIAS E CONCEITOS}
+
+% Este capítulo assume que o preâmbulo do projeto já inclui (ou poderá incluir) pacotes usuais:
+% \usepackage{amsmath,amssymb,booktabs}
+% \usepackage{tikz} \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+% \usepackage{hyperref}
+% Para código-fonte, este capítulo usa o ambiente verbatim (não requer pacotes adicionais).
+
+% \section*{Resumo executivo}
+
+% Este capítulo consolida, de forma expositiva e rigorosa, os principais \emph{conceitos}, \emph{modelos} e \emph{tecnologias computacionais} que sustentam o projeto de dissertação sobre \textbf{otimização do abastecimento em uma rede de lojas com múltiplos centros de estoque e fábricas}. O problema é enquadrado no domínio de \emph{Multi-Echelon Inventory Optimization} (MEIO), no qual decisões de produção e movimentação de múltiplos itens em uma rede geral devem ser coordenadas para minimizar custos e penalidades temporais, assegurando atendimento de demanda e respeitando capacidades. \cite{ClarkScarf1960MultiEchelon,Axsater2006InventoryControl,Shapiro2001ModelingSupplyChain,Geevers2024MEIODRL}
+
+% O capítulo organiza o ferramental metodológico em sete eixos: (i) modelagem por programação matemática (ILP/MILP/MIP), fluxos em redes e fluxo multi-\emph{commodity}; (ii) solvers e bibliotecas (OR-Tools e Gurobi), com diretrizes de parametrização; (iii) metaheurísticas (GA, GRASP, SA e NSGA-II), com pseudocódigo, hiperparâmetros e considerações de escalabilidade; (iv) simulação (\emph{Monte Carlo} e eventos discretos) para avaliação sob incerteza e \emph{rolling horizon}; (v) previsão de demanda (ensembles, modelos estatísticos e LSTM), enfatizando métricas alinhadas a custo/serviço; (vi) \emph{deep reinforcement learning} (DQN, PPO) e extensões multiagentes (MARL/IMARL) voltadas a MEIO; (vii) engenharia de software para experimentos (Kedro, Docker, Git, rastreamento de experimentos e reprodutibilidade). Esta visão integrada é coerente com a Motivação do capítulo introdutório, na qual escala de dados e necessidade de decisões repetidas (horizonte rolante) justificam o uso combinado de modelos exatos como \emph{benchmark}, heurísticas para escala e políticas aprendidas em ambientes simulados. \cite{BirgeLouveaux2011StochasticProgramming,Law2015SimulationModeling,Boute2022DRLInventoryRoadmap,Ziegner2025IMARL}
+
+\section{Visão geral do arcabouço tecnológico do projeto}
+
+O sistema alvo pode ser representado por um grafo dirigido \((N,A)\), onde \(N \coloneqq F \cup S \cup M\) reúne fábricas \(F\), centros de estoque \(S\) e lojas \(M\), e \(A\subseteq N\times N\) descreve rotas factíveis. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain} Os produtos \(i\) compõem um conjunto \(I\) (não especificado; tipicamente \(I\) pode variar de dezenas a milhares de SKUs), e a demanda nas lojas é tratada, no baseline, como \(O_m(i)\) (determinística/esperada), com extensão natural para \(D_{m,i,t}\) (multi-período e estocástica) sob \emph{rolling horizon}. \cite{Axsater2006InventoryControl,BirgeLouveaux2011StochasticProgramming}
+
+O ciclo computacional recomendado, em consonância com a apresentação e com o pipeline implementado nos códigos anexados, estrutura-se como: \textbf{(a)} ingestão e consolidação de dados históricos até \(t\) (janela \([t-w,t]\), \(w\) não especificado), \textbf{(b)} estimação de demanda futura em \(t+1:t+H\) (\(H\) não especificado; alternativas razoáveis: \(H\in\{14,28,56\}\) dias ou \(H\in\{8,12\}\) semanas), \textbf{(c)} otimização das decisões, \textbf{(d)} execução e coleta de novos dados, \textbf{(e)} realimentação e repetição do ciclo. Esse paradigma suporta tanto decisões pontuais (1 período) quanto decisões sequenciais em horizonte rolante. \cite{Law2015SimulationModeling}
+
+\subsection*{Arquiteturas de pipeline: visão conceitual (Mermaid)}
+
+\begin{verbatim}
+flowchart TD
+  A[Dados observados até t: vendas, estoque, lead time, custos] --> B[Preparação e features]
+  B --> C[Previsão de demanda: \hat{D}_{t+1:t+H}]
+  C --> D[Otimização: MILP/ILP + heurísticas]
+  D --> E[Plano de ação: produção, transferências, reposição]
+  E --> F[Execução + observação do sistema]
+  F --> A
+\end{verbatim}
+
+\subsection*{Arquitetura esquemática (TikZ)}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+>=Stealth,
+node distance=3.2cm and 2.2cm,
+block/.style={rectangle, draw, rounded corners, minimum width=3.6cm, minimum height=1.0cm, align=center, font=\small},
+flow/.style={->, thick},
+feedback/.style={->, thick, dashed}
+]
+
+\node[block] (data) {Dados até \(t\)\\(\([t-w,t]\), \(w\) não especificado)};
+\node[block, right=of data] (feat) {Preparação\\e \emph{features}};
+\node[block, right=of feat] (fcst) {Previsão\\\(\hat{D}_{t+1:t+H}\)};
+\node[block, right=of fcst] (opt) {Otimização\\(MILP/heurísticas/RL)};
+\node[block, right=of opt] (plan) {Plano\\de ação};
+
+\node[block, below=1.8cm of opt] (exec) {Execução\\e observação};
+
+\draw[flow] (data) -- (feat);
+\draw[flow] (feat) -- (fcst);
+\draw[flow] (fcst) -- (opt);
+\draw[flow] (opt) -- (plan);
+\draw[flow] (plan) |- (exec);
+\draw[feedback] (exec.west) -| node[pos=0.25, below, font=\small]{\emph{rolling horizon}} (data.south);
+
+\end{tikzpicture}%
+}
+\caption{Ciclo de decisão em horizonte rolante: dados \(\rightarrow\) previsão \(\rightarrow\) otimização \(\rightarrow\) execução \(\rightarrow\) realimentação.}
+\label{fig:tec_arquitetura}
+\end{figure}
+
+\section{Programação matemática e modelagem em redes}
+
+\subsection{ILP, MILP e MIP: definição formal, interpretação e complexidade}
+
+Uma \emph{programação inteira mista} (MIP) é um problema de otimização em que parte das variáveis deve assumir valores inteiros. Quando todas as funções são lineares e há variáveis inteiras e contínuas, obtém-se um \emph{MILP}; quando todas as variáveis são inteiras, um \emph{ILP}. Em forma padrão:
+
+\begin{align}
+\min \quad & c^\top x \\
+\text{sujeito a} \quad & A x \le b, \\
+& x_j \in \mathbb{Z} \ \ \forall j \in \mathcal{I}, \\
+& x_k \in \mathbb{R} \ \ \forall k \notin \mathcal{I},
+\end{align}
+
+onde \(\mathcal{I}\) indexa as variáveis inteiras e \(A,b,c\) são dados. \cite{Shapiro2001ModelingSupplyChain} Problemas MIP/MILP são, em geral, \emph{NP-difíceis}, e solvers modernos usam variantes de \emph{branch-and-bound}/\emph{branch-and-cut} apoiadas em relaxações lineares, cortes válidos, heurísticas internas e pré-processamento. \cite{GurobiMIPPrimer}
+
+No contexto MEIO, a vantagem do MILP é fornecer: (i) rastreabilidade (cada restrição e variável possui interpretação operacional), (ii) capacidade de impor restrições rígidas (capacidade, atendimento, políticas), e (iii) \emph{benchmarks} com limites de otimalidade (gap). A limitação central é escalabilidade: a cardinalidade de variáveis cresce com \(|A|\times |I|\) (e, em multi-período, \(|T|\)), levando a instâncias com milhões de variáveis/coeficientes, sobretudo quando se evita agregação. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain,Geevers2024MEIODRL}
+
+\subsection{Fluxos em redes e fluxo multi-\emph{commodity}}
+
+Um problema de \emph{fluxo em rede} considera um grafo dirigido \((N,A)\) e decide fluxos \(f_{a,b}\) em arcos \((a,b)\in A\), respeitando conservação de fluxo e capacidades. A formulação típica é:
+
+\begin{align}
+\min \quad & \sum_{(a,b)\in A} \kappa_{a,b} f_{a,b} \\
+\text{sujeito a} \quad
+& \sum_{(u,v)\in A: v=n} f_{u,n} - \sum_{(n,w)\in A} f_{n,w} = s_n \quad \forall n\in N, \\
+& 0 \le f_{a,b} \le C_{a,b} \quad \forall (a,b)\in A,
+\end{align}
+
+onde \(s_n\) representa oferta/demanda líquida. \cite{AhujaMagnantiOrlin1993NetworkFlows}
+
+No abastecimento multi-itens, o modelo naturalmente se torna um \emph{fluxo multi-\emph{commodity}}: para cada item \(i\in I\), define-se \(x_{a,b,i}\) e impõem-se conservações e capacidades agregadas. Uma estrutura canônica (simplificada) é:
+
+\begin{align}
+\sum_{(u,n)\in A} x_{u,n,i} - \sum_{(n,w)\in A} x_{n,w,i} &= s_{n,i} \quad \forall n\in N,\ \forall i\in I, \label{eq:mcf_balance} \\
+\sum_{i\in I} x_{a,b,i} &\le C_{a,b} \quad \forall (a,b)\in A, \label{eq:mcf_capacity}\\
+x_{a,b,i} &\ge 0.
+\end{align}
+
+Em MEIO, \(s_{n,i}\) pode representar produção líquida, disponibilidade inicial ou demanda agregada. \cite{Shapiro2001ModelingSupplyChain} A versão totalmente fracionária (contínua) é um LP de grande porte; já a versão inteira (fluxos inteiros por lote/unidade) é \emph{NP-difícil}. \cite{AhujaMagnantiOrlin1993NetworkFlows}
+
+\subsection{Formulação base deste projeto e extensão multi-período/estocástica}
+
+A formulação base do projeto define decisões de transporte \(x_{a,b,i}\) e produção \(y_{f,i}\), minimizando custos e penalidade temporal. A escrita do objetivo com parâmetro explícito \(\lambda_t\) (valor econômico do tempo) é:
+
+\begin{align}
+\min_{x,y} \quad
+& \sum_{(a,b)\in A} \sum_{i \in I_a \cap I_b} c \, d(a,b)\, x_{a,b,i}
++ \sum_{f\in F}\sum_{i\in I_f} p_f(i)\, y_{f,i}
++ \lambda_t \sum_{(a,b)\in A} \sum_{i \in I_a \cap I_b} t(a,b)\, x_{a,b,i}.
+\label{eq:obj_cost_time_chap_tec}
+\end{align}
+
+A adoção de \(\lambda_t\) é fundamental para coerência dimensional (custo vs tempo) e permite análises de sensibilidade na fronteira custo--tempo. \cite{SimchiLevi2009CadeiaSuprimentos,Chopra2022SCM}
+
+A extensão multi-período (com \(t\in\{1,\dots,H\}\), \(H\) não especificado) adiciona variáveis de estoque \(I_{n,i,t}\) e (opcionalmente) ruptura por \emph{backorder} \(B_{m,i,t}\) ou \emph{lost sales} \(L_{m,i,t}\). A forma geral do balanço em loja (com backorder) é:
+
+\begin{align}
+I_{m,i,t} - B_{m,i,t} &= I_{m,i,t-1} - B_{m,i,t-1} + \sum_{(u,m)\in A} \text{Arrive}_{u,m,i,t} - D_{m,i,t}, \\
+I_{m,i,t} \ge 0,\ \ & B_{m,i,t}\ge 0,
+\end{align}
+
+onde \(\text{Arrive}_{u,m,i,t}\) incorpora \emph{lead times} \(\ell_{u,m}\) (não especificados) via \(\text{Arrive}_{u,m,i,t}=x_{u,m,i,t-\ell_{u,m}}\). \cite{Axsater2006InventoryControl} Para demanda estocástica, \(D_{m,i,t}\) pode ser modelada por cenários \(\omega\in\Omega\) com probabilidades \(p_\omega\), minimizando custo esperado e/ou risco, conforme programação estocástica. \cite{BirgeLouveaux2011StochasticProgramming}
+
+\section{Solvers e bibliotecas de otimização}
+
+\subsection{OR-Tools: MPSolver e CP-SAT}
+
+O Google OR-Tools fornece interfaces para otimização linear e inteira (via \texttt{MPSolver}) e um solver dedicado para programação por restrições e IP baseada em SAT, o \texttt{CP-SAT}. \cite{ORToolsMIPExample,ORToolsCPSATSolver} A documentação oficial recomenda \texttt{CP-SAT} para muitos problemas inteiros, observando que ele é projetado para problemas de programação inteira e pode ser mais rápido que o \texttt{MPSolver} em várias classes; entretanto, exige modelagem em inteiros, requerendo escalonamento quando há coeficientes reais. \cite{ORToolsCPSATSolver}
+
+\paragraph{Implementação mínima (MIP com OR-Tools/MPSolver).}
+A estrutura típica em \texttt{MPSolver} consiste em declarar solver, variáveis, restrições, objetivo e chamar \texttt{Solve()}. \cite{ORToolsMIPExample}
+
+\begin{verbatim}
+# OR-Tools (MPSolver) – esqueleto mínimo (Python)
+from ortools.linear_solver import pywraplp
+
+solver = pywraplp.Solver.CreateSolver("SCIP")  # ou "CBC", etc.
+x = solver.IntVar(0, solver.infinity(), "x")
+y = solver.IntVar(0, solver.infinity(), "y")
+
+# restrição: x + 2y <= 14
+solver.Add(x + 2*y <= 14)
+
+# objetivo: maximizar 3x + 4y
+solver.Maximize(3*x + 4*y)
+
+status = solver.Solve()
+if status in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
+    print(x.solution_value(), y.solution_value(), solver.Objective().Value())
+\end{verbatim}
+
+\paragraph{Notas de uso em MEIO.}
+Para instâncias MEIO com grande número de variáveis, recomenda-se: (i) configuração de limites de tempo e tolerâncias (quando disponível na API), (ii) modelagem cuidadosa para reduzir simetria e redundância, (iii) pré-processamento do conjunto de arcos \(A\) por viabilidade \(d(a,b)\le T_{a,b}\) e por política (p.ex., associação \(E_m\)), (iv) agregação quando apropriado (p.ex., por famílias de itens), preservando rastreabilidade. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain}
+
+\subsection{Gurobi: fundamentos, API e parametrização}
+
+O Gurobi é um solver comercial de referência para MILP/MIP e LP, com documentação detalhando que muitos problemas são resolvidos por algoritmos baseados em \emph{branch-and-bound}/\emph{branch-and-cut}, com técnicas avançadas de cortes, heurísticas e pré-processamento. \cite{GurobiMIPPrimer} A API Python organiza o fluxo de modelagem em torno do objeto \texttt{Model}, no qual se adicionam variáveis, restrições e função objetivo. \cite{GurobiPythonAPI} 
+
+\paragraph{Parâmetros essenciais.}
+Do ponto de vista experimental, é crucial controlar parâmetros que afetam reprodutibilidade, comparação e custo computacional. A documentação do manual de referência do Gurobi lista parâmetros e diretrizes; em particular, encerramento por \texttt{TimeLimit} e por \texttt{MIPGap} são escolhas padrão, e \texttt{Threads} define paralelismo. \cite{GurobiParamReference,GurobiParamGuidelines}
+
+\begin{verbatim}
+# Gurobi (gurobipy) – esqueleto mínimo (Python)
+import gurobipy as gp
+from gurobipy import GRB
+
+m = gp.Model("mip_example")
+x = m.addVar(vtype=GRB.INTEGER, lb=0, name="x")
+y = m.addVar(vtype=GRB.INTEGER, lb=0, name="y")
+
+m.addConstr(x + 2*y <= 14, name="c1")
+m.setObjective(3*x + 4*y, GRB.MAXIMIZE)
+
+# parâmetros típicos p/ experimento
+m.Params.TimeLimit = 300.0  # 5 minutos
+m.Params.MIPGap = 0.01      # 1% de gap
+m.Params.Threads = 1        # p/ reprodutibilidade (opcional)
+
+m.optimize()
+if m.Status in (GRB.OPTIMAL, GRB.SUBOPTIMAL):
+    print(x.X, y.X, m.ObjVal)
+\end{verbatim}
+
+\paragraph{Notas de uso em MEIO.}
+Para comparação entre métodos, recomenda-se relatar: (i) status (\texttt{OPTIMAL}, \texttt{FEASIBLE}, \texttt{TIME\_LIMIT}), (ii) \emph{best bound}, \emph{incumbent} e \texttt{MIPGap}, (iii) tempo total e, quando possível, tempo em presolve e em \emph{root node}, (iv) tamanho do modelo (número de variáveis/constraints). Inconsistências e inviabilidades devem ser diagnosticadas com relaxações ou IIS (quando aplicável), evitando comparações injustas. \cite{GurobiParamReference,GurobiParamGuidelines}
+
+\section{Metaheurísticas para MEIO: GA, GRASP, SA e NSGA-II}
+
+Metaheurísticas são estratégias de busca de propósito geral para problemas combinatórios e/ou de grande escala, úteis quando (a) MILP/ILP não escala em tempo viável e/ou (b) deseja-se explorar fronteiras multicritério (p.ex., custo vs tempo vs emissões). \cite{Talbi2009Metaheuristics} No MEIO, elas são especialmente atraentes quando se preserva estrutura realista (muitos itens, muitos nós, restrições práticas), pois permitem encodar regras de negócio e operar com avaliação por simulação.
+
+\subsection{Genetic Algorithm (GA)}
+
+\paragraph{Definição.}
+GA é um método populacional inspirado em evolução, que mantém uma população de soluções (cromossomos), aplica operadores de seleção, cruzamento e mutação, e utiliza uma função de aptidão para guiar a busca. \cite{Talbi2009Metaheuristics,Holland1992ANAS}
+
+\paragraph{Pseudocódigo (alto nível).}
+\begin{verbatim}
+Inicialize população P0 com soluções factíveis (ou penalizadas)
+Para g = 1..G:
+  Avalie fitness de cada indivíduo
+  Selecione pais (torneio/roleta) proporcional ao fitness
+  Recombine (crossover) e aplique mutação com prob. pm
+  Repare ou penalize violações de restrição
+  Forme nova população Pg (elitismo opcional)
+Retorne melhor solução encontrada
+\end{verbatim}
+
+\paragraph{Complexidade.}
+Se \(P\) é tamanho da população, \(G\) número de gerações e \(C_{\text{eval}}\) custo de avaliar uma solução, o custo típico é \(O(P \cdot G \cdot C_{\text{eval}})\). Em MEIO, \(C_{\text{eval}}\) pode incluir simulação, tornando o método computacionalmente intenso.
+
+\paragraph{Hiperparâmetros comuns.}
+Tamanho da população \(P\), taxa de crossover \(p_c\), taxa de mutação \(p_m\), pressão seletiva (torneio), elitismo, critério de parada (gerações sem melhora), e tratamento de restrição (reparo vs penalização). \cite{Talbi2009Metaheuristics}
+
+\paragraph{Prós/cons em MEIO.}
+GA tende a explorar bem espaços grandes e multimodais, admite paralelismo natural, mas pode exigir calibração extensa e pode ter dificuldade em restrições rígidas sem mecanismos de reparo/viabilidade.
+
+\subsection{GRASP}
+
+\paragraph{Definição.}
+GRASP (\emph{Greedy Randomized Adaptive Search Procedure}) é uma metaheurística multi-início: cada iteração constrói uma solução por uma heurística gulosa randomizada (via \emph{Restricted Candidate List}, controlada por \(\alpha\)) e, em seguida, aplica busca local para refinar a solução. \cite{FeoResende1995GRASP}
+
+\paragraph{Pseudocódigo.}
+\begin{verbatim}
+Para k = 1..K:
+  s <- Construção gulosa randomizada (parâmetro α)
+  s <- Busca local(s) a partir de s
+  Atualize melhor solução s*
+Retorne s*
+\end{verbatim}
+
+\paragraph{Complexidade.}
+O custo é \(O(K \cdot (C_{\text{construct}} + C_{\text{ls}}))\). Em MEIO, \(C_{\text{ls}}\) pode ser elevado se movimentos (swap, relocate, reallocation) exigirem recomputar custos e checar restrições.
+
+\paragraph{Hiperparâmetros.}
+\(\alpha\in[0,1]\) (grau de aleatoriedade na construção), número de iterações \(K\), vizinhanças na busca local, critérios de parada (tempo, iterações sem melhora). \cite{FeoResende1995GRASP}
+
+\subsection{Simulated Annealing (SA)}
+
+\paragraph{Definição.}
+SA é um método de busca estocástica que aceita pioras com probabilidade controlada por uma ``temperatura'' \(T\), permitindo escapar de ótimos locais; o algoritmo é inspirado no processo físico de recozimento. \cite{Kirkpatrick1983SA}
+
+\paragraph{Critério de aceitação (Metropolis).}
+Dado custo \(f(s)\), vizinho \(s'\) e \(\Delta = f(s')-f(s)\), aceita-se \(s'\) se \(\Delta \le 0\) ou com probabilidade \(\exp(-\Delta/T)\) caso contrário. \cite{Kirkpatrick1983SA}
+
+\paragraph{Pseudocódigo.}
+\begin{verbatim}
+s <- solução inicial; s* <- s; T <- T0
+Enquanto T > Tmin e não parar:
+  Para r = 1..R (repetições por temperatura):
+    s' <- vizinho(s)
+    Se f(s') <= f(s) então s <- s'
+    Senão aceitar com prob exp(-(f(s')-f(s))/T)
+    Atualize s* se necessário
+  T <- alpha * T   (alpha < 1)
+Retorne s*
+\end{verbatim}
+
+\paragraph{Hiperparâmetros.}
+Temperatura inicial \(T_0\), esquema de resfriamento \(\alpha\), repetições por temperatura \(R\), temperatura mínima \(T_{\min}\), definição de vizinhança. \cite{Kirkpatrick1983SA}
+
+\subsection{NSGA-II para multiobjetivo}
+
+\paragraph{Definição.}
+NSGA-II é um algoritmo evolutivo multiobjetivo elitista que combina ordenação por dominância (\emph{non-dominated sorting}) e diversidade por distância de aglomeração, produzindo aproximações de fronteiras de Pareto. \cite{Deb2002NSGA2}
+
+\paragraph{Complexidade.}
+O artigo original discute complexidade \(O(MN^2)\) para \(N\) indivíduos e \(M\) objetivos sob ordenação e crowding. \cite{Deb2002NSGA2}
+
+\paragraph{Uso em MEIO.}
+Em MEIO, NSGA-II é indicado quando objetivos concorrentes são explicitados (p.\ ex., custo total, tempo total e/ou emissões), evitando a necessidade de escolher \(\lambda_t\) a priori. Em contrapartida, aumenta custo computacional e exige definição de avaliação/viabilidade multicritério.
+
+\section{Simulação: eventos discretos e Monte Carlo}
+
+Simulação é um eixo metodológico essencial quando se estende o problema para multi-período e demanda estocástica, pois permite medir custo esperado, nível de serviço e robustez sob variabilidade, além de servir como ambiente de treinamento/avaliação para DRL. \cite{Law2015SimulationModeling}
+
+\subsection{Simulação de eventos discretos (DES)}
+
+\paragraph{Conceito.}
+Em DES, o estado do sistema muda em instantes discretos associados a eventos (chegada de demanda, recebimento de transferência, produção concluída, ruptura). Um \emph{event list} ordenado por tempo é processado sequencialmente. \cite{Law2015SimulationModeling}
+
+\paragraph{Uso em MEIO.}
+DES é especialmente útil quando tempos de transporte/produção são explícitos, há filas/capacidades, e o impacto de atrasos e janelas interessa ao nível de serviço e custo.
+
+\subsection{Simulação Monte Carlo}
+
+\paragraph{Conceito.}
+Monte Carlo estima métricas esperadas por amostragem repetida de variáveis aleatórias (demanda, lead times, falhas). \cite{Law2015SimulationModeling}
+
+\paragraph{Pseudocódigo.}
+\begin{verbatim}
+Para r = 1..R replicações:
+  Inicialize estoques e estado
+  Para t = 1..H:
+    Amostre demanda D_{t} ~ Distribuição (ou cenário)
+    Aplique política/decisão (MILP/heurística/RL) p/ o período t
+    Atualize estoques, backorders e custos
+  Armazene métricas da replicação r
+Compute média, variância e intervalos de confiança das métricas
+\end{verbatim}
+
+\paragraph{Notas práticas.}
+Recomenda-se \(R\) suficiente para reduzir variância (não especificado; valores iniciais típicos: \(R\in[30,200]\)), uso de sementes controladas e, para comparar políticas, \emph{common random numbers} (mesmas amostras de demanda para todos os métodos) a fim de reduzir ruído comparativo. \cite{Law2015SimulationModeling}
+
+\section{Previsão de demanda: modelos, métricas e alinhamento com decisão}
+
+\subsection{Modelos estatísticos e de aprendizado}
+
+No pipeline anexado (Kedro), há implementação de \emph{walk-forward} (\emph{rolling-origin}) para avaliação fora-da-amostra, com modelos como \emph{naive}, Holt-Winters, SARIMAX, XGBoost com defasagens e Prophet, registrando métricas (MAE, RMSE, MAPE) e parâmetros por execução (inclusive via MLflow). (Conforme códigos anexados; ver estrutura \texttt{conf/base/catalog.yml} e \texttt{pipelines/forecasting}.) Essa prática está alinhada a recomendações de avaliação temporal: evitar vazamento de informação e medir desempenho em horizonte relevante.
+
+Em literatura recente, Nasseri et al.\ analisam previsão de demanda no varejo e mostram, em contexto com milhões de registros e variáveis externas, que ensembles baseados em árvores podem superar LSTM em métricas clássicas; o resultado é relevante para este projeto porque sugere que, em certos regimes, modelos mais simples e robustos podem produzir previsões competitivas para decisão operacional. \cite{Nasseri2023RetailDemandPrediction}
+
+\subsection{Métricas: erro preditivo e impacto operacional}
+
+Embora MAE/RMSE/MAPE sejam úteis para comparar algoritmos de previsão, existe consenso prático de que o erro preditivo deve ser interpretado à luz do objetivo operacional. Tadayonrad e Ndiaye propõem um KPI que incorpora confiabilidade da rede e sazonalidade e argumentam que minimizar erro não necessariamente minimiza custo de estoque; seu enfoque é diretamente aplicável ao MEIO, no qual previsões alimentam decisões de reposição e \emph{safety stock}. \cite{TadayonradNdiaye2023KPIDemandForecasting}
+
+\paragraph{Recomendação metodológica.}
+Além de MAE/RMSE/MAPE, recomenda-se avaliar previsões por métricas \emph{decision-centric}, p.\ ex.: custo total resultante quando \(\hat{D}\) alimenta o modelo de decisão, fill rate, custo de ruptura e excesso de inventário.
+
+\section{Programação estocástica e modelos de nível de serviço}
+
+Programação estocástica fornece um arcabouço formal para modelar incerteza via cenários e decisões de \emph{recourse}. \cite{BirgeLouveaux2011StochasticProgramming} Em MEIO, isso pode se materializar em: (i) modelos multiestágio, (ii) modelos de dois estágios com recourse, ou (iii) aproximações híbridas (cenários + rolling horizon). A principal limitação é o crescimento do modelo com \(|\Omega|\times |T|\), o que frequentemente exige amostragem (SAA), decomposição e/ou simulação.
+
+No âmbito de nível de serviço e estoques de segurança, abordagens do tipo GSM e suas extensões industriais permanecem relevantes quando se deseja garantir metas explícitas e reduzir capital em inventário; Achkar et al.\ discutem generalizações do GSM e validação por simulação, fornecendo evidência de aplicabilidade industrial e ganhos computacionais via reformulações. \cite{Achkar2024GSMExtensions}
+
+\section{DRL, MARL e políticas para MEIO}
+
+\subsection{MDP e formulação de RL}
+
+RL modela o problema como um \emph{Markov Decision Process} (MDP) \(\langle \mathcal{S},\mathcal{A},P,R,\gamma\rangle\), em que um agente observa um estado \(s\in\mathcal{S}\), escolhe ação \(a\in\mathcal{A}\), recebe recompensa \(r=R(s,a)\) e transita via \(P(s'|s,a)\). \cite{SuttonBarto2018RL} Em MEIO multi-período, \(s_t\) deve codificar, minimamente, estoques atuais, demandas recentes, pipeline de pedidos (lead time) e capacidades; \(a_t\) codifica decisões de produção/transferência e/ou políticas parametrizadas.
+
+\subsection{DQN: Q-learning profundo}
+
+DQN aproxima a função-valor \(Q_\theta(s,a)\) com redes neurais e atualiza parâmetros por minimização de erro temporal-diferencial. O artigo seminal demonstra controle em nível humano em Atari e formaliza componentes como \emph{experience replay} e \emph{target network}. \cite{Mnih2015DQN} Em inventário, DQN costuma ser aplicado quando ações são discretas e espaço de ação é controlável (p.\ ex., níveis de reposição discretizados), mas enfrenta limites quando a dimensionalidade da ação explode (multi-itens e rede grande).
+
+\subsection{PPO: policy gradient com clipping}
+
+PPO é um algoritmo de \emph{policy gradient} que maximiza uma função objetivo \emph{surrogate} com \emph{clipping} para restringir a distância entre a política nova e a antiga, estabilizando treinamento. \cite{Schulman2017PPO} Em MEIO, PPO é frequentemente preferido quando ações são contínuas (quantidades) ou quando se deseja modelar decisões como vetores contínuos e depois projetar/arriscar para viabilidade. Geevers et al.\ reportam aplicação de PPO a diferentes estruturas MEIO (linear, divergente e rede geral), observando desempenho superior a \emph{benchmark} nos cenários estudados, o que justifica PPO como candidato no presente projeto. \cite{Geevers2024MEIODRL}
+
+\subsection{MARL/IMARL e escalabilidade}
+
+Em redes gerais, uma estratégia para escalabilidade é modelar decisões por nó/elo como agentes distintos (MARL) ou decompor a política. Ziegner et al.\ propõem IMARL como abordagem iterativa multiagente voltada a MEIO, relatando ganhos de escalabilidade e desempenho em comparação com benchmarks, o que o torna uma referência natural para a trilha de pesquisa do projeto (conforme apresentação do autor). \cite{Ziegner2025IMARL}
+
+\subsection{Ambiente tipo Gymnasium: esqueleto para simulação e RL}
+
+A recomendação prática é implementar um ambiente com API compatível com Gymnasium (\texttt{reset}, \texttt{step}), permitindo: (i) simulação para avaliação de políticas e (ii) treino com bibliotecas DRL. A documentação oficial descreve requisitos de \texttt{reset()} e \texttt{step()} e recomenda inicializar RNG com \texttt{super().reset(seed=seed)} para reprodutibilidade. \cite{GymnasiumEnvAPI}
+
+\begin{verbatim}
+# Esqueleto Gym-like (pseudo-Python) para MEIO multi-período
+import gymnasium as gym
+import numpy as np
+
+class MEIOEnv(gym.Env):
+    def __init__(self, instance, horizon, seed=0):
+        self.instance = instance
+        self.H = horizon
+        self.t = 0
+        self.state = None
+        self.action_space = ...        # definir (Box/Discrete)
+        self.observation_space = ...   # definir (Box/Dict)
+        self.rng = np.random.default_rng(seed)
+
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)  # recomendado pelo Gymnasium p/ seeding correto
+        self.t = 0
+        self.state = self._init_state()
+        return self._get_obs(), {}
+
+    def step(self, action):
+        # 1) converter action -> decisões (produção/transferências)
+        # 2) simular demanda e lead times
+        # 3) atualizar estoques e custos
+        reward = - self._cost_increment()
+        self.t += 1
+        terminated = (self.t >= self.H)
+        return self._get_obs(), reward, terminated, False, {}
+
+    def _get_obs(self):
+        return ...
+\end{verbatim}
+
+\subsection{Treinamento PPO com Stable-Baselines3: parâmetros e loop}
+
+Para treinamento, uma opção prática é Stable-Baselines3, cuja documentação descreve hiperparâmetros relevantes de PPO, como \(n\_steps\), \(batch\_size\), \(n\_epochs\) e \(\gamma\). \cite{SB3PPO} Uma configuração inicial (não especificada; sugerida como ponto de partida) é: \(n\_steps\in\{512,1024,2048\}\), \(batch\_size\in\{64,128,256\}\), \(\gamma\in[0.95,0.999]\), com busca posterior por \emph{tuning}.
+
+\begin{verbatim}
+# PPO (Stable-Baselines3) – esqueleto mínimo (Python)
+from stable_baselines3 import PPO
+
+env = MEIOEnv(instance=inst, horizon=H, seed=123)
+model = PPO("MlpPolicy", env,
+            n_steps=2048, batch_size=128, n_epochs=10,
+            gamma=0.99, learning_rate=3e-4, clip_range=0.2,
+            verbose=1)
+model.learn(total_timesteps=2_000_000)
+\end{verbatim}
+
+\section{Métricas de avaliação e protocolo experimental}
+
+\subsection{Métricas: previsão, operação, otimização e aprendizado}
+
+A avaliação deve separar: (i) qualidade preditiva, (ii) desempenho operacional e (iii) custo computacional. Em previsão, métricas clássicas incluem MAE/RMSE/MAPE (também usadas no pipeline Kedro anexado) e devem ser complementadas por métricas alinhadas ao impacto em inventário e nível de serviço. \cite{Nasseri2023RetailDemandPrediction,TadayonradNdiaye2023KPIDemandForecasting} Em MEIO, métricas operacionais recomendadas incluem: custo total, custo de transporte, custo de produção, custo de estoque, custo de ruptura (backorder/lost sales), nível de serviço (cycle service level, fill rate), estoque médio e variância. \cite{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}
+
+Em otimização exata, reporta-se status, melhor solução, melhor limite e \emph{gap}, além de \emph{runtime} e uso de memória quando mensurável. Em DRL, mede-se retorno médio e sua dispersão, estabilidade por sementes, taxa de violação de restrições (quando aplicável) e generalização para instâncias não vistas. \cite{Boute2022DRLInventoryRoadmap,Geevers2024MEIODRL}
+
+\subsection{Protocolo, seeding e testes estatísticos}
+
+O protocolo experimental recomendado segue princípios de comparação justa em ambientes estocásticos: múltiplas sementes, \emph{common random numbers} para simulações comparativas, e agregação por estatísticas robustas (média, mediana, intervalos de confiança). \cite{Law2015SimulationModeling} Para comparar métodos, sugere-se ao menos: (i) teste pareado (t-test quando plausível ou Wilcoxon quando não), (ii) estimativas por bootstrap para diferenças de médias/medianas, e (iii) correção para múltiplas comparações quando necessário.
+
+\section{Engenharia de software para experimentos: Kedro, Docker, Git e reprodutibilidade}
+
+\subsection{Kedro: conceitos, Data Catalog, pipelines e visualização}
+
+Kedro provê uma estrutura para projetos de ciência de dados baseada em: \emph{nós} (funções com entradas/saídas nomeadas), \emph{pipelines} (ordenação e dependências) e um \emph{Data Catalog} (registro de datasets em \texttt{catalog.yml}). \cite{KedroConcepts,KedroDataCatalogYAML} Esses conceitos aparecem concretamente no projeto anexado: o arquivo \texttt{conf/base/catalog.yml} registra datasets por camadas (\texttt{01\_raw}, \texttt{02\_intermediate}, \texttt{03\_primary}, etc.), e o pipeline de previsão implementa \emph{rolling-origin forecast} sem vazamento do futuro. (Conforme códigos anexados.)
+
+Kedro-Viz é uma ferramenta oficial para visualização interativa do grafo de pipeline, útil para auditoria e comunicação de experimentos. \cite{KedroVizDocs} No fluxo do projeto, isso favorece governança experimental e reduz risco de inconsistência entre versões.
+
+\subsection{MLflow e rastreamento de experimentos}
+
+MLflow fornece APIs para registrar parâmetros, métricas e artefatos de experimento, permitindo comparações e auditoria. \cite{MLflowTrackingAPI} O projeto anexado inclui integração \texttt{kedro-mlflow} (conforme \texttt{conf/base/mlflow.yml} e datasets de métricas), o que recomenda-se manter quando se evoluir para múltiplos modelos de previsão e múltiplas políticas (heurísticas e DRL).
+
+\subsection{Docker: isolamento, builds reprodutíveis e boas práticas}
+
+A containerização com Docker reduz \emph{drift} de ambiente (dependências e SO) e facilita reexecução dos experimentos. Boas práticas oficiais incluem \emph{multi-stage builds} e organização do Dockerfile para minimizar tamanho e maximizar reprodutibilidade. \cite{DockerBuildBestPractices} Para este projeto, recomenda-se: (i) fixar versões (Python e bibliotecas críticas), (ii) capturar \texttt{requirements.txt}/\texttt{pyproject.toml}, e (iii) registrar hashes de dataset e configurações.
+
+\subsection{Git: versionamento e rastreabilidade}
+
+Versionamento em Git é requisito prático para uma dissertação reprodutível: garante histórico, ramos experimentais e rastreabilidade de mudanças em código e configurações. O livro oficial \emph{Pro Git} é uma referência consolidada e acessível para práticas recomendadas (commits pequenos, branching, merges, tags). \cite{ProGitBook}
+
+\subsection{Checklist de reprodutibilidade (recomendado)}
+
+Para orientar a execução experimental, recomenda-se adotar, no mínimo, o seguinte checklist:
+\begin{itemize}
+  \item \textbf{Ambiente}: versão do Python e pacotes fixados; container Docker (quando aplicável) com instruções de build.
+  \item \textbf{Dados}: hashes (ou versões) de arquivos, dicionário de dados, política de tratamento de faltantes/outliers.
+  \item \textbf{Seeding}: sementes globais registradas (NumPy, bibliotecas ML, ambiente Gym), múltiplas sementes por experimento.
+  \item \textbf{Configuração}: hiperparâmetros e parâmetros de solver/versionamento por arquivo YAML/JSON controlado por Git.
+  \item \textbf{Rastreamento}: MLflow (ou equivalente) registrando métricas, parâmetros e artefatos (modelos e relatórios).
+  \item \textbf{Relatório}: tabelas de resultados com ICs, testes estatísticos e descrição do protocolo.
+\end{itemize}
+
+\section{Tabelas comparativas e configurações iniciais recomendadas}
+
+\subsection{Comparação entre famílias de métodos}
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.14\textwidth} p{0.14\textwidth} p{0.13\textwidth} p{0.13\textwidth} p{0.20\textwidth}}
+\toprule
+\textbf{Método} & \textbf{Escalabilidade} & \textbf{Interpretabilidade} & \textbf{Dados necessários} & \textbf{Custo comput.} & \textbf{Tratamento de restrições} \\
+\midrule
+ILP/MILP (solver) & média--baixa (cresce rápido) & alta & baixo--médio & alto (pior caso) & nativo (exato) \\
+Fluxo em rede (LP) & alta (quando contínuo) & alta & baixo--médio & médio & nativo (linear) \\
+Metaheurísticas (GA/GRASP/SA) & alta (paralelizável) & média & baixo--médio & médio--alto & penalização/reparo \\
+Simulação (DES/MC) & alta (paralelizável) & alta (modelo explícito) & médio--alto & médio--alto & avalia políticas; não ``impõe'' \\
+DRL (PPO/DQN) & média (treino custoso) & baixa--média & alto (interação) & alto & indireto (penalização/máscara) \\
+MARL/IMARL & média (infra mais complexa) & baixa & alto & alto & indireto; decomposição por agentes \\
+\bottomrule
+\end{tabular}
+\caption{Comparação qualitativa de métodos no contexto MEIO.}
+\label{tab:comparacao_metodos}
+\end{table}
+
+\subsection{Configurações iniciais (pontos de partida)}
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.24\textwidth} p{0.27\textwidth} p{0.40\textwidth}}
+\toprule
+\textbf{Componente} & \textbf{Parâmetros iniciais} & \textbf{Justificativa/nota} \\
+\midrule
+MILP (solver) & \(\texttt{TimeLimit}=300\)s; \(\texttt{MIPGap}=1\%\); \(\texttt{Threads}=1\) & Comparabilidade e controle de custo; ajustar por escala. \cite{GurobiParamGuidelines} \\
+OR-Tools CP-SAT & \(\texttt{max\_time\_in\_seconds}\) (não especificado; p.ex.\ 60--600) & Terminação por tempo é recomendada para evitar execuções longas. \cite{ORToolsCPSATSolver} \\
+GA & \(P=100\), \(G=200\), \(p_c=0.8\), \(p_m=0.05\) & Ponto de partida; calibrar por instância e custo de avaliação. \cite{Talbi2009Metaheuristics} \\
+GRASP & \(\alpha=0.2\) e \(K=500\) iterações & \(\alpha\) controla aleatoriedade; aumenta diversidade; calibrar. \cite{FeoResende1995GRASP} \\
+SA & \(T_0\) por escala de custo; \(\alpha=0.95\); \(R=100\) & Esquema clássico; calibrar para taxas de aceitação. \cite{Kirkpatrick1983SA} \\
+NSGA-II & \(N=200\), \(G=200\), elitismo ligado & Multiobjetivo custo/tempo; custo computacional maior. \cite{Deb2002NSGA2} \\
+Previsão & XGB com defasagens \(L=6\) (baseline) e Holt-Winters/SARIMAX & Coerente com pipeline anexado; comparar com ensembles e LSTM. \cite{Nasseri2023RetailDemandPrediction} \\
+PPO (SB3) & \(n\_steps=2048\), \(batch=128\), \(\gamma=0.99\), \(lr=3\cdot10^{-4}\) & Defaults usuais; ajustar por estabilidade e custo. \cite{SB3PPO} \\
+\bottomrule
+\end{tabular}
+\caption{Configurações iniciais recomendadas para experimentos (valores ``não especificado'' devem ser definidos no protocolo).}
+\label{tab:defaults}
+\end{table}
+
+% \section{Síntese e ligação com a metodologia experimental}
+
+% O conjunto de tecnologias e conceitos aqui descrito viabiliza um desenho metodológico em camadas: inicia-se com formulação e \emph{benchmarks} por MILP/ILP para instâncias pequenas/agregadas, evolui-se para metaheurísticas quando a escala inviabiliza métodos exatos, introduz-se simulação e programação estocástica para incorporar dinâmica e incerteza sob \emph{rolling horizon}, e finalmente investiga-se DRL/MARL como políticas que aprendem decisões sequenciais, com validação empírica rigorosa. \cite{Shapiro2001ModelingSupplyChain,BirgeLouveaux2011StochasticProgramming,Law2015SimulationModeling,Boute2022DRLInventoryRoadmap,Geevers2024MEIODRL,Ziegner2025IMARL}
+
+% -------------------------------------------------------------------------
+% REFERÊNCIAS ADICIONAIS (BibTeX) — chaves novas usadas neste capítulo.
+% Caso ainda não estejam no seu .bib, recomenda-se adicionar as entradas.
+% Fontes primárias/oficiais foram priorizadas.
+%
+% OR-Tools:
+% - turn0search0 / turn3search19 (OR-Tools MIP example)
+% - turn3search3 / turn5search11 (CP-SAT solver)
+% Gurobi:
+% - turn0search1 (MIP Primer)
+% - turn3search2 (Parameter Reference)
+% - turn3search6 (Parameter Guidelines)
+% Kedro / MLflow:
+% - turn4search12 (Kedro concepts), turn4search0 (Data catalog YAML examples), turn0search2 (Kedro-Viz)
+% - turn4search3 (MLflow Tracking API)
+% Docker / Git / Gymnasium / SB3:
+% - turn1search2 (Docker build best practices), turn1search3 (Pro Git), turn1search1 (Gymnasium Env), turn1search0 (SB3 PPO)
+% Algoritmos clássicos:
+% - Deb 2002 NSGA-II: turn0search11
+% - Feo & Resende 1995 GRASP: turn2search14
+% - Kirkpatrick et al 1983 SA: turn2search1
+% - Sutton & Barto 2018 RL: turn3search0
+% - Mnih et al 2015 DQN: turn2search0
+% - Holland ANAS: turn2search19
+%
+% Sugestão: inserir as entradas BibTeX correspondentes no arquivo .bib do projeto.
+% -------------------------------------------------------------------------

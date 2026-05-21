@@ -1,0 +1,17 @@
+id: burger_soberba
+name: "Soberba"
+price: 29.90
+ingredients:
+  - "brioche bun"
+  - "burger 100g"
+  - "smoked ribs (costelinha defumada)"
+  - "prato cheese"
+  - "caramelized onion"
+  - "barbecue sauce"
+weight_g: 100
+is_vegan: false
+is_vegetarian: false
+is_spicy: false
+contains_lactose: true
+calories: null
+protein_g: null

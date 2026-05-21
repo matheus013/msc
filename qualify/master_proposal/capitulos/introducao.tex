@@ -1,0 +1,294 @@
+\mychapter{Introduction}{cap:intro}\lhead{INTRODUCTION}
+
+% Nota (fontes consultadas via web para apoiar a redação e seleção de trabalhos de alto impacto):
+% citeturn0search0 citeturn0search1 citeturn0search2 citeturn0search3 citeturn3view0 citeturn3view2 citeturn1search1 citeturn1search2 citeturn1search3 citeturn7search2 citeturn5search4
+
+\section{Motivation}
+
+\subsection{Contexto, relevância e lacuna científica}
+
+A gestão integrada do abastecimento em redes varejistas geograficamente dispersas constitui um problema central de engenharia de operações, pois condiciona simultaneamente (i) o nível de serviço percebido na ponta (disponibilidade de produtos, frequência de ruptura e tempo de reposição) e (ii) a estrutura de custos logísticos e produtivos (transporte, produção, manutenção e perdas por falta). \cite{SimchiLevi2009CadeiaSuprimentos,Chopra2022SCM,Ballou2006GCSLogistica}\footnote{Texto revisto e enriquecido em 15/03/2026 (America/Maceio).} Em termos sistêmicos, a dificuldade decorre do fato de que decisões tomadas localmente (p.\ ex., políticas de reposição e expedição em cada instalação) podem induzir externalidades relevantes sobre outros nós da rede, amplificando variabilidade à montante e deteriorando desempenho global. A literatura clássica formaliza esse efeito como distorção informacional e amplificação de variância (\emph{bullwhip effect}), fenômeno que tende a elevar estoques de segurança, custos e instabilidade operacional em cadeias multiestágio. \cite{LeePadmanabhanWhang1997Bullwhip}
+
+Embora existam formulações consagradas para controle de estoques e planejamento logístico, frequentemente baseadas em hipóteses estruturais e regimes de escala bem delimitados, redes varejistas contemporâneas combinam características que tensionam tais premissas: portfólios extensos (múltiplos itens/SKUs), heterogeneidade regional, restrições operacionais de capacidade em transporte e produção, além de demanda com forte componente estocástico e sazonal. \cite{Axsater2006InventoryControl,Zipkin2000FoundationsInventory} Em consequência, emerge uma lacuna metodológica recorrente: conciliar (a) modelos de otimização com rastreabilidade e interpretabilidade suficientes para subsidiar decisão gerencial e (b) métodos computacionais que permaneçam viáveis sob topologias gerais e volumes de dados realistas, sem reduzir o problema a abstrações excessivamente simplificadoras. \cite{Shapiro2001ModelingSupplyChain,AhujaMagnantiOrlin1993NetworkFlows,Boute2022DRLInventoryRoadmap}
+
+\subsection{MEIO e porquê da coordenação}
+
+O problema desta dissertação insere-se no domínio de \emph{Multi-Echelon Inventory Optimization} (MEIO), no qual múltiplos escalões (\emph{echelons}) mantêm estoque e realizam movimentações ao longo do tempo (p.\ ex., fábricas, centros de distribuição/estoque e lojas), exigindo coordenação explícita entre níveis para que metas de serviço sejam atingidas ao menor custo sistêmico. \cite{ClarkScarf1960MultiEchelon,Axsater2006InventoryControl,Zipkin2000FoundationsInventory} A razão fundamental para a coordenação decorre da interdependência entre escalões: estoques e políticas em um nível alteram o risco de ruptura e a necessidade de estoque em outros níveis, de modo que otimizações locais (\emph{single-echelon}) podem induzir redundância de capital (estoque excessivo em um elo) simultaneamente a insuficiência de disponibilidade em outro. \cite{SimchiLevi2009CadeiaSuprimentos,Chopra2022SCM}
+
+A literatura fundacional mostra que, mesmo em topologias seriadas (cadeias em série), a obtenção de políticas ótimas ou quase ótimas demanda estruturas analíticas e hipóteses específicas, evidenciando complexidade intrínseca do multi-escalão. \cite{ClarkScarf1960MultiEchelon} No entanto, redes de abastecimento em ambientes varejistas frequentemente extrapolam o caso seriado e assumem topologias divergentes e gerais, com múltiplas origens e destinos, transbordo entre centros e possibilidade de múltiplos caminhos logísticos. Essa generalidade topológica é compatível com a representação de redes por grafos e com a tradição de modelagem por fluxos, na qual cadeias seriadas e divergentes surgem como casos particulares de uma rede com conjunto de arcos factíveis. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain} Para MEIO em aplicações industriais, abordagens centradas em nível de serviço e alocação de \emph{safety stock} (p.\ ex., modelos de serviço garantido e suas extensões) reforçam que o posicionamento de estoques e o cumprimento de metas de serviço devem ser tratados de forma integrada ao longo da rede, sobretudo sob incerteza. \cite{Achkar2024GSMExtensions}
+
+\subsection{Problema de pesquisa, modelo de referência e escopo}
+
+Esta pesquisa considera uma rede composta por fábricas \(F\), centros de estoque \(S\) e lojas \(M\), na qual a ponta do sistema (lojas) enfrenta demanda esperada por item, denotada por \(O_m(i)\). A decisão operacional consiste em determinar, de forma coordenada, quantidades a produzir e quantidades a transferir entre nós, respeitando limitações de disponibilidade, capacidade produtiva e restrições logísticas (capacidade de transporte e viabilidade de rotas), com objetivo de minimizar custos e penalidades associadas ao tempo de transporte.
+
+Como formulação de referência, adota-se o modelo base fornecido pelo autor (formulação determinística de um período), no qual \(x_{a,b,i}\) representa a quantidade do item \(i\) transferida do nó \(a\) para o nó \(b\), e \(y_{f,i}\) representa a quantidade do item \(i\) produzida na fábrica \(f\). Em termos de modelagem em rede, é conveniente explicitar um conjunto de nós \(N \coloneqq F \cup S \cup M\) e um conjunto de arcos factíveis \(A \subseteq N \times N\), obtido por pré-processamento das restrições de viabilidade (p.\ ex., filtragem de rotas inviáveis em função de limites operacionais de distância/tempo), de modo a evitar restrições redundantes e tornar explícita a estrutura do grafo. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain}
+
+Adicionalmente, embora o problema esteja formulado no baseline como determinístico e de um período, o contexto operacional real de abastecimento é inerentemente dinâmico, pois decisões são reiteradas ao longo de ciclos, com atualização periódica de informações de vendas, demanda estimada e disponibilidade. Conforme apresentação do autor, há uma linha do tempo em ciclos \(t_1,t_2,t_3,\dots\) com atualização recorrente de histórico e demanda entre ciclos, o que é consistente com uma lógica de \emph{rolling horizon}: resolve-se um subproblema de planejamento em cada ciclo com dados atualizados, aplica-se a decisão de curto prazo e replaneja-se em seguida. Tal enquadramento é particularmente relevante para justificar extensões multi-período e avaliações por simulação. \cite{Law2015SimulationModeling}
+
+No que tange ao escopo, alguns parâmetros estruturais permanecem \emph{não especificados} no enunciado (por exemplo: horizonte \(H\), granularidade temporal e aderência do termo de tempo no objetivo). Para fins de rigor e reprodutibilidade, propõe-se explicitar alternativas razoáveis na formalização estendida (por exemplo, planejamento diário com \(H \in \{14,28,56\}\) dias, ou planejamento semanal com \(H \in \{8,12\}\) semanas; valores finais \emph{não especificados} e dependentes do contexto de aplicação). A extensão multi-período e estocástica pode ser estruturada tanto via programação estocástica por cenários quanto via avaliação por simulação Monte Carlo, o que encontra suporte formal no arcabouço clássico de programação estocástica. \cite{BirgeLouveaux2011StochasticProgramming,Law2015SimulationModeling}
+
+\subsection{Escala, viabilidade computacional e motivação para métodos aproximados}
+
+Em aplicações realistas de MEIO, a escala do problema tende a ser o principal fator limitante para abordagens estritamente exatas. Conforme apresentação do autor, o estudo de caso motivador envolve um \emph{dataset} com aproximadamente \(48\) milhões de registros, \(12\) mil produtos únicos e \(3\) milhões de entidades de demanda (revendedoras), ilustrando um cenário em que o número de combinações potenciais de decisões cresce de forma massiva. (Conforme apresentação do autor; números exatos do recorte operacional adicional \emph{não especificados}.) Em termos computacionais, isso se manifesta em duas dimensões complementares: (i) o crescimento combinatorial do espaço de decisões em modelos discretos (p.\ ex., decisões de expedição multi-itens em múltiplos nós) e (ii) a explosão do espaço de estados quando o problema é tratado como decisão sequencial sob incerteza, caracterizando a chamada \emph{maldição da dimensionalidade}. \cite{Boute2022DRLInventoryRoadmap,Geevers2024MEIODRL,Ziegner2025IMARL}
+
+A apresentação do autor indica a existência de uma solução inicial baseada em programação linear inteira que atua como \emph{benchmark} para parte do problema, sugerindo quantidades ideais de reposição a partir de histórico de vendas e restrições logísticas; ainda assim, para viabilizar a execução nesse ambiente de dados, foram necessárias agregações e/ou simplificações de variáveis devido ao volume de ``milhões de decisões possíveis'' (conforme apresentação do autor). Essa evidência fortalece a posição metodológica da dissertação: modelos exatos (MILP/ILP) são essenciais como referência interpretável e como instrumento de auditoria de qualidade em instâncias reduzidas ou agregadas, mas não são, por si só, uma solução universal quando se preserva fidelidade operacional em grande escala. \cite{Shapiro2001ModelingSupplyChain,AhujaMagnantiOrlin1993NetworkFlows}
+
+Nesse cenário, métodos aproximados tornam-se metodologicamente justificáveis e, em muitos casos, necessários. Metaheurísticas oferecem um compromisso entre qualidade de solução e custo computacional, sobretudo quando se pretende explorar rapidamente regiões promissoras do espaço de busca e incorporar restrições operacionais complexas. \cite{Talbi2009Metaheuristics} Conforme apresentação do autor, o plano experimental inclui a comparação entre um baseline linear/inteiro e metaheurísticas como \emph{Genetic Algorithm} (GA), GRASP e \emph{Simulated Annealing} (SA), além da incorporação de uma abordagem de aprendizado por reforço multiagente inspirada por IMARL. (Conforme apresentação do autor; parâmetros finais de execução \emph{não especificados}.) Observa-se que tais escolhas são coerentes com a literatura: GA e SA são paradigmas amplamente utilizados em otimização combinatória para balancear exploração e intensificação; GRASP combina construções gulosas randomizadas com busca local; e abordagens multiagentes tentam decompor decisões e endereçar escalabilidade em MEIO. \cite{Talbi2009Metaheuristics,Ziegner2025IMARL,Geevers2024MEIODRL}
+
+Por fim, a escala também impõe requisitos de engenharia experimental e reprodutibilidade. Conforme apresentação do autor, pretende-se consolidar um pipeline automatizado (p.\ ex., Kedro) que execute múltiplas abordagens e gere relatórios padronizados (custo total, tempo de execução, uso de memória, estabilidade), viabilizando análises multicritério e testes de robustez em diferentes escalas de dados. (Conforme apresentação do autor.) Esse ponto é particularmente relevante quando se avaliam métodos estocásticos (metaheurísticas e DRL), para os quais a análise estatística por múltiplas sementes e a padronização de métricas são condições necessárias para inferências confiáveis. \cite{Law2015SimulationModeling,Boute2022DRLInventoryRoadmap}
+
+\subsection{Coerência custo--tempo e definição do trade-off}
+
+O objetivo do modelo base combina componentes de custo e um termo associado ao tempo de transporte. Para evitar ambiguidade de unidades e garantir interpretabilidade econômica, adota-se explicitamente um parâmetro de ponderação \(\lambda_t \ge 0\) que converte a penalidade temporal em unidade monetária, interpretável como ``valor econômico do tempo logístico'' (por exemplo, \(\mathrm{R\$}\) por unidade de tempo, possivelmente escalonado por unidade transportada). Assim, uma escrita formal e unitariamente consistente do objetivo é:
+
+\begin{align}
+\min_{x,y} \quad
+& \sum_{(a,b)\in A} \sum_{i \in I_a \cap I_b} c \, d(a,b)\, x_{a,b,i}
+\;+\; \sum_{f\in F}\sum_{i\in I_f} p_f(i)\, y_{f,i}
+\;+\; \lambda_t \sum_{(a,b)\in A} \sum_{i \in I_a \cap I_b} t(a,b)\, x_{a,b,i}.
+\label{eq:obj_cost_time}
+\end{align}
+
+Nesta expressão, \(c\) é um custo unitário de transporte por unidade de distância (por unidade transportada), \(d(a,b)\) representa distância (por exemplo, em km), \(t(a,b)\) representa tempo (por exemplo, em horas) e \(p_f(i)\) o custo unitário de produção. O parâmetro \(\lambda_t\) pode ser calibrado de duas formas complementares: (i) como um coeficiente econômico (p.\ ex., custo de capital imobilizado no trânsito, penalidade por atraso ou custo de oportunidade associado a tempo), ou (ii) por normalização, escalonando os termos de custo e tempo em faixas comparáveis (por exemplo, normalização por máximos/percentis) e interpretando \(\lambda_t\) como parâmetro adimensional de preferência. \cite{SimchiLevi2009CadeiaSuprimentos,Chopra2022SCM}
+
+Adicionalmente, uma leitura MEIO admite que tempo logístico é frequentemente um \emph{proxy} de nível de serviço (quanto maior o tempo de trânsito, maior exposição a falta no ponto de demanda), o que permite modelagens alternativas: converter parte do critério em restrições de serviço (p.\ ex., probabilidade de atendimento, janelas) ou em custo esperado de ruptura via modelos estocásticos. \cite{Axsater2006InventoryControl,Achkar2024GSMExtensions,BirgeLouveaux2011StochasticProgramming} No contexto desta dissertação, a opção por um objetivo ponderado com \(\lambda_t\) é adequada como baseline e facilita análises de sensibilidade: ao variar \(\lambda_t\) em uma grade (valores \emph{não especificados}), pode-se observar a fronteira empírica custo--tempo e comparar métodos sob a mesma noção de preferência operacional. \cite{Talbi2009Metaheuristics}
+
+\subsection{Questões de pesquisa e hipótese metodológica}
+
+À luz dos elementos anteriores, esta dissertação organiza-se em torno de quatro questões de pesquisa. Primeiramente, investiga-se como especificar, de forma formal e auditável, uma formulação integrada produção--transferência em rede, multi-itens, que respeite capacidades e restrições logísticas sem sacrificar interpretabilidade (QP1). Em seguida, busca-se caracterizar regimes de escala em que modelos exatos/semiexatos permanecem úteis como referência e como instrumento decisório, e regimes em que métodos aproximados e políticas aprendidas passam a ser necessários (QP2). Na sequência, avalia-se comparativamente o desempenho de MILP/ILP, metaheurísticas e políticas por RL/DRL (inclusive multiagentes) sob métricas operacionais e computacionais padronizadas (QP3). Por fim, ao estender o problema para multi-período e demanda estocástica sob \emph{rolling horizon}, examina-se a robustez e a capacidade de generalização de políticas aprendidas em ambiente simulado (QP4). \cite{BirgeLouveaux2011StochasticProgramming,Law2015SimulationModeling,Boute2022DRLInventoryRoadmap,Geevers2024MEIODRL,Ziegner2025IMARL}
+
+A hipótese metodológica central é que a combinação de (i) um baseline de otimização em rede para instâncias controladas/agregadas, (ii) metaheurísticas para regimes de maior escala e (iii) DRL para regimes dinâmicos/estocásticos constitui uma estratégia cientificamente consistente e empiricamente testável para MEIO em redes gerais. \cite{Shapiro2001ModelingSupplyChain,AhujaMagnantiOrlin1993NetworkFlows,Talbi2009Metaheuristics,Boute2022DRLInventoryRoadmap} Essa hipótese é particularmente pertinente quando se considera que DRL, embora promissor para decisão sequencial, demanda desenho cuidadoso de estados, recompensas e protocolos de avaliação; e que abordagens multiagentes têm sido propostas especificamente para mitigar gargalos de dimensionalidade em MEIO realista. \cite{Geevers2024MEIODRL,Ziegner2025IMARL,Schulman2017PPO,Oroojlooyjadid2022BeerGameDQN}
+
+\subsubsection*{Esquemático da rede de abastecimento}
+
+\begin{figure}[h]
+\centering
+\resizebox{0.82\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=3.8cm,
+    >=Stealth,
+    block/.style={
+        rectangle,
+        draw,
+        rounded corners,
+        minimum width=3.2cm,
+        minimum height=1cm,
+        align=center,
+        font=\small
+    },
+    flow/.style={->, thick},
+    every node/.style={font=\small}
+]
+
+\node[block] (F) {Fábricas $F$};
+\node[block, right=of F] (S) {Centros de estoque $S$};
+\node[block, right=of S] (M) {Lojas $M$};
+
+\draw[flow] (F) -- (S)
+    node[midway, above=2pt, align=center] {$y_{f,i},\, x_{f,s,i}$};
+
+\draw[flow] (S) -- (M)
+    node[midway, above=2pt] {$x_{s,m,i}$};
+
+\draw[flow] (S.north) to[out=70, in=110, looseness=8]
+    node[pos=0.5, above] {$x_{s,s',i}$} (S.north);
+
+\draw[flow] (F.south) to[out=-25, in=-155]
+    node[midway, below=8pt] {$x_{f,m,i}$} (M.south);
+
+\end{tikzpicture}
+}
+\caption{Estrutura simplificada da rede de abastecimento multi-echelon.}
+\label{fig:meio_network}
+\end{figure}
+
+\subsubsection*{Pipeline de solução e avaliação}
+
+\begin{figure}[h]
+\centering
+\resizebox{0.9\textwidth}{!}{
+\begin{tikzpicture}[
+node distance=2cm,
+block/.style={rectangle, draw, rounded corners, align=center, minimum width=3.2cm, minimum height=0.9cm},
+arrow/.style={->, thick}
+]
+
+\node (A) [block] {Modelagem e dados\\
+rede $N$, arcos $A$, custos/tempos, capacidades, demanda};
+
+\node (B) [block, below left=of A] {Benchmark\\ILP / MILP};
+
+\node (C) [block, below=of A] {Metaheurísticas\\GA / GRASP / SA};
+
+\node (D) [block, below right=of A] {Extensão dinâmica\\multi-período + simulador};
+
+\node (E) [block, below=of D] {DRL / MARL};
+
+\node (F) [block, below=2cm of C] {Relatórios\\custo, tempo, memória};
+
+\node (G) [block, below=of F] {Análise multicritério};
+
+\node (H) [block, below=of G] {Conclusões};
+
+\draw[arrow] (A) -- (B);
+\draw[arrow] (A) -- (C);
+\draw[arrow] (A) -- (D);
+\draw[arrow] (D) -- (E);
+\draw[arrow] (B) -- (F);
+\draw[arrow] (C) -- (F);
+\draw[arrow] (E) -- (F);
+\draw[arrow] (F) -- (G);
+\draw[arrow] (G) -- (H);
+
+\end{tikzpicture}
+}
+\caption{Pipeline de solução e avaliação.}
+\label{fig:pipeline_solve_eval}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=3.2cm and 2.2cm,
+    block/.style={
+        rectangle,
+        draw,
+        rounded corners,
+        minimum width=3.4cm,
+        minimum height=1.0cm,
+        align=center,
+        font=\small
+    },
+    data/.style={
+        trapezium,
+        trapezium left angle=70,
+        trapezium right angle=110,
+        draw,
+        minimum width=3.4cm,
+        minimum height=1.0cm,
+        align=center,
+        font=\small
+    },
+    flow/.style={->, thick},
+    feedback/.style={->, thick, dashed}
+]
+
+\node[data] (hist) {Dados históricos\\$[t-w,t]$};
+
+\node[block, right=of hist] (forecast)
+{Previsão de demanda\\$\hat{D}_{t+1:t+H}$};
+
+\node[block, right=of forecast] (opt)
+{Otimização\\produção, estoque e transferências};
+
+\node[block, right=of opt] (plan)
+{Plano de ação};
+
+\node[block, below=1.8cm of opt] (exec)
+{Execução operacional};
+
+\node[data, left=of exec] (obs)
+{Novos dados observados\\vendas, estoques e custos};
+
+\draw[flow] (hist) -- (forecast);
+\draw[flow] (forecast) -- (opt);
+\draw[flow] (opt) -- (plan);
+\draw[flow] (plan) |- (exec);
+\draw[flow] (exec) -- (obs);
+
+\draw[feedback] (obs.west) |- (hist.south);
+
+\end{tikzpicture}%
+}
+\caption{Framework iterativo de previsão e otimização em horizonte rolante.}
+\label{fig:framework_iterativo}
+\end{figure}
+
+\subsubsection*{Encaminhamento para trabalhos relacionados, objetivos e contribuições}
+
+A motivação apresentada delimita um problema MEIO em topologia de rede geral, com decisões integradas de produção e transferência, cujo tratamento exige tanto fundamentação teórica (multi-echelon, estocasticidade e redes) quanto uma estratégia metodológica comparativa que enderece simultaneamente qualidade, interpretabilidade e escalabilidade. Em consequência, a Seção \emph{Related Work} sistematiza os fundamentos de inventário multi-echelon e variabilidade, a tradição de modelagem por programação matemática e fluxos em redes, e o estado recente de DRL/MARL, simulação e previsão de demanda em cadeias multi-escala. Na sequência, a seção de objetivos traduz essas motivações em metas verificáveis e um plano experimental reprodutível.
+
+As contribuições esperadas desta dissertação podem ser resumidas, em alto nível, como:
+\begin{enumerate}
+    \item uma formalização unificada e auditável do problema de abastecimento em rede varejista multi-escalão, com representação explícita de arcos factíveis e trade-off custo--tempo via \(\lambda_t\);
+    \item um \emph{benchmark} ILP/MILP e um conjunto de metaheurísticas (GA/GRASP/SA) adequados a regimes de escala distintos, com protocolo de comparação padronizado;
+    \item uma extensão multi-período/estocástica sob \emph{rolling horizon} e respectiva infraestrutura de simulação para avaliação robusta;
+    \item a investigação de políticas por DRL/MARL (incluindo IMARL) como alternativa escalável para MEIO realista, com análise de estabilidade e generalização;
+    \item evidências empíricas, em instâncias controladas e em dados de grande porte (conforme apresentação do autor), que caracterizem limites de aplicabilidade e trade-offs entre custo, tempo computacional e recursos de memória.
+\end{enumerate}
+
+\section{Related Work}
+
+\subsection{MEIO sob incerteza: fundamentos, tipologias e modelos de nível de serviço}
+
+A literatura de MEIO se desenvolveu sobre a constatação de que políticas e decisões de inventário em sistemas multi-escala são estruturalmente interdependentes e, portanto, inadequadas para tratamento estritamente local se o objetivo é minimizar custo sistêmico sob metas de serviço. O resultado fundador de Clark e Scarf estabelece, para um sistema seriado sob hipóteses específicas, decomposições e propriedades estruturais que influenciaram décadas de pesquisa subsequente. \cite{ClarkScarf1960MultiEchelon} Textos clássicos de controle de inventário consolidados na Pesquisa Operacional detalham a formalização de custos de posse e ruptura, políticas-base e medidas de serviço, e são essenciais para transpor conceitos de SEIO para MEIO com rigor. \cite{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}
+
+Em ambientes industriais, uma família particularmente influente de formulações para MEIO é associada aos \emph{guaranteed-service models} (GSM), que transformam certas fontes de incerteza e variabilidade em compromissos de tempo de serviço e alocação estratégica de estoques de segurança. O trabalho clássico de Graves e Willems propõe um arcabouço em rede (sob hipóteses específicas, como políticas \emph{base-stock} e demanda limitada) e desenvolve algoritmos para posicionamento de \emph{safety stock}, com validação aplicada. \cite{GravesWillems2000SafetyStock} Revisões de alto impacto mostram que GSM e suas extensões constituem uma área extensa, variando hipóteses (demanda, lead times, capacidades, políticas) e métodos de solução, além de concentrar aplicações industriais relevantes. \cite{Eruguz2016GSMsurvey} Extensões recentes incorporam características típicas de prática industrial (p.\ ex., nós híbridos, MOQ, múltiplas métricas de serviço e reformas computacionais), evidenciando que a modelagem realista frequentemente induz não-linearidades e desafios computacionais adicionais. \cite{Achkar2024GSMExtensions}
+
+Uma síntese moderna e influente da pesquisa em MEIO sob demanda estocástica é proposta por de Kok et al., que desenvolvem uma tipologia para classificar modelos (assunções, objetivos e metodologias), analisam clusters de escolhas de modelagem e destacam lacunas que emergem quando se busca representar redes gerais e restrições operacionais reais. \cite{DeKok2018Typology} Tal referência é particularmente relevante para esta dissertação, pois o problema investigado incorpora rede geral (com possibilidade de transbordo e múltiplos caminhos), múltiplos itens, custos logísticos e um componente temporal explícito no objetivo, indo além do foco exclusivo em estoque de segurança.
+
+% Evidência bibliográfica consultada (alto impacto): de Kok et al. (EJOR 2018) e Eruguz et al. (IJPE 2016). citeturn3view0 citeturn3view2
+
+\subsection{Modelagem por redes e programação matemática: produção, distribuição e restrições logísticas}
+
+A integração de produção e distribuição em modelos otimizáveis é tradicionalmente tratada por programação matemática, frequentemente com representações em rede, decomposições e formulações por fluxo. Shapiro sistematiza a modelagem de cadeias com decisões de produção, estoque e transporte, articulando hipóteses e estruturas de formulação que orientam tanto a construção do modelo quanto a interpretação de soluções. \cite{Shapiro2001ModelingSupplyChain} Em paralelo, a teoria de fluxos em redes fundamenta representações \( (N,A) \) e fornece linguagem e resultados úteis para compreender escalabilidade, restrições de capacidade e estruturas especiais (seriadas, divergentes e redes gerais) como casos particulares de grafos dirigidos. \cite{AhujaMagnantiOrlin1993NetworkFlows}
+
+No problema desta dissertação, a presença simultânea de (i) decisões de produção \(y_{f,i}\), (ii) fluxos multi-itens \(x_{a,b,i}\), (iii) capacidades \(C_{a,b}\) e (iv) viabilidade de rotas e \emph{lead times}/tempos \(t(a,b)\) aproxima a formulação de um planejamento integrado em rede com restrições operacionais. Do ponto de vista de Pesquisa Operacional, isso justifica a adoção de MILP/ILP como baseline rigoroso em instâncias reduzidas/agregadas, tanto para inferência de gargalos quanto para calibração de heurísticas e políticas aprendidas. \cite{Shapiro2001ModelingSupplyChain,AhujaMagnantiOrlin1993NetworkFlows}
+
+\subsection{Escalabilidade: metaheurísticas, simulação e programação estocástica}
+
+A escalabilidade é um dos principais fatores que motivam abordagens aproximadas. Metaheurísticas formam uma família de métodos de propósito geral para otimização em espaços combinatórios e/ou não convexos, e sua adequação a problemas com múltiplas restrições práticas (capacidade, janelas, políticas) decorre da flexibilidade de representação e de mecanismos de penalização/viabilidade. \cite{Talbi2009Metaheuristics} A escolha de GA/GRASP/SA, conforme apresentada pelo autor, é compatível com esse arcabouço: GA privilegia exploração global via recombinação; SA organiza uma trajetória com critério probabilístico de aceitação; e GRASP oferece um compromisso entre construção gulosa randomizada e intensificação por busca local.
+
+Sob incerteza, a literatura oferece dois instrumentos metodológicos complementares, ambos relevantes para este trabalho. Em um eixo mais formal, programação estocástica fornece modelagens por cenários e decisões de recourse para sistematizar a incorporação de demanda aleatória, custos esperados e, se necessário, medidas de risco. \cite{BirgeLouveaux2011StochasticProgramming} Em um eixo experimental-operacional, simulação descreve e avalia sistemas dinâmicos e estocásticos, permitindo comparar políticas sob métricas de custo e nível de serviço, bem como validar aproximações e simplificações impostas por modelos otimizáveis. \cite{Law2015SimulationModeling} Essa combinação é particularmente alinhada ao paradigma de \emph{rolling horizon} adotado nesta dissertação, no qual previsão, otimização e execução se alternam, realimentando continuamente o estado do sistema.
+
+\subsection{Previsão de demanda e métricas alinhadas a custo/serviço}
+
+A previsão de demanda é um elemento crítico quando se pretende operacionalizar decisões multi-período e/ou sob incerteza, pois alimenta tanto parâmetros de modelos determinísticos (como \(O_m(i)\) em curto prazo) quanto distribuições/cenários em formulações estocásticas. Evidência empírica recente em previsão no varejo indica que métodos de \emph{ensemble} baseados em árvores podem superar redes LSTM em determinados contextos e categorias de produtos, mesmo em dados reais de grande escala, reforçando que ``mais complexidade'' em modelo de previsão nem sempre resulta em melhor desempenho preditivo para fins de decisão. \cite{Nasseri2023RetailDemandPrediction} Complementarmente, Tadayonrad e Ndiaye argumentam que métricas clássicas de erro (p.\ ex., MAE/MAPE) não capturam diretamente impacto em custos de inventário e propõem um KPI que incorpora custo e nível de serviço via confiabilidade e sazonalidade, aproximando avaliação preditiva de objetivos operacionais. \cite{TadayonradNdiaye2023KPIDemandForecasting}
+
+% Evidência consultada: Nasseri et al. (MDPI 2023) e Tadayonrad \& Ndiaye (Supply Chain Analytics 2023). citeturn1search1 citeturn1search2
+
+\subsection{DRL/MARL para inventários e MEIO: evidências, limitações e tendência de escalabilidade}
+
+O avanço recente de DRL em controle de inventário decorre da capacidade de representar políticas para decisão sequencial em ambientes estocásticos, aproximando-se do que ocorre em operação real (p.\ ex., decisões repetidas em \(t=1,2,\dots\)). Entretanto, sua adoção exige escolhas de projeto (estado, ação, recompensa, arquitetura e protocolos de avaliação) que impactam substancialmente estabilidade e confiabilidade; Boute et al. sintetizam essas escolhas, discutem trade-offs e fornecem um roadmap para aplicação e avaliação rigorosa em inventários. \cite{Boute2022DRLInventoryRoadmap}
+
+Evidência diretamente conectada ao recorte MEIO é apresentada por Geevers et al., que aplicam PPO a três estruturas de rede (linear, divergente e geral) e reportam desempenho superior ao benchmark nos três casos, situando as limitações e sugerindo caminhos futuros. \cite{Geevers2024MEIODRL} A literatura também oferece avaliações comparativas em problemas de inventário ``clássicos e intratáveis'', incluindo configurações multi-echelon, propondo protocolos de comparação com heurísticas e ADP; um exemplo influente reporta que DRL pode alcançar desempenho competitivo em diferentes estruturas, embora com custos de treinamento e cuidados de generalização. \cite{Gijsbrechts2022DRLInventoryMSOM} Em ambientes explicitamente multiagentes e descentralizados, a linha do Beer Game é representativa por conectar DRL à dinâmica do bullwhip e a decisões locais com informação parcial, além de explorar mecanismos como \emph{transfer learning}. \cite{Oroojlooyjadid2022BeerGameDQN}
+
+Quanto à escalabilidade, a maldição da dimensionalidade permanece como restrição decisiva para DRL em cenários realistas. Ziegner et al. discutem esse ponto no contexto de MEIO e propõem IMARL, combinando MARL, técnicas com grafos e uma estratégia iterativa para ampliar aplicabilidade em cenários com maior complexidade estrutural, reportando ganhos de robustez e desempenho frente a benchmarks. \cite{Ziegner2025IMARL} Assim, o estado da arte sugere que DRL/MARL é promissor, porém depende de (i) ambientes de simulação fidedignos, (ii) desenho experimental rigoroso e (iii) técnicas explícitas de escalabilidade para redes gerais.
+
+% Evidência consultada: Geevers (Springer) e Ziegner (arXiv) e Gijsbrechts (MSOM; metadados acessíveis). citeturn0search0 citeturn1search3 citeturn5search4
+
+\section{General and Specific Objectives}
+
+\subsection*{Objetivo geral}
+
+Desenvolver, implementar e avaliar comparativamente um arcabouço de decisão para o problema de otimização do abastecimento em uma rede de lojas com múltiplos centros de estoque e fábricas, fundamentado na formulação base (produção \(y_{f,i}\) e fluxos \(x_{a,b,i}\) em rede) e estendido para um ambiente multi-período/estocástico em \emph{rolling horizon}, de modo a minimizar custo total e penalidades temporais (via \(\lambda_t\)) preservando restrições logísticas e metas de serviço.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+  \item \textbf{Refinar e validar a formulação base em rede.} Consolidar conjuntos, parâmetros e restrições, explicitando o grafo \((N,A)\), o pré-processamento de arcos factíveis, e a interpretação unitária do objetivo com \(\lambda_t\), garantindo consistência matemática e rastreabilidade. \cite{AhujaMagnantiOrlin1993NetworkFlows,Shapiro2001ModelingSupplyChain}
+
+  \item \textbf{Construir um pipeline reprodutível de dados e instâncias.} Definir um esquema de dados e rotinas de geração/extração para instâncias controladas (tamanho \emph{não especificado}; propor \(|M|\in\{20,50,100\}\), \(|S|\in\{2,5,10\}\), \(|I|\in\{50,200,500\}\)) e, quando possível, instâncias em escala real (conforme apresentação do autor), padronizando relatórios e logs.
+
+  \item \textbf{Implementar um benchmark ILP/MILP.} Resolver instâncias pequenas/agregadas com ILP/MILP, reportando \emph{gap} (quando disponível), decomposição de custo (produção vs transporte vs penalidade temporal) e sensibilidade a capacidades \(C_{a,b}\) e \(Q_f\). \cite{Shapiro2001ModelingSupplyChain}
+
+  \item \textbf{Projetar e calibrar metaheurísticas para escala.} Implementar GA/GRASP/SA (conforme apresentação do autor) com tratamento explícito de restrições e análise estatística por múltiplas sementes, visando instâncias de maior porte e regimes em que ILP/MILP se torna impraticável. \cite{Talbi2009Metaheuristics}
+
+  \item \textbf{Incorporar previsão de demanda no ciclo decisório.} Implementar um módulo de previsão para alimentar \(O_m(i)\) (base) e/ou \(D_{m,i,t}\) (extensão), avaliando modelos com métricas tradicionais e métricas alinhadas a custo/serviço; quando pertinente, comparar \emph{ensembles} de árvores e LSTM em dados com sazonalidade e variáveis exógenas. \cite{Nasseri2023RetailDemandPrediction,TadayonradNdiaye2023KPIDemandForecasting}
+
+  \item \textbf{Estender para multi-período e demanda estocástica sob rolling horizon.} Introduzir índice temporal \(t\), estoques \(I_{n,i,t}\) e variáveis de ruptura (backorder ou lost sales, \emph{não especificado}), modelando cenários/Monte Carlo para demanda e, opcionalmente, lead times; justificar e documentar hipóteses. \cite{BirgeLouveaux2011StochasticProgramming,Law2015SimulationModeling}
+
+  \item \textbf{Construir e validar um simulador para avaliação de políticas.} Desenvolver um ambiente de simulação coerente com o modelo e com o ciclo de reotimização, permitindo comparar políticas sob métricas de custo esperado, nível de serviço (fill rate/cycle service), variância e robustez. \cite{Law2015SimulationModeling}
+
+  \item \textbf{Investigar DRL/MARL como política escalável.} Implementar uma política DRL (p.\ ex., PPO) e, se aplicável, extensões MARL/IMARL (conforme apresentação do autor), avaliando generalização, estabilidade e custo computacional em comparação com benchmarks e metaheurísticas. \cite{Boute2022DRLInventoryRoadmap,Geevers2024MEIODRL,Ziegner2025IMARL,Schulman2017PPO,Oroojlooyjadid2022BeerGameDQN}
+\end{enumerate}
+
+\subsection*{Observação de coerência entre objetivos e entregáveis do capítulo}
+
+Os objetivos acima estruturam naturalmente a transição da Introdução para o restante do texto: a Seção \emph{Related Work} sustenta as escolhas de formulação e método; o capítulo de modelagem formaliza o problema em nível de tese; os capítulos metodológicos implementam ILP/MILP, metaheurísticas, simulação e DRL/MARL; e os capítulos experimentais apresentam evidência quantitativa e análise multicritério, com destaque para sensibilidade em \(\lambda_t\) e para limites de escalabilidade em dados realistas.
+
+\newpage\lhead{\rightmark}
+
+
