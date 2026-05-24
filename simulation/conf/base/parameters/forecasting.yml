@@ -19,3 +19,9 @@ forecasting:
     max_depth: 6
     learning_rate: 0.05
     subsample: 0.8
+
+  croston:
+    alpha: 0.1             # taxa de suavização para tamanho e intervalo
+
+  arima:
+    order: [1, 1, 1]       # (p, d, q) — ARIMA padrão para séries curtas

@@ -110,18 +110,17 @@ class SsPolicyClass:
 
 
 # ══════════════════════════════════════════════════════════════
-# 3. Newsvendor
+# 3. Newsvendor  — Q* = μ̂ + z·σ̂  (proposta eq. Jornaleiro)
 # ══════════════════════════════════════════════════════════════
 class NewsvendorPolicy:
     def __init__(self, demand, cfg):
-        ccfg = cfg["COST"]
-        cu   = ccfg.get("stockout_cost_per_unit", 5.0)
-        co   = ccfg.get("holding_cost_per_unit", 1.0)
-        q_cr = cu / (cu + co)
-        self.Q_opt = float(np.quantile(demand, q_cr))
-        lt = cfg["SIMULATION"].get("lead_time", 2)
-        self.ROP   = np.mean(demand) * lt
-        print(f"  [Newsvendor] Q*={self.Q_opt:.1f} | CR={q_cr:.2f} | ROP={self.ROP:.1f}")
+        z    = cfg.get("HEURISTIC", {}).get("z_score", 1.28)
+        mu   = float(np.mean(demand))
+        std  = float(np.std(demand))
+        lt   = cfg["SIMULATION"].get("lead_time", 2)
+        self.Q_opt = max(0.0, mu + z * std)
+        self.ROP   = mu * lt
+        print(f"  [Newsvendor] Q*={self.Q_opt:.1f} | z={z:.2f} | ROP={self.ROP:.1f}")
 
     def __call__(self, state, env):
         pos = env.inventory + sum(env.pipeline)
@@ -468,6 +467,32 @@ class DQNPolicy:
         if self._step % self.tgt_freq == 0:
             self.t_net.copy_from(self.q_net)
 
+    def prepopulate_from_ga(self, demand, cfg, ga_params: dict,
+                            n_transitions: int = 1000) -> int:
+        """Pré-popula o replay buffer com trajetórias da solução GA (proposta Fase ii)."""
+        from simulation.core.inventory_env import InventoryEnv
+        ROP = ga_params["ROP"]
+        Q   = ga_params["Q"]
+        SS  = ga_params["SS"]
+        q_idx = int(np.argmin(np.abs(self.actions - Q)))
+
+        added = 0; ep = 0
+        while added < n_transitions:
+            env = InventoryEnv(demand, cfg, seed=2000 + ep)
+            s = env.reset(); done = False
+            while not done and added < n_transitions:
+                inv_pos = env.inventory + sum(env.pipeline)
+                if inv_pos <= ROP + SS:
+                    a_idx, qty = q_idx, Q
+                else:
+                    a_idx, qty = 0, 0.0
+                ns, r, done, _ = env.step(qty)
+                self.remember(s, a_idx, r, ns, done)
+                s = ns; added += 1
+            ep += 1
+        print(f"  [DQN] Buffer pré-populado com {added} transições GA")
+        return added
+
     def train(self, demand, cfg, verbose=True):
         from simulation.core.inventory_env import InventoryEnv
         n_ep = cfg["DQN"].get("episodes", 500)
@@ -518,9 +543,50 @@ class PPOPolicy:
         idx = np.random.choice(self.n_act, p=pr) if explore else np.argmax(pr)
         return idx, self.actions[idx], np.log(pr[idx]+1e-8)
 
+    def warmstart_from_ga(self, demand, cfg, ga_params: dict,
+                          n_episodes: int = 20) -> None:
+        """Aquece a política PPO com trajetórias GA antes do treinamento regular."""
+        from simulation.core.inventory_env import InventoryEnv
+        ROP = ga_params["ROP"]
+        Q   = ga_params["Q"]
+        SS  = ga_params["SS"]
+
+        for ep in range(n_episodes):
+            env = InventoryEnv(demand, cfg, seed=3000 + ep)
+            s = env.reset(); done = False
+            traj = {"s": [], "a": [], "r": [], "lp": [], "v": []}
+            while not done:
+                inv_pos = env.inventory + sum(env.pipeline)
+                qty_ga  = Q if inv_pos <= ROP + SS else 0.0
+                a_idx   = int(np.argmin(np.abs(self.actions - qty_ga)))
+                lp      = float(np.log(1.0 / self.n_act))
+                v       = float(self.critic.predict(s.reshape(1, -1))[0, 0])
+                ns, r, done, _ = env.step(self.actions[a_idx])
+                traj["s"].append(s); traj["a"].append(a_idx)
+                traj["r"].append(r); traj["lp"].append(lp); traj["v"].append(v)
+                s = ns
+            self.reward_hist.append(sum(traj["r"]))
+            G = 0; rets = []
+            for r_t in reversed(traj["r"]): G = r_t + self.gamma * G; rets.insert(0, G)
+            rets = np.array(rets); rets = (rets - rets.mean()) / (rets.std() + 1e-8)
+            S = np.array(traj["s"]); A = np.array(traj["a"])
+            old_lp = np.array(traj["lp"]); V = np.array(traj["v"])
+            adv = rets - V
+            for _ in range(self.k_ep):
+                lg = self.actor.predict(S); pr = self._softmax(lg)
+                new_lp = np.log(pr[np.arange(len(A)), A] + 1e-8)
+                rat = np.exp(new_lp - old_lp)
+                cl = np.clip(rat, 1 - self.clip, 1 + self.clip)
+                tgt_a = lg.copy()
+                for i in range(len(A)):
+                    tgt_a[i, A[i]] += adv[i] * min(rat[i], cl[i])
+                self.actor.update(S, tgt_a)
+                self.critic.update(S, rets.reshape(-1, 1))
+        print(f"  [PPO] Warm-start concluído: {n_episodes} episódios GA")
+
     def train(self, demand, cfg, verbose=True):
         from simulation.core.inventory_env import InventoryEnv
-        n_ep = cfg["PPO"].get("episodes", 300)
+        n_ep = cfg["PPO"].get("episodes", 500)
         print(f"  [PPO] Treinando {n_ep} episódios...")
         for ep in range(n_ep):
             env = InventoryEnv(demand, cfg, seed=ep)
@@ -560,51 +626,54 @@ class PPOPolicy:
 
 
 # ══════════════════════════════════════════════════════════════
-# 10. SARSA (on-policy TD)
+# 10. SARSA tabular — Tabela-Q 5×10  (proposta seção 4.3)
+#     α=0.1, γ=0.99, ε=0.1 (fixo)
 # ══════════════════════════════════════════════════════════════
 class SARSAPolicy:
     def __init__(self, state_dim, cfg):
         sc = cfg.get("SARSA", {})
-        self.n_act   = sc.get("n_actions", 20)
-        self.max_ord = sc.get("max_order_qty", 200)
-        self.gamma   = sc.get("gamma", 0.95)
-        self.alpha   = sc.get("learning_rate", 0.001)
-        self.eps     = sc.get("epsilon_start", 1.0)
-        self.eps_end = sc.get("epsilon_end", 0.01)
-        self.eps_dec = sc.get("epsilon_decay", 0.995)
-        self.actions = np.linspace(0, self.max_ord, self.n_act)
-        self.q_net   = _NN([state_dim, 64, 32, self.n_act], self.alpha)
+        self.n_states = sc.get("n_states", 5)
+        self.n_act    = sc.get("n_actions", 10)
+        self.max_ord  = sc.get("max_order_qty", 200)
+        self.gamma    = sc.get("gamma", 0.99)
+        self.alpha    = sc.get("learning_rate", 0.1)
+        self.eps      = sc.get("epsilon", 0.1)
+        self.actions  = np.linspace(0, self.max_ord, self.n_act)
+        self.Q        = np.zeros((self.n_states, self.n_act))
         self.reward_hist = []
 
+    def _discretize(self, state: np.ndarray) -> int:
+        """Mapeia inv normalizado (state[0] ∈ [0,1+]) → bin [0, n_states)."""
+        inv_norm = float(np.clip(state[0], 0.0, 1.0))
+        return min(int(inv_norm * self.n_states), self.n_states - 1)
+
     def act(self, s, explore=True):
+        si = self._discretize(s)
         if explore and _random.random() < self.eps:
-            idx = _random.randint(0, self.n_act-1)
+            idx = _random.randint(0, self.n_act - 1)
         else:
-            idx = int(np.argmax(self.q_net.predict(s.reshape(1,-1))[0]))
+            idx = int(np.argmax(self.Q[si]))
         return idx, self.actions[idx]
 
     def train(self, demand, cfg, verbose=True):
         from simulation.core.inventory_env import InventoryEnv
         n_ep = cfg.get("SARSA", {}).get("episodes", 500)
-        print(f"  [SARSA] Treinando {n_ep} episódios...")
+        print(f"  [SARSA] Treinando {n_ep} episódios (tabular {self.n_states}×{self.n_act})...")
         for ep in range(n_ep):
             env = InventoryEnv(demand, cfg, seed=ep)
-            s = env.reset(); done=False; tot=0.0
+            s = env.reset(); done = False; tot = 0.0
+            si = self._discretize(s)
             idx, qty = self.act(s)
             while not done:
                 ns, r, done, _ = env.step(qty)
+                nsi  = self._discretize(ns)
                 nidx, nqty = self.act(ns) if not done else (0, 0.0)
-                q_s  = self.q_net.predict(s.reshape(1,-1))
-                q_ns = self.q_net.predict(ns.reshape(1,-1))
-                tgt  = q_s.copy()
-                tgt[0, idx] = r + (self.gamma * q_ns[0, nidx] if not done else r)
-                self.q_net.update(s.reshape(1,-1), tgt)
-                s=ns; idx=nidx; qty=nqty; tot+=r
+                td_target = r + (self.gamma * self.Q[nsi, nidx] if not done else r)
+                self.Q[si, idx] += self.alpha * (td_target - self.Q[si, idx])
+                s = ns; si = nsi; idx = nidx; qty = nqty; tot += r
             self.reward_hist.append(tot)
-            self.eps = max(self.eps_end, self.eps * self.eps_dec)
-            if verbose and (ep+1) % 100 == 0:
-                print(f"    Ep {ep+1}/{n_ep} eps={self.eps:.3f} "
-                      f"avg_r={np.mean(self.reward_hist[-50:]):.1f}")
+            if verbose and (ep + 1) % 100 == 0:
+                print(f"    Ep {ep+1}/{n_ep} avg_r={np.mean(self.reward_hist[-50:]):.1f}")
 
     def make_policy(self):
         def p(s, env): return self.act(s, False)[1]

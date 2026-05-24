@@ -1,6 +1,6 @@
 """
 forecasting.py — Módulo 1: Previsão de Demanda
-LSTM vetorizado (numpy batch), ANN/MLP (sklearn), XGBoost
+LSTM vetorizado (numpy batch), ANN/MLP (sklearn), XGBoost, Croston, ARIMA
 """
 import numpy as np
 from sklearn.neural_network import MLPRegressor
@@ -152,6 +152,94 @@ def evaluate_forecaster(y_true, y_pred, name=""):
     acc  = max(0.0, 100.0 - mape)
     print(f"  [{name}] MAE={mae:.2f} | RMSE={rmse:.2f} | MAPE={mape:.1f}% | Accuracy={acc:.1f}%")
     return {"MAE": mae, "RMSE": rmse, "MAPE": mape, "Accuracy": acc}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Croston (proposta seção 3.1)
+# ══════════════════════════════════════════════════════════════════════════════
+class CrostonForecaster:
+    """Método de Croston para demanda intermitente.
+
+    Suaviza separadamente o tamanho das demandas positivas (q̂) e o intervalo
+    entre elas (p̂). Previsão constante: q̂ / p̂.
+    Interface fit(X, y) compatível com o pipeline walk-forward:
+    a série completa é reconstruída a partir da janela deslizante X e y.
+    """
+
+    def __init__(self, alpha: float = 0.1):
+        self.alpha = alpha
+        self.forecast_ = 0.0
+
+    def fit(self, X: np.ndarray, y: np.ndarray, **kwargs):
+        series = (np.concatenate([X[0], y]) if len(X) > 0 else y).astype(float)
+        self._fit_series(series)
+        return self
+
+    def _fit_series(self, series: np.ndarray):
+        pos_idx = np.where(series > 0)[0]
+        if len(pos_idx) == 0:
+            self.forecast_ = 0.0
+            return
+        q = float(series[pos_idx[0]])
+        p = float(pos_idx[0] + 1) if pos_idx[0] > 0 else 1.0
+        interval = 1
+        for t in range(pos_idx[0] + 1, len(series)):
+            if series[t] > 0:
+                q = self.alpha * series[t] + (1 - self.alpha) * q
+                p = self.alpha * interval + (1 - self.alpha) * p
+                interval = 1
+            else:
+                interval += 1
+        self.forecast_ = max(0.0, q / max(p, 1e-6))
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        return np.full(len(X), self.forecast_)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ARIMA (proposta seção 3.1)
+# ══════════════════════════════════════════════════════════════════════════════
+class ARIMAForecaster:
+    """ARIMA com ordem configurável.
+
+    Treina em statsmodels; armazena previsões step-ahead no momento do fit.
+    predict(X) consome as previsões em sequência; após esgotar, repete a última.
+    Interface fit(X, y) compatível com o pipeline walk-forward.
+    """
+
+    def __init__(self, order: tuple = (1, 1, 1)):
+        self.order = order
+        self._forecasts: list = []
+        self._pred_idx: int = 0
+        self._fallback: float = 0.0
+
+    def fit(self, X: np.ndarray, y: np.ndarray, **kwargs):
+        series = (np.concatenate([X[0], y]) if len(X) > 0 else y).astype(float)
+        pos = series[series > 0]
+        self._fallback = float(np.mean(pos)) if len(pos) > 0 else 0.0
+        try:
+            from statsmodels.tsa.arima.model import ARIMA as _ARIMA
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                result = _ARIMA(series, order=self.order).fit()
+            n_steps = max(30, len(y))
+            self._forecasts = np.clip(result.forecast(steps=n_steps), 0, None).tolist()
+        except Exception:
+            self._forecasts = []
+        self._pred_idx = 0
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        results = []
+        for _ in range(len(X)):
+            if self._pred_idx < len(self._forecasts):
+                results.append(self._forecasts[self._pred_idx])
+                self._pred_idx += 1
+            else:
+                last = self._forecasts[-1] if self._forecasts else self._fallback
+                results.append(last)
+        return np.array(results)
 
 
 def train_all_forecasters(X_train, y_train, X_test, y_test, fcfg):

@@ -76,7 +76,7 @@ def _build_cfg(params: dict) -> dict:
             "n_actions":         params.get("dqn", {}).get("n_actions", 20),
             "max_order_qty":     200,
             "learning_rate":     0.001,
-            "hidden_layers":     [128, 64],
+            "hidden_layers":     params.get("dqn", {}).get("hidden_layers", [64, 64]),
         },
         "PPO": {
             "episodes":      params.get("ppo", {}).get("episodes", 300),
@@ -118,8 +118,8 @@ def scale_parameters_per_store(scenarios_meta: pd.DataFrame,
         z = params.get("z_score", 1.28)
         lt = params.get("lead_time", 2)
 
-        # Estoque inicial = demanda média de 2 lead times + safety stock
-        init_inv = max(10.0, mu * lt * 2 + z * sigma * np.sqrt(lt))
+        # I₀ = max(100, 2μ̂L) — proposta eq.(I0_metod)
+        init_inv = max(100.0, 2.0 * mu * lt)
         max_ord = max(50.0, mu * 12)  # ~12 ciclos de demanda média
 
         cfg = {k: dict(v) if isinstance(v, dict) else v for k, v in base_cfg.items()}
@@ -390,13 +390,18 @@ def run_proposed_architecture(scenarios: pd.DataFrame,
             log.warning("[Proposed] GA phase failed for %s: %s", key, e)
             continue
 
-        # Fase 2a: GA-DQN (treina RL em dados históricos; avalia no período de teste)
+        buffer_size = hybrid_params.get("buffer_size", 1000)
+
+        # Fase 2a: GA-DQN
+        # (i) GA já executou; (ii) pré-popula buffer; (iii) DQN 200 ep — proposta seção 4.4
         try:
             rl_cfg = dict(cfg)
             rl_cfg["DQN"] = dict(cfg["DQN"])
             rl_cfg["DQN"]["episodes"] = hybrid_params.get(
                 "rl_episodes", cfg["DQN"]["episodes"])
             dqn = DQNPolicy(state_dim, rl_cfg)
+            dqn.prepopulate_from_ga(demand_train, cfg, ga_params,
+                                    n_transitions=buffer_size)
             dqn.train(demand_train, rl_cfg, verbose=False)
             hybrid_dqn = HybridGADQN(ga_params, dqn)
             policy_fn = hybrid_dqn.make_policy()
@@ -405,13 +410,15 @@ def run_proposed_architecture(scenarios: pd.DataFrame,
         except Exception as e:
             log.warning("[Proposed] GA-DQN failed for %s: %s", key, e)
 
-        # Fase 2b: GA-PPO (treina RL em dados históricos; avalia no período de teste)
+        # Fase 2b: GA-PPO
+        # (i) GA já executou; (ii) warm-start PPO; (iii) PPO 200 ep — proposta seção 4.4
         try:
             rl_cfg = dict(cfg)
             rl_cfg["PPO"] = dict(cfg["PPO"])
             rl_cfg["PPO"]["episodes"] = hybrid_params.get(
                 "rl_episodes", cfg["PPO"]["episodes"])
             ppo = PPOPolicy(state_dim, rl_cfg)
+            ppo.warmstart_from_ga(demand_train, cfg, ga_params, n_episodes=20)
             ppo.train(demand_train, rl_cfg, verbose=False)
             hybrid_ppo = HybridGAPPO(ga_params, ppo)
             policy_fn = hybrid_ppo.make_policy()

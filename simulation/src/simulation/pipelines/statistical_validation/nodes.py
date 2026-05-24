@@ -72,8 +72,17 @@ def run_wilcoxon_tests(kpis: pd.DataFrame) -> pd.DataFrame:
 
     df_out = pd.DataFrame(rows)
     if not df_out.empty:
-        log.info("Wilcoxon: %d testes | %d significativos (p<0.05)",
-                 len(df_out), df_out["significant"].sum())
+        n_tests = len(df_out)
+        bonferroni_alpha = 0.05 / n_tests
+        df_out["significant_bonferroni"] = df_out["p_value"] < bonferroni_alpha
+        df_out["bonferroni_alpha"] = bonferroni_alpha
+        log.info(
+            "Wilcoxon: %d testes | %d sig. (p<0.05) | %d sig. Bonferroni (α=%.4f)",
+            n_tests,
+            df_out["significant"].sum(),
+            df_out["significant_bonferroni"].sum(),
+            bonferroni_alpha,
+        )
     return df_out
 
 

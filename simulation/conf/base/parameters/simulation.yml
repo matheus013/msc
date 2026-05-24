@@ -42,8 +42,8 @@ simulation:
 
   de:
     strategy: "rand1bin"
-    mutation: [0.5, 1.0]
-    recombination: 0.7
+    mutation: 0.8
+    recombination: 0.9
     max_iter: 100
     population_size: 15
 
@@ -57,9 +57,10 @@ simulation:
     memory_size: 10000
     target_update_freq: 10
     n_actions: 20
+    hidden_layers: [64, 64]
 
   ppo:
-    episodes: 300
+    episodes: 500
     gamma: 0.99
     clip_epsilon: 0.2
     update_epochs: 4
@@ -68,12 +69,11 @@ simulation:
 
   sarsa:
     episodes: 500
-    gamma: 0.95
-    epsilon_start: 1.0
-    epsilon_end: 0.01
-    epsilon_decay: 0.995
-    learning_rate: 0.001
-    n_actions: 20
+    n_states: 5
+    n_actions: 10
+    gamma: 0.99
+    learning_rate: 0.1
+    epsilon: 0.1
 
   hybrid:
     ga_generations: 50

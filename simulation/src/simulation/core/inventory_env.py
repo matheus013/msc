@@ -87,11 +87,12 @@ class InventoryEnv:
         else:
             mu_r  = self._global_mu
             std_r = self._global_std
-        d_next  = float(self.demand[self.t]) if self.t < self.T else mu_r
+        # D_{t-1}: última demanda observada (proposta def. 1, seção 1)
+        d_last  = float(self.demand[self.t - 1]) if self.t > 0 else 0.0
         pending = float(sum(self.pipeline))
         return np.array([
             self.inventory / (self.init_inv + 1e-6),
-            d_next / (self._global_mu + 1e-6),
+            d_last / (self._global_mu + 1e-6),
             pending / (self.init_inv + 1e-6),
             mu_r   / (self._global_mu + 1e-6),
             std_r  / (self._global_std + 1e-6),

@@ -103,9 +103,11 @@ def _single_split_sequential(splits: dict, params: dict) -> tuple:
     """
     from simulation.core.forecasting import LSTMNumpy, ANNForecaster, XGBoostForecaster
 
-    lc  = params.get("lstm",     {})
-    ac  = params.get("ann",      {})
-    xc  = params.get("xgboost",  {})
+    lc  = params.get("lstm",    {})
+    ac  = params.get("ann",     {})
+    xc  = params.get("xgboost", {})
+    cc  = params.get("croston", {})
+    arc = params.get("arima",   {})
 
     all_rows = []
     final_models = {}
@@ -127,7 +129,7 @@ def _single_split_sequential(splits: dict, params: dict) -> tuple:
             log.warning("Treino insuficiente para (%s,%s,%s) — pulando", w, s, i)
             continue
 
-        models = _fit_all(X_tr, y_tr, lc, ac, xc)
+        models = _fit_all(X_tr, y_tr, lc, ac, xc, cc, arc)
 
         # ── Previsão sequencial: ciclos [train_end, n) ───────────────────
         n = len(series)
@@ -157,7 +159,7 @@ def _single_split_sequential(splits: dict, params: dict) -> tuple:
 
         # ── Modelo final: treina em TODA a série ─────────────────────────
         X_all, y_all = _sliding_windows(series, lookback)
-        final_models[key] = _fit_all(X_all, y_all, lc, ac, xc)
+        final_models[key] = _fit_all(X_all, y_all, lc, ac, xc, cc, arc)
 
     predictions_df = pd.DataFrame(all_rows)
     log.info("Previsões geradas: %d linhas | %d ciclos únicos",
@@ -173,9 +175,11 @@ def _expanding_window(splits: dict, params: dict) -> tuple:
     """
     from simulation.core.forecasting import LSTMNumpy, ANNForecaster, XGBoostForecaster
 
-    lc  = params.get("lstm",     {})
-    ac  = params.get("ann",      {})
-    xc  = params.get("xgboost",  {})
+    lc  = params.get("lstm",    {})
+    ac  = params.get("ann",     {})
+    xc  = params.get("xgboost", {})
+    cc  = params.get("croston", {})
+    arc = params.get("arima",   {})
 
     all_rows = []
     final_models = {}
@@ -198,7 +202,7 @@ def _expanding_window(splits: dict, params: dict) -> tuple:
             if len(X_tr) < 3:
                 continue
 
-            models = _fit_all(X_tr, y_tr, lc, ac, xc)
+            models = _fit_all(X_tr, y_tr, lc, ac, xc, cc, arc)
             window = series[t - lookback: t].reshape(1, -1)
             actual = float(series[t])
             cycle  = cycles[t]
@@ -221,7 +225,7 @@ def _expanding_window(splits: dict, params: dict) -> tuple:
 
         # Modelo final em TODA a série
         X_all, y_all = _sliding_windows(series, lookback)
-        final_models[key] = _fit_all(X_all, y_all, lc, ac, xc)
+        final_models[key] = _fit_all(X_all, y_all, lc, ac, xc, cc, arc)
 
     predictions_df = pd.DataFrame(all_rows)
     log.info("Expanding window: %d previsões", len(predictions_df))
@@ -348,10 +352,15 @@ def _sliding_windows(series: np.ndarray, lookback: int):
 
 
 def _fit_all(X_train: np.ndarray, y_train: np.ndarray,
-             lc: dict, ac: dict, xc: dict) -> dict:
-    """Treina LSTM, ANN e XGBoost nos mesmos dados de treino."""
-    from simulation.core.forecasting import LSTMNumpy, ANNForecaster, XGBoostForecaster
-
+             lc: dict, ac: dict, xc: dict,
+             cc: dict = None, arc: dict = None) -> dict:
+    """Treina LSTM, ANN, XGBoost, Croston e ARIMA nos mesmos dados de treino."""
+    from simulation.core.forecasting import (
+        LSTMNumpy, ANNForecaster, XGBoostForecaster,
+        CrostonForecaster, ARIMAForecaster,
+    )
+    cc  = cc  or {}
+    arc = arc or {}
     models = {}
 
     try:
@@ -377,8 +386,7 @@ def _fit_all(X_train: np.ndarray, y_train: np.ndarray,
         log.debug("ANN treino falhou: %s", e)
 
     try:
-        from simulation.core.forecasting import XGBoostForecaster as _XGB
-        xgbm = _XGB(
+        xgbm = XGBoostForecaster(
             n_estimators=xc.get("n_estimators", 200),
             max_depth=xc.get("max_depth", 6),
             learning_rate=xc.get("learning_rate", 0.05),
@@ -387,5 +395,20 @@ def _fit_all(X_train: np.ndarray, y_train: np.ndarray,
         models["XGBoost"] = xgbm
     except Exception as e:
         log.debug("XGBoost treino falhou: %s", e)
+
+    try:
+        croston = CrostonForecaster(alpha=cc.get("alpha", 0.1))
+        croston.fit(X_train, y_train)
+        models["Croston"] = croston
+    except Exception as e:
+        log.debug("Croston treino falhou: %s", e)
+
+    try:
+        order = tuple(arc.get("order", [1, 1, 1]))
+        arima = ARIMAForecaster(order=order)
+        arima.fit(X_train, y_train)
+        models["ARIMA"] = arima
+    except Exception as e:
+        log.debug("ARIMA treino falhou: %s", e)
 
     return models
