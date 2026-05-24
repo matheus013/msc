@@ -1,0 +1,294 @@
+﻿\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
+
+\section{Motivação}
+
+\subsection{Contexto, relevância e lacuna científica}
+
+A gestão integrada do abastecimento em redes varejistas geograficamente dispersas constitui um problema central da engenharia de operações, pois condiciona simultaneamente (i) o nível de serviço percebido na ponta da cadeia (disponibilidade de produtos, frequência de ruptura e tempo de reposição) e (ii) a estrutura de custos logísticos e operacionais, que inclui manutenção de estoque, transporte, produção e perdas por falta \cite{SimchiLevi2009CadeiaSuprimentos,Chopra2022SCM,Ballou2006GCSLogistica}. Em termos sistêmicos, a dificuldade decorre da interdependência entre as decisões tomadas em cada nó da rede: políticas de reposição e expedição adotadas localmente podem induzir externalidades relevantes sobre os demais elos, amplificando variabilidade à montante e deteriorando o desempenho global. A literatura clássica formaliza esse efeito como distorção informacional e amplificação de variância ao longo da cadeia de suprimentos, o chamado \textit{bullwhip effect} \cite{LeePadmanabhanWhang1997Bullwhip}, fenômeno que tende a elevar estoques de segurança, custos operacionais e instabilidade nas camadas superiores.
+
+Em redes varejistas contemporâneas, a situação é ainda mais desafiadora: portfólios extensos com milhares de SKUs, heterogeneidade regional expressiva, restrições de capacidade em transporte e armazenagem, além de demanda com forte componente estocástico e intermitente \cite{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}. Denomina-se \textit{intermitente} a demanda caracterizada por longos períodos sem consumo, alternados com picos esporádicos de magnitude variável~\cite{croston:1972}. Em varejo regional brasileiro de produtos de baixo giro, séries com coeficiente de variação (CV) sistematicamente acima de 2.5 são a regra, não a exceção~\cite{syntetos:2001}, violando as hipóteses de estacionariedade e quasi-normalidade sobre as quais repousa toda a família de heurísticas clássicas como EOQ e política~$(s,S)$.
+
+A classificação de \citet{syntetos:2001}, formalizada no diagrama ADI $\times$ CV$^2$, é hoje o padrão de facto para tipificação da intermitência: o Intervalo Médio entre Demandas (ADI) mede com que frequência a demanda é diferente de zero, enquanto o quadrado do coeficiente de variação (CV$^2$) mede a irregularidade dos tamanhos de demanda não-nulos. O cruzamento dessas dimensões por dois limiares (ADI $= 1.32$ e CV$^2 = 0.49$) produz quatro quadrantes com propriedades operacionais distintas~\cite{syntetos:2001}:
+\begin{itemize}
+  \item \textbf{Suave (\textit{Smooth})}: ADI $< 1.32$ e CV$^2 < 0.49$; demanda regular, modelos clássicos adequados;
+  \item \textbf{Errática (\textit{Erratic})}: ADI $< 1.32$ e CV$^2 \geq 0.49$; demanda frequente, porém de tamanho imprevisível;
+  \item \textbf{Intermitente (\textit{Intermittent})}: ADI $\geq 1.32$ e CV$^2 < 0.49$; ocorrências raras com tamanhos relativamente estáveis;
+  \item \textbf{Grumosa (\textit{Lumpy})}: ADI $\geq 1.32$ e CV$^2 \geq 0.49$; o caso mais difícil, combinando raridade e irregularidade extremas.
+\end{itemize}
+O dataset que origina esta dissertação contém séries em todos os quatro quadrantes, com concentração expressiva no quadrante Lumpy para produtos de baixo giro, o que torna o problema ao mesmo tempo representativo do varejo real e metodologicamente relevante.
+
+Emerge assim uma lacuna metodológica central: não existe política universalmente ótima para demanda intermitente. Modelos clássicos falham por hipóteses paramétricas violadas em regime \textit{Lumpy}; algoritmos de RL demandam da ordem de $10^6$ interações~\cite{Oroojlooyjadid2022BeerGameDQN}, incompatíveis com séries históricas curtas; meta-heurísticas otimizam parâmetros fixos sem adaptar-se a mudanças de regime. A lacuna correta a preencher não é ``qual algoritmo vence'', mas \textbf{``como determinar qual política usar dado o perfil operacional de cada série''}. Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE): um sistema de decisão que aprende, a partir de features operacionais da série (ADI, CV$^2$, burstiness, entropia, sazonalidade), qual estratégia de reposição maximiza o desempenho esperado para aquele regime específico.
+
+\subsection{O problema de otimização de inventário em redes varejistas}
+
+O problema desta dissertação é a otimização de políticas de reposição em redes varejistas geograficamente dispersas, onde cada loja decide individualmente quando e quanto repor a partir do armazém regional. Formalmente, cada loja opera um sistema de controle de estoque de único escalão com $N$ unidades varejistas atendidas por um armazém central; o objetivo é determinar a função de decisão $\pi^*$ que minimize o custo total acumulado ao longo do horizonte de planejamento (ver Seção~\ref{sec:formulacao}).
+
+Esse contexto apresenta três propriedades relevantes: (i) decisões são locais e descentralizadas: cada loja otimiza seu próprio estoque com base em sua demanda histórica; (ii) séries são heterogêneas: o volume, a irregularidade e a intermitência variam dramaticamente entre lojas e SKUs, razão pela qual não existe uma política única eficiente para toda a rede; e (iii) o efeito \textit{bullwhip}~\cite{LeePadmanabhanWhang1997Bullwhip} (amplificação da variabilidade à montante) é medido pelo indicador BE (\textit{Bullwhip Effect}) e é um critério explícito de avaliação das políticas, pois políticas que amplificam a variabilidade prejudicam a cadeia inteira mesmo que otimizem o custo local.
+
+A heterogeneidade inter-série é a motivação operacional central do AIPE: se todas as séries fossem homogêneas, uma política fixa seria suficiente. A evidência empírica desta dissertação demonstra que não são.
+
+\subsection{Previsão de demanda como módulo auxiliar de features}
+
+A previsão de demanda não é uma contribuição central desta dissertação; é um \textbf{módulo auxiliar} com dois papéis: (i) fornecer features prospectivas ($\hat{D}_{t+1}$, viés sistemático, volatilidade de resíduos) que enriquecem o vetor operacional de cada série e (ii) permitir quantificar o impacto da qualidade preditiva sobre o desempenho das políticas.
+
+No regime intermitente, métricas clássicas como MAPE são indefinidas quando a demanda real é zero. A dissertação adota o \textit{Mean Absolute Scaled Error} (MASE)~\cite{Hyndman2006MASE} como métrica primária (razão entre o MAE do modelo e o MAE da previsão ingênua, livre de escala e comparável entre séries de volumes distintos) e sMAPE~\cite{Makridakis1993SMAPE} como complemento simétrico. A validação segue protocolo \textit{walk-forward}: a previsão do ciclo $t$ usa apenas ciclos $1, \ldots, t-1$, eliminando qualquer vazamento temporal.
+
+O papel do módulo de previsão no AIPE é gerar features; a seleção do melhor modelo de previsão por série é um produto secundário, não o objetivo principal.
+
+\subsection{Validação estatística rigorosa}
+
+Uma lacuna metodológica recorrente em estudos comparativos de políticas de inventário é a comparação de médias sem testes de significância estatística formal. Em cenários com variabilidade expressiva (como o regime intermitente com CV entre 2.5 e 5.4), diferenças observadas nas médias podem ser atribuídas a flutuações aleatórias, especialmente quando o número de séries é reduzido. A dissertação adota, na Fase~2, um protocolo rigoroso de validação estatística:
+\begin{itemize}
+  \item \textbf{Wilcoxon \textit{signed-rank}}~\cite{Wilcoxon1945}: teste não-paramétrico para comparação pareada entre duas políticas, robusto a distribuições assimétricas;
+  \item \textbf{Friedman + Nemenyi \textit{post-hoc}}~\cite{Friedman1940,Nemenyi1963}: teste de hipótese para múltiplas políticas com análise de diferenças críticas por par;
+  \item \textbf{Cohen's $d$}~\cite{Cohen1988}: estimador do tamanho de efeito entre pares de políticas, permitindo distinguir significância estatística de relevância prática.
+\end{itemize}
+A combinação desses procedimentos permite responder não apenas ``qual política é melhor?'', mas também ``com qual grau de confiança?'' e ``o ganho é operacionalmente relevante?'', distinção crítica para recomendações práticas em gestão de cadeia de suprimentos.
+
+\subsection{Escala, reprodutibilidade e motivação para o pipeline Kedro}
+
+O dataset que origina esta dissertação contém aproximadamente 48 milhões de registros de transações de venda, distribuídos entre cerca de 12 mil SKUs e mais de 3 milhões de entidades de demanda em múltiplos estados brasileiros. A Fase~1 operou sobre um recorte controlado: estado da Paraíba, produto 48130, 15 lojas selecionadas por critério de cobertura temporal. A Fase~2 estende o escopo ao conjunto completo, processando todos os estados e todos os produtos com demanda suficientemente intermitente.
+
+Essa escala impõe requisitos de engenharia experimental que transcendem o escopo de scripts pontuais: rastreabilidade das transformações de dados, reprodutibilidade entre execuções, versionamento de parâmetros e resultados, e geração automatizada de relatórios. O pipeline foi construído sobre o \textit{framework} Kedro~\cite{KedroConcepts}, que estrutura nós (funções puras), pipelines (grafos de dependência) e um catálogo de dados (mapeamento de entradas e saídas para artefatos em disco), garantindo que qualquer resultado possa ser reproduzido a partir dos parâmetros e dados originais. A Figura~\ref{fig:kedro_pipeline} apresenta o grafo do pipeline completo.
+
+\subsection{Questões de pesquisa e hipótese central}
+
+À luz dos elementos anteriores, esta dissertação organiza-se em torno de cinco questões de pesquisa:
+
+\begin{description}
+  \item[QP1.] Como estruturar um pipeline integrado de seleção adaptativa de política, abrangendo ingestão de dados reais, classificação por Syntetos-Boylan, engenharia de features operacionais e benchmark controlado de 12 políticas candidatas, que produza os insumos necessários ao treinamento do \textit{Policy Selection Engine} com rastreabilidade e reprodutibilidade garantidas?
+
+  \item[QP2.] Em que regime de intermitência (quadrante ADI$\times$CV$^2$) e escala (volume de demanda, horizonte temporal) cada família de política (clássica, meta-heurística, RL isolado e híbrida GA-RL) apresenta vantagem comparativa em custo, nível de serviço e estabilidade logística?
+
+  \item[QP3.] Em quais regimes de demanda (quadrante ADI$\times$CV$^2$, perfil operacional) a arquitetura híbrida GA-RL apresenta vantagem estatisticamente significativa como política especialista; em quais regimes políticas mais simples (EOQ, Jornaleiro) são equivalentes ou superiores em custo e nível de serviço?
+
+  \item[QP4.] As features prospectivas extraídas do módulo de previsão de demanda (viés sistemático, volatilidade de resíduos, MASE por série) enriquecem de forma mensurável o vetor operacional de cada série e melhoram a acurácia do \textit{Policy Selection Engine} em relação ao vetor de features estáticas?
+
+  \item[QP5.] É possível construir um \textit{Policy Selection Engine} (PSE), meta-modelo supervisionado que mapeia features operacionais de uma série (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade) para a política de reposição de menor custo total, que generalize para novas séries e seja comparável ou superior à seleção manual por especialista?
+\end{description}
+
+\paragraph{Hipótese central.}
+Não existe política universalmente ótima para demanda intermitente, corolário operacional do teorema \textit{No Free Lunch}~\cite{Wolpert1997NoFreeLunch}: diferentes regimes de demanda exigem estratégias de reposição distintas, e um sistema adaptativo capaz de classificar o regime e selecionar a política dinamicamente, o \textit{Adaptive Inventory Policy Engine} (AIPE), pode maximizar o desempenho operacional de forma superior a qualquer política fixa aplicada indiscriminadamente. O AIPE é, formalmente, uma instância do \textit{Algorithm Selection Problem}~\cite{Rice1976AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection} no domínio de inventário sob demanda intermitente.
+
+Essa hipótese decompõe-se em três sub-hipóteses:
+\begin{enumerate}[(H1)]
+  \item \textbf{(Heterogeneidade de regimes)} O benchmark de 12 políticas sobre um dataset nacional de demanda intermitente mostrará que nenhuma política domina todas as métricas em todos os quadrantes Syntetos-Boylan: a política dominante varia sistematicamente por regime.
+  \item \textbf{(GA-RL como política especialista)} Arquiteturas híbridas GA-RL emergem como políticas especialistas em regimes específicos de alta intermitência (CV\,$>$\,2.5) e horizonte curto ($T \leq 38$ ciclos): a inicialização do agente por busca global (GA) viabiliza convergência onde RL isolado degenera, apresentando vantagem estatisticamente significativa sobre políticas clássicas \textit{nesse regime específico}, sem que isso implique dominância universal, resultado diretamente derivado da heterogeneidade empírica de H1.
+  \item \textbf{(Policy Selection Engine)} Um meta-modelo supervisionado (XGBoost/LightGBM) treinado sobre features operacionais consegue selecionar a política de menor custo com acurácia e F1-macro superiores à seleção pela classificação Syntetos-Boylan isolada, gerando recomendações operacionalmente interpretáveis e acionáveis.
+\end{enumerate}
+
+A evidência preliminar da Fase~1, sobre 15 lojas da Paraíba com $T=38$ ciclos bimestrais, apoia H1 e H2: a análise estratificada por grupo de volume revelou que GA-DQN é superior em lojas de volume médio, enquanto o Jornaleiro é mais econômico em baixo volume e o custo é o diferenciador em alto volume, confirmando a heterogeneidade de regimes. GA-DQN apresentou CTI (Custo Total de Inventário) 48\% inferior à política~$(s,S)$ e efeito \textit{bullwhip} 24 vezes menor, enquanto o DQN isolado degenerou. A Fase~2 testa H3 em escala nacional.
+
+\subsubsection*{Estrutura da rede varejista e papel do AIPE}
+
+\begin{figure}[h]
+\centering
+\resizebox{0.82\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=3.8cm,
+    >=Stealth,
+    block/.style={
+        rectangle,
+        draw,
+        rounded corners,
+        minimum width=3.2cm,
+        minimum height=1cm,
+        align=center,
+        font=\small
+    },
+    flow/.style={->, thick},
+    every node/.style={font=\small}
+]
+
+\node[block] (F) {Fornecedor/Fábrica};
+\node[block, right=of F] (S) {Armazém Regional (CD)};
+\node[block, right=of S] (M) {Lojas Revendedoras};
+
+\draw[flow] (F) -- (S)
+    node[midway, above=2pt, align=center] {$x_{f,w,i}$};
+
+\draw[flow] (S) -- (M)
+    node[midway, above=2pt] {$x_{w,m,i}$};
+
+\draw[flow] (S.north) edge[bend left=270, looseness=2.5]
+    node[pos=0.5, above] {$x_{w,w',i}$} (S.north);
+
+\end{tikzpicture}
+}
+\caption{Estrutura operacional da rede varejista: fábricas $\to$ armazém regional $\to$ lojas revendedoras. O AIPE otimiza as decisões de reposição em nível de loja; o BE mede a amplificação de variabilidade que cada política induz ao armazém.}
+\label{fig:meio_network}
+\end{figure}
+
+\subsubsection*{Pipeline de solução: componentes integrados}
+
+\begin{figure}[h]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=2.0cm and 1.8cm,
+    block/.style={rectangle, draw, rounded corners, align=center,
+                  minimum width=3.2cm, minimum height=0.9cm, font=\small},
+    data/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+                 draw, align=center, minimum width=3.2cm, minimum height=0.9cm, font=\small},
+    flow/.style={->, thick},
+    feedback/.style={->, thick, dashed}
+]
+
+\node[data]   (hist)  {Dados históricos\\$[t-w,t]$ — multi-estado};
+\node[block, right=of hist]  (class) {Classificação\\ADI$\times$CV$^2$\\(Syntetos-Boylan)};
+\node[block, right=of class] (fcst)  {Previsão de demanda\\LSTM, ANN, XGBoost\\walk-forward};
+\node[block, right=of fcst]  (opt)   {Otimização\\GA + Metaheurísticas};
+\node[block, below=1.5cm of opt] (rl) {Arquitetura GA-RL\\DQN / PPO};
+\node[block, below=1.5cm of fcst] (exec) {Simulação\\$T$ ciclos × $N$ lojas};
+\node[data, below=1.5cm of class] (obs) {KPIs\\CTI, NS, TR, BE, FP};
+
+\draw[flow] (hist)  -- (class);
+\draw[flow] (class) -- (fcst);
+\draw[flow] (fcst)  -- (opt);
+\draw[flow] (opt)   -- (rl);
+\draw[flow] (rl)    -- (exec);
+\draw[flow] (exec)  -- (obs);
+\draw[feedback] (obs.west) -- (hist.south);
+
+\end{tikzpicture}
+}
+\caption{Pipeline integrado em horizonte rolante: da ingestão de dados à geração de KPIs.}
+\label{fig:kedro_pipeline}
+\end{figure}
+
+\subsubsection*{Contribuições desta dissertação}
+
+As contribuições organizam-se ao redor de um eixo único: demonstrar que a política ótima é específica ao regime e construir o sistema que aprende essa relação.
+
+\textbf{Contribuição central:}
+\begin{enumerate}
+  \item O \textit{Adaptive Inventory Policy Engine} (AIPE): sistema de seleção adaptativa de política que aprende, a partir do mapeamento empírico regime$\rightarrow$política do benchmark, qual estratégia de reposição apresenta menor custo esperado por perfil operacional de demanda. O meta-modelo supervisionado (XGBoost/LightGBM) recebe o vetor de features operacionais $\phi(\mathbf{x}_i) \in \mathbb{R}^{17}$, produz uma recomendação acionável com probabilidades de confiança e é avaliado por validação cruzada estratificada com análise de importância por SHAP (\textit{SHapley Additive exPlanations}) (QP5, H3).
+\end{enumerate}
+
+\textbf{Contribuições de suporte empírico:}
+\begin{enumerate}
+  \setcounter{enumi}{1}
+  \item Benchmark sistemático de 12 políticas de controle de inventário (clássicas, meta-heurísticas, RL isolado, híbridas GA-RL) sobre dados reais de varejo nacional com demanda extremamente intermitente (CV entre 2.5 e 5.4), com evidência empírica de que a política dominante varia sistematicamente por regime e perfil de série (QP1, QP2, H1);
+  \item Mapeamento empírico regime$\rightarrow$política dominante: demonstração, com validação estatística formal (Wilcoxon, Friedman, Cohen's $d$), de que a dominância varia por perfil operacional: GA-DQN apresenta vantagem significativa em alta intermitência/volume médio; EOQ e Jornaleiro em outros perfis; provendo os rótulos de treinamento para o PSE e confirmando empiricamente H1 e H2;
+  \item Validação estatística formal da Fase~2 (145 séries, 5 replicações, 8.700 pontos de avaliação): GA-DQN com 82\% e GA-PPO com 89\% de comparações significativas, preenchendo a lacuna de ausência de testes que afeta a maioria dos estudos relacionados;
+  \item Pipeline Kedro reprodutível e escalável: rastreabilidade parâmetros$\rightarrow$artefatos, configurabilidade por YAML, processamento por estado (Parquet particionado), pronto para extensão nacional.
+\end{enumerate}
+
+\section{Trabalhos Relacionados}
+
+\subsection{Controle de inventário em redes varejistas: fundamentos e tipologias}
+
+A literatura de controle de estoques em sistemas multi-escalão parte do trabalho fundador de Clark e Scarf~\cite{ClarkScarf1960MultiEchelon}, que estabelece, para sistemas seriados, que políticas ótimas podem ser decompostas por escalão sob hipóteses específicas. Axsäter e Zipkin consolidam esse arcabouço em textos clássicos que formalizam custos de posse e ruptura, políticas \textit{base-stock} e medidas de nível de serviço~\cite{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}. Em ambientes industriais, os modelos de serviço garantido (GSM)~\cite{GravesWillems2000SafetyStock} e suas extensões~\cite{Achkar2024GSMExtensions,Eruguz2016GSMsurvey} constituem a principal família de abordagens para posicionamento estratégico de estoques de segurança em redes gerais, sendo amplamente empregados em planejamento integrado.
+
+O regime de demanda intermitente introduz complexidades que escapam à teoria clássica. \citet{croston:1972} propôs o primeiro estimador específico para esse regime, modelando separadamente a frequência e o tamanho dos eventos de demanda. \citet{syntetos:2001} refinaram essa classificação, introduzindo o diagrama ADI$\times$CV$^2$ que divide os padrões de demanda em quatro quadrantes com recomendações metodológicas distintas, tornando explícita a diferença entre séries de demanda \textit{suave}, \textit{errática}, \textit{intermitente} e \textit{grumosa} (\textit{lumpy}). A revisão de de Kok et al.~\cite{DeKok2018Typology} sintetiza o estado da arte em MEIO e identifica como lacunas abertas exatamente as situações de demanda não-estacionária em redes gerais (o contexto desta dissertação).
+
+\subsection{Previsão de demanda intermitente: modelos e métricas}
+
+A previsão de demanda intermitente apresenta dois desafios estruturais: (i) a frequência de zeros impede o uso de métricas relativas clássicas como MAPE; (ii) a não-estacionariedade invalida hipóteses de modelos como Holt-Winters que pressupõem padrões suaves. Evidência empírica em competições de previsão (M4, M5) demonstra que modelos baseados em árvores de decisão e gradiente boosting frequentemente superam redes LSTM em séries com alta intermitência, especialmente quando o volume de dados históricos por SKU é limitado~\cite{Nasseri2023RetailDemandPrediction}.
+
+No plano das métricas, \citet{Hyndman2006MASE} introduziram o MASE como substituto livre de escala para o MAPE, com propriedades desejáveis em séries com zeros: é definido mesmo quando a demanda real é zero (desde que o denominador, o erro ingênuo, seja não-nulo), é comparável entre séries de escalas distintas e não sofre de problemas de assimetria do MAPE. \citet{Makridakis1993SMAPE} propuseram o sMAPE como solução simétrica para a assimetria do MAPE. A competição M4~\cite{Makridakis2020M4} adotou o MASE como métrica primária, consolidando seu uso. \citet{TadayonradNdiaye2023KPIDemandForecasting} argumentam que essas métricas, embora melhores, ainda não capturam diretamente o impacto sobre custos de inventário e propõem KPIs alinhados ao custo e ao nível de serviço, direção que esta dissertação incorpora ao conectar previsão e decisão de reposição no mesmo pipeline.
+
+\subsection{Meta-heurísticas e aprendizado por reforço para controle de estoques}
+
+A otimização de parâmetros de políticas de inventário por meta-heurísticas tem sido extensivamente estudada. \citet{Talbi2009Metaheuristics} consolidam o arcabouço teórico de GA, SA, PSO e outros para problemas combinatórios em geral. No contexto específico de demanda intermitente, \citet{Yuna2023IntermittentMetaheuristics} compararam SA e Busca Tabu na otimização de parâmetros $(s,S)$ em sete conjuntos com CV$>$1.5, e \citet{Erkayman2025MarkovInventory} modelaram demanda como cadeia de Markov e otimizaram com GA e PSO; ambos, porém, restringem-se a sistemas de único escalão.
+
+Na frente de RL, \citet{Oroojlooyjadid2022BeerGameDQN} demonstraram que DQN aprende políticas de reposição no Beer Game multi-echelon sem especificar a distribuição de demanda. \citet{Geevers2024MEIODRL} aplicaram PPO a três topologias de rede (linear, divergente e geral) com desempenho superior ao benchmark. \citet{Liu2024HAPPO} introduziram HAPPO para reduzir simultaneamente custo e efeito \textit{bullwhip} em ambientes descentralizados. A limitação transversal de todos esses trabalhos é a exigência de da ordem de $10^6$ interações~\cite{Oroojlooyjadid2022BeerGameDQN}, tornando-os inadequados para séries históricas curtas de varejo.
+
+\subsection{Seleção adaptativa de política: \textit{Algorithm Selection Problem}, \textit{hyper-heuristics} e meta-aprendizado}
+\label{sec:aas_literatura}
+
+O problema de determinar qual algoritmo usar dada uma instância foi formalizado por \citet{Rice1976AlgorithmSelection} como o \textit{Algorithm Selection Problem} (ASP): dado um espaço de instâncias $\mathcal{I}$, um espaço de algoritmos $\mathcal{A}$ e uma medida de desempenho $f$, encontrar o mapeamento $s^*: \mathcal{I} \rightarrow \mathcal{A}$ tal que $s^*(i) = \arg\max_{a \in \mathcal{A}} f(a, i)$. O AIPE é uma instância direta do ASP aplicada ao controle de inventário: as instâncias são séries de demanda, os algoritmos são as políticas candidatas e a medida de desempenho é o CTI (minimização) sujeito a NS (Nível de Serviço) mínimo.
+
+Um resultado fundamental que motiva o ASP é o teorema \textit{No Free Lunch} (NFL) de \citet{Wolpert1997NoFreeLunch}: para qualquer distribuição uniforme sobre funções objetivo, todos os algoritmos de busca possuem desempenho médio idêntico. O NFL implica que ganhos de desempenho só são possíveis explorando estrutura específica da classe de instâncias, precisamente o que as features operacionais do AIPE fazem ao capturar ADI, CV$^2$, \textit{burstiness} e sazonalidade como discriminadores de regime.
+
+A implementação prática do ASP segue o paradigma \textit{features de instância $\rightarrow$ modelo supervisionado $\rightarrow$ seleção de algoritmo}, consolidado por \citet{Kerschke2019AutomatedAlgorithmSelection} em survey abrangente sobre Automated Algorithm Selection (AAS). \citet{Kerschke2019ELASelection} demonstram empiricamente que features de paisagem (\textit{Exploratory Landscape Analysis}) combinadas com classificadores supervisionados selecionam automaticamente o melhor otimizador por instância em problemas contínuos, a mesma arquitetura que o AIPE implementa substituindo ELA por features operacionais de demanda. \citet{Kotthoff2014AlgorithmSelection} apresenta taxonomia prática de sistemas AAS em busca combinatória, mostrando que seletores por instância alcançam ganhos substanciais sobre qualquer política única.
+
+No campo das \textit{hyper-heuristics}, que generalizam o ASP para seleção dinâmica de heurísticas de baixo nível, \citet{Drake2020SelectionHyperHeuristics} e \citet{Dokeroglu2024HyperHeuristics} consolidam o estado da arte: \textit{selection hyper-heuristics} escolhem, a cada estado do problema, qual heurística aplicar, análogo operacional direto do AIPE. A diferença é que o AIPE opera em nível de série (seleção offline por perfil) enquanto hyper-heuristics tradicionais operam em nível de ciclo (seleção online por estado).
+
+Em inventário especificamente, \citet{Preil2022BanditInventory} modelam a seleção de ação como \textit{multi-armed bandit} em cadeias multi-escalão, e \citet{ContextualRL2024SupplyChain} usam informação de contexto para adaptar políticas de RL a configurações ambientais distintas, direção que o AIPE leva ao seu limite lógico: ao invés de adaptar parâmetros, seleciona a família de política. \citet{Qi2023EndToEndInventory} demonstram em \textit{Management Science} que deep learning mapeia diretamente features de demanda e prazo de entrega em quantidades de reposição, confirmando que features operacionais são suficientes para aprender políticas de inventário em escala industrial.
+
+\subsection{Arquiteturas híbridas GA-RL e posicionamento do AIPE}
+
+A frente mais próxima combina busca global de meta-heurísticas com adaptação local do RL. \citet{Zabraoui2025GaDQN} introduziram GA-DQN sobre o conjunto Walmart~M5 (CV típico $<1$): o GA otimiza parâmetros globalmente enquanto o DQN refina decisões a cada ciclo, elevando o NS de 61\% para 94\% com redução de custo. Esta dissertação incorpora GA-DQN como \textit{uma das doze políticas avaliadas} (a que demonstra melhor desempenho em séries de volume médio com alta intermitência, CV entre 2.5 e 5.4), mas posiciona o \textit{Policy Selection Engine} como contribuição principal: o objetivo não é provar que GA-DQN vence, mas aprender \textit{quando} cada política vence. Esse enquadramento é mais honesto (nenhuma política domina todas as métricas em todos os regimes) e mais ambicioso: o PSE generaliza para qualquer política nova que seja incorporada ao benchmark.
+
+A Tabela~\ref{tab:relwork_intro} sintetiza o posicionamento desta dissertação em relação aos trabalhos relacionados.
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Posicionamento desta dissertação em relação aos trabalhos relacionados. \textbf{Negrito}: dimensões em que esta dissertação se diferencia da literatura existente.}
+\label{tab:relwork_intro}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Trabalho &
+\makecell[c]{Dados\\Reais} &
+\makecell[c]{CV\\(regime)} &
+\makecell[c]{Políticas\\(\#)} &
+\makecell[c]{Multi-\\nível} &
+\makecell[c]{Indicadores\\(\#)} \\
+\midrule
+\citealt{Oroojlooyjadid2022BeerGameDQN} & Não & $<1$ & 3 & Sim & 2 \\
+\citealt{Gijsbrechts2022DRLInventoryMSOM} & Não & $<1$ & 6 & Sim & 2 \\
+\citealt{Yuna2023IntermittentMetaheuristics} & Não & $>1.5$ & 2 & Não & 2 \\
+\citealt{Erkayman2025MarkovInventory} & Não & $>1.5$ & 2 & Não & 1 \\
+\citealt{Liu2024HAPPO} & Não & $<1$ & 4 & Sim & 2 \\
+\citealt{Zabraoui2025GaDQN} & Não & $<1$ & 7 & Sim & 3 \\
+\midrule
+\textbf{Esta dissertação (Fase 1)}
+  & \textbf{Sim}
+  & $\mathbf{2.5}$ a $\mathbf{5.4}$
+  & \textbf{12}
+  & \textbf{Sim}
+  & \textbf{5} \\
+\textbf{Esta dissertação (Fase 2)}
+  & \textbf{Sim}
+  & \textbf{todos os quadrantes}
+  & \textbf{12}
+  & \textbf{Sim}
+  & \textbf{5\,+\,testes estat.} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Objetivos}
+
+\subsection*{Objetivo geral}
+
+Propor, implementar e avaliar o \textit{Adaptive Inventory Policy Engine} (AIPE): um meta-controlador operacional que aprende, a partir de features operacionais de cada série (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade, volume), qual política de reposição maximiza o desempenho esperado para aquele perfil de demanda específico. O AIPE é fundamentado por: (i) benchmark empírico de 12 políticas com validação estatística formal, gerando evidência de heterogeneidade de dominância por regime; (ii) mapeamento regime$\rightarrow$política que constitui os rótulos de treinamento do meta-modelo; e (iii) \textit{Policy Selection Engine} supervisionado (XGBoost/LightGBM com interpretabilidade SHAP) que generaliza para novas séries. O sistema opera sobre dados reais de varejo nacional em larga escala com reprodutibilidade garantida por pipeline Kedro.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+  \item \textbf{[Fase 1 — Concluído]} Construir e validar o ambiente de simulação \textit{InventoryEnv} com dinâmica de estoque $(s,Q)$, prazo de entrega fixo $L=2$ ciclos, calibração adaptativa por loja e protocolo de avaliação com cinco indicadores: CTI, NS, TR (Taxa de Ruptura), BE e FP (Frequência de Pedidos) \cite{Law2015SimulationModeling,Axsater2006InventoryControl};
+
+  \item \textbf{[Fase 1 — Concluído]} Comparar sistematicamente doze políticas (três clássicas, quatro meta-heurísticas, três RL isolados, dois GA-RL) sobre dados reais de varejo regional com CV entre 2.5 e 5.4, produzindo análise estratificada por perfil de demanda \cite{Boute2022DRLInventoryRoadmap,Talbi2009Metaheuristics};
+
+  \item \textbf{[Fase 1 — Concluído]} Caracterizar empiricamente as condições sob as quais a inicialização do \textit{replay buffer} pelo GA viabiliza convergência do agente de RL em horizontes curtos (38 ciclos), identificando os regimes de demanda em que essa arquitetura apresenta vantagem estatisticamente significativa sobre políticas isoladas \cite{Oroojlooyjadid2022BeerGameDQN,Zabraoui2025GaDQN};
+
+  \item \textbf{[Fase 2 — Concluído]} Implementar o pipeline AIPE em Kedro com: engenharia de features operacionais (ADI, CV$^2$, burstiness, entropia, tendência, autocorrelação sazonal), classificação por Perfis Operacionais de Demanda (5 perfis), previsão walk-forward com MASE/sMAPE/RMSSE, simulação das 12 políticas sobre 145 séries do estado da Bahia e relatório automatizado de recomendações por par (loja, produto);
+
+  \item \textbf{[Fase 2 — Concluído]} Realizar validação estatística formal com Wilcoxon \textit{signed-rank}, Friedman/Nemenyi e Cohen's $d$ estratificados por regime de demanda, sobre 145 séries com 5 replicações (QP2), suprindo a lacuna de ausência de testes de significância identificada na Fase~1;
+
+  \item \textbf{[Fase 3 — Em andamento]} Treinar e validar o \textit{Policy Selection Engine} supervisionado (XGBoost/LightGBM) que mapeia features operacionais à política de menor custo, com validação cruzada estratificada e análise de importância de features por SHAP (QP5) \cite{Shapiro2001ModelingSupplyChain};
+
+  \item \textbf{[Fase 3 — Planejado]} Estender o pipeline ao conjunto completo de SKUs e estados (escala nacional), com validação \textit{out-of-sample} por janela deslizante e análise de heterogeneidade regional por bioma econômico \cite{Axsater2006InventoryControl}.
+\end{enumerate}
+
+\subsection*{Escopo e Delimitações}
+\label{sec:delimitacoes}
+
+Para precisar o que esta dissertação propõe, é igualmente importante delimitar o que está fora de seu escopo. As seguintes funcionalidades não são abordadas:
+
+\begin{itemize}
+  \item \textbf{Coordenação multiagente entre escalões}: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
+  \item \textbf{Aprendizado por reforço multiagente (MARL)}: algoritmos como HAPPO~\cite{Liu2024HAPPO} ou comunicação entre agentes estão fora do escopo; o AIPE opera como seletor offline de política por série, não como coordenador online entre nós da rede.
+  \item \textbf{\textit{Online learning} contínuo}: o AIPE é reavaliado periodicamente (a cada $\Delta t$ ciclos), não atualizado continuamente a cada nova transação ; a adaptação é por recálculo do vetor de features, não por reaprendizado incremental do meta-modelo.
+  \item \textbf{Otimização conjunta de múltiplos SKUs}: cada série (loja, produto) é tratada independentemente; efeitos de substituição, complementaridade e portfolio não são modelados.
+  \item \textbf{Otimização de roteamento e transporte}: custos e restrições logísticas de transporte são parâmetros fixos; a dissertação otimiza \textit{quando} e \textit{quanto} pedir, não \textit{como} transportar.
+  \item \textbf{Integração em tempo real com ERP}: o pipeline opera sobre histórico exportado em Parquet; não há integração transacional em tempo real com sistemas de gestão corporativa.
+\end{itemize}
+
+Essas delimitações não são fragilidades do trabalho, mas escolhas metodológicas que concentram a contribuição central, o aprendizado automático da relação regime$\rightarrow$política, em condições controladas e reprodutíveis sobre dados reais de varejo nacional.
+
+\newpage\lhead{\rightmark}

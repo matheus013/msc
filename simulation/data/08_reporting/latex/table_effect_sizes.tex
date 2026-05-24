@@ -1,0 +1,111 @@
+\begin{table}[htb]
+\centering
+\caption{Tamanhos de efeito (Cohen's $d$) -- politica proposta vs baselines}
+\label{tab:effect_sizes}
+\begin{tabular}{llrrr}
+\toprule
+Politica A & Politica B & Metrica & Cohen's $d$ & Magnitude \\
+\midrule
+GA-DQN & EOQ & TIC & $0{,}703$ & medium \\
+GA-DQN & EOQ & NS & $-0{,}888$ & large \\
+GA-DQN & EOQ & TR & $0{,}878$ & large \\
+GA-DQN & EOQ & BE & $0{,}192$ & trivial \\
+GA-DQN & EOQ & FP & $1{,}944$ & large \\
+GA-DQN & sS & TIC & $0{,}679$ & medium \\
+GA-DQN & sS & NS & $-0{,}894$ & large \\
+GA-DQN & sS & TR & $0{,}877$ & large \\
+GA-DQN & sS & BE & $0{,}191$ & trivial \\
+GA-DQN & sS & FP & $1{,}944$ & large \\
+GA-DQN & Newsvendor & TIC & $0{,}999$ & large \\
+GA-DQN & Newsvendor & NS & $0{,}688$ & medium \\
+GA-DQN & Newsvendor & TR & $-0{,}470$ & small \\
+GA-DQN & Newsvendor & BE & $0{,}210$ & small \\
+GA-DQN & Newsvendor & FP & $1{,}464$ & large \\
+GA-DQN & GA & TIC & $-0{,}013$ & trivial \\
+GA-DQN & GA & NS & $-0{,}294$ & small \\
+GA-DQN & GA & TR & $0{,}313$ & small \\
+GA-DQN & GA & BE & $-0{,}129$ & trivial \\
+GA-DQN & GA & FP & $0{,}176$ & trivial \\
+GA-DQN & SA & TIC & $-0{,}048$ & trivial \\
+GA-DQN & SA & NS & $-0{,}596$ & medium \\
+GA-DQN & SA & TR & $0{,}591$ & medium \\
+GA-DQN & SA & BE & $0{,}209$ & small \\
+GA-DQN & SA & FP & $-0{,}745$ & medium \\
+GA-DQN & PSO & TIC & $0{,}448$ & small \\
+GA-DQN & PSO & NS & $0{,}016$ & trivial \\
+GA-DQN & PSO & TR & $0{,}026$ & trivial \\
+GA-DQN & PSO & BE & $0{,}210$ & small \\
+GA-DQN & PSO & FP & $0{,}178$ & trivial \\
+GA-DQN & DE & TIC & $-0{,}225$ & small \\
+GA-DQN & DE & NS & $-0{,}656$ & medium \\
+GA-DQN & DE & TR & $0{,}642$ & medium \\
+GA-DQN & DE & BE & $0{,}210$ & small \\
+GA-DQN & DE & FP & $-1{,}410$ & large \\
+GA-DQN & DQN & TIC & $0{,}625$ & medium \\
+GA-DQN & DQN & NS & $0{,}571$ & medium \\
+GA-DQN & DQN & TR & $-0{,}382$ & small \\
+GA-DQN & DQN & BE & $0{,}205$ & small \\
+GA-DQN & DQN & FP & $1{,}573$ & large \\
+GA-DQN & PPO & TIC & $-2{,}051$ & large \\
+GA-DQN & PPO & NS & $-1{,}273$ & large \\
+GA-DQN & PPO & TR & $1{,}214$ & large \\
+GA-DQN & PPO & BE & $0{,}112$ & trivial \\
+GA-DQN & PPO & FP & $-0{,}338$ & small \\
+GA-DQN & SARSA & TIC & $0{,}971$ & large \\
+GA-DQN & SARSA & NS & $0{,}523$ & medium \\
+GA-DQN & SARSA & TR & $-0{,}366$ & small \\
+GA-DQN & SARSA & BE & $0{,}207$ & small \\
+GA-DQN & SARSA & FP & $1{,}673$ & large \\
+GA-PPO & EOQ & TIC & $0{,}855$ & large \\
+GA-PPO & EOQ & NS & $0{,}103$ & trivial \\
+GA-PPO & EOQ & TR & $-0{,}079$ & trivial \\
+GA-PPO & EOQ & BE & $0{,}222$ & small \\
+GA-PPO & EOQ & FP & $0{,}925$ & large \\
+GA-PPO & sS & TIC & $0{,}845$ & large \\
+GA-PPO & sS & NS & $0{,}095$ & trivial \\
+GA-PPO & sS & TR & $-0{,}078$ & trivial \\
+GA-PPO & sS & BE & $0{,}221$ & small \\
+GA-PPO & sS & FP & $0{,}925$ & large \\
+GA-PPO & Newsvendor & TIC & $0{,}972$ & large \\
+GA-PPO & Newsvendor & NS & $1{,}919$ & large \\
+GA-PPO & Newsvendor & TR & $-1{,}671$ & large \\
+GA-PPO & Newsvendor & BE & $0{,}240$ & small \\
+GA-PPO & Newsvendor & FP & $0{,}505$ & medium \\
+GA-PPO & GA & TIC & $0{,}464$ & small \\
+GA-PPO & GA & NS & $0{,}689$ & medium \\
+GA-PPO & GA & TR & $-0{,}657$ & medium \\
+GA-PPO & GA & BE & $-0{,}123$ & trivial \\
+GA-PPO & GA & FP & $-0{,}484$ & small \\
+GA-PPO & SA & TIC & $0{,}536$ & medium \\
+GA-PPO & SA & NS & $0{,}343$ & small \\
+GA-PPO & SA & TR & $-0{,}334$ & small \\
+GA-PPO & SA & BE & $0{,}239$ & small \\
+GA-PPO & SA & FP & $-1{,}407$ & large \\
+GA-PPO & PSO & TIC & $0{,}749$ & medium \\
+GA-PPO & PSO & NS & $0{,}989$ & large \\
+GA-PPO & PSO & TR & $-0{,}936$ & large \\
+GA-PPO & PSO & BE & $0{,}240$ & small \\
+GA-PPO & PSO & FP & $-0{,}531$ & medium \\
+GA-PPO & DE & TIC & $0{,}468$ & small \\
+GA-PPO & DE & NS & $0{,}284$ & small \\
+GA-PPO & DE & TR & $-0{,}279$ & small \\
+GA-PPO & DE & BE & $0{,}240$ & small \\
+GA-PPO & DE & FP & $-2{,}171$ & large \\
+GA-PPO & DQN & TIC & $0{,}842$ & large \\
+GA-PPO & DQN & NS & $1{,}419$ & large \\
+GA-PPO & DQN & TR & $-1{,}308$ & large \\
+GA-PPO & DQN & BE & $0{,}235$ & small \\
+GA-PPO & DQN & FP & $0{,}670$ & medium \\
+GA-PPO & PPO & TIC & $-1{,}086$ & large \\
+GA-PPO & PPO & NS & $-0{,}669$ & medium \\
+GA-PPO & PPO & TR & $0{,}688$ & medium \\
+GA-PPO & PPO & BE & $0{,}142$ & trivial \\
+GA-PPO & PPO & FP & $-1{,}051$ & large \\
+GA-PPO & SARSA & TIC & $0{,}968$ & large \\
+GA-PPO & SARSA & NS & $1{,}374$ & large \\
+GA-PPO & SARSA & TR & $-1{,}247$ & large \\
+GA-PPO & SARSA & BE & $0{,}237$ & small \\
+GA-PPO & SARSA & FP & $0{,}738$ & medium \\
+\bottomrule
+\end{tabular}
+\end{table}

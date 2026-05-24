@@ -1,0 +1,45 @@
+reporting:
+  figure_format: "pdf"
+  figure_dpi: 150
+  colormap: "tab20"
+
+  plots:
+    # A. Comparação de políticas
+    comparison_bars: true
+    radar_kpis: true
+    kpi_heatmap_all: true
+    heatmap_service_level: true
+    boxplot_tic: true
+    violin_bullwhip: true
+    tradeoff_scatter: true
+
+    # B. Fronteira de Pareto e sensibilidade
+    pareto_frontier: true
+    policy_sensitivity: true
+
+    # C. Validação estatística
+    critical_difference: true
+    wilcoxon_pvalue_heatmap: true
+    cohens_d_heatmap: true
+
+    # D. Qualidade do forecast
+    forecast_vs_actual: true
+    forecast_residuals: true
+    forecast_metrics_distribution: true   # boxplots MASE/RMSSE/sMAPE por modelo
+
+    # E. Caracterização da demanda
+    adi_cv_scatter: true
+    demand_distribution: true
+    intermittency_calendar: true
+
+    # F. Mapas geográficos (requer: pip install geopandas geobr)
+    brazil_store_map: true
+    brazil_kpi_choropleth: true
+
+  latex:
+    global_table: true
+    stratified_table: true
+    statistical_tests_table: true
+    effect_sizes_table: true
+    booktabs: true
+    decimal_sep: "{,}"

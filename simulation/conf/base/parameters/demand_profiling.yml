@@ -1,0 +1,13 @@
+demand_profiling:
+  cycles_per_year: 17  # ciclos bimestrais por ano (padrão da rede)
+
+  # Limiares para classificação de Perfis Operacionais de Demanda (POD)
+  profile_thresholds:
+    adi_high: 1.32            # ADI >= limiar → intermitente (Syntetos-Boylan)
+    cv2_high: 0.49            # CV² >= limiar → variabilidade alta
+    zero_streak_max_high: 5   # silêncios longos → Sparse High Impact
+    burstiness_high: 0.30     # burstiness >= limiar → bursty demand
+    seasonality_acf_high: 0.25 # autocorrelação sazonal >= limiar → sazonal
+    trend_coef_high: 0.05     # |tendência| >= 5% da média por ciclo
+    entropy_high: 2.0         # entropia alta → distribuição difusa
+    mu_low: 2.0               # demanda média baixa → Low Volume Stable

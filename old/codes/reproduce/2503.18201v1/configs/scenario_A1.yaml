@@ -1,4 +1,0 @@
-scenario_id: A1
-network_structure: small_divergent
-demand: poisson
-lead_time: static

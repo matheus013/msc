@@ -1,0 +1,152 @@
+# =============================================================================
+# Kedro Data Catalog — simulation/
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 01_raw — fonte particionada por estado (Parquet Hive)
+# DEFINIÇÃO APENAS em conf/local/catalog.yml (path local, não vai para VCS)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# 02_intermediate — dados filtrados e limpos
+# -----------------------------------------------------------------------------
+sales_raw:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/sales_raw.parquet
+
+sales_filtered:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/sales_filtered.parquet
+
+sales_cleaned:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/sales_cleaned.parquet
+
+# -----------------------------------------------------------------------------
+# 03_primary — cenários por (estado, produto, loja)
+# -----------------------------------------------------------------------------
+scenarios:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/scenarios.parquet
+
+scenarios_meta:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/scenarios_meta.parquet
+
+# -----------------------------------------------------------------------------
+# 04_feature — splits walk-forward por série
+# -----------------------------------------------------------------------------
+walkforward_splits:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/walkforward_splits.pkl
+
+# -----------------------------------------------------------------------------
+# 06_models — modelos treinados
+# -----------------------------------------------------------------------------
+trained_forecasters:
+  type: pickle.PickleDataset
+  filepath: data/06_models/forecasters.pkl
+
+scaled_params:
+  type: pickle.PickleDataset
+  filepath: data/06_models/scaled_params.pkl
+
+# -----------------------------------------------------------------------------
+# 07_model_output — KPIs e métricas
+# -----------------------------------------------------------------------------
+forecast_predictions:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/forecast_predictions.parquet
+
+forecast_metrics:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/forecast_metrics.parquet
+
+kpis_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_classical.parquet
+
+kpis_metaheuristic:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_metaheuristic.parquet
+
+kpis_rl:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_rl.parquet
+
+kpis_proposed:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_proposed.parquet
+
+kpis:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis.parquet
+
+# -----------------------------------------------------------------------------
+# 04_feature — features operacionais e perfis de demanda
+# -----------------------------------------------------------------------------
+demand_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/demand_features.parquet
+
+demand_profiles:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/demand_profiles.parquet
+
+# -----------------------------------------------------------------------------
+# 07_model_output — Policy Selection Engine (AIPE)
+# -----------------------------------------------------------------------------
+policy_labels:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/policy_labels.parquet
+
+policy_selector_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/policy_selector_model.pkl
+
+policy_selector_metrics:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/policy_selector_metrics.parquet
+
+policy_recommendations:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/policy_recommendations.parquet
+
+# -----------------------------------------------------------------------------
+# 08_reporting — resultados estatísticos e figuras
+# -----------------------------------------------------------------------------
+wilcoxon_results:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/wilcoxon_results.parquet
+
+friedman_results:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/friedman_results.pkl
+
+effect_sizes:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/effect_sizes.parquet
+
+stratified_summary:
+  type: pandas.ParquetDataset
+  filepath: data/08_reporting/stratified_summary.parquet
+
+comparison_plots:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/comparison_plots.pkl
+
+demand_plots:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/demand_plots.pkl
+
+map_plots:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/map_plots.pkl
+
+latex_tables:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/latex_tables.pkl
+
+dissertation_report:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/dissertation_report.pkl

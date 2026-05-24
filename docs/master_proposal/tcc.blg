@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: tcc.aux
+Reallocating 'name_of_file' (item size: 1) to 25 items.
+A level-1 auxiliary file: capitulos/introducao.aux
+Reallocating 'name_of_file' (item size: 1) to 24 items.
+A level-1 auxiliary file: capitulos/conceitos.aux
+Reallocating 'name_of_file' (item size: 1) to 23 items.
+A level-1 auxiliary file: capitulos/proposta.aux
+Reallocating 'name_of_file' (item size: 1) to 25 items.
+A level-1 auxiliary file: capitulos/resultados.aux
+Reallocating 'name_of_file' (item size: 1) to 25 items.
+A level-1 auxiliary file: capitulos/conclusoes.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: plainnat.bst
+Reallocating 'name_of_file' (item size: 1) to 12 items.
+Database file #1: referencias.bib
+You've used 66 entries,
+            2773 wiz_defined-function locations,
+            1067 strings with 18074 characters,
+and the built_in function-call counts, 31694 in all, are:
+= -- 2906
+> -- 1836
+< -- 43
++ -- 633
+- -- 560
+* -- 2716
+:= -- 4986
+add.period$ -- 263
+call.type$ -- 66
+change.case$ -- 377
+chr.to.int$ -- 59
+cite$ -- 132
+duplicate$ -- 1375
+empty$ -- 2500
+format.name$ -- 656
+if$ -- 6557
+int.to.chr$ -- 8
+int.to.str$ -- 1
+missing$ -- 75
+newline$ -- 400
+num.names$ -- 266
+pop$ -- 664
+preamble$ -- 1
+purify$ -- 318
+quote$ -- 0
+skip$ -- 1016
+stack$ -- 0
+substring$ -- 1209
+swap$ -- 116
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 666
+warning$ -- 0
+while$ -- 288
+width$ -- 0
+write$ -- 995

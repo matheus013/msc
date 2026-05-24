@@ -1,0 +1,21 @@
+policy_selection:
+  # Critério de rótulo: NS mínimo para considerar uma política "viável"
+  service_level_min_label: 0.70
+
+  random_seed: 42
+  cv_folds: 5         # folds para validação cruzada estratificada
+
+  # Classificador: "xgboost" (padrão) | "lightgbm" | "random_forest"
+  model: xgboost
+
+  xgboost:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+
+  lightgbm:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05

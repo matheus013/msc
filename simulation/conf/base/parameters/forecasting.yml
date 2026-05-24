@@ -1,0 +1,21 @@
+forecasting:
+  lookback: 6              # Janela de entrada para os modelos ML (ciclos anteriores)
+  min_train_cycles: 17     # Mínimo de ciclos para treino inicial antes da primeira previsão
+  walkforward: false       # false=rápido (split único), true=expansível (re-treina por ciclo)
+
+  lstm:
+    hidden_size: 64
+    epochs: 50
+    batch_size: 16
+    learning_rate: 0.001
+
+  ann:
+    hidden_layers: [64, 32]
+    max_iter: 200
+    early_stopping: true
+
+  xgboost:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8

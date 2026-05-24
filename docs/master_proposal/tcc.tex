@@ -1,0 +1,159 @@
+ \documentclass[dissertacao]{ic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hypersetup{
+    colorlinks = {true},
+    linktocpage = {false},
+    plainpages = {false},
+    linkcolor = {black},
+    citecolor = {Blue},
+    urlcolor = {Red}, 
+    unicode = {true}, 
+    pdftitle = {dissertacao matheus},
+    pdfauthor = {Matheus Inácio Batista Santos},
+    pdfsubject = {Dissertação de Mestrado},
+    pdfkeywords={Adaptive Inventory Policy Engine, AIPE, Policy Selection Engine, Intermittent Demand, Syntetos-Boylan, Meta-Learning, Inventory Optimization, Retail Networks},
+    pdfcreator = {LaTeX2e},
+    pdffitwindow = {false},
+    pdfstartview = {FitH}, 
+    pdftoolbar = {true},
+    pdfpagemode = {UseOutlines}, 
+    pdfview = {XYZ null null null}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{smartdiagram} 
+\usepackage{todonotes}
+\newtheorem{teo}{Teorema}[section]
+\newtheorem{prop}[teo]{Proposição} 
+\newtheorem{defi}[teo]{Definição} 
+\newtheorem{conj}[teo]{Conjectura} 
+\usepackage{dsfont}
+\renewcommand*\familydefault{\sfdefault}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{comment}
+\usepackage{enumerate}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows, automata, shapes, calc, fit, backgrounds}
+%\usepackage{algorithmic}
+%\parskip 3pt plus 2pt minus 1pt
+%\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+%\usepackage{algorithmic}     
+ 
+\titulo{Adaptive Inventory Policy Engine: Seleção Adaptativa de Políticas de Reposição em Redes Varejistas sob Demanda Intermitente}
+%PROCESSOS DE HANDOVER EM REDES MÓVEIS 5G COM REDES DEFINIDAS POR SOFTWARE	
+
+\autor{Matheus Inácio Batista Santos}{mibs@ic.ufal.br}{}
+
+% \orientador{Dr. André Luiz Lins de Aquino}{}{Computing Institute}{Federal University of Alagoas}
+
+\orientadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+
+% \examinador{Dr. Erick de Andrade Barboza}{}{Computing Institute}{Federal University of Alagoas}
+
+% \examinadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+
+%\examinadorTres{Examinador 3}{}{unidade Acadêmica}{Instituição}
+ 
+\dataMesAno{June 18}{2020}
+
+%Rian
+\setlength{\marginparwidth}{2cm}
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\blue}{\textcolor{blue}}
+\usepackage{todonotes}
+\newcommand{\addref}{\todo[color=red!40]{Add referência.}}
+\newcommand{\rewrite}[1]{\todo[color=green!40]{#1}}
+\newcommand{\todoin}[1]{\todo[inline]{#1}}
+\newcommand{\estranho}{\todo{Estranho}}
+\newcommand{\arrumar}{\todo{Arrumar}}
+\newcommand{\pp}{\todo{1ª pessoa}}
+\newcommand{\ac}{\todo{Arrumar cite}}
+\newcommand{\veja}{\todo[color=green,fancyline]{Veja}}
+%Rian
+
+\begin{document}
+
+\selectlanguage{brazil}   
+
+\capa
+
+% \begin{agradecimentos}   
+
+% \vspace{2em}
+
+% \vspace*{\fill}
+% \begin{epigraph}{Perterson, \textit{J. B.}}{All hell is about to break loose and chaos is coming. When that is happening in your life, you might want be doing something that you regard as truly worthwhile.}
+
+% \end{epigraph}
+
+% \end{agradecimentos}
+
+\selectlanguage{brazil} 
+\begin{abstract}
+
+A gestão de inventário em redes varejistas sob demanda \emph{intermitente} representa um desafio central na engenharia de operações, com impacto estimado de 3,5\% a 8\% do faturamento anual em capital imobilizado e perdas por ruptura. Em varejo regional brasileiro, itens de baixo giro exibem coeficiente de variação (CV) tipicamente acima de 2,5 e elevado intervalo médio entre demandas (ADI), regime classificado como \emph{Lumpy} na taxonomia de Syntetos-Boylan, em que hipóteses de estacionariedade de heurísticas clássicas como EOQ e $(s,S)$ são sistematicamente violadas, e em que agentes de aprendizado por reforço isolados convergem de forma inadequada pela escassez de dados históricos por SKU.
+
+Esta dissertação propõe um \textbf{pipeline integrado de otimização de inventário} para redes varejistas multi-escalão, operando sobre uma base de dados transacional proprietária de uma rede do Nordeste brasileiro com aproximadamente 48 milhões de registros, 12 mil SKUs e demanda registrada em múltiplos estados brasileiros. O pipeline, orquestrado pelo framework Kedro, abrange cinco componentes integrados: (i)~ingestão, filtragem e pré-processamento de dados transacionais com classificação Syntetos-Boylan (ADI $\times$ CV$^2$) em quatro quadrantes --- \emph{Smooth}, \emph{Erratic}, \emph{Intermittent} e \emph{Lumpy}; (ii)~módulo de previsão de demanda com modelos Croston, ARIMA, XGBoost e LSTM, avaliados por validação \emph{walk-forward} sem vazamento de informação e por métricas alinhadas ao regime intermitente (MASE, sMAPE, RMSSE); (iii)~simulação e avaliação de 12 políticas de controle de inventário organizadas em quatro categorias: clássicas (EOQ, $(s,S)$, Jornaleiro), meta-heurísticas (GA, SA, PSO, DE), agentes de RL isolados (DQN, PPO, SARSA) e arquiteturas híbridas; (iv)~arquitetura híbrida GA-RL --- componente central da proposta --- na qual o GA identifica globalmente regiões promissoras do espaço de parâmetros e pré-popula o \emph{replay buffer} do agente de RL, contornando o requisito de da ordem de $10^6$ interações típico de agentes isolados; e (v)~validação estatística não paramétrica por testes de Wilcoxon, Friedman, Nemenyi e tamanho de efeito de Cohen, estratificada por quadrante de demanda e por estado.
+
+Como resultado preliminar que fundamenta a hipótese central da dissertação (Fase~1), o componente GA-RL foi avaliado em um experimento controlado com 15 lojas da Paraíba, um único SKU de alta intermitência (CV entre 2,5 e 5,4, regime \emph{Lumpy}) e horizonte de 38 ciclos bimestrais. A arquitetura GA-DQN apresentou o equilíbrio mais favorável entre as 12 políticas: custo total 48\% inferior à política $(s,S)$, efeito \emph{bullwhip} 24 vezes menor e taxa de ruptura equivalente à melhor política prática isolada. A análise estratificada por volume revelou que não existe política universalmente dominante --- o GA-DQN é superior no estrato de volume médio, e o Jornaleiro é mais econômico no de volume muito baixo.
+
+A Fase~2, em desenvolvimento, expande o pipeline a todos os estados e ao portfólio completo de SKUs, integrando o módulo de previsão às decisões de reposição, realizando validação \emph{out-of-sample} com janela deslizante e produzindo evidência estatisticamente fundada sobre o desempenho relativo das 12 políticas em cada quadrante Syntetos-Boylan.
+
+\vspace{2em}
+\textbf{Palavras-chave}: Otimização de Inventário; Demanda Intermitente; Syntetos-Boylan; Arquitetura Híbrida GA-RL; Aprendizado por Reforço Profundo; Previsão de Demanda; Validação Estatística; Cadeia de Suprimentos.
+
+\end{abstract}
+\selectlanguage{english}   
+
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{table}{Figure List}
+
+\listoftables
+\addcontentsline{toc}{table}{Table List}
+
+\listofalgorithms
+\addcontentsline{toc}{table}{Algorithm List}
+
+\inicio
+
+\include{capitulos/introducao}
+\include{capitulos/conceitos}
+\include{capitulos/proposta}
+\include{capitulos/resultados}
+\include{capitulos/conclusoes}
+
+\begin{raggedright}
+    \bibliographystyle{plainnat}
+    \renewcommand{\bibsection} {
+    \chapter*{\begin{flushright}References\end{flushright}}
+    \addcontentsline{toc}{chapter}{References}
+}
+
+\lhead{REFERENCES}
+\bibliography{referencias}
+\newpage\lhead{\rightmark}
+\end{raggedright}
+
+\end{document}

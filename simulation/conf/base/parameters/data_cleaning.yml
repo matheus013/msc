@@ -1,0 +1,14 @@
+data_cleaning:
+  # ── Regras de limpeza ─────────────────────────────────────────────────────
+  remove_negative_sales: true   # Remove registros com demand < 0
+
+  # NÃO há filtro por volume máximo de vendas.
+  # O campo 'segmento' já estratifica por faturamento.
+
+  remove_zero_only_stores: true  # Remove séries sem nenhuma venda no horizonte completo
+
+  dedup_by:
+    - warehouse
+    - item_id
+    - store_id
+    - venda_ciclo

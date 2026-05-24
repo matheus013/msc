@@ -1,0 +1,81 @@
+simulation:
+  n_replications: 5
+  random_seed: 42
+  lead_time: 2          # ciclos (≈42 dias)
+  service_level_target: 0.90
+  z_score: 1.28         # correspondente ao SL alvo de 90%
+
+  # Integridade temporal
+  evaluation_mode: "walkforward"   # "full" | "walkforward"
+  train_split_cycles: 17
+
+  cost:
+    holding: 1.0
+    stockout: 5.0
+    order_fixed: 50.0
+    order_unit: 0.5
+
+  policies:
+    classical: true
+    metaheuristics: true
+    reinforcement_learning: true
+    proposed_architecture: true
+
+  ga:
+    population: 100
+    generations: 50
+    crossover_prob: 0.7
+    mutation_prob: 0.05
+    tournament_size: 3
+
+  sa:
+    initial_temp: 1000.0
+    cooling_rate: 0.95
+    max_iter: 500
+
+  pso:
+    n_particles: 40
+    iterations: 80
+    inertia: 0.7
+    cognitive: 1.5
+    social: 1.5
+
+  de:
+    strategy: "rand1bin"
+    mutation: [0.5, 1.0]
+    recombination: 0.7
+    max_iter: 100
+    population_size: 15
+
+  dqn:
+    episodes: 500
+    gamma: 0.95
+    epsilon_start: 1.0
+    epsilon_end: 0.01
+    epsilon_decay: 0.995
+    batch_size: 64
+    memory_size: 10000
+    target_update_freq: 10
+    n_actions: 20
+
+  ppo:
+    episodes: 300
+    gamma: 0.99
+    clip_epsilon: 0.2
+    update_epochs: 4
+    learning_rate: 0.0003
+    n_actions: 20
+
+  sarsa:
+    episodes: 500
+    gamma: 0.95
+    epsilon_start: 1.0
+    epsilon_end: 0.01
+    epsilon_decay: 0.995
+    learning_rate: 0.001
+    n_actions: 20
+
+  hybrid:
+    ga_generations: 50
+    buffer_size: 1000
+    rl_episodes: 200

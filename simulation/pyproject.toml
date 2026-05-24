@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simulation"
+version = "0.1.0"
+description = "Multi-Echelon Inventory Optimization — MSc Dissertation Pipeline"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+simulation = "simulation.__main__:main"
+
+[tool.kedro]
+package_name = "simulation"
+project_name = "simulation"
+kedro_init_version = "1.4.0"
+source_dir = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.pytest.ini_options]
+addopts = "--cov-report term-missing --cov src/simulation -ra"
+testpaths = ["tests"]
+
+[tool.kedro_telemetry]
+project_id = "b14d0563ee5b42b4aa51f82496606512"

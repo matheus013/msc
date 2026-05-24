@@ -1,0 +1,40 @@
+data_ingestion:
+  # Selecao de dados
+  states: ["BA"]            # ["all"] para todos os 27 estados
+  products: null            # null = todos os produtos ativos; lista = produto(s) especifico(s)
+  date_start: "202301"      # Ciclo inicial (formato YYYYCC)
+  date_end:   "202504"      # Ciclo final
+
+  # Filtros de qualidade da serie
+  cv_threshold: 1.5         # Minimo de CV -- so produtos com demanda suficientemente variavel
+  min_positive_cycles: 17   # Minimo de ciclos com demanda > 0 por serie
+
+  # Filtro de lojas: status da revendedora
+  # O campo 'status' no dataset indica se a revendedora esta ativa.
+  # Apenas status listados aqui sao incluidos na simulacao.
+  active_statuses: ["Ativo"]
+
+  # Filtro de tipo de venda
+  # O campo 'venda_tipo' distingue vendas normais de brindes/amostras/promocoes.
+  # Listar aqui os valores a EXCLUIR (null = nao filtra, inclui todos os tipos).
+  # Para ver os valores existentes: df["venda_tipo"].value_counts()
+  # Exemplo: ["Brinde"] ou ["Brinde", "Amostra"]
+  exclude_venda_tipos: ["Brinde"]
+
+  # Filtro de produtos: janela de atividade
+  # Produto "ativo" = apareceu em pelo menos 1 dos ultimos N ciclos.
+  active_product_window: 3
+
+  # Filtro de segmento (opcional)
+  # null = todos os segmentos
+  segmentos: null
+
+  # Limite de lojas por estado (opcional)
+  # null = todas as lojas qualificadas; inteiro = top N por n_positive
+  max_stores: null
+
+  # Estrutura do calendario
+  cycles_per_year: 17       # Ciclos bimestrais por ano (~21 dias cada)
+
+  # Enriquecimento
+  fill_missing_cycles: true  # Preenche ciclos ausentes com demand=0, revenue=0

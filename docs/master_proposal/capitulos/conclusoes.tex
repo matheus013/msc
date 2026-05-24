@@ -1,0 +1,89 @@
+﻿\mychapter{Considerações Finais e Cronograma}{cap:conclusion}\lhead{CONSIDERAÇÕES FINAIS}
+
+\section{Síntese das Contribuições}
+
+Esta dissertação propõe e valida empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE), um pipeline integrado de otimização de inventário para redes varejistas sob demanda extremamente intermitente, operando sobre dados operacionais reais em larga escala. O trabalho está organizado em duas fases concluídas e uma fase em andamento, consolidando seis contribuições articuladas:
+
+\begin{enumerate}
+  \item \textbf{Benchmarking sistemático de 12 políticas sobre dados reais (Fase~1 e Fase~2)}: As duas fases produziram um estudo comparativo amplo para controle de inventário em regime intermitente com dados reais, cobrindo políticas clássicas, meta-heurísticas, agentes de RL e arquiteturas híbridas em protocolo experimental controlado com validação estatística formal. A Fase~1 avaliou 15 lojas do Nordeste (produto 48130); a Fase~2 expandiu para 145 combinações (loja, SKU) do estado da Bahia com cinco replicações independentes, totalizando 8.700 pontos de avaliação.
+
+  \item \textbf{Arquitetura híbrida GA-RL como política especialista}: A arquitetura GA-RL, validada empiricamente em ambas as fases, demonstrou que a inicialização do agente de RL pelo GA viabiliza convergência em horizontes curtos ($T=38$ ciclos), apresentando vantagem estatisticamente significativa sobre políticas clássicas e agentes isolados \textit{em regimes de alta intermitência e volume médio} (BE\,=\,$0.21$ para PSO na Fase~2, versus $119.4$ para $(s,S)$ na Fase~1). A Fase~2 identificou que o perfil da série determina qual família de política é mais eficiente, fundamento direto do módulo AIPE.
+
+  \item \textbf{Validação estatística não paramétrica}: Os testes de Wilcoxon pareado, Friedman, Nemenyi e Cohen's $d$ foram aplicados sobre as 145 séries da Fase~2 com correção de Holm para comparações múltiplas. GA-DQN apresentou diferenças significativas em 82\% das comparações realizadas (37/45); GA-PPO em 89\% (40/45). Os efeitos mais relevantes, GA-DQN versus EOQ em CTI ($d=+0.703$, médio) e NS ($d=-0.888$, grande), quantificam o \textit{trade-off} custo-serviço com magnitude prática estabelecida.
+
+  \item \textbf{Módulo de previsão de demanda com validação walk-forward}: Três modelos (LSTM, XGBoost e ANN) foram avaliados por validação temporal estrita sobre as 145 séries. O LSTM é o único a superar a previsão \textit{naïve} em MASE médio ($0.76 < 1$); o XGBoost apresenta o menor sMAPE ($148.8\%$). A heterogeneidade entre séries é pronunciada (MASE entre $0.49$ e $1.87$), evidenciando que a qualidade da previsão é altamente dependente do perfil da série e motivando a seleção adaptativa de modelo.
+
+  \item \textbf{Pipeline Kedro reprodutível e escalável}: O framework implementado garante rastreabilidade completa (parâmetros YAML $\rightarrow$ artefatos determinísticos), configurabilidade por arquivo (Fase~1: PB + 1 SKU; Fase~2: BA, 145 séries) e reprodutibilidade via \texttt{kedro run}. O pipeline processa partições Parquet por estado e escala horizontalmente para o conjunto nacional.
+
+  \item \textbf{Taxonomia Syntetos-Boylan e Perfis Operacionais de Demanda (POD)}: A classificação ADI $\times$ CV$^2$ em quatro quadrantes estruturou todas as análises. Sobre ela, o módulo \texttt{demand\_profiling} calculou 17 features operacionais por série (ADI, CV$^2$, \textit{burstiness}, entropia, tendência, sazonalidade) e produziu cinco PODs orientados à decisão de política, base do meta-modelo AIPE.
+\end{enumerate}
+
+\section{Resultados Principais da Fase~2}
+
+Os resultados da Fase~2 sobre 145 séries do estado da Bahia confirmam e expandem os achados da Fase~1:
+
+\begin{itemize}
+  \item \textbf{Melhor equilíbrio custo-serviço}: EOQ (NS\,=\,$0.95$, CTI\,=\,R\$\,512) e $(s,S)$ (NS\,=\,$0.95$, CTI\,=\,R\$\,529) oferecem o melhor equilíbrio no conjunto agregado. O Jornaleiro minimiza custo (CTI\,=\,R\$\,299) ao preço de NS\,=\,$0.69$, sendo adequado para séries de baixíssimo volume.
+
+  \item \textbf{Ausência de política universalmente dominante}: A dispersão do CTI, com coeficientes de variação superiores a 100\% para GA, GA-DQN e GA-PPO, confirma que a política ótima é altamente dependente do perfil da série. Este achado fundamenta empiricamente o módulo AIPE.
+
+  \item \textbf{Degeneração dos agentes RL isolados na Fase~2}: SARSA (FP\,=\,$0.09$) e PPO (CTI\,=\,R\$\,4.894, 16 vezes o Jornaleiro) continuam apresentando degeneração operacional, reforçando que a inicialização via GA é estruturalmente necessária em horizontes históricos curtos.
+
+  \item \textbf{Previsão de demanda}: O LSTM supera a previsão \textit{naïve} em 60\% das séries (MASE médio\,=\,$0.76$). A heterogeneidade do MASE entre séries ($0.49$ a $1.87$) motiva a seleção adaptativa de modelo de previsão, implementada no módulo \texttt{demand\_forecasting}.
+\end{itemize}
+
+\section{Implicações Práticas}
+
+Com base na análise estratificada das Fases~1 e~2, quatro recomendações emergem diretamente dos resultados:
+
+\begin{itemize}
+  \item \textbf{Para séries de volume médio no regime \textit{Lumpy} (Fase~1)}: GA-DQN (NS\,=\,$0.933$, CTI\,=\,R\$\,10.854 na Fase~1) justifica o custo computacional adicional frente às heurísticas clássicas. O treinamento é realizado uma única vez por série e pode ser automatizado como rotina periódica.
+
+  \item \textbf{Para o conjunto de 145 séries da Bahia (Fase~2)}: EOQ oferece o melhor equilíbrio custo-serviço (NS\,=\,$0.95$, CTI\,=\,R\$\,512), sendo 57\% mais barato que $(s,S)$ com NS idêntico. O AIPE deve recomendar EOQ para séries com ADI moderado e baixa variabilidade das quantidades.
+
+  \item \textbf{Substituir a política $(s,S)$ imediatamente}: Em ambas as fases, $(s,S)$ foi consistentemente superada em custo e estabilidade. A migração para EOQ ou Jornaleiro, sem custo computacional adicional, reduz o CTI em mais de 40\% e o efeito \textit{bullwhip} de forma substancial.
+
+  \item \textbf{Para distribuidores e operadores logísticos}: A redução do efeito \textit{bullwhip}, de 119 para $(s,S)$ até $0.21$ para PSO nas melhores políticas, estabiliza a cadeia a montante, diminuindo custos de transporte e armazenagem. O pipeline requer apenas histórico de vendas disponível em qualquer sistema ERP e pode ser operacionalizado como rotina periódica automatizada.
+\end{itemize}
+
+\section{Trabalhos Futuros (Fase~3: Expansão Nacional)}
+
+Os resultados das Fases~1 e~2 estabelecem a base para três frentes de trabalho na Fase~3:
+
+\begin{enumerate}
+  \item \textbf{Escalonamento nacional multi-estado e multi-SKU}: Aplicar o pipeline completo ao conjunto de dados nacional ($\approx 10.4$ milhões de séries em 26 estados e DF), com processamento distribuído por estado (Parquet particionado). A extensão habilitará análise de heterogeneidade regional e identificação de padrões de demanda por bioma econômico (Nordeste, Sudeste, Centro-Oeste).
+
+  \item \textbf{Treinamento e validação do meta-modelo AIPE}: Com os resultados da Fase~2 como dados de treinamento (features operacionais $\rightarrow$ política ótima por série), treinar o meta-modelo supervisionado do AIPE e avaliar sua acurácia preditiva via validação cruzada estratificada por POD. A expansão nacional aumentará substancialmente a diversidade de perfis e a confiabilidade do meta-modelo.
+
+  \item \textbf{Análise de sensibilidade e condições de contorno}: Variar parâmetros de custo ($c_s/h$), prazo de entrega ($L$) e limiar de CV para identificar as condições sob as quais a arquitetura GA-RL é preferível a soluções mais simples, produzindo um mapa operacional de recomendação de política por quadrante Syntetos-Boylan.
+
+  \item \textbf{Integração do impacto da previsão sobre a política}: Avaliar como a qualidade da previsão (MASE por série) propaga-se para o desempenho operacional (CTI, NS, BE), quantificando o valor marginal de um modelo de previsão mais acurado para cada regime de demanda e família de política.
+\end{enumerate}
+
+\section{Cronograma}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Cronograma de atividades (referência: maio de 2026). \checkmark: concluído; $\bullet$: em andamento; $\circ$: planejado.}
+\label{tab:cronograma}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Atividade & 2024 S2 & 2025 S1 & 2025 S2 & 2026 \\
+\midrule
+Formulação do problema e revisão de literatura           & \checkmark & & & \\
+Benchmarking Fase~1 (15 lojas, PB, 12 políticas)         & \checkmark & \checkmark & & \\
+Submissão artigo SBPO~2026                               & & \checkmark & & \\
+Pipeline Kedro + módulo previsão de demanda              & & \checkmark & \checkmark & \\
+Simulação Fase~2 (145 séries, BA, 5 replicações)         & & & \checkmark & \\
+Validação estatística (Wilcoxon, Friedman, Cohen's $d$)  & & & \checkmark & \\
+Módulo \texttt{demand\_profiling} e PODs                 & & & \checkmark & \\
+Expansão nacional e meta-modelo AIPE                     & & & & $\bullet$ \\
+Análise de sensibilidade e mapa de recomendação          & & & & $\circ$ \\
+Submissão de artigos adicionais                          & & \checkmark & \checkmark & $\circ$ \\
+Escrita e defesa da dissertação                          & & & & $\bullet$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As Fases~1 e~2 consolidam a contribuição empírica central da dissertação: benchmark sistemático de políticas de inventário em dados reais do varejo brasileiro com validação estatística formal em regime \textit{Lumpy} e módulo de previsão de demanda integrado. A Fase~3 estenderá esses resultados à escala nacional e completará o treinamento e avaliação do meta-modelo AIPE, consolidando as contribuições necessárias para uma dissertação de mestrado rigorosa e com impacto prático demonstrado no contexto do varejo regional brasileiro.
