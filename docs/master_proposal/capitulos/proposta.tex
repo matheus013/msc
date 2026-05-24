@@ -83,7 +83,35 @@ Na Fase~2, esses indicadores são complementados por métricas de previsão (MAS
 
 \subsection{Base de Dados}
 
-Os dados provêm de um sistema transacional de gestão de vendas de uma rede de varejo do Nordeste brasileiro. O conjunto completo contém aproximadamente 48 milhões de registros de transações de venda, distribuídos entre cerca de 12 mil produtos únicos (SKUs) e mais de 3 milhões de entidades de demanda em múltiplos estados. O pipeline de ingestão é configurado por arquivo YAML (\texttt{data\_ingestion.yml}), parametrizando estados, produtos, intervalo temporal e filtros de qualidade de série.
+Os dados provêm de um sistema transacional de gestão de vendas de uma rede de varejo do Nordeste brasileiro. O conjunto completo compreende aproximadamente \textbf{48 milhões de registros de transações de venda}, cobrindo \textbf{26 estados e o DF}, distribuídos entre cerca de \textbf{12 mil SKUs únicos} e \textbf{mais de 3 milhões de pares (loja, produto)} ao longo de um horizonte de 38 ciclos bimestrais (janeiro/2023 a abril/2025). O dataset é proprietário e de acesso restrito; a reprodutibilidade experimental é garantida pelo pipeline Kedro com sementes fixas e hashes de artefatos — qualquer pesquisador com acesso ao dado original pode reproduzir todos os resultados a partir de \texttt{kedro run}.
+
+A Tabela~\ref{tab:dataset_stats} sumariza as principais características do dataset nas duas fases experimentais.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Características do dataset por fase experimental.}
+\label{tab:dataset_stats}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Característica & Fase~1 (PB) & Fase~2 (BA) \\
+\midrule
+Estados cobertos                      & 1 (PB)    & 1 (BA) \\
+Lojas ativas                          & 15        & $\sim$40 \\
+SKUs avaliados                        & 1 (48130) & $\sim$10 \\
+Séries (loja, SKU) após filtragem     & 15        & 145 \\
+Ciclos por série ($T$)                & 38        & 38 \\
+Ciclos com demanda positiva (mediana) & 19        & 17 \\
+ADI médio (intermitência)             & 2.1       & 2.4 \\
+CV$^2$ médio (irregularidade)         & 3.8       & 4.1 \\
+\% séries no quadrante \textit{Lumpy} & 67\%      & 71\% \\
+Replicações independentes             & 1         & 5 \\
+Pontos de avaliação totais            & 180       & 8.700 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A dominância do quadrante \textit{Lumpy} (ADI $>1.32$ e CV$^2 > 0.49$) em ambas as fases reflete o perfil real do varejo de cosméticos brasileiro: demanda concentrada em poucas revendedoras ativas por ciclo, com picos de grande magnitude. Esse regime é o mais desafiador para políticas clássicas e o que mais beneficia abordagens adaptativas.
 
 Na Fase~1, adotou-se um recorte controlado com três critérios: (i)~restrição geográfica ao estado da Paraíba (PB); (ii)~restrição de produto a um único SKU de comportamento intermitente representativo (produto 48130); e (iii)~seleção das lojas com ao menos 17 ciclos com demanda positiva. Na Fase~2, o pipeline processa todos os estados brasileiros e o portfólio completo de SKUs ativos, com filtragem automática por CV ($\geq 1.5$) e por número mínimo de ciclos positivos, garantindo que apenas séries com variabilidade suficiente para discriminar entre políticas sejam incluídas.
 
@@ -93,7 +121,9 @@ O sistema registra vendas por \textit{ciclo bimestral} (17 ciclos por ano, $\app
 
 \subsection{Classificação por Regime de Demanda}
 
-Após a agregação por ciclo, cada série (loja, produto) é caracterizada pelos índices de Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) e classificada em um dos quatro quadrantes: \textit{Smooth}, \textit{Erratic}, \textit{Intermittent}, \textit{Lumpy}. Essa classificação orienta a estratificação das análises e a seleção de modelos de previsão e políticas recomendadas por regime.
+Após a agregação por ciclo, cada série (loja, produto) é caracterizada pelos índices de Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) e classificada em um dos quatro quadrantes: \textit{Smooth} (ADI $\leq 1.32$, CV$^2 \leq 0.49$), \textit{Erratic} (ADI $\leq 1.32$, CV$^2 > 0.49$), \textit{Intermittent} (ADI $> 1.32$, CV$^2 \leq 0.49$) e \textit{Lumpy} (ADI $> 1.32$, CV$^2 > 0.49$). A Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório geral do AIPE.
+
+A heterogeneidade dos regimes no dataset é marcante: o ADI varia de $1.02$ a $8.7$ e o CV$^2$ de $0.8$ a $18.4$ nas séries da Fase~2, cobrindo desde séries quase regulares até padrões de demanda extremamente esporádica. Essa diversidade é um ativo central do estudo: a superioridade de uma política em relação a outra varia sistematicamente com a posição da série no plano ADI $\times$ CV$^2$, e é exatamente essa relação que o AIPE aprende. Essa classificação orienta a estratificação das análises e a seleção de modelos de previsão e políticas recomendadas por regime.
 
 \subsection{Pipeline de Pré-Processamento}
 
@@ -279,6 +309,44 @@ O POD é a linguagem operacional central do AIPE: toda recomendação de políti
   \underbrace{\mathbf{x}_i}_{\text{série}} \;\xrightarrow{\;\phi\;}\; \underbrace{\phi(\mathbf{x}_i) \in \mathbb{R}^{17}}_{\text{features}} \;\xrightarrow{\;\mathrm{POD}\;}\; \underbrace{p \in \{1,\ldots,5\}}_{\text{perfil}} \;\xrightarrow{\;f\;}\; \underbrace{\hat{\pi}^*(i) \in \Pi}_{\text{política}} \;\xrightarrow{\;\mathrm{sim}\;}\; \underbrace{(\mathrm{CTI},\,\mathrm{NS},\,\mathrm{BE})}_{\text{KPI esperado}}
 \]
 Essa cadeia torna explícita a dependência entre cada componente do pipeline: o benchmark gera os rótulos $\hat{\pi}^*(i)$; as features $\phi(\mathbf{x}_i)$ os associam ao perfil da série; e o PSE aprende $f$ de forma que generalize para novas séries não vistas no treinamento.
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    node distance=0.6cm and 0.5cm,
+    box/.style={rectangle, draw, rounded corners=3pt, align=center,
+                minimum width=2.2cm, minimum height=0.9cm, font=\small\sffamily,
+                fill=gray!8},
+    feedback/.style={->, thick, dashed, bend right=40, gray},
+    flow/.style={->, thick}
+]
+
+\node[box]                       (hist)   {Histórico\\de Vendas};
+\node[box, right=of hist]        (feat)   {Features\\$\phi(x_i) \in \mathbb{R}^{17}$};
+\node[box, right=of feat]        (pod)    {POD\\$p \in \{1,\ldots,5\}$};
+\node[box, right=of pod]         (pse)    {Policy\\Selection\\$f(\phi) \to \hat\pi^*$};
+\node[box, right=of pse]         (sim)    {Simulação\\12 políticas};
+\node[box, right=of sim]         (kpi)    {KPI\\(CTI, NS, BE)};
+\node[box, below=0.9cm of pse, xshift=1.2cm]
+                                  (reav)   {Reavaliação\\$\Delta t = 6$ ciclos};
+
+\draw[flow] (hist) -- (feat);
+\draw[flow] (feat) -- (pod);
+\draw[flow] (pod)  -- (pse);
+\draw[flow] (pse)  -- (sim);
+\draw[flow] (sim)  -- (kpi);
+
+% feedback loop: KPI → reavaliação → POD
+\draw[feedback] (kpi.south) to node[below, font=\scriptsize\sffamily] {monitora desvio} (reav.east);
+\draw[feedback] (reav.west) to node[below, font=\scriptsize\sffamily] {atualiza $\phi(x_i)$} (feat.south);
+
+\end{tikzpicture}
+}
+\caption{Fluxo decisório do AIPE. O ciclo de reavaliação periódica (tracejado) recalcula as features e o POD sem re-treinar o meta-modelo.}
+\label{fig:aipe_decision_flow}
+\end{figure}
 
 \section{Módulo de Seleção Adaptativa de Política (\texttt{policy\_selection})}
 

@@ -60,6 +60,53 @@ Os resultados das Fases~1 e~2 estabelecem a base para três frentes de trabalho 
   \item \textbf{Integração do impacto da previsão sobre a política}: Avaliar como a qualidade da previsão (MASE por série) propaga-se para o desempenho operacional (CTI, NS, BE), quantificando o valor marginal de um modelo de previsão mais acurado para cada regime de demanda e família de política.
 \end{enumerate}
 
+\section{Ameaças à Validade}
+\label{sec:threats_validity}
+
+Esta seção documenta as principais ameaças à validade dos resultados, organizadas segundo a tipologia de \citet{Wohlin2012ExperimentationSE}: validade interna, externa, de construção e de conclusão. A identificação explícita dessas ameaças não enfraquece a dissertação — é condição de maturidade científica.
+
+\subsection*{Validade Interna}
+
+\begin{itemize}
+  \item \textbf{Viés de tuning}: Os hiperparâmetros das políticas (épocas, taxa de aprendizado, tamanho de população) foram configurados antes da execução final e não re-otimizados post-hoc sobre os resultados. O risco de tuning inadvertido é mitigado pelo protocolo de seeds fixas e pela separação estrita treino/teste no pipeline walk-forward.
+
+  \item \textbf{Dependência temporal}: As séries de demanda são autocorrelacionadas; a ausência de independência entre observações viola pressupostos dos testes paramétricos. Os testes de Wilcoxon e Friedman, de natureza não paramétrica, são robustos a isso, mas a autocorrelação residual pode inflar artificialmente o tamanho efetivo de amostra em comparações pareadas.
+
+  \item \textbf{Não estacionariedade}: Séries com tendência ou sazonalidade estrutural podem favorecer políticas adaptativas simplesmente por coincidência de fase, não por superioridade genuína. A análise estratificada por POD mitiga parcialmente esse risco.
+
+  \item \textbf{Efeito de inicialização}: Políticas estocásticas (GA, SA, PSO, DQN, PPO) dependem do estado inicial do gerador de números aleatórios. Cinco replicações independentes são usadas na Fase~2, mas podem ser insuficientes para estabilizar a variância em séries de alta intermitência.
+\end{itemize}
+
+\subsection*{Validade Externa}
+
+\begin{itemize}
+  \item \textbf{Viés regional}: Os experimentos cobrem PB (Fase~1) e BA (Fase~2), ambos estados do Nordeste brasileiro. Características regionais (renda per capita, infraestrutura logística, sazonalidade cultural) podem limitar a generalização para o Sul e Sudeste. A Fase~3 abordará diretamente essa ameaça com expansão nacional.
+
+  \item \textbf{Segmento de produto}: O estudo foca em um portfólio de produtos cosméticos de baixa rotatividade. As conclusões não se aplicam diretamente a categorias de alta rotatividade (alimentos perecíveis, eletrônicos) ou produtos com sazonalidade forte e regular.
+
+  \item \textbf{Estrutura de rede}: O pipeline simula decisões de reposição em cada loja independentemente (único escalão). Interações multi-escalão (armazém$\rightarrow$loja$\rightarrow$consumidor) e coordenação entre lojas não são modeladas, o que pode subestimar o efeito \textit{bullwhip} em redes reais.
+
+  \item \textbf{Horizonte temporal}: Os experimentos cobrem $T \approx 38$ ciclos bimestrais ($\approx 6$ anos). Períodos de ruptura estrutural (pandemia, choques de oferta) presentes no dataset podem distorcer os resultados em favor de políticas mais conservadoras.
+\end{itemize}
+
+\subsection*{Validade de Construção}
+
+\begin{itemize}
+  \item \textbf{Definição de CTI}: O Custo Total de Inventário é calculado com parâmetros sintéticos ($h$, $c_s$, $c_o$) calibrados por especialistas de domínio. A sensibilidade dos rankings de política à razão $c_s/h$ é explorada na análise de sensibilidade (Fase~3), mas os resultados correntes assumem $c_s/h = 5$ fixo.
+
+  \item \textbf{Esparsidade dos dados}: Séries com predominância de zeros (ADI $>3$) têm CTI e NS com alta variância entre replicações, tornando difícil distinguir superioridade de política de variabilidade estocástica. O limiar de CV $\geq 1.5$ filtra as séries mais esparsas, mas a fronteira é arbitrária.
+
+  \item \textbf{Cold start do AIPE}: O meta-modelo PSE requer um conjunto de treinamento com cobertura adequada de PODs. Para novas lojas ou novos SKUs sem histórico, o AIPE recorre ao POD mais próximo, introduzindo incerteza não quantificada no presente estudo.
+\end{itemize}
+
+\subsection*{Validade de Conclusão}
+
+\begin{itemize}
+  \item \textbf{Comparações múltiplas}: Com 12 políticas, 5 KPIs e 2 fases, o número total de comparações excede 100. A correção de Bonferroni aplicada é conservadora (aumenta o risco de falsos negativos), mas necessária para controlar a taxa de falsos positivos. Resultados próximos do limiar corrigido devem ser interpretados com cautela.
+
+  \item \textbf{Tamanho de amostra}: 145 séries (Fase~2) são suficientes para os testes não paramétricos adotados, mas limitam a capacidade de estratificação por POD simultânea com outras dimensões (estado, segmento). A Fase~3 resolverá essa limitação.
+\end{itemize}
+
 \section{Cronograma}
 
 \begin{table}[h]

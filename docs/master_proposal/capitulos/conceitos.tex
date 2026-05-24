@@ -1,6 +1,6 @@
 ﻿\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
 
-Este capítulo consolida os conceitos, modelos e arcabouços teóricos que fundamentam a dissertação. A exposição organiza-se em seis eixos integrados: (i)~caracterização quantitativa da demanda intermitente, com ênfase na taxonomia de Syntetos-Boylan; (ii)~políticas clássicas e meta-heurísticas de controle de inventário; (iii)~aprendizado por reforço aplicado a decisões sequenciais de reposição; (iv)~métricas de qualidade de previsão adequadas ao regime intermitente; (v)~validação temporal sem vazamento de informação; e (vi)~testes estatísticos não paramétricos para comparação de múltiplas políticas. A unificação desses eixos no pipeline Kedro implementado constitui a contribuição metodológica central da dissertação.
+Este capítulo consolida os conceitos, modelos e arcabouços teóricos que fundamentam a dissertação. O fio condutor é a \textit{seleção contextual de políticas}: a tese de que a política ótima é específica ao perfil de demanda da série e que um meta-sistema pode aprender essa relação a partir de evidência empírica. A exposição organiza-se em sete eixos: (i)~caracterização quantitativa da demanda intermitente, com ênfase na taxonomia de Syntetos-Boylan; (ii)~formulação unificada de políticas de reposição e seleção algorítmica contextual; (iii)~meta-heurísticas de otimização como família de política paramétrica; (iv)~aprendizado por reforço como família de política adaptativa — contribuição importante do portfólio, não eixo central da dissertação; (v)~métricas de qualidade de previsão adequadas ao regime intermitente; (vi)~validação temporal sem vazamento de informação; e (vii)~testes estatísticos não paramétricos para comparação de múltiplas políticas. A integração desses eixos em um framework reprodutível de avaliação e seleção contextual de políticas constitui a contribuição metodológica central da dissertação.
 
 \section{Demanda Intermitente: Definição e Caracterização}
 
@@ -73,6 +73,14 @@ A Figura~\ref{fig:sb_quadrant} ilustra a posição das séries no plano ADI $\ti
 
 \subsection{Formulação do Problema de Controle}
 
+\begin{defi}[Política de Reposição]
+Uma \textit{política de reposição} $\pi$ é uma função que mapeia o estado operacional observado $\mathbf{s}_t \in \mathcal{S}$ em uma quantidade de pedido não negativa:
+\[
+  \pi: \mathcal{S} \rightarrow \mathcal{A}, \qquad a_t = \pi(\mathbf{s}_t;\, \boldsymbol{\theta}),
+\]
+onde $\boldsymbol{\theta}$ é o vetor de parâmetros cuja natureza varia com a família: $(s, Q)$ para políticas clássicas; solução real em $\mathbb{R}^2$ para meta-heurísticas (GA, SA, PSO, DE); pesos de rede neural para DQN/PPO; tabela-Q discreta para SARSA. Todas as 12 políticas avaliadas são instâncias desta definição com distintos espaços $\boldsymbol{\Theta}$ e distintos mecanismos de otimização de $\boldsymbol{\theta}$.
+\end{defi}
+
 O problema de controle de inventário em horizonte finito $T$ é formalizado como: dado o vetor de estado $\mathbf{s}_t = (I_t, Q_{t-L}, \hat{D}_{t+1})$ (nível de estoque corrente, pedidos em trânsito e previsão de demanda futura), determine uma política $\pi: \mathcal{S} \to \mathcal{A}$ que minimize o custo total esperado:
 
 \begin{equation}
@@ -116,9 +124,9 @@ Partículas navegam no espaço de soluções atraídas pelo melhor histórico pe
 \paragraph{Evolução Diferencial (DE).}
 Gera candidatos por mutação diferencial (\emph{rand/1/bin}) e cruzamento com taxa $C_R$, sendo reconhecida pela robustez em espaços contínuos de baixa dimensão \cite{Storn1997DE}.
 
-\subsection{Agentes de Aprendizado por Reforço}
+\subsection{Agentes de Aprendizado por Reforço como Família de Política Adaptativa}
 
-O aprendizado por reforço (RL) enquadra o controle de inventário como um Processo de Decisão de Markov (MDP) $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$, onde o agente observa o estado $\mathbf{s}_t$, escolhe a ação $a_t$ (quantidade a pedir), recebe recompensa $r_t = -\text{custo}_t$ e busca maximizar o retorno descontado $\sum_{t}\gamma^t r_t$ \cite{SuttonBarto2018RL}. Essa formulação generaliza o controle ótimo sem impor pressuposto distribucional.
+O aprendizado por reforço (RL) representa uma família de políticas adaptativas incluída no portfólio do AIPE — não o eixo central da dissertação, mas uma das classes de política cujas condições de superioridade o PSE aprende a identificar. O RL enquadra o controle de inventário como um Processo de Decisão de Markov (MDP) $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$, onde o agente observa o estado $\mathbf{s}_t$, escolhe a ação $a_t$ (quantidade a pedir), recebe recompensa $r_t = -\text{custo}_t$ e busca maximizar o retorno descontado $\sum_{t}\gamma^t r_t$ \cite{SuttonBarto2018RL}. A evidência empírica das Fases~1 e~2 mostra que o RL isolado é competitivo apenas em horizontes longos e séries de volume médio — condição que o meta-modelo AIPE aprende a detectar.
 
 \paragraph{DQN.}
 Aproxima a função-valor $Q_\theta(s, a)$ por redes neurais profundas, com \emph{experience replay} e \emph{target network} para estabilidade \cite{Mnih2015DQN}. Em inventário, exige espaço de ação discretizado e da ordem de $10^6$ interações para convergência, o que o torna inadequado quando a série histórica disponível é curta.
@@ -131,7 +139,7 @@ Algoritmo tabular on-policy com atualização $Q(s,a) \leftarrow Q(s,a) + \alpha
 
 \subsection{Arquitetura Híbrida GA-RL}
 
-A arquitetura híbrida GA-RL, contribuição central desta dissertação, resolve a tensão entre convergência (RL) e horizontes curtos (série real com $T \approx 38$ ciclos). O pipeline opera em três fases:
+A arquitetura híbrida GA-RL é a política especialista de melhor desempenho do portfólio: resolve a tensão entre convergência (RL) e horizontes curtos (série real com $T \approx 38$ ciclos). O pipeline opera em três fases:
 
 \begin{enumerate}[(i)]
   \item \textbf{Busca global (GA)}: 50 gerações com 100 indivíduos geram 5.000 avaliações simuladas, identificando a região do espaço $(s, Q)$ com menor custo;
@@ -140,6 +148,27 @@ A arquitetura híbrida GA-RL, contribuição central desta dissertação, resolv
 \end{enumerate}
 
 Essa arquitetura contorna o requisito de da ordem de $10^6$ passos do DQN isolado \cite{Oroojlooyjadid2022BeerGameDQN}, viabilizando políticas adaptativas mesmo com apenas 570 transições reais disponíveis ($15 \times 38$). A variante GA-PPO aplica a mesma lógica ao agente PPO contínuo, evitando a degeneração para $\text{FP} = 0.98$ observada no PPO isolado.
+
+\subsection{Seleção Contextual de Políticas: Formulação Formal}
+\label{sec:policy_selection_formal}
+
+Nenhuma das 12 políticas domina as demais em todos os regimes de demanda — fato empiricamente verificável e teoricamente garantido pelo teorema \textit{No Free Lunch}~\cite{Wolpert1997NoFreeLunch}: nenhum algoritmo supera todos os outros na média uniforme sobre o espaço de instâncias. Isso motiva a formulação da seleção de políticas como problema de otimização estrutural.
+
+\begin{defi}[Problema de Seleção de Políticas]
+\label{def:policy_selection}
+Seja $\mathcal{X} = \{x_1, \ldots, x_N\}$ o conjunto de séries históricas; $\phi: \mathcal{X} \rightarrow \mathbb{R}^d$ o mapeamento de features operacionais; e $\Pi = \{\pi_1, \ldots, \pi_k\}$ o portfólio de políticas candidatas. O \textit{Problema de Seleção de Políticas} consiste em aprender a função:
+\[
+  f: \mathbb{R}^d \rightarrow \Pi, \qquad f\!\bigl(\phi(x_i)\bigr) = \hat{\pi}^*(i),
+\]
+tal que:
+\[
+  \hat{\pi}^*(i) \approx \arg\min_{\pi \in \Pi}\; \mathbb{E}[\mathrm{CTI}(\pi, x_i)]
+  \quad \text{sujeito a} \quad \mathbb{E}[\mathrm{NS}(\pi, x_i)] \geq \alpha_{\min}.
+\]
+O \textit{Policy Selection Engine} (PSE) implementa $f$ como meta-modelo supervisionado treinado nos pares $\bigl\{(\phi(x_i),\, \hat{\pi}^*(i))\bigr\}_{i=1}^N$ gerados pelo benchmark experimental.
+\end{defi}
+
+Esta formulação é uma instância do \textit{Algorithm Selection Problem} (ASP) de \citet{Rice1976AlgorithmSelection}: dado um espaço de problemas $\mathcal{P}$, um portfólio de algoritmos $\mathcal{A}$ e uma medida de desempenho $m$, encontrar a função de seleção $\sigma: \mathcal{P} \rightarrow \mathcal{A}$ que maximiza $m$ em cada instância. O PSE do AIPE é, portanto, um \textit{meta-sistema de decisão operacional} — não um algoritmo de otimização, mas um sistema que aprende \textit{quando} cada política é ótima, condicionado às características observáveis da série. Essa perspectiva é conceitualmente equivalente a uma \textit{selection hyper-heuristic}~\cite{Drake2020SelectionHyperHeuristics} operando no nível de série temporal de demanda.
 
 \section{Métricas de Qualidade de Previsão para Demanda Intermitente}
 
