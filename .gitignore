@@ -214,3 +214,22 @@ analyze_pdf.py
 .venv
 .vscode
 data
+# LaTeX build outputs
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.hd
+*.loa
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+docs/master_proposal/IC-eps-converted-to.pdf
+docs/master_proposal/tcc.pdf
