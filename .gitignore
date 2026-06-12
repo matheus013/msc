@@ -233,3 +233,10 @@ data
 *.toc
 docs/master_proposal/IC-eps-converted-to.pdf
 docs/master_proposal/tcc.pdf
+
+# Local LaTeX build and agent context archives
+docs/master_proposal/build/*
+!docs/master_proposal/build/.gitkeep
+docs/master_proposal/_agent_context/*
+!docs/master_proposal/_agent_context/.gitkeep
+docs/master_proposal/*.upa
