@@ -87,14 +87,14 @@ def _build_cfg(params: dict) -> dict:
             "n_actions":     params.get("ppo", {}).get("n_actions", 20),
             "max_order_qty": 200,
         },
+        # SARSA tabular: α, γ, ε fixo (seção 2.2.4 e tabela 5×10 da dissertação)
         "SARSA": {
             "episodes":      params.get("sarsa", {}).get("episodes", 500),
-            "gamma":         params.get("sarsa", {}).get("gamma", 0.95),
-            "epsilon_start": params.get("sarsa", {}).get("epsilon_start", 1.0),
-            "epsilon_end":   params.get("sarsa", {}).get("epsilon_end", 0.01),
-            "epsilon_decay": params.get("sarsa", {}).get("epsilon_decay", 0.995),
-            "learning_rate": params.get("sarsa", {}).get("learning_rate", 0.001),
-            "n_actions":     params.get("sarsa", {}).get("n_actions", 20),
+            "n_states":      params.get("sarsa", {}).get("n_states", 5),
+            "n_actions":     params.get("sarsa", {}).get("n_actions", 10),
+            "gamma":         params.get("sarsa", {}).get("gamma", 0.99),
+            "learning_rate": params.get("sarsa", {}).get("learning_rate", 0.1),
+            "epsilon":       params.get("sarsa", {}).get("epsilon", 0.1),
             "max_order_qty": 200,
         },
     }
@@ -118,8 +118,8 @@ def scale_parameters_per_store(scenarios_meta: pd.DataFrame,
         z = params.get("z_score", 1.28)
         lt = params.get("lead_time", 2)
 
-        # I₀ = max(100, 2μ̂L) — proposta eq.(I0_metod)
-        init_inv = max(100.0, 2.0 * mu * lt)
+        # I₀ = ponto de reposição de referência (eq. 3.5): μL + zσ√L
+        init_inv = rop_ref(mu, sigma, z, lt)
         max_ord = max(50.0, mu * 12)  # ~12 ciclos de demanda média
 
         cfg = {k: dict(v) if isinstance(v, dict) else v for k, v in base_cfg.items()}

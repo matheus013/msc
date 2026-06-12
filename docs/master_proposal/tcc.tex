@@ -1,4 +1,4 @@
- \documentclass[dissertacao]{ic}
+﻿ \documentclass[dissertacao]{ic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hypersetup{
@@ -9,7 +9,7 @@
     citecolor = {Blue},
     urlcolor = {Red}, 
     unicode = {true}, 
-    pdftitle = {dissertacao matheus},
+    pdftitle = {Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos},
     pdfauthor = {Matheus Inácio Batista Santos},
     pdfsubject = {Dissertação de Mestrado},
     pdfkeywords={Adaptive Inventory Policy Engine, AIPE, Policy Selection Engine, Intermittent Demand, Syntetos-Boylan, Meta-Learning, Inventory Optimization, Retail Networks},
@@ -22,7 +22,6 @@
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{smartdiagram} 
-\usepackage{todonotes}
 \newtheorem{teo}{Teorema}[section]
 \newtheorem{prop}[teo]{Proposição} 
 \newtheorem{defi}[teo]{Definição} 
@@ -37,10 +36,13 @@
 \usepackage{comment}
 \usepackage{enumerate}
 
+\usepackage{float}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{makecell}
 \usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{pdflscape}
 
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -55,41 +57,37 @@
 
 \makeatletter
 \def\BState{\State\hskip-\ALG@thistlm}
+% In center/flushright/raggedleft, \\ is \@centercr (not \@normalcr).
+% Both check for hmode/vmode and error with "no line to end" if called in vmode.
+% Patch both to force horizontal mode first.
+\let\@orig@normalcr\@normalcr
+\renewcommand{\@normalcr}{\ifvmode\leavevmode\fi\@orig@normalcr}
+\let\@origcentercr\@centercr
+\def\@centercr{\ifhmode\else\leavevmode\fi\@origcentercr}
 \makeatother
 
 %\usepackage{algorithmic}     
  
-\titulo{Adaptive Inventory Policy Engine: Seleção Adaptativa de Políticas de Reposição em Redes Varejistas sob Demanda Intermitente}
+\titulo{Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos}
 %PROCESSOS DE HANDOVER EM REDES MÓVEIS 5G COM REDES DEFINIDAS POR SOFTWARE	
 
 \autor{Matheus Inácio Batista Santos}{mibs@ic.ufal.br}{}
 
-% \orientador{Dr. André Luiz Lins de Aquino}{}{Computing Institute}{Federal University of Alagoas}
+\orientador{Dr. Rian Gabriel Santos Pinheiro}{}{Instituto de Computação}{Universidade Federal de Alagoas}
 
-\orientadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+\orientadorDois{Dr. Bruno Costa e Silva Nogueira}{}{Instituto de Computação}{Universidade Federal de Alagoas}
 
-% \examinador{Dr. Erick de Andrade Barboza}{}{Computing Institute}{Federal University of Alagoas}
+\examinador{}{}{}{} % a preencher
 
-% \examinadorDois{Dr. Rian Gabriel Santos Pinheiro}{}{Computing Institute}{Federal University of Alagoas}
+\examinadorDois{}{}{}{} % a preencher
 
-%\examinadorTres{Examinador 3}{}{unidade Acadêmica}{Instituição}
+\examinadorTres{}{}{}{} % a preencher
  
-\dataMesAno{June 18}{2020}
+\dataMesAno{5 de junho}{2026}
 
-%Rian
 \setlength{\marginparwidth}{2cm}
 \newcommand{\red}{\textcolor{red}}
 \newcommand{\blue}{\textcolor{blue}}
-\usepackage{todonotes}
-\newcommand{\addref}{\todo[color=red!40]{Add referência.}}
-\newcommand{\rewrite}[1]{\todo[color=green!40]{#1}}
-\newcommand{\todoin}[1]{\todo[inline]{#1}}
-\newcommand{\estranho}{\todo{Estranho}}
-\newcommand{\arrumar}{\todo{Arrumar}}
-\newcommand{\pp}{\todo{1ª pessoa}}
-\newcommand{\ac}{\todo{Arrumar cite}}
-\newcommand{\veja}{\todo[color=green,fancyline]{Veja}}
-%Rian
 
 \begin{document}
 
@@ -111,49 +109,53 @@
 \selectlanguage{brazil} 
 \begin{abstract}
 
-A gestão de inventário em redes varejistas sob demanda \emph{intermitente} representa um desafio central na engenharia de operações, com impacto estimado de 3,5\% a 8\% do faturamento anual em capital imobilizado e perdas por ruptura. Em varejo regional brasileiro, itens de baixo giro exibem coeficiente de variação (CV) tipicamente acima de 2,5 e elevado intervalo médio entre demandas (ADI), regime classificado como \emph{Lumpy} na taxonomia de Syntetos-Boylan, em que hipóteses de estacionariedade de heurísticas clássicas como EOQ e $(s,S)$ são sistematicamente violadas, e em que agentes de aprendizado por reforço isolados convergem de forma inadequada pela escassez de dados históricos por SKU.
+Redes varejistas precisam decidir continuamente quando e quanto repor estoque em cada loja. Essa decisão se torna mais difícil quando os produtos não apresentam o mesmo padrão de venda: alguns têm demanda regular, enquanto outros passam vários períodos sem venda e concentram vendas em poucos ciclos. Nesses casos, aplicar uma única regra de reposição para toda a rede pode gerar excesso de estoque em alguns produtos, falta de estoque em outros e maior instabilidade nos pedidos enviados ao armazém.
 
-Esta dissertação propõe um \textbf{pipeline integrado de otimização de inventário} para redes varejistas multi-escalão, operando sobre uma base de dados transacional proprietária de uma rede do Nordeste brasileiro com aproximadamente 48 milhões de registros, 12 mil SKUs e demanda registrada em múltiplos estados brasileiros. O pipeline, orquestrado pelo framework Kedro, abrange cinco componentes integrados: (i)~ingestão, filtragem e pré-processamento de dados transacionais com classificação Syntetos-Boylan (ADI $\times$ CV$^2$) em quatro quadrantes --- \emph{Smooth}, \emph{Erratic}, \emph{Intermittent} e \emph{Lumpy}; (ii)~módulo de previsão de demanda com modelos Croston, ARIMA, XGBoost e LSTM, avaliados por validação \emph{walk-forward} sem vazamento de informação e por métricas alinhadas ao regime intermitente (MASE, sMAPE, RMSSE); (iii)~simulação e avaliação de 12 políticas de controle de inventário organizadas em quatro categorias: clássicas (EOQ, $(s,S)$, Jornaleiro), meta-heurísticas (GA, SA, PSO, DE), agentes de RL isolados (DQN, PPO, SARSA) e arquiteturas híbridas; (iv)~arquitetura híbrida GA-RL --- componente central da proposta --- na qual o GA identifica globalmente regiões promissoras do espaço de parâmetros e pré-popula o \emph{replay buffer} do agente de RL, contornando o requisito de da ordem de $10^6$ interações típico de agentes isolados; e (v)~validação estatística não paramétrica por testes de Wilcoxon, Friedman, Nemenyi e tamanho de efeito de Cohen, estratificada por quadrante de demanda e por estado.
+Esta dissertação propõe um framework metodológico de apoio à decisão para recomendar políticas de reposição de acordo com o comportamento observado em cada série loja-produto. A hipótese central é que a política mais adequada depende do regime operacional da demanda, e que essa relação pode ser aprendida a partir de características históricas da série. Para isso, a abordagem caracteriza o padrão de venda, utiliza previsão de demanda como componente auxiliar, avalia políticas candidatas em simulação e aprende a associar perfis de demanda a políticas com melhor desempenho esperado. Esse framework é denominado \textit{Adaptive Inventory Policy Engine} (AIPE), e seu componente de seleção é o \textit{Policy Selection Engine} (PSE).
 
-Como resultado preliminar que fundamenta a hipótese central da dissertação (Fase~1), o componente GA-RL foi avaliado em um experimento controlado com 15 lojas da Paraíba, um único SKU de alta intermitência (CV entre 2,5 e 5,4, regime \emph{Lumpy}) e horizonte de 38 ciclos bimestrais. A arquitetura GA-DQN apresentou o equilíbrio mais favorável entre as 12 políticas: custo total 48\% inferior à política $(s,S)$, efeito \emph{bullwhip} 24 vezes menor e taxa de ruptura equivalente à melhor política prática isolada. A análise estratificada por volume revelou que não existe política universalmente dominante --- o GA-DQN é superior no estrato de volume médio, e o Jornaleiro é mais econômico no de volume muito baixo.
+A proposta é avaliada com dados reais de uma rede varejista brasileira, cuja base contém aproximadamente 48 milhões de registros transacionais e 12 mil produtos. Nos subconjuntos experimentais já analisados, os resultados indicam redução de custo total de inventário de até 48\% em relação a políticas de referência, sem degradação proporcional do nível de serviço. A avaliação compara políticas clássicas, meta-heurísticas e agentes de aprendizado por reforço.
 
-A Fase~2, em desenvolvimento, expande o pipeline a todos os estados e ao portfólio completo de SKUs, integrando o módulo de previsão às decisões de reposição, realizando validação \emph{out-of-sample} com janela deslizante e produzindo evidência estatisticamente fundada sobre o desempenho relativo das 12 políticas em cada quadrante Syntetos-Boylan.
+Os resultados preliminares indicam que, no conjunto de políticas e séries avaliadas, não há uma política universalmente dominante. Em vez disso, mesmo dentro do regime de demanda altamente irregular (\textit{Lumpy}) analisado nas Fases~1 e~2, diferentes perfis operacionais favorecem políticas distintas; a generalização para os demais regimes de demanda é objetivo da Fase~3. A principal contribuição da dissertação é avaliar a viabilidade de selecionar políticas de reposição de forma contextual, com base em evidência empírica, para apoiar decisões de estoque em redes varejistas heterogêneas.
 
 \vspace{2em}
-\textbf{Palavras-chave}: Otimização de Inventário; Demanda Intermitente; Syntetos-Boylan; Arquitetura Híbrida GA-RL; Aprendizado por Reforço Profundo; Previsão de Demanda; Validação Estatística; Cadeia de Suprimentos.
+\textbf{Palavras-chave}: Otimização de Inventário; Demanda Intermitente; Seleção Contextual de Políticas; Cadeia de Suprimentos.
 
 \end{abstract}
-\selectlanguage{english}   
+\selectlanguage{brazil}
 
 \tableofcontents
 
 \listoffigures
-\addcontentsline{toc}{table}{Figure List}
+\addcontentsline{toc}{table}{Lista de Figuras}
 
 \listoftables
-\addcontentsline{toc}{table}{Table List}
+\addcontentsline{toc}{table}{Lista de Tabelas}
 
-\listofalgorithms
-\addcontentsline{toc}{table}{Algorithm List}
+\input{lista_siglas_termos}
 
 \inicio
 
 \include{capitulos/introducao}
 \include{capitulos/conceitos}
+\include{capitulos/correlatos}
 \include{capitulos/proposta}
 \include{capitulos/resultados}
 \include{capitulos/conclusoes}
 
+\include{capitulos/apendice}
+
 \begin{raggedright}
     \bibliographystyle{plainnat}
     \renewcommand{\bibsection} {
-    \chapter*{\begin{flushright}References\end{flushright}}
-    \addcontentsline{toc}{chapter}{References}
+    \chapter*{\begin{flushright}Referências\end{flushright}}
+    \addcontentsline{toc}{chapter}{Referências}
 }
 
-\lhead{REFERENCES}
+\lhead{REFERÊNCIAS}
 \bibliography{referencias}
 \newpage\lhead{\rightmark}
 \end{raggedright}
 
 \end{document}
+
+

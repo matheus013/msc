@@ -21,8 +21,12 @@ class InventoryEnv:
     - lead_time, custos e estoque inicial são idênticos
     - pipeline de pedidos reseta ao mesmo estado
 
-    State vector (6 dim):
-        [inv/init, d_next/mu, pending/init, mov_avg/mu, std/global_std, t/T]
+    State vector (6 dim) — eq. (2.17) da dissertação:
+        [I_t/I_0, D̂_{t+1}/μ, OP_t/I_0, μ_6(D)/μ, σ_6(D)/σ, t/T]
+
+    onde D̂_{t+1} é a previsão de demanda do próximo ciclo (saída do modelo
+    de previsão). Se forecast_series não for fornecida, usa previsão ingênua
+    D̂_{t+1} = D_{t-1}.
 
     Contexto Multi-Nível (opcional):
     - warehouse: identificador do estoque (ex: estado, código UF)
@@ -33,7 +37,8 @@ class InventoryEnv:
     STATE_DIM = 6
 
     def __init__(self, demand_series: np.ndarray, cfg: dict, seed: int = None,
-                 warehouse: str = None, store_id: str = None, product_id: str = None):
+                 warehouse: str = None, store_id: str = None, product_id: str = None,
+                 forecast_series: np.ndarray = None):
         """
         Args:
             demand_series: série temporal de demanda (agregada ou por PDV)
@@ -42,11 +47,22 @@ class InventoryEnv:
             warehouse: (opcional) identificador do warehouse/estoque
             store_id: (opcional) identificador da loja/PDV
             product_id: (opcional) identificador do produto
+            forecast_series: (opcional) D̂_{t+1} pré-calculado pelo modelo de previsão
+                             (mesmo comprimento de demand_series). Se None, usa previsão
+                             ingênua D_{t-1}.
         """
         self.demand       = demand_series.astype(float)
         self.T            = len(demand_series)
         self._global_mu   = float(np.mean(demand_series))
         self._global_std  = max(float(np.std(demand_series)), 1e-6)
+
+        # Previsão de demanda para o próximo ciclo (saída do modelo de previsão)
+        if forecast_series is not None:
+            self._forecast = np.asarray(forecast_series, dtype=float)
+        else:
+            # Previsão ingênua: D̂_{t+1} = D_{t-1}
+            naive = np.concatenate([[self._global_mu], demand_series[:-1]])
+            self._forecast = naive.astype(float)
 
         # Contexto multi-nível (para rastreabilidade)
         self.warehouse = warehouse
@@ -79,23 +95,25 @@ class InventoryEnv:
         return self._state()
 
     def _state(self):
-        lb = min(self.t, 10)
+        # μ_6(D) e σ_6(D): média e desvio padrão dos últimos 6 ciclos (seção 2.5.5)
+        lb = min(self.t, 6)
         if lb > 1:
             recent = self.demand[max(0, self.t - lb): self.t]
-            mu_r = float(np.mean(recent))
+            mu_r  = float(np.mean(recent))
             std_r = float(np.std(recent))
         else:
             mu_r  = self._global_mu
             std_r = self._global_std
-        # D_{t-1}: última demanda observada (proposta def. 1, seção 1)
-        d_last  = float(self.demand[self.t - 1]) if self.t > 0 else 0.0
-        pending = float(sum(self.pipeline))
+
+        # D̂_{t+1}: previsão de demanda para o próximo ciclo (seção 2.5.5)
+        d_hat_next = float(self._forecast[self.t]) if self.t < self.T else 0.0
+        pending    = float(sum(self.pipeline))
         return np.array([
             self.inventory / (self.init_inv + 1e-6),
-            d_last / (self._global_mu + 1e-6),
-            pending / (self.init_inv + 1e-6),
-            mu_r   / (self._global_mu + 1e-6),
-            std_r  / (self._global_std + 1e-6),
+            d_hat_next     / (self._global_mu + 1e-6),
+            pending        / (self.init_inv + 1e-6),
+            mu_r           / (self._global_mu + 1e-6),
+            std_r          / (self._global_std + 1e-6),
             self.t / max(self.T, 1),
         ], dtype=np.float32)
 
@@ -127,7 +145,8 @@ class InventoryEnv:
         self.demand_history.append(d)
         self.stockout_history.append(shortage)
 
-        reward = -(cost / (self.o_fixed + 1e-6))
+        # r_t = -(h·I_t + c_s·S_t + c_o^fix·1(Q_t>0) + c_o^var·Q_t)  — eq. (2.17)
+        reward = -cost
         self.t += 1
         done   = (self.t >= self.T)
         ns     = self._state() if not done else np.zeros(self.STATE_DIM, np.float32)

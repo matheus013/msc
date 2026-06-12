@@ -289,24 +289,23 @@ de Curso e Dissertacoes]
     \begin{flushright} % Alinhamento à direita
       \href{http://ic.ufal.br}{\includegraphics[width=.3\linewidth]{IC.eps}}\\%
 % [Rian] Adicionado href
-      \Large \vspace*{2cm} \ifthenelse{\boolean{tcc}}{Undergraduate Thesis}{Master's Thesis Proposal}\\%
-      \vspace*{2cm} \LARGE \textbf{\@titulo} \\%
+      \Large \vspace*{2cm} \ifthenelse{\boolean{tcc}}{Undergraduate Thesis}{Proposta de Dissertação de Mestrado}\newline%
+      \vspace*{2cm}{\parbox{.9\linewidth}{\raggedleft\LARGE\bfseries\setstretch{1.05}\@titulo}}\par%
       \vspace*{2cm}%
-      \Large \href{\@autorPagina}{\color{black}{\@autorNome}} \\ \normalsize %
-\texttt{\@autorEmail} \\ % [Rian] Adicionado href
-      \ifthenelse{\boolean{autorDoisExiste}}{\Large \@autorDoisNome \\ %
-\normalsize \texttt{\@autorDoisEmail}\\}{}%
+      \Large \href{\@autorPagina}{\color{black}{\@autorNome}}\newline\normalsize %
+\texttt{\@autorEmail}\newline % [Rian] Adicionado href
+      \ifthenelse{\boolean{autorDoisExiste}}{\Large \@autorDoisNome\newline%
+\normalsize \texttt{\@autorDoisEmail}\newline}{}%
       \vspace*{2cm}%
       \Large%
-      \ifthenelse{\boolean{orientadorDoisExiste}}{Advisers:}{Adviser:}%
-      \\
+      \ifthenelse{\boolean{orientadorDoisExiste}}{Orientadores:}{Orientador:}\newline
       \vspace*{0.2cm}%
       \large
-      \ifthenelse{\equal{\@orientadorNome}{}}{}{\href{\@orientadorPagina}{\color{black}\@orientadorNome}\\}%
+      \ifthenelse{\equal{\@orientadorNome}{}}{}{\href{\@orientadorPagina}{\color{black}\@orientadorNome}\newline}%
 % [Rian] Adicionado href
-      \ifthenelse{\equal{\@orientadorDoisNome}{}}{}{\@orientadorDoisNome\\}%
-      \ifthenelse{\equal{\@orientadorTresNome}{}}{}{\@orientadorTresNome\\}%
-      \normalsize \vfill Maceió\\ \@data%
+      \ifthenelse{\equal{\@orientadorDoisNome}{}}{}{\@orientadorDoisNome\newline}%
+      \ifthenelse{\equal{\@orientadorTresNome}{}}{}{\@orientadorTresNome\newline}%
+      \normalsize \vfill Maceió\newline\@data%
     \end{flushright}%
     \folhaDeRosto%
     \aprovacao%
@@ -323,9 +322,9 @@ de Curso e Dissertacoes]
     \thispagestyle{empty}%
     \begin{center}
         \Large
-        \@autorNome\\
-        \@autorDoisNome\\
-        \vspace*{3cm} \LARGE \textbf{\@titulo} \\%
+        \@autorNome\newline
+        \ifthenelse{\equal{\@autorDoisNome}{}}{}{\@autorDoisNome\newline}%
+        \vspace*{3cm}{\parbox{.9\linewidth}{\centering\LARGE\bfseries\setstretch{1.05}\@titulo}}\par%
     \end{center}
     \vspace*{2cm}
     \hspace{5 cm}%
@@ -336,22 +335,21 @@ de Curso e Dissertacoes]
        {Monografia apresentada como requisito parcial para obtenção do grau de
 Bacharel em Engenharia de Computação do Instituto de Computação da Universidade
 Federal de Alagoas.}%
-        {Uma dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para a obtenção do grau de Mestre em Informática pela Universidade Federal de Alagoas, Instituto de Computação.}%
+        {Uma proposta de dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para qualificação no curso de Mestrado em Informática pela Universidade Federal de Alagoas, Instituto de Computação.}%
     \end{minipage}%
     \begin{flushright}
         \vspace*{2cm} \large%
-        \ifthenelse{\boolean{orientadorDoisExiste}}{Advisers:}{Adviser:}%
-        \\%
+        \ifthenelse{\boolean{orientadorDoisExiste}}{Orientadores:}{Orientador:}\newline%
         \vspace*{0.5cm}%
         \Large%
-        \ifthenelse{\equal{\@orientadorNome}{}}{}{\@orientadorNome\\}%
+        \ifthenelse{\equal{\@orientadorNome}{}}{}{\@orientadorNome\newline}%
         \vspace*{0.2cm}%
-        \ifthenelse{\equal{\@orientadorDoisNome}{}}{}{\@orientadorDoisNome\\}%
+        \ifthenelse{\equal{\@orientadorDoisNome}{}}{}{\@orientadorDoisNome\newline}%
         \vspace*{0.2cm}%
-        \ifthenelse{\equal{\@orientadorTresNome}{}}{}{\@orientadorTresNome\\}%
+        \ifthenelse{\equal{\@orientadorTresNome}{}}{}{\@orientadorTresNome\newline}%
         \normalsize%
         \vfill%
-        Maceió\\ \@data%
+        Maceió\newline\@data%
     \end{flushright}
     \normalsize%
 }%
@@ -376,7 +374,7 @@ Federal de Alagoas.}%
         {Monografia apresentada como requisito parcial para obtenção do grau de
 Bacharel em Engenharia de Computação do Instituto de Computação da Universidade
 Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
-        {Dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para a obtenção do grau de Mestre em Informática pela Universidade Federal de Alagoas, Instituto de Computação, aprovada pela banca examinadora que assina abaixo.
+        {Proposta de dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para qualificação no curso de Mestrado em Informática pela Universidade Federal de Alagoas, Instituto de Computação, avaliada pela banca examinadora que assina abaixo.
         }%
     \begin{center}
         \normalsize%
@@ -392,14 +390,14 @@ Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
         \ifthenelse{\value{numeroDeAssinaturas} = 6}{\vspace*{0.7cm}}{}%
         \rule{9cm}{0.02cm}\\%
         \vspace*{0.2cm}%
-        \@orientadorNome~-~Adviser\\
+        \@orientadorNome~-~Orientador\\
         \ifthenelse{\equal{\@orientadorDepartamento}{}}{}{\@orientadorDepartamento\\}%
         \ifthenelse{\equal{\@orientadorInstituicao}{}}{}{\@orientadorInstituicao\\}%
         \ifthenelse{\boolean{orientadorDoisExiste}}{
             \vspace*{1cm}%
             \rule{9cm}{0.02cm}\\%
             \vspace*{0.2cm}%
-            \@orientadorDoisNome~-~Adviser\\
+            \@orientadorDoisNome~-~Orientador\\
             \ifthenelse{\equal{\@orientadorDoisDepartamento}{}}{}{\@orientadorDoisDepartamento\\}%
             \ifthenelse{\equal{\@orientadorDoisInstituicao}{}}{}{\@orientadorDoisInstituicao\\}%
         }{}
@@ -407,21 +405,21 @@ Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
             \vspace*{1cm}%
             \rule{9cm}{0.02cm}\\%
             \vspace*{0.2cm}%
-            \@orientadorTresNome~-~Adviser\\
+            \@orientadorTresNome~-~Orientador\\
             \ifthenelse{\equal{\@orientadorTresDepartamento}{}}{}{\@orientadorTresDepartamento\\}%
             \ifthenelse{\equal{\@orientadorTresInstituicao}{}}{}{\@orientadorTresInstituicao\\}%
         }{}
         \vspace*{1cm}%
         \rule{9cm}{0.02cm}\\%
         \vspace*{0.2cm}%
-        \@examinadorNome~-~Examiner\\
+        \@examinadorNome~-~Examinador(a)\\
         \ifthenelse{\equal{\@examinadorDepartamento}{}}{}{\@examinadorDepartamento\\}%
         \ifthenelse{\equal{\@examinadorInstituicao}{}}{}{\@examinadorInstituicao\\}%
         \ifthenelse{\boolean{examinadorDoisExiste}}{
             \vspace*{1cm}%
             \rule{9cm}{0.02cm}\\%
             \vspace*{0.2cm}%
-            \@examinadorDoisNome~-~Examiner\\
+            \@examinadorDoisNome~-~Examinador(a)\\
             \@examinadorDoisDepartamento\\
             \@examinadorDoisInstituicao\\
         }{}
@@ -429,7 +427,7 @@ Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
             \vspace*{1cm}%
             \rule{9cm}{0.02cm}\\%
             \vspace*{0.2cm}%
-            \@examinadorTresNome~-~Examiner\\
+            \@examinadorTresNome~-~Examinador(a)\\
             \@examinadorTresDepartamento\\
             \@examinadorTresInstituicao\\
         }{}
@@ -587,9 +585,9 @@ Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
 %% Definição do comando DATA
 %%------------------------------------------------------------------------------
 \newcommand{\@data}{}
-\newcommand{\dataMesAno}[3]{
+\newcommand{\dataMesAno}[2]{
     \renewcommand{\@data}{
-        #1, #2
+        #1 de #2
     }%%Fim de @DATA
 }%Fim de DATA
 
@@ -610,7 +608,7 @@ Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
 %%------------------------------------------------------------------------------
 \renewenvironment{abstract}{
     \onehalfspacing
-    \chapter*{\centering Abstract}
+    \chapter*{\centering Resumo}
 }{}
 
 %%------------------------------------------------------------------------------

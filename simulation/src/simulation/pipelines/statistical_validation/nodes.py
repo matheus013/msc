@@ -72,16 +72,27 @@ def run_wilcoxon_tests(kpis: pd.DataFrame) -> pd.DataFrame:
 
     df_out = pd.DataFrame(rows)
     if not df_out.empty:
+        # Correção de Holm (step-down) — seção 4.7.1 e Tabela 4.4
+        df_out = df_out.sort_values("p_value").reset_index(drop=True)
         n_tests = len(df_out)
-        bonferroni_alpha = 0.05 / n_tests
-        df_out["significant_bonferroni"] = df_out["p_value"] < bonferroni_alpha
-        df_out["bonferroni_alpha"] = bonferroni_alpha
+        # Limiar de Holm para o i-ésimo teste (ordenado): α / (m - i)
+        holm_thresholds = [0.05 / (n_tests - i) for i in range(n_tests)]
+        df_out["holm_threshold"] = holm_thresholds
+        # Procedimento step-down: rejeita até a primeira falha, daí para
+        sig_holm = []
+        still_rejecting = True
+        for i in range(n_tests):
+            if still_rejecting and df_out.loc[i, "p_value"] <= holm_thresholds[i]:
+                sig_holm.append(True)
+            else:
+                still_rejecting = False
+                sig_holm.append(False)
+        df_out["significant_holm"] = sig_holm
         log.info(
-            "Wilcoxon: %d testes | %d sig. (p<0.05) | %d sig. Bonferroni (α=%.4f)",
+            "Wilcoxon: %d testes | %d sig. (p<0.05) | %d sig. Holm",
             n_tests,
             df_out["significant"].sum(),
-            df_out["significant_bonferroni"].sum(),
-            bonferroni_alpha,
+            sum(sig_holm),
         )
     return df_out
 

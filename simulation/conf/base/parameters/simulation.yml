@@ -24,7 +24,7 @@ simulation:
   ga:
     population: 100
     generations: 50
-    crossover_prob: 0.7
+    crossover_prob: 0.9
     mutation_prob: 0.05
     tournament_size: 3
 

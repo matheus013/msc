@@ -1,532 +1,56 @@
 [
   {
     "event": "before_pipeline_run",
-    "timestamp": "2026-05-23T00:46:28.649321+00:00"
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "vendas_partitioned",
-    "node_id": "186075e2",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:data_ingestion",
-    "node_id": "38289191",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "load_raw_sales",
-    "node_id": "81be1146",
-    "duration": 1.3097228999977233,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "sales_raw",
-    "node_id": "a87c5f8c",
-    "status": "Available",
-    "size": 64919184
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "sales_raw",
-    "node_id": "a87c5f8c",
-    "status": "Available",
-    "size": 64919184
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:data_ingestion",
-    "node_id": "38289191",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "filter_by_parameters",
-    "node_id": "30ca6c0b",
-    "duration": 8.688326799994684,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "sales_filtered",
-    "node_id": "9e96c93b",
-    "status": "Available",
-    "size": 7126824
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "sales_filtered",
-    "node_id": "9e96c93b",
-    "status": "Available",
-    "size": 7126824
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:data_cleaning",
-    "node_id": "9b17b853",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "clean_sales_data",
-    "node_id": "98d806fc",
-    "duration": 0.3363208999944618,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "sales_cleaned",
-    "node_id": "3e128e33",
-    "status": "Available",
-    "size": 3271275
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "sales_cleaned",
-    "node_id": "3e128e33",
-    "status": "Available",
-    "size": 3271275
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:data_ingestion",
-    "node_id": "38289191",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "build_demand_scenarios",
-    "node_id": "b9c64ccb",
-    "duration": 92.95360980000987,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:forecasting",
-    "node_id": "1d777f56",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "build_walkforward_splits",
-    "node_id": "50b69d4f",
-    "duration": 0.14222710000467487,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "walkforward_splits",
-    "node_id": "82e22cc4",
-    "status": "Available",
-    "size": 103161
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:demand_profiling",
-    "node_id": "0487d049",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "compute_demand_features",
-    "node_id": "7e949889",
-    "duration": 0.32978890000958927,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "demand_features",
-    "node_id": "ebeab37b",
-    "status": "Available",
-    "size": 38876
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:simulation",
-    "node_id": "4f67f8b7",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "scale_parameters_per_store",
-    "node_id": "01ea1382",
-    "duration": 0.022402800008421764,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "scaled_params",
-    "node_id": "43d3273f",
-    "status": "Available",
-    "size": 77030
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "demand_features",
-    "node_id": "ebeab37b",
-    "status": "Available",
-    "size": 38876
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:demand_profiling",
-    "node_id": "0487d049",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "classify_operational_profiles",
-    "node_id": "be646aee",
-    "duration": 0.010816800000611693,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "demand_profiles",
-    "node_id": "c9555c3e",
-    "status": "Available",
-    "size": 40224
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scaled_params",
-    "node_id": "43d3273f",
-    "status": "Available",
-    "size": 77030
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:simulation",
-    "node_id": "4f67f8b7",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "run_classical_policies",
-    "node_id": "7d8e669e",
-    "duration": 3.4844424000039,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "kpis_classical",
-    "node_id": "0fabf5de",
-    "status": "Available",
-    "size": 27747
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scaled_params",
-    "node_id": "43d3273f",
-    "status": "Available",
-    "size": 77030
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:simulation",
-    "node_id": "4f67f8b7",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "run_metaheuristic_policies",
-    "node_id": "30289109",
-    "duration": 1404.644860100001,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "kpis_metaheuristic",
-    "node_id": "46e34aff",
-    "status": "Available",
-    "size": 27667
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scaled_params",
-    "node_id": "43d3273f",
-    "status": "Available",
-    "size": 77030
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:simulation",
-    "node_id": "4f67f8b7",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "run_proposed_architecture",
-    "node_id": "ade8d218",
-    "duration": 1185.1658497000026,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "kpis_proposed",
-    "node_id": "1e973f0b",
-    "status": "Available",
-    "size": 23468
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios",
-    "node_id": "c254d16c",
-    "status": "Available",
-    "size": 22338
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scenarios_meta",
-    "node_id": "0708924a",
-    "status": "Available",
-    "size": 22070
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "scaled_params",
-    "node_id": "43d3273f",
-    "status": "Available",
-    "size": 77030
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:simulation",
-    "node_id": "4f67f8b7",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "run_rl_policies",
-    "node_id": "991b4095",
-    "duration": 2164.5242953999987,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "kpis_rl",
-    "node_id": "7614534c",
-    "status": "Available",
-    "size": 26313
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "walkforward_splits",
-    "node_id": "82e22cc4",
-    "status": "Available",
-    "size": 103161
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:forecasting",
-    "node_id": "1d777f56",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "after_node_run",
-    "node": "run_walkforward_forecasting",
-    "node_id": "d5e34e54",
-    "duration": 89.34993899999245,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "forecast_predictions",
-    "node_id": "a6a5a091",
-    "status": "Available",
-    "size": 90551
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "trained_forecasters",
-    "node_id": "665397ee",
-    "status": "Available",
-    "size": 78385445
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "kpis_classical",
-    "node_id": "0fabf5de",
-    "status": "Available",
-    "size": 27747
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "kpis_metaheuristic",
-    "node_id": "46e34aff",
-    "status": "Available",
-    "size": 27667
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "kpis_rl",
-    "node_id": "7614534c",
-    "status": "Available",
-    "size": 26313
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "kpis_proposed",
-    "node_id": "1e973f0b",
-    "status": "Available",
-    "size": 23468
-  },
-  {
-    "event": "after_node_run",
-    "node": "aggregate_kpis",
-    "node_id": "01094892",
-    "duration": 0.008625699992990121,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "kpis",
-    "node_id": "51c39841",
-    "status": "Available",
-    "size": 54005
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "forecast_predictions",
-    "node_id": "a6a5a091",
-    "status": "Available",
-    "size": 90551
-  },
-  {
-    "event": "after_node_run",
-    "node": "evaluate_forecast_accuracy",
-    "node_id": "02cded3c",
-    "duration": 2.3240426999982446,
-    "status": "success"
-  },
-  {
-    "event": "after_dataset_saved",
-    "dataset": "forecast_metrics",
-    "node_id": "78b0ba6c",
-    "status": "Available",
-    "size": 430079
+    "timestamp": "2026-06-08T03:53:19.229030+00:00"
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 54005
+    "size": 60532
   },
   {
-    "event": "after_node_run",
-    "node": "compute_effect_sizes",
-    "node_id": "2cecbfe7",
-    "duration": 0.31390889998874627,
-    "status": "success"
+    "event": "after_dataset_loaded",
+    "dataset": "wilcoxon_results",
+    "node_id": "2af3d158",
+    "status": "Available",
+    "size": 8275
   },
   {
-    "event": "after_dataset_saved",
+    "event": "after_dataset_loaded",
+    "dataset": "friedman_results",
+    "node_id": "ad7b4b90",
+    "status": "Available",
+    "size": 9486
+  },
+  {
+    "event": "after_dataset_loaded",
     "dataset": "effect_sizes",
     "node_id": "8ee7c35a",
     "status": "Available",
-    "size": 5279
+    "size": 5292
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:reporting",
+    "node_id": "961b6053",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "generate_comparison_plots",
+    "node_id": "74c88f4a",
+    "duration": 7.871682100027101,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "comparison_plots",
+    "node_id": "58cb4bac",
+    "status": "Available",
+    "size": 1128
   },
   {
     "event": "after_dataset_loaded",
@@ -567,7 +91,7 @@
     "event": "after_node_run",
     "node": "generate_demand_plots",
     "node_id": "d03b8602",
-    "duration": 4.6980803000042215,
+    "duration": 57.6180475000001,
     "status": "success"
   },
   {
@@ -575,7 +99,7 @@
     "dataset": "demand_plots",
     "node_id": "b887dc05",
     "status": "Available",
-    "size": 543
+    "size": 16507
   },
   {
     "event": "after_dataset_loaded",
@@ -596,7 +120,7 @@
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 54005
+    "size": 60532
   },
   {
     "event": "after_dataset_loaded",
@@ -609,7 +133,7 @@
     "event": "after_node_run",
     "node": "generate_dissertation_report",
     "node_id": "b2de854f",
-    "duration": 0.03802999999606982,
+    "duration": 0.050434400007361546,
     "status": "success"
   },
   {
@@ -618,6 +142,55 @@
     "node_id": "b86352e7",
     "status": "Available",
     "size": 148
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "kpis",
+    "node_id": "51c39841",
+    "status": "Available",
+    "size": 60532
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "wilcoxon_results",
+    "node_id": "2af3d158",
+    "status": "Available",
+    "size": 8275
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "effect_sizes",
+    "node_id": "8ee7c35a",
+    "status": "Available",
+    "size": 5292
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "stratified_summary",
+    "node_id": "cec15ed1",
+    "status": "Available",
+    "size": 20389
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:reporting",
+    "node_id": "961b6053",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "generate_latex_tables",
+    "node_id": "ef929e29",
+    "duration": 0.05951890000142157,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_saved",
+    "dataset": "latex_tables",
+    "node_id": "dfa6c001",
+    "status": "Available",
+    "size": 21583
   },
   {
     "event": "after_dataset_loaded",
@@ -631,7 +204,7 @@
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 54005
+    "size": 60532
   },
   {
     "event": "after_dataset_loaded",
@@ -644,7 +217,7 @@
     "event": "after_node_run",
     "node": "generate_map_plots",
     "node_id": "6adc35bd",
-    "duration": 0.2235717999865301,
+    "duration": 36.70625089999521,
     "status": "success"
   },
   {
@@ -652,43 +225,10 @@
     "dataset": "map_plots",
     "node_id": "177db266",
     "status": "Available",
-    "size": 5
+    "size": 269
   },
   {
-    "event": "after_dataset_loaded",
-    "dataset": "kpis",
-    "node_id": "51c39841",
-    "status": "Available",
-    "size": 54005
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "demand_features",
-    "node_id": "ebeab37b",
-    "status": "Available",
-    "size": 38876
-  },
-  {
-    "event": "after_dataset_loaded",
-    "dataset": "params:policy_selection",
-    "node_id": "527545e4",
-    "status": "Available",
-    "size": 0
-  },
-  {
-    "event": "on_node_error",
-    "node": "generate_policy_labels",
-    "node_id": "04dfbb2d",
-    "error": "\"Columns not found: 'tic', 'service_level', 'stockout_rate'\"",
-    "timestamp": "2026-05-23T02:09:16.119296+00:00",
-    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\task.py\", line 305, in _call_node_run\n    outputs = node.run(inputs)\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 562, in run\n    raise exc\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 548, in run\n    outputs = self._run_with_list(inputs, self._inputs)\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 593, in _run_with_list\n    return self._func(*(inputs[item] for item in node_inputs))\n           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\OneDrive\\\u00c1rea de Trabalho\\Documentos\\sbpo\\simulation\\src\\simulation\\pipelines\\policy_selection\\nodes.py\", line 63, in generate_policy_labels\n    kpis.groupby(KEYS + [\"policy\"])[[\"tic\", \"service_level\", \"stockout_rate\"]]\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pandas\\core\\groupby\\generic.py\", line 2938, in __getitem__\n    return super().__getitem__(key)\n           ~~~~~~~~~~~~~~~~~~~^^^^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pandas\\core\\base.py\", line 223, in __getitem__\n    raise KeyError(f\"Columns not found: {str(bad_keys)[1:-1]}\")\nKeyError: \"Columns not found: 'tic', 'service_level', 'stockout_rate'\"\n"
-  },
-  {
-    "event": "on_pipeline_error",
-    "error": "\"Columns not found: 'tic', 'service_level', 'stockout_rate'\"",
-    "timestamp": "2026-05-23T02:09:16.132589+00:00",
-    "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\framework\\session\\session.py\", line 427, in run\n    run_result = runner.run(\n        filtered_pipeline,\n    ...<3 lines>...\n        only_missing_outputs=only_missing_outputs,\n    )\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 115, in run\n    self._run(pipeline, catalog, hook_or_null_manager, run_id)  # type: ignore[arg-type]\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\sequential_runner.py\", line 63, in _run\n    super()._run(\n    ~~~~~~~~~~~~^\n        pipeline=pipeline,\n        ^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        run_id=run_id,\n        ^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\runner.py\", line 240, in _run\n    ).execute()\n      ~~~~~~~^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\task.py\", line 89, in execute\n    node = self._run_node_sequential(\n        self.node,\n    ...<2 lines>...\n        self.run_id,\n    )\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\task.py\", line 168, in _run_node_sequential\n    outputs = self._call_node_run(\n        node, catalog, inputs, is_async, hook_manager, run_id=run_id\n    )\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\task.py\", line 315, in _call_node_run\n    raise exc\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\runner\\task.py\", line 305, in _call_node_run\n    outputs = node.run(inputs)\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 562, in run\n    raise exc\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 548, in run\n    outputs = self._run_with_list(inputs, self._inputs)\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\kedro\\pipeline\\node.py\", line 593, in _run_with_list\n    return self._func(*(inputs[item] for item in node_inputs))\n           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\OneDrive\\\u00c1rea de Trabalho\\Documentos\\sbpo\\simulation\\src\\simulation\\pipelines\\policy_selection\\nodes.py\", line 63, in generate_policy_labels\n    kpis.groupby(KEYS + [\"policy\"])[[\"tic\", \"service_level\", \"stockout_rate\"]]\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pandas\\core\\groupby\\generic.py\", line 2938, in __getitem__\n    return super().__getitem__(key)\n           ~~~~~~~~~~~~~~~~~~~^^^^^\n  File \"C:\\Users\\mathe\\AppData\\Local\\Programs\\Python\\Python314\\Lib\\site-packages\\pandas\\core\\base.py\", line 223, in __getitem__\n    raise KeyError(f\"Columns not found: {str(bad_keys)[1:-1]}\")\nKeyError: \"Columns not found: 'tic', 'service_level', 'stockout_rate'\"\n",
-    "node": "generate_policy_labels",
-    "node_id": "04dfbb2d"
+    "event": "after_pipeline_run",
+    "timestamp": "2026-06-08T03:55:01.684827+00:00"
   }
 ]

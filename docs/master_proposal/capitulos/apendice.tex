@@ -1,0 +1,361 @@
+% apendice.tex — Apêndice A: Matriz Completa de Parâmetros Experimentais
+
+\chapter*{\centering Apêndice~A --- Matriz Completa de Parâmetros Experimentais}
+\addcontentsline{toc}{chapter}{Apêndice~A --- Matriz Completa de Parâmetros Experimentais}
+\label{app:reproducibility}
+\lhead{APÊNDICE A}
+
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{table}{0}
+
+Este apêndice consolida os parâmetros utilizados nos experimentos reportados, organizados por camada experimental. A formulação conceitual de cada política permanece nos Capítulos~2 e~3; o registro aqui serve para auditoria e reprodução. Os valores foram obtidos a partir das configurações, scripts e artefatos versionados do projeto.
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.1 — Parâmetros globais do experimento
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Parâmetros globais do experimento.]{Parâmetros globais do experimento.}
+\label{tab:global_params} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.1)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Dados}} \\[2pt]
+Dados & estado & BA & UF selecionada para a análise \\
+Dados & período & jan/2023 a abr/2025 & 17 ciclos por ano \\
+Dados & registros transacionais & ${\approx}48$ milhões & base completa da rede varejista \\
+Dados & produtos & ${\approx}12\,000$ & base completa \\
+Dados & periodicidade & ciclos sazonais & 17 ciclos por ano \\
+Dados & tratamento de zeros & preenche com zero & ciclos ausentes completados \\
+Dados & filtro min.\ de ciclos com venda & 17 & séries com menos ciclos positivos são removidas \\
+Dados & janela de atividade do produto & 3 ciclos & produto considerado ativo se vendeu nos últimos 3 ciclos \\
+Dados & status incluídos & Ativo & produtos com status diferente são excluídos \\
+Dados & tipos de venda excluídos & Brinde & transações de brinde não entram na simulação \\
+Dados & deduplicação & por armazém, produto, loja e ciclo & chave de deduplicação dos registros \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Ambiente de simulação}} \\[2pt]
+InventoryEnv & lead time & 2 ciclos & uniforme; mesmo valor para todas as políticas \\
+InventoryEnv & estoque inicial $I_0$ & escalonado por série & $\mathrm{rop\_ref} = \mu L + z\sigma\sqrt{L}$; ajustado por série \\
+InventoryEnv & tipo de falta & perda de venda & demanda não atendida é perdida; sem acúmulo \\
+InventoryEnv & regra de arredondamento & inteiro superior & aplicada a todos os pedidos calculados \\
+InventoryEnv & frequência de reavaliação (AIPE) & 6 ciclos & intervalo $\Delta t$ definido conceitualmente \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Custos}} \\[2pt]
+Custos & custo de manutenção $h$ & 1,0 & por unidade por ciclo \\
+Custos & custo de ruptura $c_s$ & 5,0 & por unidade de demanda não atendida \\
+Custos & custo fixo de pedido $K$ & 50,0 & por ordem emitida \\
+Custos & custo variável de pedido $c_v$ & 0,5 & por unidade pedida \\
+Custos & razão $c_s/h$ & 5,0 & nível de serviço crítico ${\approx}83\%$ \\
+Custos & unidade monetária & adimensional & valores relativos, não em R\$ \\
+Custos & custos globais ou por série & globais & mesmos parâmetros para todas as séries \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Avaliação}} \\[2pt]
+Avaliação & número de replicações & 5 & replicações independentes por série \\
+Avaliação & semente global & 42 & fixa para todas as execuções \\
+Avaliação & modo de avaliação & walk-forward & janela deslizante; 17 ciclos de treino \\
+Avaliação & métricas reportadas & CTI, NS, TR, BE, FP & definição formal no Capítulo~3 \\
+Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do limiar é considerada inviável \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.2 — Políticas clássicas e meta-heurísticas
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.0cm} p{4.1cm} @{}}
+\caption[Parâmetros das políticas clássicas e meta-heurísticas.]{Parâmetros das políticas clássicas e meta-heurísticas.}
+\label{tab:classic_meta_params} \\
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.2)}} \\[2pt]
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{EOQ}} \\[2pt]
+EOQ & lote ótimo $Q^*$ & $\sqrt{2KD/h}$ & $K{=}50$, $h{=}1$ (globais) \\
+EOQ & estimativa de demanda $D$ & previsão auxiliar & série histórica filtrada \\
+EOQ & ponto de reposição & $\mu L + z\sigma\sqrt{L}$ & $L{=}2$; $z{\approx}0{,}97$ \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{$(s,S)$}} \\[2pt]
+$(s,S)$ & ponto de disparo $s$ & ROP $= \mu L + z\sigma\sqrt{L}$ & $L{=}2$ \\
+$(s,S)$ & nível alvo $S$ & $s + Q^*$ & derivado do EOQ \\
+$(s,S)$ & fator de segurança $z$ & $\Phi^{-1}(c_s/(c_s{+}h)) \approx 0{,}97$ & $c_s{=}5$, $h{=}1$ \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Jornaleiro (Newsvendor)}} \\[2pt]
+Jornaleiro & razão crítica CR & $c_s/(c_s{+}h) = 5/6 \approx 0{,}833$ & \\
+Jornaleiro & nível ótimo $y^*$ & quantil(0,833) da previsão & via distribuição empírica \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{GA (Algoritmo Genético)}} \\[2pt]
+GA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+GA & tamanho da população & 100 & \\
+GA & número de gerações & 50 & \\
+GA & taxa de crossover & 0,9 & operador Blend, $\alpha{=}0{,}5$ \\
+GA & taxa de mutação & 0,05 & gaussiana, $\sigma{=}\mathrm{range}/10$ \\
+GA & método de seleção & torneio de tamanho 3 & \\
+GA & função fitness & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & maximiza NS com penalidade de custo \\
+GA & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{SA (Simulated Annealing)}} \\[2pt]
+SA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+SA & temperatura inicial & 1000,0 & \\
+SA & fator de resfriamento & 0,95 & geométrico por iteração \\
+SA & iterações máximas & 500 & \\
+SA & minimizador local & Nelder-Mead & \texttt{scipy.optimize.}\newline\texttt{dual\_annealing} \\
+SA & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{PSO (Particle Swarm Optimization)}} \\[2pt]
+PSO & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+PSO & número de partículas & 40 & \\
+PSO & iterações máximas & 80 & \\
+PSO & peso de inércia $w$ & 0,7 & \\
+PSO & coeficiente cognitivo $c_1$ & 1,5 & \\
+PSO & coeficiente social $c_2$ & 1,5 & \\
+PSO & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{DE (Differential Evolution)}} \\[2pt]
+DE & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+DE & estratégia & \texttt{rand1bin} & mutação + cruzamento binomial \\
+DE & fator diferencial $F$ & 0,8 & \\
+DE & taxa de cruzamento CR & 0,9 & \\
+DE & iterações máximas & 100 & \\
+DE & tamanho da população & 15 & \\
+DE & polimento local & ativo & \texttt{scipy.optimize.}\newline\texttt{differential\_evolution} \\
+DE & tolerância & $10^{-6}$ & critério de parada \\
+DE & semente & 42 & \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.3 — Agentes RL e políticas híbridas
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.2cm} p{3.9cm} @{}}
+\caption[Parâmetros dos agentes de aprendizado por reforço e políticas híbridas.]{Parâmetros dos agentes de aprendizado por reforço e políticas híbridas.}
+\label{tab:rl_params} \\
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.3)}} \\[2pt]
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Ambiente compartilhado (todos os agentes)}} \\[2pt]
+InventoryEnv & vetor de estado (dim.\ 1 a 3) & $I_t/I_0$,\; $\hat{D}/\mu$,\; $\mathrm{OP}/I_0$ & nível de estoque, previsão, pedido aberto \\
+InventoryEnv & vetor de estado (dim.\ 4 a 6) & $\mu_6/\mu$,\; $\sigma_6/\sigma$,\; $t/T$ & tendências de curto prazo e posição no horizonte \\
+InventoryEnv & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{DQN}} \\[2pt]
+DQN & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
+DQN & número de episódios & 500 & \\
+DQN & fator de desconto $\gamma$ & 0,95 & \\
+DQN & $\varepsilon$ inicial & 1,0 & exploração total no início \\
+DQN & $\varepsilon$ mínimo & 0,01 & \\
+DQN & decaimento de $\varepsilon$ & 0,995 por episódio & geométrico \\
+DQN & tamanho do batch & 64 & \\
+DQN & tamanho do replay buffer & 10\,000 & \\
+DQN & frequência de atualização da rede-alvo & 10 episódios & \\
+DQN & arquitetura da Q-network & $[6] \to [64, 64] \to [20]$ & duas camadas ocultas \\
+DQN & taxa de aprendizado & 0,001 & padrão do código; não exposto no YAML \\
+DQN & recorte de gradiente & $[-1{,}0,\; 1{,}0]$ & \\
+DQN & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{PPO}} \\[2pt]
+PPO & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
+PPO & número de episódios & 500 & \\
+PPO & fator de desconto $\gamma$ & 0,99 & \\
+PPO & epsilon de recorte & 0,2 & razão de probabilidade recortada em $[1{-}\varepsilon,\, 1{+}\varepsilon]$ \\
+PPO & épocas de otimização por rollout & 4 & \\
+PPO & taxa de aprendizado & 0,0003 & \\
+PPO & arquitetura do ator & $[6] \to [64, 32] \to [20]$ & saída em logits \\
+PPO & arquitetura do crítico & $[6] \to [64, 32] \to [1]$ & saída em valor escalar \\
+PPO & estimativa de vantagem & $A_t = G_t - V(s_t)$, normalizada & $(G - \bar{G})/(\sigma_G + 10^{-8})$ \\
+PPO & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{SARSA}} \\[2pt]
+SARSA & discretização do estado & $\lfloor \mathrm{clip}(I_t/I_0,\, 0,\, 1) \times 5 \rfloor$ & bin único baseado no nível de estoque \\
+SARSA & número de estados & 5 & \\
+SARSA & espaço de ações & 10 ações discretas & \\
+SARSA & política de exploração & $\varepsilon$-greedy & \\
+SARSA & número de episódios & 500 & \\
+SARSA & fator de desconto $\gamma$ & 0,99 & \\
+SARSA & taxa de aprendizado $\alpha$ & 0,1 & \\
+SARSA & $\varepsilon$ & 0,1 & constante; sem decaimento identificado \\
+SARSA & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{GA-DQN}} \\[2pt]
+GA-DQN & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
+GA-DQN & parâmetros do DQN & herdados (ver acima) & \\
+GA-DQN & tamanho do replay buffer pré-populado & 1\,000 & trajetórias geradas pelo GA \\
+GA-DQN & episódios de refinamento RL & 200 & \\
+GA-DQN & regra de integração GA~$\to$~DQN & se $(I_t + \mathrm{OP}) \leq s + \mathrm{SS}$:\newline $Q = \max(Q_{\mathrm{DQN}},\; 0{,}5 \cdot Q_{\mathrm{GA}})$;\newline caso contrário: $Q = 0$ & \\
+GA-DQN & semente & 42 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{GA-PPO}} \\[2pt]
+GA-PPO & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
+GA-PPO & parâmetros do PPO & herdados (ver acima) & \\
+GA-PPO & episódios de aquecimento com trajetórias GA & 20 & log-prob uniforme \\
+GA-PPO & episódios de refinamento PPO & 200 & \\
+GA-PPO & forma de integração GA~$\to$~PPO & inicialização por rollouts GA; refinamento PPO & warm-start antes do treinamento RL \\
+GA-PPO & semente & 42 & \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.4 — Previsão, características operacionais e geração de rótulos
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Parâmetros de previsão, características operacionais e geração de rótulos.]{Parâmetros de previsão, características operacionais e geração de rótulos.}
+\label{tab:forecast_label_params} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.4)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Previsão auxiliar}} \\[2pt]
+Previsão & modelos utilizados & LSTM, ANN, XGBoost, Croston, ARIMA & ensemble de previsão \\
+Previsão & janela de entrada (lookback) & 6 ciclos & \\
+Previsão & ciclos mínimos de treino & 17 & \\
+Previsão & modo walk-forward & desativado & previsão em janela fixa \\
+Previsão & horizonte de previsão & 1 ciclo à frente & \\[3pt]
+
+LSTM & hidden size & 64 & \\
+LSTM & épocas & 50 & \\
+LSTM & batch size & 16 & \\
+LSTM & taxa de aprendizado & 0,001 & \\[3pt]
+
+ANN / MLP & camadas ocultas & $[64, 32]$ & \\
+ANN / MLP & iterações máximas & 200 & \\
+ANN / MLP & early stopping & ativo & \\
+ANN / MLP & fração de validação & 0,1 & \\[3pt]
+
+XGBoost (previsão) & n\_estimators & 200 & \\
+XGBoost (previsão) & max\_depth & 6 & \\
+XGBoost (previsão) & taxa de aprendizado & 0,05 & \\
+XGBoost (previsão) & subsample & 0,8 & \\[3pt]
+
+Croston & alpha (suavização) & 0,1 & suavização exponencial \\[3pt]
+
+ARIMA & ordem $(p,d,q)$ & $(1,1,1)$ & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Características operacionais e classificação POD}} \\[2pt]
+POD / ADI-CV\textsuperscript{2} & limiar ADI & 1,32 & classif.\ Syntetos-Boylan \\
+POD / ADI-CV\textsuperscript{2} & limiar CV\textsuperscript{2} & 0,49 & classif.\ Syntetos-Boylan \\
+POD / ADI-CV\textsuperscript{2} & limiar de zeros consecutivos & 5 & \\
+POD / ADI-CV\textsuperscript{2} & limiar de burstiness & 0,30 & \\
+POD / ADI-CV\textsuperscript{2} & limiar ACF (sazonalidade) & 0,25 & \\
+POD / ADI-CV\textsuperscript{2} & coeficiente mínimo de tendência & 0,05 & \\
+POD / ADI-CV\textsuperscript{2} & limiar de entropia & 2,0 & \\
+POD / ADI-CV\textsuperscript{2} & média mínima de demanda & 2,0 & séries abaixo são excluídas \\
+POD / ADI-CV\textsuperscript{2} & limiar CV para segmentação & 1,5 & segmentação adicional por variabilidade \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Geração de rótulos e PSE}} \\[2pt]
+Rótulos & limiar mínimo de NS para rótulo & 0,70 & política abaixo é excluída do ranking \\
+Rótulos & modelo PSE & XGBoost & classificador treinado sobre perfis de séries \\
+Rótulos & validação cruzada & 5 folds & \\
+Rótulos & semente PSE & 42 & \\
+Rótulos & n\_estimators (PSE) & 300 & \\
+Rótulos & max\_depth (PSE) & 6 & \\
+Rótulos & taxa de aprendizado (PSE) & 0,05 & \\
+Rótulos & subsample (PSE) & 0,8 & \\
+Rótulos & colsample\_bytree (PSE) & 0,8 & \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.5 — Validação estatística, ambiente computacional e artefatos
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Validação estatística, ambiente computacional e artefatos.]{Validação estatística, ambiente computacional e artefatos.}
+\label{tab:validation_env} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro ou artefato} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.5)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro ou artefato} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Validação estatística}} \\[2pt]
+Estatística & teste par a par & Wilcoxon signed-rank & comparação de pares de políticas \\
+Estatística & teste global & Friedman & hipótese nula de igualdade entre múltiplas políticas \\
+Estatística & post-hoc & Nemenyi & comparações múltiplas após rejeição de Friedman \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Ambiente computacional}} \\[2pt]
+Python & versão mínima & 3.9 & \\
+Kedro & versão mínima & 0.19.0 & orquestração do pipeline \\
+kedro-datasets & versão mínima & 2.0.0 & \\
+pandas & versão mínima & 2.0 & \\
+NumPy & versão mínima & 1.24 & \\
+scikit-learn & versão mínima & 1.3 & \\
+XGBoost & versão mínima & 2.0 & \\
+DEAP & versão mínima & 1.4 & GA e DE \\
+SciPy & versão mínima & 1.11 & SA e DE \\
+PyArrow & versão mínima & 14.0 & \\
+Matplotlib & versão mínima & 3.7 & \\
+scikit-posthocs & versão mínima & 0.8 & testes de Nemenyi \\
+GeoPandas & versão mínima & 0.14 & \\
+geobr & versão mínima & 0.4 & malhas geográficas \\
+PyYAML & versão mínima & 6.0 & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Artefatos de reprodução}} \\[2pt]
+dados processados & \nolinkurl{simulation/data/03_primary/} & & snapshot dos dados usados nas simulações \\
+features operacionais & \nolinkurl{simulation/data/04_feature/} & & descritores das séries de demanda \\
+configurações YAML & \nolinkurl{simulation/conf/base/parameters/} & & hiperparâmetros de todos os módulos \\
+resultados de simulação & \nolinkurl{simulation/data/07_model_output/} & & métricas CTI, NS, TR, BE e FP por série \\
+testes estatísticos & \nolinkurl{results/statistical_tests/} & & Wilcoxon, Friedman, Nemenyi \\
+rótulos PSE & \nolinkurl{results/policy_labels/} & & política dominante por série \\
+\end{longtable}
+\endgroup
