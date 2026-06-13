@@ -110,7 +110,7 @@ de Curso e Dissertacoes]
 \RequirePackage{bm} % Pacote para criação do modelo de RSsF (fig:model_rssf)
 \RequirePackage{float} %
 \RequirePackage{pdfcomment} % Comentário do Abstract
-\RequirePackage[pdftex]{hyperref} %
+\RequirePackage{hyperref} %
 \RequirePackage{fancybox}
 \RequirePackage{multicol}
 

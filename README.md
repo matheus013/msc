@@ -1,6 +1,6 @@
-# Otimização de Inventário Multi-Echelon com Aprendizado de Máquina
+# AIPE — Adaptive Inventory Policy Engine
 
-Repositório da pesquisa de mestrado e artigo SBPO 2026 sobre otimização de políticas de gestão de inventário em redes warehouse→loja, com demanda intermitente e dados reais de varejo regional brasileiro.
+Repositório da dissertação de mestrado e artigo SBPO 2026 sobre seleção adaptativa de políticas de reposição em redes warehouse→loja com demanda intermitente, usando dados reais de varejo regional brasileiro.
 
 ---
 
@@ -11,23 +11,48 @@ sbpo/
 ├── docs/
 │   ├── sbpo/                  ← Artigo SBPO 2026 (LaTeX)
 │   │   ├── main.tex
-│   │   ├── exemplo-latex.bib
-│   │   ├── sbpo-template.sty
-│   │   └── figuras/           ← Figuras geradas pelo experimento PB
-│   ├── master_proposal/       ← Proposta de dissertação de mestrado (LaTeX)
-│   └── references/            ← PDFs de referência aprovados
+│   │   └── figuras/
+│   ├── master_proposal/       ← Proposta de dissertação (LaTeX/XeLaTeX)
+│   │   ├── tcc.tex
+│   │   ├── capitulos/
+│   │   ├── figures/
+│   │   └── build/             ← Artefatos de compilação (gitignored)
+│   └── references/            ← PDFs de referência
 │
-├── data/
-│   ├── source/                ← Dados brutos proprietários (gitignored)
-│   │   └── vendas/uf=*/       ← Parquet particionado por estado (27 UFs)
-│   └── scenario/              ← Cenários por ciclo bimestral (gitignored)
-│
-└── simulation/                ← Pipeline Kedro — dissertação de mestrado
-    ├── conf/base/             ← Parâmetros configuráveis por YAML
+└── simulation/                ← Pipeline Kedro
+    ├── conf/base/parameters/  ← YAMLs configuráveis
     ├── src/simulation/
-    │   ├── core/              ← InventoryEnv, 12 políticas, forecasters
-    │   └── pipelines/         ← 5 pipelines Kedro
-    └── requirements.txt
+    │   ├── core/              ← InventoryEnv, políticas, forecasters
+    │   └── pipelines/         ← 7 pipelines Kedro
+    └── data/                  ← Dados (gitignored)
+```
+
+---
+
+## Dissertação de Mestrado
+
+**"Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos"**
+UFAL — Instituto de Computação
+
+Propõe o AIPE (*Adaptive Inventory Policy Engine*), framework que seleciona automaticamente a política de reposição mais adequada para cada série loja-produto com base no perfil operacional de demanda (taxonomia ADI × CV²).
+
+### Capítulos
+
+| # | Título |
+|---|---|
+| 1 | Introdução |
+| 2 | Referencial Teórico |
+| 3 | Trabalhos Relacionados |
+| 4 | Metodologia |
+| 5 | Resultados Preliminares |
+| 6 | Considerações Finais e Próximas Etapas |
+
+### Compilar
+
+```bash
+cd docs/master_proposal
+latexmk -pdf -xelatex -outdir=build -interaction=nonstopmode tcc.tex
+# PDF gerado em build/tcc.pdf
 ```
 
 ---
@@ -36,62 +61,65 @@ sbpo/
 
 **"Otimização Multi-Echelon de Inventário com Demanda Intermitente: Uma Arquitetura Híbrida GA-RL"**
 
-Avalia 12 políticas de inventário — clássicas (EOQ, (s,S), Newsvendor), metaheurísticas (GA, SA, PSO, DE) e aprendizado por reforço (DQN, PPO, SARSA, GA-DQN, GA-PPO) — sobre dados reais de uma rede de varejo regional brasileira (estado PB, produto 48130, 15 lojas, 38 ciclos bimestrais).
-
-Fonte do artigo: [`docs/sbpo/main.tex`](docs/sbpo/main.tex)
+Avalia 12 políticas sobre dados reais (Fase 1: Paraíba, Fase 2: Bahia).
+Fonte: [`docs/sbpo/main.tex`](docs/sbpo/main.tex)
 
 ---
 
 ## Pipeline de Simulação (Kedro)
 
-Projeto Kedro completo para a dissertação de mestrado. Suporta qualquer estado ou combinação de estados/produtos com filtros configuráveis via YAML.
-
 ```bash
 cd simulation/
 pip install -e . -r requirements.txt
 
-# Rodar pipeline completo (padrão: estado PB, produto 48130)
-kedro run
-
-# Todos os estados e produtos intermitentes
-kedro run --params "data_ingestion.states=['all'],data_ingestion.products=null"
-
-# Apenas validação estatística (KPIs já gerados)
-kedro run --pipeline statistical_validation
-
-# Visualizar DAG
-kedro viz
+kedro run                                      # pipeline completo (padrão: PB)
+kedro run --params "data_ingestion.states=['BA']"  # Fase 2 — Bahia
+kedro run --pipeline statistical_validation    # só validação estatística
+kedro viz                                      # DAG visual
 ```
 
-### Pipelines
+### Pipelines (7)
 
 | Pipeline | Entrada | Saída |
 |---|---|---|
-| `data_ingestion` | Parquet particionado por UF | `scenarios.parquet`, `scenarios_meta.parquet` |
-| `demand_forecasting` | Cenários | `forecasters.pkl`, `forecast_metrics.csv` |
-| `inventory_simulation` | Cenários + parâmetros | `kpis.parquet` (12 políticas × lojas × replicações) |
-| `statistical_validation` | KPIs | Wilcoxon, Friedman+Nemenyi, Cohen's d |
-| `reporting` | KPIs + testes | Figuras PDF, tabelas LaTeX (booktabs) |
+| `data_ingestion` | Parquet por UF | `scenarios.parquet` |
+| `demand_profiling` | Cenários | Perfis POD (ADI × CV²) |
+| `demand_forecasting` | Cenários | `forecasters.pkl`, métricas |
+| `inventory_simulation` | Cenários + params | `kpis.parquet` |
+| `policy_selection` | KPIs + perfis | Rótulos PSE, features |
+| `statistical_validation` | KPIs | Wilcoxon, Friedman-Nemenyi |
+| `reporting` | KPIs + testes | Figuras PDF, tabelas LaTeX |
 
 ### Parâmetros configuráveis
 
 | Arquivo | Controla |
 |---|---|
-| `conf/base/parameters/data_ingestion.yml` | Estados, produtos, período, CV mínimo |
-| `conf/base/parameters/data_cleaning.yml` | Filtros de limpeza, thresholds de outlier |
-| `conf/base/parameters/simulation.yml` | Custos, lead time, hiperparâmetros das 12 políticas |
-| `conf/base/parameters/forecasting.yml` | LSTM, ANN, XGBoost |
-| `conf/base/parameters/reporting.yml` | Figuras e tabelas LaTeX |
+| `data_ingestion.yml` | Estados, produtos, período |
+| `data_cleaning.yml` | Filtros, thresholds de outlier |
+| `demand_profiling.yml` | Limiares ADI, CV², burstiness |
+| `forecasting.yml` | Modelos de previsão |
+| `simulation.yml` | Custos, lead time, hiperparâmetros |
+| `policy_selection.yml` | Critério de rótulo, random seed |
+| `reporting.yml` | Formato das figuras e tabelas |
 
 ---
 
-## 5 KPIs avaliados
+## 12 Políticas Avaliadas
+
+| Categoria | Políticas |
+|---|---|
+| Clássicas | EOQ, (s,S), Jornaleiro |
+| Meta-heurísticas | GA, SA, PSO, DE |
+| Aprendizado por Reforço | DQN, PPO, SARSA |
+| Híbridas (AIPE) | GA-DQN, GA-PPO |
+
+## 5 KPIs
 
 | KPI | Descrição |
 |---|---|
 | **TIC** | Custo total de inventário (holding + ruptura + pedido) |
 | **NS** | Nível de serviço — proporção da demanda atendida |
-| **TR** | Taxa de ruptura — proporção de ciclos com falta |
+| **TR** | Taxa de ruptura — ciclos com falta / total |
 | **BE** | Efeito Bullwhip — Var(pedidos) / Var(demanda) |
 | **FP** | Frequência de pedidos — pedidos / ciclos |
 
@@ -107,4 +135,6 @@ deap, scipy, scikit-posthocs
 matplotlib
 ```
 
-Instalação completa: `pip install -r simulation/requirements.txt`
+```bash
+pip install -r simulation/requirements.txt
+```

@@ -16,7 +16,7 @@ Os experimentos da Fase~1 foram conduzidos sobre 15 lojas da Paraíba, produto 4
 
 A Tabela~\ref{tab:global_prelim} apresenta as médias dos cinco indicadores sobre as 15 lojas, ordenadas por CTI crescente.
 
-\noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional — o agente parou de emitir pedidos ou pediu em quase todos os ciclos — e essas políticas não constituem soluções práticas viáveis.
+\noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
 
 \begin{table}[ht]
 \centering
@@ -322,7 +322,7 @@ O LSTM é o único modelo a superar a previsão \textit{naïve} em MASE ($0.76 <
 
 A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o LSTM atinge MASE\,=\,$0.49$; para a mais difícil, MASE\,=\,$1.87$ (série loja~10533990, produto~75792, demanda média de $0.8$ unidades por ciclo, ADI\,=\,$1.81$, tipicamente a configuração mais desafiadora do quadrante \textit{Lumpy}).
 
-\noindent Estes resultados complementam — mas não determinam — a seleção de política pelo AIPE. O modelo de previsão com melhor desempenho em MASE não implica necessariamente a melhor política de estoque para a mesma série.
+\noindent Estes resultados complementam, mas não determinam, a seleção de política pelo AIPE. O modelo de previsão com melhor desempenho em MASE não implica necessariamente a melhor política de estoque para a mesma série.
 
 \begin{figure}[ht]
 \centering

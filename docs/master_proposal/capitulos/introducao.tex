@@ -101,7 +101,7 @@ Esse objetivo se materializa em uma abordagem que combina a caracterização do 
 
   \item \textbf{[Fase 2: Concluído]} Realizar validação estatística dos resultados obtidos, verificando a consistência das diferenças observadas entre políticas e a robustez das conclusões experimentais;
 
-  \item \textbf{[Fase 3: Em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante — definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço —, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
+  \item \textbf{[Fase 3: Em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante, definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
 
   \item \textbf{[Fase 3: Planejado]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
 \end{enumerate}
@@ -113,7 +113,7 @@ Após explicitar os objetivos, é igualmente importante delimitar o que está fo
 
 \begin{itemize}
   \item Coordenação multiagente entre escalões: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
-  \item Aprendizado por reforço multiagente (MARL): algoritmos como HAPPO~\citep{Liu2024HAPPO} ou comunicação entre agentes estão fora do escopo; o AIPE opera como seletor offline de política por série, não como coordenador online entre nós da rede.
+  \item Aprendizado por reforço multiagente (MARL): algoritmos como HAPPO, uma variante multiagente do PPO \citep{Liu2024HAPPO}, ou comunicação entre agentes estão fora do escopo; o AIPE opera como seletor offline de política por série, não como coordenador online entre nós da rede.
   \item \textit{Online learning} contínuo: o AIPE é reavaliado periodicamente (a cada $\Delta t$ ciclos), não atualizado continuamente a cada nova transação; a adaptação é por recálculo do vetor de características, não por reaprendizado incremental do meta-modelo.
   \item Otimização conjunta de múltiplos SKUs: cada série (loja, produto) é tratada independentemente; efeitos de substituição, complementaridade e portfolio não são modelados.
   \item Otimização de roteamento e transporte: custos e restrições logísticas de transporte são parâmetros fixos; a dissertação otimiza \textit{quando} e \textit{quanto} pedir, não \textit{como} transportar.
