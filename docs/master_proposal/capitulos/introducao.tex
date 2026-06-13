@@ -6,7 +6,7 @@ Redes varejistas com múltiplas lojas enfrentam problemas recorrentes de reposi�
 
 Essa dificuldade é o ponto de partida desta dissertação: tomar decisões de reposição em redes varejistas geograficamente distribuídas, nas quais produtos, lojas e regiões apresentam padrões de demanda substancialmente distintos. Em um país continental como o Brasil, fatores logísticos, sazonalidade, diferenças regionais de consumo e variabilidade entre lojas ampliam a complexidade operacional do controle de estoque. Nesse cenário, decidir quando e quanto repor deixa de ser uma aplicação mecânica de regras fixas e passa a exigir métodos capazes de reconhecer a heterogeneidade das séries loja-produto.
 
-\subsection{Contexto operacional de redes varejistas multi-loja}
+\subsection{Redes Varejistas Multi-Loja}
 
 Para situar esse desafio, considere a estrutura básica de uma rede varejista geograficamente dispersa: lojas espalhadas em diferentes cidades e regiões abastecidas por um ou mais centros de distribuição regionais. O desafio é que cada loja, em seu contexto local, precisa decidir quando repor estoque e em que quantidade. Essa decisão é crítica porque afeta dois objetivos em conflito: manter custos baixos (reduzindo estoque em prateleira) e manter disponibilidade (não deixando o cliente sem o produto).
 
@@ -28,7 +28,7 @@ Essa sequência é sintetizada na Figura~\ref{fig:intro_problem_selection}: rede
 
 \input{figures/intro_problem_selection}
 
-\subsection{O problema de otimização de inventário em redes varejistas}
+\subsection{Problema de Reposição em Redes Varejistas}
 
 A motivação apresentada anteriormente pode ser formalizada como um problema recorrente de otimização de inventário. No contexto operacional considerado, cada loja precisa responder continuamente a duas decisões: quando repor e quanto repor.
 
@@ -45,7 +45,7 @@ Portanto, o problema de otimização é este: dado um histórico de vendas de ca
 Para tornar esse problema tratável por modelos de seleção, é necessário representar cada série loja-produto por descritores mensuráveis. Características operacionais são descritores do padrão de venda: frequência de venda, variabilidade de tamanho de pedidos, padrões sazonais e outras medidas de comportamento operacional. Essas características alimentam a engenharia do AIPE. Os detalhes técnicos estão no Capítulo~\ref{cap:metod}.
 
 
-\subsection{Questões centrais e hipóteses}
+\subsection{Questões de Pesquisa e Hipóteses}
 
 % \subsubsection*{Visão geral do funcionamento do AIPE}
 
@@ -114,7 +114,7 @@ Após explicitar os objetivos, é igualmente importante delimitar o que está fo
 \begin{itemize}
   \item Coordenação multiagente entre escalões: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
   \item Aprendizado por reforço multiagente (MARL): algoritmos como HAPPO~\citep{Liu2024HAPPO} ou comunicação entre agentes estão fora do escopo; o AIPE opera como seletor offline de política por série, não como coordenador online entre nós da rede.
-  \item \textit{Online learning} contínuo: o AIPE é reavaliado periodicamente (a cada $\Delta t$ ciclos), não atualizado continuamente a cada nova transação; a adaptação é por recálculo do vetor de \textit{features}, não por reaprendizado incremental do meta-modelo.
+  \item \textit{Online learning} contínuo: o AIPE é reavaliado periodicamente (a cada $\Delta t$ ciclos), não atualizado continuamente a cada nova transação; a adaptação é por recálculo do vetor de características, não por reaprendizado incremental do meta-modelo.
   \item Otimização conjunta de múltiplos SKUs: cada série (loja, produto) é tratada independentemente; efeitos de substituição, complementaridade e portfolio não são modelados.
   \item Otimização de roteamento e transporte: custos e restrições logísticas de transporte são parâmetros fixos; a dissertação otimiza \textit{quando} e \textit{quanto} pedir, não \textit{como} transportar.
   \item Integração em tempo real com ERP: o \textit{pipeline} opera sobre histórico exportado em Parquet; não há integração transacional em tempo real com plataformas de gestão corporativa.

@@ -1,7 +1,7 @@
 % apendice.tex — Apêndice A: Matriz Completa de Parâmetros Experimentais
 
-\chapter*{\centering Apêndice~A --- Matriz Completa de Parâmetros Experimentais}
-\addcontentsline{toc}{chapter}{Apêndice~A --- Matriz Completa de Parâmetros Experimentais}
+\appendix
+\chapter{Matriz de Parâmetros Experimentais}
 \label{app:reproducibility}
 \lhead{APÊNDICE A}
 
@@ -65,7 +65,7 @@ Custos & custos globais ou por série & globais & mesmos parâmetros para todas 
 \multicolumn{4}{@{}l}{\textit{Avaliação}} \\[2pt]
 Avaliação & número de replicações & 5 & replicações independentes por série \\
 Avaliação & semente global & 42 & fixa para todas as execuções \\
-Avaliação & modo de avaliação & walk-forward & janela deslizante; 17 ciclos de treino \\
+Avaliação & modo de avaliação & \textit{walk-forward} & janela deslizante; 17 ciclos de treino \\
 Avaliação & métricas reportadas & CTI, NS, TR, BE, FP & definição formal no Capítulo~3 \\
 Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do limiar é considerada inviável \\
 \end{longtable}
@@ -184,7 +184,7 @@ DQN & $\varepsilon$ inicial & 1,0 & exploração total no início \\
 DQN & $\varepsilon$ mínimo & 0,01 & \\
 DQN & decaimento de $\varepsilon$ & 0,995 por episódio & geométrico \\
 DQN & tamanho do batch & 64 & \\
-DQN & tamanho do replay buffer & 10\,000 & \\
+DQN & tamanho do \textit{replay buffer} & 10\,000 & \\
 DQN & frequência de atualização da rede-alvo & 10 episódios & \\
 DQN & arquitetura da Q-network & $[6] \to [64, 64] \to [20]$ & duas camadas ocultas \\
 DQN & taxa de aprendizado & 0,001 & padrão do código; não exposto no YAML \\
@@ -217,7 +217,7 @@ SARSA & semente & 42 & \\[4pt]
 \multicolumn{4}{@{}l}{\textit{GA-DQN}} \\[2pt]
 GA-DQN & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
 GA-DQN & parâmetros do DQN & herdados (ver acima) & \\
-GA-DQN & tamanho do replay buffer pré-populado & 1\,000 & trajetórias geradas pelo GA \\
+GA-DQN & tamanho do \textit{replay buffer} pré-populado & 1\,000 & trajetórias geradas pelo GA \\
 GA-DQN & episódios de refinamento RL & 200 & \\
 GA-DQN & regra de integração GA~$\to$~DQN & se $(I_t + \mathrm{OP}) \leq s + \mathrm{SS}$:\newline $Q = \max(Q_{\mathrm{DQN}},\; 0{,}5 \cdot Q_{\mathrm{GA}})$;\newline caso contrário: $Q = 0$ & \\
 GA-DQN & semente & 42 & \\[4pt]
@@ -259,7 +259,7 @@ GA-PPO & semente & 42 & \\
 Previsão & modelos utilizados & LSTM, ANN, XGBoost, Croston, ARIMA & ensemble de previsão \\
 Previsão & janela de entrada (lookback) & 6 ciclos & \\
 Previsão & ciclos mínimos de treino & 17 & \\
-Previsão & modo walk-forward & desativado & previsão em janela fixa \\
+Previsão & modo \textit{walk-forward} & desativado & previsão em janela fixa \\
 Previsão & horizonte de previsão & 1 ciclo à frente & \\[3pt]
 
 LSTM & hidden size & 64 & \\
@@ -275,32 +275,32 @@ ANN / MLP & fração de validação & 0,1 & \\[3pt]
 XGBoost (previsão) & n\_estimators & 200 & \\
 XGBoost (previsão) & max\_depth & 6 & \\
 XGBoost (previsão) & taxa de aprendizado & 0,05 & \\
-XGBoost (previsão) & subsample & 0,8 & \\[3pt]
+XGBoost (previsão) & \textit{subsample} & 0,8 & \\[3pt]
 
 Croston & alpha (suavização) & 0,1 & suavização exponencial \\[3pt]
 
 ARIMA & ordem $(p,d,q)$ & $(1,1,1)$ & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Características operacionais e classificação POD}} \\[2pt]
-POD / ADI-CV\textsuperscript{2} & limiar ADI & 1,32 & classif.\ Syntetos-Boylan \\
-POD / ADI-CV\textsuperscript{2} & limiar CV\textsuperscript{2} & 0,49 & classif.\ Syntetos-Boylan \\
-POD / ADI-CV\textsuperscript{2} & limiar de zeros consecutivos & 5 & \\
-POD / ADI-CV\textsuperscript{2} & limiar de burstiness & 0,30 & \\
-POD / ADI-CV\textsuperscript{2} & limiar ACF (sazonalidade) & 0,25 & \\
-POD / ADI-CV\textsuperscript{2} & coeficiente mínimo de tendência & 0,05 & \\
-POD / ADI-CV\textsuperscript{2} & limiar de entropia & 2,0 & \\
-POD / ADI-CV\textsuperscript{2} & média mínima de demanda & 2,0 & séries abaixo são excluídas \\
-POD / ADI-CV\textsuperscript{2} & limiar CV para segmentação & 1,5 & segmentação adicional por variabilidade \\[4pt]
+POD / ADI-CV$^2$ & limiar ADI & 1,32 & classif.\ Syntetos-Boylan \\
+POD / ADI-CV$^2$ & limiar CV$^2$ & 0,49 & classif.\ Syntetos-Boylan \\
+POD / ADI-CV$^2$ & limiar de zeros consecutivos & 5 & \\
+POD / ADI-CV$^2$ & limiar de burstiness & 0,30 & \\
+POD / ADI-CV$^2$ & limiar ACF (sazonalidade) & 0,25 & \\
+POD / ADI-CV$^2$ & coeficiente mínimo de tendência & 0,05 & \\
+POD / ADI-CV$^2$ & limiar de entropia & 2,0 & \\
+POD / ADI-CV$^2$ & média mínima de demanda & 2,0 & séries abaixo são excluídas \\
+POD / ADI-CV$^2$ & limiar CV para segmentação & 1,5 & segmentação adicional por variabilidade \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Geração de rótulos e PSE}} \\[2pt]
-Rótulos & limiar mínimo de NS para rótulo & 0,70 & política abaixo é excluída do ranking \\
+Rótulos & limiar mínimo de NS para rótulo & 0,70 & política abaixo é excluída do \textit{ranking} \\
 Rótulos & modelo PSE & XGBoost & classificador treinado sobre perfis de séries \\
 Rótulos & validação cruzada & 5 folds & \\
 Rótulos & semente PSE & 42 & \\
 Rótulos & n\_estimators (PSE) & 300 & \\
 Rótulos & max\_depth (PSE) & 6 & \\
 Rótulos & taxa de aprendizado (PSE) & 0,05 & \\
-Rótulos & subsample (PSE) & 0,8 & \\
+Rótulos & \textit{subsample} (PSE) & 0,8 & \\
 Rótulos & colsample\_bytree (PSE) & 0,8 & \\
 \end{longtable}
 \endgroup
@@ -331,11 +331,11 @@ Rótulos & colsample\_bytree (PSE) & 0,8 & \\
 \multicolumn{4}{@{}l}{\textit{Validação estatística}} \\[2pt]
 Estatística & teste par a par & Wilcoxon signed-rank & comparação de pares de políticas \\
 Estatística & teste global & Friedman & hipótese nula de igualdade entre múltiplas políticas \\
-Estatística & post-hoc & Nemenyi & comparações múltiplas após rejeição de Friedman \\[4pt]
+Estatística & \textit{post-hoc} & Nemenyi & comparações múltiplas após rejeição de Friedman \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Ambiente computacional}} \\[2pt]
 Python & versão mínima & 3.9 & \\
-Kedro & versão mínima & 0.19.0 & orquestração do pipeline \\
+Kedro & versão mínima & 0.19.0 & orquestração do \textit{pipeline} \\
 kedro-datasets & versão mínima & 2.0.0 & \\
 pandas & versão mínima & 2.0 & \\
 NumPy & versão mínima & 1.24 & \\
@@ -352,7 +352,7 @@ PyYAML & versão mínima & 6.0 & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Artefatos de reprodução}} \\[2pt]
 dados processados & \nolinkurl{simulation/data/03_primary/} & & snapshot dos dados usados nas simulações \\
-features operacionais & \nolinkurl{simulation/data/04_feature/} & & descritores das séries de demanda \\
+características operacionais & \nolinkurl{simulation/data/04_feature/} & & descritores das séries de demanda \\
 configurações YAML & \nolinkurl{simulation/conf/base/parameters/} & & hiperparâmetros de todos os módulos \\
 resultados de simulação & \nolinkurl{simulation/data/07_model_output/} & & métricas CTI, NS, TR, BE e FP por série \\
 testes estatísticos & \nolinkurl{results/statistical_tests/} & & Wilcoxon, Friedman, Nemenyi \\

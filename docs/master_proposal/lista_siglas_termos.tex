@@ -16,7 +16,7 @@
 \midrule
 \endhead
 \endfoot
-AIPE & \textit{Adaptive Inventory Policy Engine} & Framework metodológico que recomenda políticas de reposição por série loja-produto. \\
+AIPE & \textit{Adaptive Inventory Policy Engine} & \textit{Framework} metodológico que recomenda políticas de reposição por série loja-produto. \\
 PSE & \textit{Policy Selection Engine} & Meta-modelo supervisionado que aprende a relação entre características da série e política recomendada. \\
 Política de reposição & Regra ou algoritmo de decisão de estoque & Define quando emitir pedido e em qual quantidade. \\
 Série loja-produto & Histórico de vendas de um produto específico em uma loja específica & Unidade básica de análise da dissertação. \\
@@ -27,7 +27,7 @@ TR & Taxa de Ruptura & Frequência ou proporção de falta de estoque; deve ser 
 BE & \textit{Bullwhip Effect} & Amplificação da variabilidade dos pedidos na cadeia. \\
 FP & Frequência de Pedidos & Fração de ciclos em que a política emite pedido. \\
 ADI & \textit{Average Demand Interval} & Intervalo médio entre períodos com demanda positiva. \\
-CV\textsuperscript{2} & Quadrado do coeficiente de variação & Medida de variabilidade relativa da demanda. \\
+CV$^2$ & Quadrado do coeficiente de variação & Medida de variabilidade relativa da demanda. \\
 \textit{Lumpy} & Demanda grumosa & Regime com muitos períodos sem venda e alta variabilidade nos períodos com venda. \\
 \textit{Smooth} & Demanda regular & Regime com alta frequência e baixa variabilidade. \\
 \textit{Erratic} & Demanda errática & Regime com alta frequência e alta variabilidade. \\
@@ -44,7 +44,7 @@ GA-DQN & Política híbrida GA + DQN & Política especialista que combina busca 
 GA-PPO & Política híbrida GA + PPO & Política especialista que combina busca evolutiva e PPO. \\
 EOQ & \textit{Economic Order Quantity} & Política clássica baseada em quantidade econômica de pedido. \\
 $(s,S)$ & Política de ponto de pedido e nível máximo & Política que emite pedido quando o estoque cai abaixo de $s$, repondo até $S$. \\
-Jornaleiro / \textit{Newsvendor} & Política de período único baseada em quantil da demanda & Política clássica usada como baseline de reposição. \\
+Jornaleiro / \textit{Newsvendor} & Política de período único baseada em quantil da demanda & Política clássica usada como \textit{baseline} de reposição. \\
 MASE & \textit{Mean Absolute Scaled Error} & Métrica de erro de previsão usada como sinal auxiliar. \\
 sMAPE & \textit{Symmetric Mean Absolute Percentage Error} & Métrica secundária de erro de previsão. \\
 RMSSE & \textit{Root Mean Squared Scaled Error} & Métrica escalada de erro quadrático de previsão. \\
@@ -62,8 +62,8 @@ M4/M5 & Competições internacionais de previsão & Benchmarks amplamente usados
 ARIMA/SARIMAX & Modelos estatísticos de séries temporais & Modelos de previsão usados como alternativas auxiliares na etapa preditiva. \\
 LSTM & \textit{Long Short-Term Memory} & Rede neural recorrente usada para capturar padrões sequenciais em séries temporais. \\
 ANN & \textit{Artificial Neural Network} & Rede neural artificial usada como modelo de previsão de demanda. \\
-XGBoost & \textit{Extreme Gradient Boosting} & Modelo baseado em árvores e gradiente boosting usado para previsão e classificação. \\
-LightGBM & \textit{Light Gradient Boosting Machine} & Modelo alternativo de boosting considerado para classificação supervisionada. \\
+XGBoost & \textit{Extreme Gradient Boosting} & Modelo baseado em árvores e gradiente \textit{boosting} usado para previsão e classificação. \\
+LightGBM & \textit{Light Gradient Boosting Machine} & Modelo alternativo de \textit{boosting} considerado para classificação supervisionada. \\
 RandomForest & Floresta aleatória & Modelo de ensemble baseado em múltiplas árvores de decisão. \\
 DRL & \textit{Deep Reinforcement Learning} & Aprendizado por reforço profundo, isto é, RL com aproximação por redes neurais. \\
 HAPPO & \textit{Heterogeneous-Agent Proximal Policy Optimization} & Variante multiagente de PPO discutida em trabalhos relacionados. \\
@@ -73,7 +73,7 @@ SB3 & \textit{Stable-Baselines3} & Biblioteca de referência para implementaçã
 API & \textit{Application Programming Interface} & Interface de programação usada para padronizar chamadas de software. \\
 YAML & \textit{YAML Ain't Markup Language} & Formato de arquivo usado para parametrização dos experimentos. \\
 Parquet & Formato colunar de dados & Formato eficiente para armazenar bases tabulares particionadas. \\
-Kedro & Framework de engenharia de dados & Ferramenta usada para organizar pipelines reprodutíveis de processamento e simulação. \\
+Kedro & \textit{Framework} de engenharia de dados & Ferramenta usada para organizar \textit{pipelines} reprodutíveis de processamento e simulação. \\
 \textit{Dataset} & Conjunto de dados & Base organizada usada como entrada para análises, simulações ou treinamento. \\
 \textit{Benchmark} & Protocolo comparativo & Avaliação padronizada usada para comparar políticas candidatas sob as mesmas condições. \\
 \textit{Baseline} & Método de referência & Política ou modelo usado como ponto de comparação para avaliar ganhos relativos. \\

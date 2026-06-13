@@ -5,27 +5,26 @@ Este capítulo apresenta os fundamentos teóricos necessários à formulação d
 A revisão parte da premissa de que políticas de reposição apresentam desempenho dependente do regime de demanda, o que limita a adoção de uma política única para todo o portfólio. A caracterização da demanda intermitente e da taxonomia de Syntetos-Boylan evidencia a existência de regimes operacionais distintos e justifica por que cada regime exige abordagens de reposição específicas. Em seguida, são discutidas as principais famílias de políticas de reposição, incluindo políticas clássicas como EOQ, $(s,S)$ e Jornaleiro. EOQ (\textit{Economic Order Quantity}) determina um lote econômico de pedido a partir do equilíbrio entre custo de pedido e custo de manutenção; a política $(s,S)$ aciona reposição quando o estoque atinge um ponto mínimo $s$ e repõe até um nível-alvo $S$; o modelo do Jornaleiro avalia a quantidade ótima em decisões de período único sob incerteza. O capítulo também discute meta-heurísticas (Algoritmo Genético, Simulated Annealing, Particle Swarm, Differential Evolution) e agentes de aprendizado por reforço (DQN, PPO, SARSA), destacando que cada família apresenta vantagens e limitações associadas ao perfil operacional da demanda.
 
 Na sequência, o capítulo discute métricas de qualidade de previsão e testes estatísticos não paramétricos. Esses elementos são utilizados para sustentar avaliações comparáveis entre políticas e para apoiar a geração de rótulos de treinamento do \textit{Policy Selection Engine} (PSE). Por fim, a formulação do \textit{Algorithm Selection Problem}, das hiper-heurísticas e do meta-aprendizado é mobilizada como fundamento conceitual da seleção contextual de políticas, estabelecendo a base teórica do AIPE.
-\section{Famílias de Políticas de Reposição}
+\section{Políticas de Reposição}
 
 Antes de discutir a taxonomia de demanda, é útil delimitar o conjunto de decisões que será comparado ao longo da dissertação. Uma política de reposição define quando emitir pedido e quanto repor, a partir do estado operacional observado em cada série loja-produto. Nesta seção, as políticas são apresentadas de forma conceitual, agrupadas por família metodológica. A formalização matemática do problema de controle aparece adiante, após a caracterização dos regimes de demanda, para conectar a escolha da política ao perfil operacional de cada série.
-
 \subsection{Políticas Clássicas}
 
 As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como \textit{baselines} de referência no \textit{benchmark}.
 
-\paragraph{EOQ (\emph{Economic Order Quantity}).}
-Minimiza o custo total anual assumindo demanda constante $\mu$. A quantidade ótima é $Q^* = \sqrt{2\mu c_o^{\text{fix}}/h}$, com ponto de reposição $s = \mu L$. Em regime intermitente, o pressuposto de demanda constante é violado, elevando o custo total em relação a políticas adaptativas.
+\paragraph{EOQ (\textit{Economic Order Quantity}).}
+Minimiza o custo total anual assumindo demanda constante $\mu$, em que $\mu$ representa a demanda média por ciclo. A quantidade ótima é $Q^* = \sqrt{2\mu c_o^{\text{fix}}/h}$, na qual $Q^*$ é o lote econômico, $c_o^{\text{fix}}$ é o custo fixo por pedido e $h$ é o custo de manutenção por unidade e por ciclo. O ponto de reposição é definido como $s = \mu L$, em que $s$ representa o nível de estoque que aciona um pedido e $L$ é o prazo de entrega medido em ciclos. Em regime intermitente, o pressuposto de demanda constante é violado, elevando o custo total em relação a políticas adaptativas.
 
 \paragraph{Política $(s, S)$.}
-Emite pedido de magnitude $S - I_t$ quando $I_t \leq s$, com $s$ e $S$ calibrados por EOQ. É a política de referência mais adotada no varejo regional brasileiro por sua simplicidade operacional. Contudo, gera \textit{efeito chicote} elevado (amplificação de variabilidade entre a loja e o armazém), porque os pedidos se concentram em lotes espaçados, criando vales e picos artificiais na cadeia \citep{LeePadmanabhanWhang1997Bullwhip}.
+Emite pedido de magnitude $S - I_t$ quando $I_t \leq s$, em que $I_t$ é a posição de estoque no ciclo $t$, $s$ é o ponto de reposição e $S$ é o nível-alvo para recomposição do estoque. Neste trabalho, $s$ e $S$ são calibrados a partir da EOQ. É a política de referência mais adotada no varejo regional brasileiro por sua simplicidade operacional. Contudo, gera \textit{efeito chicote} elevado (amplificação de variabilidade entre a loja e o armazém), porque os pedidos se concentram em lotes espaçados, criando vales e picos artificiais na cadeia \citep{LeePadmanabhanWhang1997Bullwhip}.
 
-\paragraph{Jornaleiro (\emph{Newsvendor}).}
-Determina o pedido ótimo de período único como o quantil $z_\alpha$ da distribuição de demanda: $Q^* = \hat{\mu} + z_\alpha \hat{\sigma}$, com $z_\alpha = 1.28$ para nível de serviço alvo de 90\%. Assume independência entre períodos, o que o torna econômico em demanda de baixo volume onde os picos não são correlacionados.
+\paragraph{Jornaleiro (\textit{Newsvendor}).}
+Determina o pedido ótimo de período único como um quantil da distribuição de demanda: $Q^* = \hat{\mu} + z_\alpha \hat{\sigma}$, em que $\hat{\mu}$ e $\hat{\sigma}$ são, respectivamente, a média e o desvio-padrão estimados da demanda histórica, $z_\alpha$ é o quantil da distribuição normal associado ao nível de serviço alvo e $Q^*$ é a quantidade recomendada para o período. Neste trabalho, adota-se $z_\alpha = 1.28$ para nível de serviço alvo de 90\%. A política assume independência entre períodos, o que a torna econômica em demanda de baixo volume onde os picos não são correlacionados.
 
 \smallskip
 \noindent\textit{Limitação estrutural das políticas clássicas:} EOQ, $(s,S)$ e Jornaleiro assumem homogeneidade operacional. Cada um pressupõe, implicitamente, que a série se comporta de forma previsível e regular o suficiente para que parâmetros fixos sejam adequados. Entretanto, no regime intermitente com CV $> 1.5$, essa hipótese é sistematicamente violada: a mesma parametrização que funciona para uma série \textit{Smooth} gera ruptura frequente em séries \textit{Lumpy}. Isso impede o uso de qualquer política clássica como solução universal. Portanto, ou se aceita degradação de desempenho em parte do portfólio, ou se busca adaptar a escolha da política ao perfil operacional de cada série.
 
-\subsection{Meta-Heurísticas de Otimização}
+\subsection{Meta-Heurísticas}
 
 As meta-heurísticas buscam parâmetros $(s^*, Q^*)$ que minimizam o custo total via simulação do horizonte completo, sem pressupor qualquer distribuição de demanda. Essa abordagem é adequada ao regime intermitente porque integra diretamente os picos irregulares observados na série histórica.
 
@@ -33,42 +32,42 @@ As meta-heurísticas buscam parâmetros $(s^*, Q^*)$ que minimizam o custo total
 Mantém uma população de soluções e evolui por seleção, cruzamento e mutação \citep{Holland1992ANAS,Talbi2009Metaheuristics}. A função de aptidão é o custo total simulado. Em inventário, o GA tem sido amplamente utilizado para otimização de políticas de reposição \citep{Yuna2023IntermittentMetaheuristics}, pois tolera bem a descontinuidade introduzida pelos ciclos de demanda nula.
 
 \paragraph{Recozimento Simulado (SA).}
-Busca estocástica com critério de aceitação de Metropolis: aceita vizinho $s'$ com probabilidade $\exp(-\Delta C / T_k)$, onde $T_k$ decresce segundo esquema geométrico \citep{Kirkpatrick1983SA}. Permite escapar de ótimos locais mas é sensível ao esquema de resfriamento.
+Busca estocástica com critério de aceitação de Metropolis: aceita uma solução vizinha $s'$ com probabilidade $\exp(-\Delta C / T_k)$, em que $\Delta C$ é a variação de custo entre a solução candidata e a solução corrente, $T_k$ é a temperatura na iteração $k$ e $k$ indexa o passo da busca. A temperatura $T_k$ decresce segundo esquema geométrico \citep{Kirkpatrick1983SA}. Permite escapar de ótimos locais mas é sensível ao esquema de resfriamento.
 
 \paragraph{Otimização por Enxame de Partículas (PSO).}
-Partículas navegam no espaço de soluções atraídas pelo melhor histórico pessoal e pelo melhor global, balanceando exploração e explotação via inércia $w$ e acelerações $c_1$, $c_2$ \citep{Kennedy1995PSO}.
+Partículas navegam no espaço de soluções atraídas pelo melhor histórico pessoal e pelo melhor global, balanceando exploração e explotação via inércia $w$ e acelerações $c_1$, $c_2$. O parâmetro $w$ controla a persistência da trajetória anterior, enquanto $c_1$ e $c_2$ ponderam, respectivamente, a atração pela melhor posição individual e pela melhor posição coletiva do enxame \citep{Kennedy1995PSO}.
 
 \paragraph{Evolução Diferencial (DE).}
-Gera candidatos por mutação diferencial (\emph{rand/1/bin}) e cruzamento com taxa $C_R$, sendo reconhecida pela robustez em espaços contínuos de baixa dimensão \citep{Storn1997DE}.
+Gera candidatos por mutação diferencial (\textit{rand/1/bin}) e cruzamento com taxa $C_R$, em que $C_R$ define a probabilidade de cada componente do candidato mutado ser incorporado à nova solução. A DE é reconhecida pela robustez em espaços contínuos de baixa dimensão \citep{Storn1997DE}.
 
 \smallskip
 Meta-heurísticas resolvem o problema de \textit{como} otimizar os parâmetros de uma política fixada, mas não o problema de \textit{qual} política selecionar para cada série. GA, SA, PSO e DE podem encontrar boas calibrações em regimes específicos; contudo, seu desempenho varia entre quadrantes Syntetos-Boylan. Assim, a seleção contextual permanece em aberto e é tratada, nesta dissertação, pelo PSE do AIPE.
 
-\subsection{Agentes de Aprendizado por Reforço como Políticas Adaptativas}
+\subsection{Aprendizado por Reforço}
 
 O aprendizado por reforço (RL) representa uma família de políticas adaptativas incluída no portfólio avaliado pelo AIPE. Nesta dissertação, esses métodos são tratados como políticas candidatas, cujas condições de superioridade relativa podem ser identificadas pelo PSE.
 
-O RL enquadra o controle de inventário como um Processo de Decisão de Markov (MDP) $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$: o agente observa o estado $\mathbf{s}_t$, escolhe a ação $a_t$ (quantidade a pedir), recebe recompensa $r_t = -\text{custo}_t$ e busca maximizar o retorno descontado $\sum_{t}\gamma^t r_t$ \citep{SuttonBarto2018RL}.
+O RL enquadra o controle de inventário como um Processo de Decisão de Markov (MDP) $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$, em que $\mathcal{S}$ representa o espaço de estados, $\mathcal{A}$ representa o espaço de ações, $P$ descreve as transições entre estados, $R$ define a recompensa associada às decisões e $\gamma$ é o fator de desconto de recompensas futuras. Nesse enquadramento, o agente observa o estado $\mathbf{s}_t$, escolhe a ação $a_t$ (quantidade a pedir), recebe recompensa $r_t = -\text{custo}_t$ e busca maximizar o retorno descontado $\sum_{t}\gamma^t r_t$ \citep{SuttonBarto2018RL}.
 
 A limitação estrutural dos agentes RL em inventário varejista é a suposição implícita de abundância de interações. Agentes de RL isolados podem exigir um volume de interações muito superior ao horizonte histórico disponível em séries reais de varejo regional. Essa limitação reforça a necessidade de avaliar métodos de RL dentro de um portfólio mais amplo de políticas candidatas, em vez de assumi-los como solução única para todos os perfis de demanda.
 
 \paragraph{DQN.}
-Aproxima a função-valor $Q_\theta(s, a)$ por redes neurais profundas, com \emph{experience replay} e \emph{target network} para estabilidade \citep{Mnih2015DQN}. Em inventário, exige espaço de ação discretizado e tende a demandar muitas interações para convergência, o que o torna inadequado quando a série histórica disponível é curta.
+Aproxima a função-valor $Q_\theta(s, a)$ por redes neurais profundas, em que $Q_\theta(s, a)$ estima o retorno esperado ao executar a ação $a$ no estado $s$ e $\theta$ representa os parâmetros da rede neural. O método utiliza \textit{experience replay} e \textit{target network} para estabilidade \citep{Mnih2015DQN}. Em inventário, exige espaço de ação discretizado e tende a demandar muitas interações para convergência, o que o torna inadequado quando a série histórica disponível é curta.
 
 \paragraph{PPO.}
-Algoritmo de \emph{policy gradient} com clipping $\epsilon$-clip que restringe a atualização da política, evitando colapsos de gradiente \citep{Schulman2017PPO}. Suporta ações contínuas (quantidades), tornando-o mais natural para controle de estoque. Sem inicialização adequada, tende a convergir para política degenerada de alta frequência de pedidos.
+Algoritmo de \textit{policy gradient} com \textit{clipping} $\epsilon$-\textit{clip}, em que $\epsilon$ limita a magnitude da atualização da política e reduz o risco de colapsos de gradiente \citep{Schulman2017PPO}. Suporta ações contínuas (quantidades), tornando-o mais natural para controle de estoque. Sem inicialização adequada, tende a convergir para política degenerada de alta frequência de pedidos.
 
 \paragraph{SARSA.}
-Algoritmo tabular on-policy com atualização $Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma Q(s',a') - Q(s,a)]$. Limitado em expressividade para regimes intermitentes por requerer discretização grosseira do espaço de estados.
+Algoritmo tabular on-policy com atualização $Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma Q(s',a') - Q(s,a)]$, em que $Q(s,a)$ é o valor estimado do par estado--ação corrente, $\alpha$ é a taxa de aprendizado, $r$ é a recompensa observada, $\gamma$ é o fator de desconto e $(s',a')$ representa o próximo par estado--ação seguido pela própria política. É limitado em expressividade para regimes intermitentes por requerer discretização grosseira do espaço de estados.
 
-\subsection{Arquitetura Híbrida GA-RL}
+\subsection{Políticas Híbridas GA-RL}
 \label{sec:ga_rl_arch}
 
 Arquiteturas híbridas GA-RL combinam dois mecanismos complementares. O Algoritmo Genético realiza busca global no espaço de parâmetros de reposição, explorando alternativas sem depender de gradientes ou de hipóteses fortes sobre a distribuição da demanda. O agente de aprendizado por reforço, por sua vez, refina decisões a partir da interação sequencial com o ambiente de inventário. Em conjunto, a busca evolutiva fornece uma inicialização informativa e o RL acrescenta capacidade adaptativa.
 
 Essa combinação é particularmente relevante quando a série histórica disponível é curta ou irregular. Nesses casos, agentes de RL isolados tendem a exigir muitas interações para aprender políticas estáveis, enquanto meta-heurísticas isoladas podem produzir parâmetros bons para o histórico observado, mas pouco reativos a mudanças de estado. Métodos GA-RL procuram reduzir essa tensão: usam busca global para evitar exploração inicial pouco informativa e aprendizado sequencial para ajustar a decisão ao estado corrente.
 
-Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialistas dentro do benchmark. A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho.
+Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialistas dentro do \textit{benchmark}. A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho.
 
 \begin{figure}[htbp]
 \centering
@@ -95,7 +94,7 @@ Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialista
 \label{fig:ga_rl_arch}
 \end{figure}
 
-\section{Demanda Intermitente: Definição e Caracterização}
+\section{Demanda Intermitente}
 
 Demanda intermitente é caracterizada por ciclos frequentes de demanda nula intercalados com valores positivos, muitas vezes de magnitude irregular. Esse padrão é prevalente em varejo regional de produtos cosméticos, peças de reposição e bens de consumo de baixa rotatividade, contexto direto desta dissertação \citep{Croston1972ForecastingIntermittentDemand,Boylan2008Intermittent}. Do ponto de vista gerencial, a intermitência torna políticas clássicas (como EOQ e $(s,S)$ parametrizadas pela média) subótimas, pois os pressupostos de demanda contínua e estacionária são violados sistematicamente.
 
@@ -109,13 +108,13 @@ Na Equação~\ref{eq:n_pos}, $n_{+}$ conta quantos ciclos apresentam demanda pos
 
 O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico).
 
-\subsection{Taxonomia de Syntetos-Boylan \texorpdfstring{(ADI $\times$ CV\textsuperscript{2})}{(ADI × CV²)}}
+\subsection{\texorpdfstring{Taxonomia ADI $\times$ CV$^2$}{Taxonomia ADI × CV²}}
 \label{sec:sb_taxa}
 
 A classificação proposta por \citet{Syntetos2005Categorization} organiza séries de demanda em quatro quadrantes definidos por dois índices adimensionais:
 
 \begin{align}
-  \text{ADI} &= \frac{T}{n_{+}} \quad (\text{intervalo médio entre demandas, \emph{Average Demand Interval}}), \label{eq:adi} \\
+  \text{ADI} &= \frac{T}{n_{+}} \quad (\text{intervalo médio entre demandas, \textit{Average Demand Interval}}), \label{eq:adi} \\
   \text{CV}^2 &= \left(\frac{\sigma}{\mu}\right)^2 \quad (\text{quadrado do coeficiente de variação dos valores positivos}). \label{eq:cv2}
 \end{align}
 
@@ -131,25 +130,25 @@ Os limiares empíricos $\text{ADI}^* = 1.32$ e $\text{CV}^{2*} = 0.49$, derivado
 \toprule
 Regime & ADI & CV$^2$ & Interpretação operacional \\
 \midrule
-\emph{Smooth} (Regular) & $< 1.32$ & $< 0.49$ & Alta frequência, demanda estável. \\
-\emph{Erratic} (Errático) & $< 1.32$ & $\geq 0.49$ & Alta frequência, magnitude irregular. \\
-\emph{Intermittent} (Intermitente) & $\geq 1.32$ & $< 0.49$ & Muitos zeros, magnitude relativamente estável. \\
-\emph{Lumpy} (Grumoso) & $\geq 1.32$ & $\geq 0.49$ & Muitos zeros e magnitude altamente irregular. \\
+\textit{Smooth} (Regular) & $< 1.32$ & $< 0.49$ & Alta frequência, demanda estável. \\
+\textit{Erratic} (Errático) & $< 1.32$ & $\geq 0.49$ & Alta frequência, magnitude irregular. \\
+\textit{Intermittent} (Intermitente) & $\geq 1.32$ & $< 0.49$ & Muitos zeros, magnitude relativamente estável. \\
+\textit{Lumpy} (Grumoso) & $\geq 1.32$ & $\geq 0.49$ & Muitos zeros e magnitude altamente irregular. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Essa taxonomia é amplamente adotada na literatura de cadeias de suprimentos \citep{Boylan2008Intermittent,Syntetos2012DemandClassificationsApplications} e constitui, nesta dissertação, a base para estratificação das análises: os KPIs das políticas são reportados por quadrante, permitindo identificar qual abordagem de controle é mais adequada a cada regime de demanda.
 
-\subsection{Implicações para Políticas de Reposição}
+\subsection{Efeitos na Reposição}
 
-A Figura~\ref{fig:sb_quadrant} ilustra a posição das séries no plano ADI $\times$ CV$^2$. Para o regime \emph{Smooth}, políticas baseadas em média (EOQ, Jornaleiro) são adequadas. Para regimes \emph{Intermittent} e \emph{Lumpy}, o método de Croston e suas variantes (SBA, TSB) são recomendados para previsão, enquanto políticas de reposição precisam ser calibradas por unidade para evitar ruptura sistêmica, isto é, falta recorrente de estoque. Para o regime \emph{Erratic}, o maior risco é o excesso de estoque oriundo de pedidos baseados na média quando a demanda cai a zero.
+A Figura~\ref{fig:sb_quadrant} ilustra a posição das séries no plano ADI $\times$ CV$^2$. Para o regime \textit{Smooth}, políticas baseadas em média (EOQ, Jornaleiro) são adequadas. Para regimes \textit{Intermittent} e \textit{Lumpy}, o método de Croston e suas variantes (SBA, TSB) são recomendados para previsão, enquanto políticas de reposição precisam ser calibradas por unidade para evitar ruptura sistêmica, isto é, falta recorrente de estoque. Para o regime \textit{Erratic}, o maior risco é o excesso de estoque oriundo de pedidos baseados na média quando a demanda cai a zero.
 
 \smallskip
 A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem políticas distintas. Embora útil para classificar as séries, ela não determina qual política de reposição é superior em cada quadrante. Por isso, a escolha de política precisa ser tratada como um problema de seleção orientado por evidência empírica, objetivo atendido pelo AIPE.
 
 \medskip
-\noindent\textit{Conexão com o AIPE.} A hipótese operacional do AIPE é que diferentes posições no espaço de \textit{features} operacionais, incluindo mas não se limitando ao plano ADI $\times$ CV$^2$, estão associadas a diferenças no desempenho relativo das políticas candidatas. Nos resultados atuais, essa hipótese é avaliada principalmente dentro do regime \textit{Lumpy}, com extensão para demais quadrantes prevista na expansão nacional (Fase~3).
+\noindent\textit{Conexão com o AIPE.} A hipótese operacional do AIPE é que diferentes posições no espaço de características operacionais, incluindo mas não se limitando ao plano ADI $\times$ CV$^2$, estão associadas a diferenças no desempenho relativo das políticas candidatas. Nos resultados atuais, essa hipótese é avaliada principalmente dentro do regime \textit{Lumpy}, com extensão para demais quadrantes prevista na expansão nacional (Fase~3).
 
 \begin{figure}[htbp]
 \centering
@@ -158,19 +157,19 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem polí
   \draw[->] (0,0) -- (0,4.5) node[above] {\small CV$^2$};
   \draw[dashed,gray] (2.64,0) -- (2.64,4.2) node[above,font=\tiny] {$1.32$};
   \draw[dashed,gray] (0,1.96) -- (5,1.96) node[right,font=\tiny] {$0.49$};
-  \node[align=center,font=\small] at (1.32,0.98) {\emph{Smooth}};
-  \node[align=center,font=\small] at (1.32,3.10) {\emph{Erratic}};
-  \node[align=center,font=\small] at (3.82,0.98) {\emph{Intermittent}};
-  \node[align=center,font=\small] at (3.82,3.10) {\emph{Lumpy}};
+  \node[align=center,font=\small] at (1.32,0.98) {\textit{Smooth}};
+  \node[align=center,font=\small] at (1.32,3.10) {\textit{Erratic}};
+  \node[align=center,font=\small] at (3.82,0.98) {\textit{Intermittent}};
+  \node[align=center,font=\small] at (3.82,3.10) {\textit{Lumpy}};
 \end{tikzpicture}
-\caption{Plano ADI $\times$ CV\textsuperscript{2} com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV\textsuperscript{2*} = 0.49 \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
+\caption{Plano ADI $\times$ CV$^2$ com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV$^{2*} = 0.49$ \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
 \label{fig:sb_quadrant}
 \end{figure}
 
-\section{Políticas de Controle de Inventário}
+\section{Formulação do Controle de Inventário}
 
 Esta seção formaliza o problema de controle de inventário e organiza as doze políticas avaliadas nesta dissertação em quatro categorias de crescente sofisticação computacional.
-\subsection{Formulação do Problema de Controle}
+\subsection{Modelo de Controle}
 
 \begin{defi}[Política de Reposição]
 Uma \textit{política de reposição} $\pi$ é uma regra de decisão que, a cada ciclo $t$, observa a situação operacional da série e escolhe a quantidade a ser pedida. Formalmente, ela mapeia um estado $\mathbf{s}_t \in \mathcal{S}$ para uma ação $a_t \in \mathcal{A}$:
@@ -201,45 +200,45 @@ A evolução do estoque é descrita pela dinâmica:
 Na Equação~\ref{eq:balance}, a demanda observada no ciclo é denotada por $D_t$. O estoque do próximo ciclo, $I_{t+1}$, corresponde ao saldo remanescente após atender a demanda, acrescido dos pedidos que chegam após o prazo de entrega. A variável $S_t$ mede a ruptura, isto é, a parcela da demanda que excede o estoque disponível. Os parâmetros $h$, $c_s$, $c_o^{\text{fix}}$ e $c_o^{\text{var}}$ representam, respectivamente, os custos unitários de manutenção, ruptura, pedido fixo e pedido variável. A razão $c_s/h = 5$ adotada nos experimentos reflete a penalização de vendas não atendidas no contexto de varejo regional.
 
 
-\section{Métricas de Qualidade de Previsão para Demanda Intermitente}
+\section{Métricas de Previsão}
 
 As métricas clássicas MAE, RMSE e MAPE apresentam deficiências estruturais em regime intermitente: o MAPE é indefinido quando $D_t = 0$ (frequente na série estudada), o RMSE penaliza excessivamente erros em picos isolados, e nenhuma delas é invariante à escala, dificultando comparações entre séries de volume heterogêneo. A competição M4 e o trabalho de \citet{Hyndman2006MASE} motivaram métricas especificamente desenvolvidas para contornar essas limitações \citep{Makridakis2020M4Competition}, adotadas nesta dissertação.
 
-\subsection{Métricas Adotadas}
+\subsection{Métricas Utilizadas}
 
-Seja $\{D_t\}_{t=1}^{T}$ a demanda real e $\{\hat{D}_t\}_{t=1}^{T}$ a previsão. Definem-se os erros de previsão $e_t = D_t - \hat{D}_t$. A referência ingênua (\emph{naïve}) é o modelo de passeio aleatório: $\hat{D}_t^{\text{naïve}} = D_{t-1}$, com erro médio absoluto $\text{MAE}_{\text{naïve}} = \frac{1}{T-1}\sum_{t=2}^{T}|D_t - D_{t-1}|$.
+Seja $\{D_t\}_{t=1}^{T}$ a demanda real e $\{\hat{D}_t\}_{t=1}^{T}$ a previsão, ambas observadas ao longo de $T$ ciclos. Define-se o erro de previsão no ciclo $t$ como $e_t = D_t - \hat{D}_t$, e o erro absoluto médio da previsão como $\text{MAE} = T^{-1}\sum_{t=1}^{T}|e_t|$. A referência ingênua (\textit{naïve}) é o modelo de passeio aleatório: $\hat{D}_t^{\text{naïve}} = D_{t-1}$, com erro médio absoluto $\text{MAE}_{\text{naïve}} = \frac{1}{T-1}\sum_{t=2}^{T}|D_t - D_{t-1}|$.
 
-\paragraph{MASE (\emph{Mean Absolute Scaled Error}).}
+\paragraph{MASE (\textit{Mean Absolute Scaled Error}).}
 Proposto por \citet{Hyndman2006MASE}, é invariante à escala e bem definido mesmo com zeros na série:
 \begin{equation}
   \text{MASE} = \frac{\text{MAE}}{\text{MAE}_{\text{naïve}}} = \frac{\frac{1}{T}\sum_t |e_t|}{\frac{1}{T-1}\sum_{t=2}^{T}|D_t - D_{t-1}|}.
   \label{eq:mase}
 \end{equation}
-$\text{MASE} < 1$ indica superação do modelo ingênuo; $\text{MASE} = 1$ é o \emph{benchmark} neutro.
+Na Equação~\ref{eq:mase}, o numerador mede o erro absoluto médio do modelo avaliado e o denominador mede o erro absoluto médio da previsão ingênua. Assim, $\text{MASE} < 1$ indica superação do modelo ingênuo; $\text{MASE} = 1$ é o \textit{benchmark} neutro.
 
-\paragraph{sMAPE (\emph{Symmetric MAPE}).}
+\paragraph{sMAPE (\textit{Symmetric MAPE}).}
 Proposto por \citet{Makridakis1993SMAPE}, utiliza denominador simétrico para lidar com zeros e assimetria:
 \begin{equation}
   \text{sMAPE} = \frac{2}{T}\sum_t \frac{|e_t|}{|D_t| + |\hat{D}_t|} \times 100\%.
   \label{eq:smape}
 \end{equation}
-Limitado ao intervalo $[0\%, 200\%]$, sem singularidades quando $D_t = 0$ e $\hat{D}_t > 0$.
+Na Equação~\ref{eq:smape}, $D_t$ e $\hat{D}_t$ aparecem simetricamente no denominador, reduzindo a dependência da escala da série. A métrica é limitada ao intervalo $[0\%, 200\%]$ e não apresenta singularidade quando $D_t = 0$ e $\hat{D}_t > 0$.
 
-\paragraph{RMSSE (\emph{Root Mean Squared Scaled Error}).}
+\paragraph{RMSSE (\textit{Root Mean Squared Scaled Error}).}
 Versão escalada do RMSE, utilizada como métrica principal da competição M4 \citep{Makridakis2020M4Competition}:
 \begin{equation}
   \text{RMSSE} = \sqrt{\frac{\frac{1}{T}\sum_t e_t^2}{\frac{1}{T-1}\sum_{t=2}^{T}(D_t - D_{t-1})^2}}.
   \label{eq:rmsse}
 \end{equation}
-Penaliza erros grandes (via quadrado) mas permanece comparável entre séries de diferentes escalas.
+Na Equação~\ref{eq:rmsse}, o numerador é o erro quadrático médio do modelo e o denominador é o erro quadrático médio da previsão ingênua. A métrica penaliza erros grandes (via quadrado), mas permanece comparável entre séries de diferentes escalas.
 
-\paragraph{MBE (\emph{Mean Bias Error}).}
+\paragraph{MBE (\textit{Mean Bias Error}).}
 Detecta viés sistemático na previsão:
 \begin{equation}
   \text{MBE} = \frac{1}{T}\sum_t e_t = \overline{D} - \overline{\hat{D}}.
   \label{eq:mbe}
 \end{equation}
-$\text{MBE} > 0$ indica subestimação sistemática (risco de ruptura); $\text{MBE} < 0$, superestimação (excesso de estoque).
+Na Equação~\ref{eq:mbe}, $\overline{D}$ e $\overline{\hat{D}}$ representam, respectivamente, a média da demanda observada e a média da previsão no horizonte avaliado. Como $e_t = D_t - \hat{D}_t$, $\text{MBE} > 0$ indica subestimação sistemática (risco de ruptura); $\text{MBE} < 0$, superestimação (excesso de estoque).
 
 \paragraph{U de Theil.}
 Proposta por \citet{Theil1966AppliedEconometrics}, essa estatística corresponde à razão entre RMSE da previsão e RMSE do modelo ingênuo:
@@ -247,30 +246,30 @@ Proposta por \citet{Theil1966AppliedEconometrics}, essa estatística corresponde
   U_{\text{Theil}} = \frac{\text{RMSE}}{\text{RMSE}_{\text{naïve}}}.
   \label{eq:theil}
 \end{equation}
-$U < 1$ indica superação do \emph{naïve}; valores $U \gg 1$ sinalizam modelo inadequado.
+Na Equação~\ref{eq:theil}, $\text{RMSE}$ é a raiz do erro quadrático médio da previsão avaliada e $\text{RMSE}_{\text{naïve}}$ é a mesma métrica aplicada ao modelo ingênuo. Assim, $U_{\text{Theil}} < 1$ indica superação do \textit{naïve}; valores $U_{\text{Theil}} \gg 1$ sinalizam modelo inadequado.
 
 \paragraph{Seleção da métrica principal.}
-O MASE é adotado como métrica principal nesta dissertação por três razões: (i)~invariância à escala permite comparar modelos entre lojas com volumes heterogêneos (razão de até 124× no conjunto de dados); (ii)~definição clara quando $D_t = 0$; (iii)~interpretação intuitiva em relação ao \emph{benchmark} ingênuo. O sMAPE é métrica secundária por sua bounded range e ampla adoção em benchmarks competitivos. No AIPE, o MASE por série é tratado como \textit{feature operacional prospectiva}: séries com menor erro de previsão tendem a favorecer políticas orientadas a previsão, enquanto séries mais imprevisíveis favorecem políticas robustas à variância.
+O MASE é adotado como métrica principal nesta dissertação por três razões: (i)~invariância à escala permite comparar modelos entre lojas com volumes heterogêneos (razão de até 124× no conjunto de dados); (ii)~definição clara quando $D_t = 0$; (iii)~interpretação intuitiva em relação ao \textit{benchmark} ingênuo. O sMAPE é métrica secundária por sua \textit{bounded range} e ampla adoção em \textit{benchmarks} competitivos. No AIPE, o MASE por série é tratado como característica operacional prospectiva: séries com menor erro de previsão tendem a favorecer políticas orientadas a previsão, enquanto séries mais imprevisíveis favorecem políticas robustas à variância.
 
 A avaliação de modelos de previsão em séries temporais requer protocolos que respeitem a ordem temporal dos dados. Por essa razão, esta dissertação adota validação temporal por janela deslizante, detalhada no Capítulo~\ref{cap:metod}, de modo que cada previsão seja realizada apenas com informações anteriores ao período avaliado.
 
-\section{Fundamentos de Testes Estatísticos para Comparação de Políticas}
+\section{Testes Estatísticos}
 \label{sec:stat_tests}
 
 A comparação entre 12 políticas sobre múltiplas lojas e múltiplos produtos na Fase~2 requer arcabouço inferencial formal. Como as distribuições dos KPIs em regime intermitente são fortemente assimétricas, os testes paramétricos baseados em normalidade (ANOVA, $t$ de Student) são inadequados. Os testes não paramétricos (Wilcoxon, Friedman e Nemenyi) são adotados como padrão metodológico nesta dissertação, combinados com medida de tamanho de efeito (Cohen's $d$) para distinguir significância estatística de relevância prática.
 
-\subsection{Teste de Wilcoxon com Sinal e Posto}
+\subsection{Teste de Wilcoxon}
 
-O teste de Wilcoxon \emph{signed-rank}, proposto por \citet{Wilcoxon1945SignedRank}, avalia se a mediana das diferenças pareadas entre duas políticas $\pi_A$ e $\pi_B$ é diferente de zero. Para o KPI $X$ (e.g., CTI) nas lojas $i = 1,\ldots,N$:
+O teste de Wilcoxon \textit{signed-rank}, proposto por \citet{Wilcoxon1945SignedRank}, avalia se a mediana das diferenças pareadas entre duas políticas $\pi_A$ e $\pi_B$ é diferente de zero. Para o KPI $X$ (e.g., CTI) nas lojas $i = 1,\ldots,N$:
 
 \begin{equation}
   W = \sum_{i : D_i \neq 0} \text{sgn}(D_i)\,R_i,
   \label{eq:wilcoxon}
 \end{equation}
 
-onde $D_i = X_i^A - X_i^B$ e $R_i$ é o posto de $|D_i|$. Hipótese nula: $\text{mediana}(D_i) = 0$. Ao contrário do $t$-test, não assume normalidade nem homocedasticidade.
+onde $D_i = X_i^A - X_i^B$ é a diferença pareada entre as políticas $A$ e $B$ na instância $i$, $X_i^A$ e $X_i^B$ são os valores do KPI $X$ para essas políticas, $\text{sgn}(D_i)$ é o sinal da diferença e $R_i$ é o posto de $|D_i|$ após excluir diferenças nulas. Hipótese nula: $\text{mediana}(D_i) = 0$. Ao contrário do $t$-test, não assume normalidade nem homocedasticidade.
 
-\subsection{Teste de Friedman e \emph{Post-hoc} de Nemenyi}
+\subsection{Teste de Friedman e Nemenyi}
 
 Quando se compara $K > 2$ políticas simultaneamente, o teste de Friedman, proposto por \citet{Friedman1940Ranks}, testa se os postos médios de todas as políticas são iguais:
 
@@ -279,16 +278,16 @@ Quando se compara $K > 2$ políticas simultaneamente, o teste de Friedman, propo
   \label{eq:friedman}
 \end{equation}
 
-onde $\bar{r}_j$ é o posto médio da política $j$ sobre as $N$ instâncias (lojas $\times$ produtos). A rejeição de $H_0$ indica que pelo menos uma política tem desempenho diferente. O \emph{post-hoc} de Nemenyi, proposto por \citet{Nemenyi1963PostHoc}, computa a diferença crítica (DC):
+onde $K$ é o número de políticas comparadas, $N$ é o número de instâncias avaliadas e $\bar{r}_j$ é o posto médio da política $j$ sobre as $N$ instâncias (lojas $\times$ produtos). A rejeição de $H_0$ indica que pelo menos uma política tem desempenho diferente. O \textit{post-hoc} de Nemenyi, proposto por \citet{Nemenyi1963PostHoc}, computa a diferença crítica (DC):
 
 \begin{equation}
   \text{DC} = q_\alpha \sqrt{\frac{K(K+1)}{6N}},
   \label{eq:cd}
 \end{equation}
 
-onde $q_\alpha$ é o quantil da distribuição de Studentized range. Políticas cujos postos médios diferem em mais de DC são estatisticamente distinguíveis a nível $\alpha$.
+onde $q_\alpha$ é o quantil da distribuição de Studentized range para o nível de significância $\alpha$. Políticas cujos postos médios diferem em mais de DC são estatisticamente distinguíveis a nível $\alpha$.
 
-\subsection{Tamanho de Efeito de Cohen}
+\subsection{Tamanho de Efeito}
 
 O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas não quantifica sua magnitude prática. O $d$ de Cohen, sistematizado por \citet{Cohen1988StatisticalPower}, fornece essa quantificação:
 
@@ -297,10 +296,12 @@ O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas
   \label{eq:cohens_d}
 \end{equation}
 
-Convencionalmente: $|d| < 0.2$ é efeito negligenciável, $0.2 \leq |d| < 0.5$ pequeno, $0.5 \leq |d| < 0.8$ médio, $|d| \geq 0.8$ grande. Essa gradação é reportada para cada par (política proposta, baseline) em cada KPI e cada quadrante Syntetos-Boylan.
+Convencionalmente: $|d| < 0.2$ é efeito negligenciável, $0.2 \leq |d| < 0.5$ pequeno, $0.5 \leq |d| < 0.8$ médio, $|d| \geq 0.8$ grande. Essa gradação é reportada para cada par (política proposta, \textit{baseline}) em cada KPI e cada quadrante Syntetos-Boylan.
+
+Na Equação~\ref{eq:cohens_d}, $\bar{X}_A$ e $\bar{X}_B$ são as médias do KPI para os grupos ou políticas comparados, $s_A^2$ e $s_B^2$ são suas variâncias amostrais, $N_A$ e $N_B$ são os respectivos tamanhos amostrais e $s_{\text{pooled}}$ é o desvio-padrão combinado usado para padronizar a diferença.
 
 \smallskip
-O protocolo Wilcoxon + Friedman + Nemenyi + Cohen's $d$ combina detecção de diferença, comparação múltipla e quantificação de relevância prática. Com esse encadeamento, o benchmark reduz o risco de interpretar ruído amostral como ganho real e gera rótulos mais confiáveis para o treinamento do PSE.
+O protocolo Wilcoxon + Friedman + Nemenyi + Cohen's $d$ combina detecção de diferença, comparação múltipla e quantificação de relevância prática. Com esse encadeamento, o \textit{benchmark} reduz o risco de interpretar ruído amostral como ganho real e gera rótulos mais confiáveis para o treinamento do PSE.
 
 \noindent Os testes estatísticos apresentados nesta seção são aplicados sobre os resultados gerados pelo ambiente de simulação descrito no Capítulo~\ref{cap:metod} (Seção~\ref{sec:inventory_env}).
 
@@ -308,7 +309,7 @@ O protocolo Wilcoxon + Friedman + Nemenyi + Cohen's $d$ combina detecção de di
 
 A seleção contextual de políticas parte da premissa de que o desempenho de uma política de reposição depende das características da série avaliada. Essa perspectiva se aproxima do problema de seleção de algoritmos, no qual instâncias distintas de um problema podem favorecer métodos diferentes. Nesta dissertação, essa ideia é aplicada ao controle de inventário: cada série loja-produto é descrita por características operacionais, e o objetivo é aprender a associar esses perfis à política de reposição com melhor desempenho esperado. A formulação operacional dessa seleção, incluindo geração de rótulos e treinamento do \textit{Policy Selection Engine}, é apresentada no Capítulo~\ref{cap:metod}.
 
-\section{Reprodutibilidade Experimental e Rastreabilidade}
+\section{Reprodutibilidade e Rastreabilidade}
 
 Experimentos computacionais em otimização e aprendizado de máquina dependem de decisões de implementação, parametrização e amostragem que podem alterar conclusões empíricas. Por isso, a reprodutibilidade é parte do arcabouço metodológico: resultados devem poder ser reconstruídos a partir dos mesmos dados, configurações, código e critérios de avaliação.
 

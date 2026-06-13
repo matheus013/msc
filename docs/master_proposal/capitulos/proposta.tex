@@ -2,46 +2,46 @@
 
 Este capítulo apresenta o arcabouço metodológico do AIPE, fundamentado na hipótese central de que o desempenho de políticas de reposição depende do regime operacional da demanda e que essa relação pode ser aprendida por um meta-modelo supervisionado.
 
-O AIPE é o framework metodológico completo de seleção adaptativa; o PSE (\textit{Policy Selection Engine}) é o componente interno responsável por aprender a associação entre perfil de demanda e política recomendada. O AIPE é estruturado em cinco estágios sequenciais: parte da ingestão e pré-processamento dos dados transacionais, avança para a extração de \textit{features} operacionais e classificação em Perfis Operacionais de Demanda (POD), conduz o \textit{benchmark} das 12 políticas candidatas com validação estatística formal e aplica o \textit{Policy Selection Engine} (PSE) para seleção adaptativa de política, culminando na geração de relatórios e recomendações. Um módulo de previsão de demanda fornece \textit{features} prospectivas adicionais, em papel auxiliar. A metodologia foi aplicada em duas fases: Fase~1 (concluída) e Fase~2, igualmente concluída, abrangendo 145 séries do estado da Bahia com validação estatística formal.
-\section{Visão Geral da Proposta}
+O AIPE é o \textit{framework} metodológico completo de seleção adaptativa; o PSE (\textit{Policy Selection Engine}) é o componente interno responsável por aprender a associação entre perfil de demanda e política recomendada. O AIPE é estruturado em cinco estágios sequenciais: parte da ingestão e pré-processamento dos dados transacionais, avança para a extração de características operacionais e classificação em Perfis Operacionais de Demanda (POD), conduz o \textit{benchmark} das 12 políticas candidatas com validação estatística formal e aplica o \textit{Policy Selection Engine} (PSE) para seleção adaptativa de política, culminando na geração de relatórios e recomendações. Um módulo de previsão de demanda fornece características prospectivas adicionais, em papel auxiliar. A metodologia foi aplicada em duas fases: Fase~1 (concluída) e Fase~2, igualmente concluída, abrangendo 145 séries do estado da Bahia com validação estatística formal.
+\section{Visão Geral do AIPE}
 \label{sec:visao_geral_aipe}
 
 O AIPE organiza o problema de reposição como um fluxo metodológico de seleção contextual de políticas. A entrada é composta por históricos loja-produto e parâmetros operacionais da rede. Esses dados são limpos, agregados em ciclos e transformados em características operacionais da demanda. A previsão de demanda é utilizada como componente auxiliar: ela fornece sinais prospectivos e métricas adicionais ao processo, mas não constitui a contribuição central nem a etapa final de decisão.
 
-Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, seleciona-se a alternativa de maior NS, conforme formalizado na Equação~\ref{eq:policy_selector}. Os rótulos gerados por esse \textit{benchmark} alimentam o PSE, que aprende o mapeamento entre características operacionais e política recomendada. A saída do framework é, portanto, uma recomendação de regra ou algoritmo de reposição para novas séries loja-produto.
+Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, seleciona-se a alternativa de maior NS, conforme formalizado na Equação~\ref{eq:policy_selector}. Os rótulos gerados por esse \textit{benchmark} alimentam o PSE, que aprende o mapeamento entre características operacionais e política recomendada. A saída do \textit{framework} é, portanto, uma recomendação de regra ou algoritmo de reposição para novas séries loja-produto.
 
 O aprendizado de máquina aparece em dois níveis distintos na metodologia. No primeiro, métodos baseados em aprendizado por reforço, como DQN, PPO e SARSA, são políticas candidatas comparadas às políticas clássicas, meta-heurísticas e híbridas. No segundo, o PSE atua como meta-modelo supervisionado que aprende a escolher qual política candidata tende a ser mais adequada para cada perfil operacional de demanda.
 
-A Figura~\ref{fig:aipe_architecture} apresenta a arquitetura conceitual do AIPE. A proposta distingue a camada adaptável à base, composta pela preparação dos dados e parametrizações operacionais, do núcleo metodológico reutilizável, responsável pela caracterização da demanda, avaliação das políticas candidatas, geração de rótulos e treinamento do PSE. Essa separação permite que o framework seja aplicado a outras bases, desde que a camada de entrada seja adaptada ao novo contexto operacional.
+A Figura~\ref{fig:aipe_architecture} apresenta a arquitetura conceitual do AIPE. A proposta distingue a camada adaptável à base, composta pela preparação dos dados e parametrizações operacionais, do núcleo metodológico reutilizável, responsável pela caracterização da demanda, avaliação das políticas candidatas, geração de rótulos e treinamento do PSE. Essa separação permite que o \textit{framework} seja aplicado a outras bases, desde que a camada de entrada seja adaptada ao novo contexto operacional.
 
 \input{figures/aipe_conceptual_architecture}
 
-\section{Formulação do Problema de Otimização de Inventário em Redes Varejistas}
+\section{Problema de Otimização de Inventário}
 \label{sec:formulacao}
 
-Esta seção formaliza o espaço de decisão, as métricas de avaliação e a estrutura de rede que constituem a base do benchmark empírico.
+Esta seção formaliza o espaço de decisão, as métricas de avaliação e a estrutura de rede que constituem a base do \textit{benchmark} empírico.
 
-\subsection{Definição de Política e Espaço de Decisão}
+\subsection{Políticas e Espaço de Decisão}
 
 \begin{defi}[Política de Reposição]
 Uma \textit{política de reposição} $\pi$ é uma função de decisão que mapeia o estado observado da loja $i$ no ciclo $t$ (nível de estoque $I_{t,i}$, demanda recente $D_{t-1,i}$ e pedidos em trânsito $Q_{t-L,i}$) em uma quantidade de pedido não negativa:
 \[
   Q_{t,i} = \pi(I_{t,i},\, D_{t-1,i},\, Q_{t-L,i};\, \boldsymbol{\theta}),
 \]
-onde $\boldsymbol{\theta}$ é o vetor de parâmetros da política (p.ex., $(s, Q)$ para políticas clássicas; pesos de rede neural para RL). Uma \textit{família} de política é o conjunto de todas as instâncias $\pi(\cdot;\boldsymbol{\theta})$ para $\boldsymbol{\theta}$ variando no espaço de busca. Uma \textit{estratégia adaptativa} é uma meta-função $\Pi: \mathbf{x}_i \mapsto \pi^*(\cdot; \boldsymbol{\theta}^*)$ que seleciona a política e seus parâmetros a partir das \textit{features} operacionais $\mathbf{x}_i$ da série.
+onde $\boldsymbol{\theta}$ é o vetor de parâmetros da política (p.ex., $(s, Q)$ para políticas clássicas; pesos de rede neural para RL). Uma \textit{família} de política é o conjunto de todas as instâncias $\pi(\cdot;\boldsymbol{\theta})$ para $\boldsymbol{\theta}$ variando no espaço de busca. Uma \textit{estratégia adaptativa} é uma meta-função $\Pi: \mathbf{x}_i \mapsto \pi^*(\cdot; \boldsymbol{\theta}^*)$ que seleciona a política e seus parâmetros a partir das características operacionais $\mathbf{x}_i$ da série.
 \end{defi}
 
 Esta distinção é essencial: as 12 políticas avaliadas são instâncias de famílias distintas; o AIPE é a estratégia adaptativa que aprende qual família e parâmetros usar por série.
 
 \begin{defi}[Seleção Adaptativa de Política (AIPE)]
-Dado o espaço de séries $\mathcal{X}$, o mapeamento de \textit{features} $\phi: \mathcal{X} \rightarrow \mathbb{R}^p$ e o conjunto de políticas candidatas $\Pi = \{\pi_1, \ldots, \pi_k\}$, o \textit{Policy Selection Engine} aprende a função:
+Dado o espaço de séries $\mathcal{X}$, o mapeamento de características $\phi: \mathcal{X} \rightarrow \mathbb{R}^p$ e o conjunto de políticas candidatas $\Pi = \{\pi_1, \ldots, \pi_k\}$, o \textit{Policy Selection Engine} aprende a função:
 \[
   f: \mathbb{R}^p \rightarrow \Pi, \qquad f\!\bigl(\phi(\mathbf{x}_i)\bigr) = \hat{\pi}^*(i),
 \]
-tal que $\hat{\pi}^*(i) \approx \arg\min_{\pi \in \Pi} \mathbb{E}[\mathrm{CTI}(\pi, \mathbf{x}_i)]$ sujeito a $\mathbb{E}[\mathrm{NS}(\pi, \mathbf{x}_i)] \geq \alpha_{\min}$. O \textit{Adaptive Inventory Policy Engine} (AIPE) implementa $f$ como meta-modelo supervisionado treinado sobre os pares $\{(\phi(\mathbf{x}_i),\, \hat{\pi}^*(i))\}_{i=1}^N$ gerados pelo benchmark, com reavaliação periódica de $\phi(\mathbf{x}_i)$ a cada $\Delta t$ ciclos.
+tal que $\hat{\pi}^*(i) \approx \arg\min_{\pi \in \Pi} \mathbb{E}[\mathrm{CTI}(\pi, \mathbf{x}_i)]$ sujeito a $\mathbb{E}[\mathrm{NS}(\pi, \mathbf{x}_i)] \geq \alpha_{\min}$. O \textit{Adaptive Inventory Policy Engine} (AIPE) implementa $f$ como meta-modelo supervisionado treinado sobre os pares $\{(\phi(\mathbf{x}_i),\, \hat{\pi}^*(i))\}_{i=1}^N$ gerados pelo \textit{benchmark}, com reavaliação periódica de $\phi(\mathbf{x}_i)$ a cada $\Delta t$ ciclos.
 \end{defi}
 
-\subsection{Definição Formal do Problema}
+\subsection{Formulação do Problema}
 
 O problema considerado é um modelo de controle de inventário de único escalão com $N$ lojas varejistas atendidas por um armazém central. O horizonte de planejamento é discretizado em ciclos bimestrais $t \in \{1, \ldots, T\}$, cada um com aproximadamente 21 dias corridos. As variáveis e parâmetros centrais são:
 
@@ -64,6 +64,8 @@ Uma \textit{política} $\pi$ mapeia o estado observado $(I_{t,i},\, D_{t-1,i},\,
   \label{eq:obj_meio}
 \end{equation}
 
+Na Equação~\ref{eq:obj_meio}, a função indicadora $\mathbf{1}(Q_{t,i}>0)$ assume valor 1 quando há emissão de pedido no ciclo $t$ e 0 caso contrário. A formulação é escrita para uma loja $i$; no \textit{benchmark}, o mesmo cálculo é repetido para cada série loja-produto e depois agregado por política.
+
 sujeito à dinâmica de estoque:
 
 \begin{equation}
@@ -71,7 +73,9 @@ sujeito à dinâmica de estoque:
   \label{eq:balance_meio}
 \end{equation}
 
-\subsection{Estrutura da Rede Varejista}
+Na Equação~\ref{eq:balance_meio}, o operador $\max(0,\cdot)$ representa o pressuposto de venda perdida: a demanda que excede o estoque disponível não é acumulada para ciclos futuros. O termo $Q_{t-L,i}$ representa pedidos emitidos $L$ ciclos antes e recebidos no ciclo corrente.
+
+\subsection{Rede Varejista}
 
 A cadeia de suprimentos modela três escalões hierárquicos:
 
@@ -108,7 +112,7 @@ A Tabela~\ref{tab:dataset_stats} sumariza as principais características do \tex
 \begin{table}[ht]
 \centering
 \small
-\caption{Características do dataset por fase experimental.}
+\caption{Características do \textit{dataset} por fase experimental.}
 \label{tab:dataset_stats}
 \begin{tabular}{@{}lcc@{}}
 \toprule
@@ -139,13 +143,13 @@ Fase~2 expande o escopo: todos os estados brasileiros, portfólio completo de pr
 
 A base registra vendas por \textit{ciclo bimestral} (17 ciclos por ano, $\approx$21 dias corridos cada). Essa granularidade reflete a política operacional real: pedidos são consolidados e processados a cada duas semanas, justificando o prazo $L=2$ ciclos ($\approx$42 dias). Com essa granularidade, um horizonte de 38 ciclos (janeiro/2023 a abril/2025) captura: (i) sazonalidade anual completa (variações de demanda por mês/perodo), (ii) múltiplos padrões de intermitência (ciclos com venda zero e picos concentrados), e (iii) estabilização de parâmetros de estimação, crucial para validação confiável.
 
-\subsection{Classificação por Regime de Demanda}
+\subsection{Regimes de Demanda}
 
 Após a agregação por ciclo, cada série (loja, produto) é caracterizada pelos índices de Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) e classificada em um dos quatro quadrantes: \textit{Smooth} (ADI $\leq 1.32$, CV$^2 \leq 0.49$), \textit{Erratic} (ADI $\leq 1.32$, CV$^2 > 0.49$), \textit{Intermittent} (ADI $> 1.32$, CV$^2 \leq 0.49$) e \textit{Lumpy} (ADI $> 1.32$, CV$^2 > 0.49$). A Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório geral do AIPE.
 
 A heterogeneidade dos regimes no \textit{dataset} é marcante: o ADI varia de $1.02$ a $8.7$ e o CV$^2$ de $0.8$ a $18.4$ nas séries da Fase~2, cobrindo desde séries quase regulares até padrões de demanda extremamente esporádica. Essa diversidade é um ativo central do estudo: a superioridade de uma política em relação a outra varia sistematicamente com a posição da série no plano ADI $\times$ CV$^2$, e é exatamente essa relação que o AIPE aprende. Essa classificação orienta a estratificação das análises e a seleção de modelos de previsão e políticas recomendadas por regime.
 
-\subsection{Pipeline de Pré-Processamento}
+\subsection{Pipeline Experimental}
 
 O pré-processamento transforma dados transacionais brutos em séries de demanda estruturadas para simulação. Esse \textit{pipeline} é essencial porque: (i) dados brutos contêm inconsistências, (ii) a granularidade deve refletir decisões operacionais reais, (iii) séries devem ter qualidade suficiente para discriminar entre políticas. As etapas são:
 
@@ -159,47 +163,47 @@ O pré-processamento transforma dados transacionais brutos em séries de demanda
   \item Seleção de cenários: filtragem automática por critérios de qualidade (coeficiente de variação $\geq 1.5$ para capturar intermitência, mínimo de ciclos com demanda positiva, produto ativo nos últimos 3 ciclos), produzindo o conjunto de séries para análise.
 \end{enumerate}
 
-Essa sequência elimina inconsistências e produz um conjunto de séries (loja, produto) prontas para engenharia de \textit{features} e simulação.
+Essa sequência elimina inconsistências e produz um conjunto de séries (loja, produto) prontas para engenharia de características e simulação.
 
-\section{Engenharia de Características Operacionais da Demanda}
+\section{Características Operacionais da Demanda}
 
-O estágio \texttt{demand\_profiling} (nome do módulo computacional) estende a classificação Syntetos-Boylan, produzindo um vetor de 17 \textit{features} operacionais por série e agrupando as séries em perfis orientados à decisão de política.
+O estágio \texttt{demand\_profiling} (nome do módulo computacional) estende a classificação Syntetos-Boylan, produzindo um vetor de 17 características operacionais por série e agrupando as séries em perfis orientados à decisão de política.
 
-\subsection{Motivação e Objetivos}
+\subsection{Objetivo das Características}
 
-A classificação Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) usa apenas dois índices (ADI e CV$^2$) e identifica o regime de cada série. Para o \textit{Policy Selection Engine} (Seção seguinte), é necessário um vetor de \textit{features} mais rico, que capture não apenas a intermitência, mas também a estrutura temporal, a distribuição e o comportamento operacional de cada série. O estágio \texttt{demand\_profiling} produz esse vetor.
+A classificação Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) usa apenas dois índices (ADI e CV$^2$) e identifica o regime de cada série. Para o \textit{Policy Selection Engine} (Seção seguinte), é necessário um vetor de características mais rico, que capture não apenas a intermitência, mas também a estrutura temporal, a distribuição e o comportamento operacional de cada série. O estágio \texttt{demand\_profiling} produz esse vetor.
 
-\subsection{Características Operacionais Calculadas}
+\subsection{Características Calculadas}
 
-Para cada série $(w, s, i)$, calculam-se 17 \textit{features} numéricas organizadas em quatro grupos:
+Para cada série $(w, s, i)$, em que $w$ identifica a loja, $s$ identifica o produto e $i$ indexa a série loja-produto no conjunto experimental, calculam-se 17 características numéricas organizadas em quatro grupos:
 
-\paragraph{Features de intermitência:}
+\paragraph{Características de intermitência:}
 \begin{itemize}
   \item $\text{ADI} = T / n^+$: intervalo médio entre demandas positivas (Average Demand Interval);
   \item $\text{CV}^2 = (\sigma/\mu)^2$: variabilidade normalizada das quantidades;
-  \item $r_0 = 1 - n^+/T$: proporção de ciclos com demanda zero;
+  \item $r_0 = 1 - n^+/T$: proporção de ciclos com demanda zero, em que $n^+$ é o número de ciclos com demanda positiva;
   \item $z_{\max}$, $z_{\text{mean}}$: comprimento máximo e médio das sequências de zeros consecutivos;
-  \item $B = (s_\tau - \bar{\tau}) / (s_\tau + \bar{\tau})$: \textit{burstiness}~\citep{GohBarabasi2008Burstiness}, onde $\tau_i$ são os intervalos entre eventos de demanda; $B \in [-1, 1]$, com $B > 0$ indicando clusters de demanda e $B < 0$ indicando demanda regular.
+  \item $B = (s_\tau - \bar{\tau}) / (s_\tau + \bar{\tau})$: \textit{burstiness}~\citep{GohBarabasi2008Burstiness}, onde $\tau_i$ são os intervalos entre eventos de demanda, $\bar{\tau}$ é a média desses intervalos e $s_\tau$ é seu desvio-padrão; $B \in [-1, 1]$, com $B > 0$ indicando clusters de demanda e $B < 0$ indicando demanda regular.
 \end{itemize}
 
-\paragraph{Features de distribuição (sobre valores positivos):}
+\paragraph{Características de distribuição (sobre valores positivos):}
 \begin{itemize}
   \item \textit{Assimetria} e \textit{curtose excedente} dos tamanhos de demanda positivos;
-  \item \textit{Entropia de Shannon}: $H = -\sum_k p_k \log_2 p_k$, calculada sobre histograma de 10 bins, mede a difusividade da distribuição de demanda.
+  \item \textit{Entropia de Shannon}: $H = -\sum_k p_k \log_2 p_k$, calculada sobre histograma de 10 bins, em que $p_k$ é a proporção de observações no bin $k$; mede a difusividade da distribuição de demanda.
 \end{itemize}
 
-\paragraph{Features de tendência e sazonalidade:}
+\paragraph{Características de tendência e sazonalidade:}
 \begin{itemize}
-  \item $\beta_t / \mu$: coeficiente angular OLS normalizado, tendência relativa à média;
-  \item $\rho_S$: autocorrelação da série no lag sazonal $S = 17$ (um ano bimestral).
+  \item $\beta_t / \mu$: coeficiente angular OLS normalizado, em que $\beta_t$ é a inclinação estimada da série ao longo do tempo e $\mu$ é a média da demanda;
+  \item $\rho_S$: autocorrelação da série no lag sazonal $S = 17$, em que $S$ representa um ano bimestral.
 \end{itemize}
 
-\paragraph{Features de volume (herdadas de \texttt{scenarios\_meta}):}
-$\mu$, $\sigma$, $n_T$, $n^+$, e as métricas de perfil da revendedora (segmento, filial, estrutura).
+\paragraph{Características de volume (herdadas de \texttt{scenarios\_meta}):}
+$\mu$, $\sigma$, $n_T$, $n^+$, e as métricas de perfil da revendedora (segmento, filial, estrutura), em que $n_T$ representa o número total de ciclos observados.
 
-\subsection{Perfis Operacionais de Demanda}
+\subsection{Perfis de Demanda}
 
-Com base nas \textit{features} acima, cada série é classificada em um dos cinco \textit{Perfis Operacionais de Demanda} (POD) por regras hierárquicas (Tabela~\ref{tab:pod}). Ao contrário da classificação Syntetos-Boylan, o POD é orientado à decisão: seu objetivo é predizer qual família de política é mais adequada, não apenas descrever o padrão de demanda.
+Com base nas características acima, cada série é classificada em um dos cinco \textit{Perfis Operacionais de Demanda} (POD) por regras hierárquicas (Tabela~\ref{tab:pod}). Ao contrário da classificação Syntetos-Boylan, o POD é orientado à decisão: seu objetivo é predizer qual família de política é mais adequada, não apenas descrever o padrão de demanda.
 
 \begin{table}[htbp]
 \centering
@@ -225,9 +229,9 @@ Os limiares são configuráveis via \texttt{demand\_profiling.yml} e calibrávei
 
 O POD é a linguagem operacional central do AIPE: toda recomendação de política parte do perfil da série, não de características isoladas. O fluxo decisório completo organiza-se sequencialmente como:
 \[
-  \underbrace{\mathbf{x}_i}_{\text{série}} \;\xrightarrow{\;\phi\;}\; \underbrace{\phi(\mathbf{x}_i) \in \mathbb{R}^{17}}_{\text{\textit{features}}} \;\xrightarrow{\;\mathrm{POD}\;}\; \underbrace{p \in \{1,\ldots,5\}}_{\text{perfil}} \;\xrightarrow{\;f\;}\; \underbrace{\hat{\pi}^*(i) \in \Pi}_{\text{política}} \;\xrightarrow{\;\mathrm{sim}\;}\; \underbrace{(\mathrm{CTI},\,\mathrm{NS},\,\mathrm{BE})}_{\text{KPI esperado}}
+  \underbrace{\mathbf{x}_i}_{\text{série}} \;\xrightarrow{\;\phi\;}\; \underbrace{\phi(\mathbf{x}_i) \in \mathbb{R}^{17}}_{\text{características}} \;\xrightarrow{\;\mathrm{POD}\;}\; \underbrace{p \in \{1,\ldots,5\}}_{\text{perfil}} \;\xrightarrow{\;f\;}\; \underbrace{\hat{\pi}^*(i) \in \Pi}_{\text{política}} \;\xrightarrow{\;\mathrm{sim}\;}\; \underbrace{(\mathrm{CTI},\,\mathrm{NS},\,\mathrm{BE})}_{\text{KPI esperado}}
 \]
-A cadeia de dependências é clara: benchmark $\rightarrow$ rótulos $\hat{\pi}^*(i)$ $\rightarrow$ \textit{features} $\phi(\mathbf{x}_i)$ $\rightarrow$ PSE aprende $f$. A generalização para séries não vistas é alcançada via validação cruzada estratificada.
+A cadeia de dependências é clara: \textit{benchmark} $\rightarrow$ rótulos $\hat{\pi}^*(i)$ $\rightarrow$ características $\phi(\mathbf{x}_i)$ $\rightarrow$ PSE aprende $f$. A generalização para séries não vistas é alcançada via validação cruzada estratificada.
 
 \begin{figure}[ht]
 \centering
@@ -261,17 +265,17 @@ A cadeia de dependências é clara: benchmark $\rightarrow$ rótulos $\hat{\pi}^
 \draw[feedback] (kpi.south) .. controls +(0,-0.85) and +(1.10,0.15) ..
   node[right, pos=0.55, font=\scriptsize\sffamily, align=center] {monitora\\desvio} (reav.east);
 \draw[feedback] (reav.west) .. controls +(-0.95,0.30) and +(0,-0.85) ..
-  node[left, pos=0.45, font=\scriptsize\sffamily, align=center] {atualiza\\\textit{features}} (pod.south);
+  node[left, pos=0.45, font=\scriptsize\sffamily, align=center] {atualiza\\características} (pod.south);
 
 \end{tikzpicture}
 }
-\caption{Fluxo decisório do AIPE. O framework transforma o histórico de vendas em características operacionais (\texttt{demand\_profiling}), identifica o perfil de demanda (POD) e consulta o PSE para recomendar uma política; o ciclo de reavaliação periódica a cada $\Delta t=6$ ciclos (tracejado) recalcula as \textit{features} e o POD conforme novos dados se acumulam, sem re-treinar o meta-modelo.}
+\caption{Fluxo decisório do AIPE. O \textit{framework} transforma o histórico de vendas em características operacionais (\texttt{demand\_profiling}), identifica o perfil de demanda (POD) e consulta o PSE para recomendar uma política; o ciclo de reavaliação periódica a cada $\Delta t=6$ ciclos (tracejado) recalcula as características e o POD conforme novos dados se acumulam, sem re-treinar o meta-modelo.}
 \label{fig:aipe_decision_flow}
 \end{figure}
 
-\section{Previsão de Demanda como Componente Auxiliar}
+\section{Previsão de Demanda}
 
-Um módulo de previsão de demanda fornece \textit{features} prospectivas auxiliares ao AIPE. Quatro modelos — Croston, ARIMA/SARIMAX, XGBoost e LSTM — são treinados por série e selecionados por validação \textit{walk-forward} com métrica MASE \citep{Croston1972ForecastingIntermittentDemand}. A janela mínima de treinamento é $T_{\min} = 12$ ciclos; cada passo avança um ciclo, produzindo 20 a 26 pontos de teste. O protocolo elimina viés \textit{in-sample} e garante que previsões respeitem a ordem temporal dos dados. O modelo com menor MASE é selecionado como \textit{forecaster} oficial da série e suas métricas de acurácia (MASE, sMAPE, RMSSE) são incorporadas como \textit{features} do AIPE. A previsão de demanda não é tratada como contribuição central nem como etapa final de decisão. Ela fornece sinais auxiliares ao processo de caracterização da série e à simulação das políticas candidatas; o objetivo central permanece aprender qual política de reposição maximiza desempenho para cada regime operacional, não alcançar acurácia máxima em previsão.
+Um módulo de previsão de demanda fornece características prospectivas auxiliares ao AIPE. Quatro modelos — Croston, ARIMA/SARIMAX, XGBoost e LSTM — são treinados por série e selecionados por validação \textit{walk-forward} com métrica MASE \citep{Croston1972ForecastingIntermittentDemand}. A janela mínima de treinamento é $T_{\min} = 12$ ciclos; cada passo avança um ciclo, produzindo 20 a 26 pontos de teste. O protocolo elimina viés \textit{in-sample} e garante que previsões respeitem a ordem temporal dos dados. O modelo com menor MASE é selecionado como \textit{forecaster} oficial da série e suas métricas de acurácia (MASE, sMAPE, RMSSE) são incorporadas como características do AIPE. A previsão de demanda não é tratada como contribuição central nem como etapa final de decisão. Ela fornece sinais auxiliares ao processo de caracterização da série e à simulação das políticas candidatas; o objetivo central permanece aprender qual política de reposição maximiza desempenho para cada regime operacional, não alcançar acurácia máxima em previsão.
 
 Os parâmetros de referência para as políticas ($I_0$, $Q_{\text{ref}}$, $s_{\text{ref}}$) são calculados a partir das estatísticas locais $\hat{\mu}$ e $\hat{\sigma}$ de cada série por calibração adaptativa:
 
@@ -281,14 +285,15 @@ Os parâmetros de referência para as políticas ($I_0$, $Q_{\text{ref}}$, $s_{\
   s_{\text{ref}} &= \hat{\mu} L + z\hat{\sigma}\sqrt{L}, \label{eq:sref_metod}
 \end{align}
 
-com $z = 1.28$ (nível de serviço alvo de 90\%). Os espaços de busca das meta-heurísticas e os limites de ação dos agentes de RL são dimensionados proporcionalmente a $Q_{\text{ref}}$ e $s_{\text{ref}}$, garantindo comparação justa entre lojas com volumes heterogêneos (razão de até 124× entre a maior e a menor loja na Fase~1). Na Fase~2, $\hat{\mu}$ e $\hat{\sigma}$ são atualizados a cada ciclo com a janela deslizante, implementando calibração online.
+com $z = 1.28$ (nível de serviço alvo de 90\%). Os espaços de busca das meta-heurísticas e os limites de ação dos agentes de RL são dimensionados proporcionalmente a $Q_{\text{ref}}$ e $s_{\text{ref}}$, garantindo comparação justa entre lojas com volumes heterogêneos (razão de até 124× entre a maior e a menor loja na Fase~1). Na Fase~2, $\hat{\mu}$ e $\hat{\sigma}$ são atualizados a cada ciclo com a janela deslizante, implementando calibração \textit{online}.
+Nas Equações~\ref{eq:I0_metod}--\ref{eq:sref_metod}, $I_0$ é o estoque inicial usado na simulação, $Q_{\text{ref}}$ é o lote de referência usado para dimensionar ações e limites de busca, $s_{\text{ref}}$ é o ponto de reposição de referência, $\hat{\mu}$ e $\hat{\sigma}$ são a média e o desvio-padrão estimados na janela histórica disponível, $T$ é o horizonte experimental, $L$ é o prazo de entrega, $c_o^{\text{fix}}$ é o custo fixo por pedido e $h$ é o custo de manutenção.
 
-\section{Validação Temporal por Janela Deslizante}
+\section{Validação Temporal}
 \label{sec:wf_protocol}
 
-A validação cruzada clássica (\emph{k-fold}) viola a ordem temporal das séries e introduz vazamento de informação futura no treinamento. Para séries temporais, o protocolo correto é a validação por janela deslizante (\emph{walk-forward} ou \emph{rolling-origin}), que simula o processo de tomada de decisão online: modelos são ajustados exclusivamente em dados passados e avaliados em dados futuros, de forma sequencial. Este protocolo é adotado tanto na avaliação dos modelos de previsão quanto na geração dos rótulos de treinamento do PSE.
+A validação cruzada clássica (\textit{k-fold}) viola a ordem temporal das séries e introduz vazamento de informação futura no treinamento. Para séries temporais, o protocolo correto é a validação por janela deslizante (\textit{walk-forward} ou \textit{rolling-origin}), que simula o processo de tomada de decisão \textit{online}: modelos são ajustados exclusivamente em dados passados e avaliados em dados futuros, de forma sequencial. Este protocolo é adotado tanto na avaliação dos modelos de previsão quanto na geração dos rótulos de treinamento do PSE.
 
-\subsection{Protocolo Formal}
+\subsection{Protocolo Walk-Forward}
 
 Seja $\mathbf{x} = (x_1, x_2, \ldots, x_T)$ uma série temporal de comprimento $T$ e $T_{\min}$ a janela mínima de treinamento. As divisões \textit{walk-forward} são definidas como:
 
@@ -297,7 +302,7 @@ Seja $\mathbf{x} = (x_1, x_2, \ldots, x_T)$ uma série temporal de comprimento $
 \mathcal{S}_t = \bigl(\underbrace{(x_1,\ldots,x_t)}_{\text{treino}},\; \underbrace{x_{t+1}}_{\text{teste}}\bigr), \quad t = T_{\min},\, T_{\min}+1,\, \ldots,\, T-1
 \end{equation}
 
-\noindent em que cada divisão $\mathcal{S}_t$ usa a janela histórica crescente para ajustar o modelo e o ponto imediatamente seguinte como alvo de avaliação. O modelo é re-ajustado a cada passo $t$, garantindo que nenhuma informação futura vaze para o treinamento. A Figura~\ref{fig:walkforward} ilustra o protocolo.
+\noindent em que cada divisão $\mathcal{S}_t$ usa a janela histórica crescente para ajustar o modelo e o ponto imediatamente seguinte como alvo de avaliação. O índice $t$ indica o último ciclo disponível para treinamento naquela divisão, e $T_{\min}$ define o menor histórico aceitável antes da primeira previsão. O modelo é re-ajustado a cada passo $t$, garantindo que nenhuma informação futura vaze para o treinamento. A Figura~\ref{fig:walkforward} ilustra o protocolo.
 
 \begin{figure}[htbp]
 \centering
@@ -327,59 +332,59 @@ Seja $\mathbf{x} = (x_1, x_2, \ldots, x_T)$ uma série temporal de comprimento $
 \node[draw, fill=orange!50, minimum width=0.6cm, minimum height=0.35cm] at (7.5, 1.7) {};
 \node[right, font=\small] at (7.9, 1.7) {Teste};
 \end{tikzpicture}
-\caption{Protocolo \emph{walk-forward}: a janela de treinamento cresce incrementalmente e o modelo é avaliado apenas em dados futuros, eliminando viés \textit{in-sample}.}
+\caption{Protocolo \textit{walk-forward}: a janela de treinamento cresce incrementalmente e o modelo é avaliado apenas em dados futuros, eliminando viés \textit{in-sample}.}
 \label{fig:walkforward}
 \end{figure}
 
-\subsection{Aplicação do Protocolo Walk-Forward}
+\subsection{Aplicação do Protocolo}
 
 Nesta dissertação, o protocolo é parametrizado com $T_{\min} = 12$ ciclos de reposição, resultando em $T - T_{\min} = 26$ pontos de avaliação por série (horizonte total $T = 38$ ciclos). Os modelos de previsão (LSTM, XGBoost, ANN, Croston) são avaliados pelas métricas MASE, sMAPE e RMSSE computadas sobre esses 26 pontos de teste. O mesmo protocolo é aplicado à simulação das políticas de controle de inventário: cada política é executada nos 26 ciclos de avaliação com parâmetros calibrados exclusivamente na janela de treinamento.
 
-A validação \textit{walk-forward} produz estimativas de generalização temporal não viesadas. No AIPE, isso é essencial porque as métricas de previsão por série (MASE, sMAPE) alimentam o vetor de \textit{features} do PSE; avaliações apenas \textit{in-sample} tenderiam a inflar artificialmente a acurácia e a distorcer os rótulos de treinamento do meta-modelo.
-\section{Políticas de Controle de Inventário}
+A validação \textit{walk-forward} produz estimativas de generalização temporal não viesadas. No AIPE, isso é essencial porque as métricas de previsão por série (MASE, sMAPE) alimentam o vetor de características do PSE; avaliações apenas \textit{in-sample} tenderiam a inflar artificialmente a acurácia e a distorcer os rótulos de treinamento do meta-modelo.
+\section{Políticas Avaliadas}
 \label{sec:benchmark_massivo}
 
 Esta seção descreve as doze políticas organizadas em quatro categorias de crescente sofisticação computacional. As políticas são avaliadas no ambiente \textit{InventoryEnv} com a mesma série de demanda real, garantindo comparação controlada.
 
 \subsection{Políticas Clássicas}
 
-\textit{EOQ.} $Q^* = \sqrt{2 D c_o^{\text{fix}} / h}$, com ponto de reposição $s = \hat{\mu} L$. Pressupõe demanda constante, violada em regime intermitente.
+\textit{EOQ.} $Q^* = \sqrt{2 D c_o^{\text{fix}} / h}$, em que $D$ é a demanda agregada estimada para o horizonte de referência, $c_o^{\text{fix}}$ é o custo fixo de pedido e $h$ é o custo de manutenção. O ponto de reposição é $s = \hat{\mu} L$. Pressupõe demanda constante, violada em regime intermitente.
 
-\textit{$(s,S)$.} Pedido de magnitude $S - I_t$ sempre que $I_t \leq s$, com $s = s_{\text{EOQ}}$ e $S = s + Q_{\text{EOQ}}$. Política de referência amplamente usada no varejo regional brasileiro.
+\textit{$(s,S)$.} Pedido de magnitude $S - I_t$ sempre que $I_t \leq s$, em que $I_t$ é a posição de estoque no ciclo $t$, $s = s_{\text{EOQ}}$ é o ponto de disparo e $S = s + Q_{\text{EOQ}}$ é o nível-alvo. Política de referência amplamente usada no varejo regional brasileiro.
 
-\textit{Jornaleiro.} $Q^* = \hat{\mu} + z\hat{\sigma}$, $z = 1.28$. Determina o pedido ótimo de período único como quantil da distribuição de demanda.
+\textit{Jornaleiro.} $Q^* = \hat{\mu} + z\hat{\sigma}$, com $z = 1.28$, em que $\hat{\mu}$ e $\hat{\sigma}$ são a média e o desvio-padrão estimados da demanda. Determina o pedido ótimo de período único como quantil da distribuição de demanda.
 
 \subsection{Meta-Heurísticas}
 
 As quatro meta-heurísticas buscam $(s^*, Q^*)$ minimizando o custo total (Equação~\ref{eq:obj_meio}) por busca global no espaço de parâmetros, sem pressupor distribuição de demanda:
 
-\textit{GA.} Seleção por torneio ($k=3$), cruzamento ($p_c=0.7$), mutação gaussiana; 100 indivíduos, 50 gerações.
+\textit{GA.} Seleção por torneio ($k=3$), cruzamento ($p_c=0.7$), mutação gaussiana; 100 indivíduos, 50 gerações. O parâmetro $k$ define o tamanho do torneio e $p_c$ a probabilidade de cruzamento.
 
-\textit{SA.} Temperatura inicial $T_0=1000$, resfriamento $\alpha=0.95$; aceitação probabilística $\exp(-\Delta C / T_k)$.
+\textit{SA.} Temperatura inicial $T_0=1000$, resfriamento $\alpha=0.95$; aceitação probabilística $\exp(-\Delta C / T_k)$, em que $\Delta C$ é a variação de custo e $T_k$ é a temperatura na iteração $k$.
 
-\textit{PSO.} 40 partículas, 80 iterações; inércia $w=0.7$, acelerações $c_1=c_2=1.5$.
+\textit{PSO.} 40 partículas, 80 iterações; inércia $w=0.7$, acelerações $c_1=c_2=1.5$, em que $w$ controla persistência da velocidade e $c_1$, $c_2$ controlam atração cognitiva e social.
 
-\textit{DE.} Evolução Diferencial \textit{rand/1/bin}; fator de mutação $F=0.8$, taxa de cruzamento $C_R=0.9$.
+\textit{DE.} Evolução Diferencial \textit{rand/1/bin}; fator de mutação $F=0.8$, taxa de cruzamento $C_R=0.9$, em que $F$ controla a amplitude da mutação diferencial e $C_R$ a probabilidade de cruzamento.
 
 \subsection{Agentes de Aprendizado por Reforço}
 
 O vetor de estado contém seis componentes normalizados: nível de estoque atual, demanda esperada, pedidos em trânsito, média móvel e desvio padrão dos últimos seis ciclos, e progresso do horizonte. A recompensa é o negativo do custo incorrido.
 
-\textit{DQN.} 2 camadas $\times$ 64 ReLU; \textit{experience replay} (10.000 transições), \textit{target network}; 500 episódios, $\epsilon$-greedy decrescente.
+\textit{DQN.} 2 camadas $\times$ 64 ReLU; \textit{experience replay} (10.000 transições), \textit{target network}; 500 episódios, $\epsilon$-\textit{greedy} decrescente. O parâmetro $\epsilon$ controla a probabilidade de exploração aleatória.
 
-\textit{PPO.} 500 episódios; $\epsilon_{\text{clip}}=0.2$; ações contínuas.
+\textit{PPO.} 500 episódios; $\epsilon_{\text{clip}}=0.2$; ações contínuas. O parâmetro $\epsilon_{\text{clip}}$ limita a variação da política entre atualizações sucessivas.
 
-\textit{SARSA.} Tabela-$Q$ $5\times10$; $\alpha=0.1$, $\gamma=0.99$, $\epsilon=0.1$.
+\textit{SARSA.} Tabela-$Q$ $5\times10$; $\alpha=0.1$, $\gamma=0.99$, $\epsilon=0.1$. Os parâmetros $\alpha$, $\gamma$ e $\epsilon$ representam, respectivamente, taxa de aprendizado, fator de desconto e probabilidade de exploração.
 
-\subsection{Arquitetura Híbrida GA-RL como Política Especialista do Portfólio}
+\subsection{Políticas Híbridas GA-RL}
 
 A arquitetura GA-RL, formalizada na Seção~\ref{sec:ga_rl_arch}, resolve a tensão entre convergência do RL e horizontes históricos curtos via inicialização em três etapas. Os parâmetros fixados nesta dissertação são: GA com 50 gerações $\times$ 100 indivíduos (5.000 avaliações simuladas), \textit{replay buffer} pré-populado com 1.000 transições de alta qualidade, e 200 episódios de refinamento RL. A variante GA-PPO aplica a mesma sequência ao agente PPO contínuo.
 
-\section{Ambiente de Simulação}
+\section{Simulação de Inventário}
 
 O ambiente \textit{InventoryEnv} simula o modelo de inventário $(s,Q)$ descrito na Seção~\ref{sec:formulacao}, sobre o qual todas as doze políticas são avaliadas em condições idênticas e controláveis.
 
-\subsection{InventoryEnv}\label{sec:inventory_env}
+\subsection{Ambiente InventoryEnv}\label{sec:inventory_env}
 
 O ambiente \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas e Stable-Baselines3 (\textit{backend} PyTorch), simula um modelo de inventário $(s, Q)$ com as seguintes características:
 
@@ -391,40 +396,40 @@ O ambiente \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas 
   \item Série de demanda real mantida idêntica para todas as políticas.
 \end{itemize}
 
-\subsection{Configuração de Custos}
+\subsection{Custos de Simulação}
 
 Os parâmetros de custo são uniformes: $h = 1.0$, $c_s = 5.0$, $c_o^{\text{fix}} = 50.0$ e $c_o^{\text{var}} = 0.5$. A penalidade de ruptura ($c_s = 5h$) reflete o custo de capital perdido e venda não realizada típico do varejo regional.
 
-\section{Protocolo de Validação Estatística}
+\section{Validação Estatística}
 
 O arcabouço inferencial descrito na Seção~\ref{sec:stat_tests} é implementado em quatro etapas:
 
 \begin{enumerate}[(i)]
-  \item Wilcoxon pareado: testa se a mediana das diferenças entre a política proposta (GA-DQN / GA-PPO) e cada baseline é diferente de zero, para cada KPI e cada quadrante Syntetos-Boylan;
+  \item Wilcoxon pareado: testa se a mediana das diferenças entre a política proposta (GA-DQN / GA-PPO) e cada \textit{baseline} é diferente de zero, para cada KPI e cada quadrante Syntetos-Boylan;
   \item Friedman + Nemenyi: testa simultaneamente se alguma política se distingue das demais e identifica grupos homogêneos via diferença crítica;
-  \item Cohen's $d$: quantifica a magnitude prática das diferenças para pares (proposta, baseline) em cada KPI;
+  \item Cohen's $d$: quantifica a magnitude prática das diferenças para pares (proposta, \textit{baseline}) em cada KPI;
   \item Análise estratificada: repete os testes por quadrante (Smooth / Erratic / Intermittent / Lumpy) e por estado geográfico, identificando condições sob as quais a arquitetura híbrida é mais vantajosa.
 \end{enumerate}
 
 Todos os testes são realizados ao nível de significância $\alpha = 0.05$ com correção de Bonferroni para comparações múltiplas.
 
-\section{Módulo de Seleção Contextual de Políticas}
+\section{Seleção Contextual de Políticas}
 
-O \textit{Policy Selection Engine} (PSE) mapeia o perfil operacional de cada série à política de menor custo total de inventário esperado entre as que atendem ao limiar mínimo de nível de serviço, aprendendo a partir do benchmark das Fases~1 e~2.
+O \textit{Policy Selection Engine} (PSE) mapeia o perfil operacional de cada série à política de menor custo total de inventário esperado entre as que atendem ao limiar mínimo de nível de serviço, aprendendo a partir do \textit{benchmark} das Fases~1 e~2.
 
-\subsection{Fundamentação: Meta-aprendizado para Seleção de Política}
+\subsection{Base Conceitual}
 
-O \textit{Policy Selection Engine} (PSE) é uma instância de \textit{meta-aprendizado} aplicado a decisões operacionais: aprende, a partir da experiência acumulada no benchmark (``quais políticas funcionaram bem em séries com estas características?''), a mapear o perfil de uma nova série para a política de menor custo total de inventário esperado.
+O \textit{Policy Selection Engine} (PSE) é uma instância de \textit{meta-aprendizado} aplicado a decisões operacionais: aprende, a partir da experiência acumulada no \textit{benchmark} (``quais políticas funcionaram bem em séries com estas características?''), a mapear o perfil de uma nova série para a política de menor custo total de inventário esperado.
 
 A ideia central é que as características operacionais da demanda: intermitência (ADI), variabilidade (CV$^2$), concentração (\textit{burstiness} $B$), difusividade (entropia $H$), tendência ($\beta_t/\mu$) e sazonalidade ($\rho_S$) capturam estrutura que prediz a dominância de uma família de política sobre as demais. Exemplos de relações esperadas: séries com ADI alto e picos intensos favorecem políticas que toleram longos períodos sem pedido (Jornaleiro, GA-DQN); séries com alta autocorrelação sazonal favorecem políticas que capturam periodicidade (PSO com espaço de busca amplo); séries de baixo volume e alta entropia são estruturalmente não preditíveis e favorecem políticas conservadoras (Jornaleiro).
 
-O PSE não é uma simples classificação supervisionada de algoritmos. É um mecanismo metodológico de seleção contextual: aprende, a partir da experiência acumulada no benchmark, quais estruturas de demanda favorecem quais famílias de política. Sua saída não é um rótulo de algoritmo, mas uma recomendação acionável com probabilidades de confiança, o que permite ao gestor compreender a margem de decisão e selecionar alternativas quando a política recomendada não está disponível.
+O PSE não é uma simples classificação supervisionada de algoritmos. É um mecanismo metodológico de seleção contextual: aprende, a partir da experiência acumulada no \textit{benchmark}, quais estruturas de demanda favorecem quais famílias de política. Sua saída não é um rótulo de algoritmo, mas uma recomendação acionável com probabilidades de confiança, o que permite ao gestor compreender a margem de decisão e selecionar alternativas quando a política recomendada não está disponível.
 
 \paragraph{Fundamentos teóricos.} O PSE fundamenta-se em três pilares convergentes:
 
 \begin{enumerate}[(a)]
-  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, encontrar $a^*(x) = \arg\max_{a \in \mathcal{A}} f(a, x)$. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ são as 12 políticas e $f$ é o CTI negativo sujeito a NS $\geq \alpha_{\min}$.
-  \item Teorema \textit{No Free Lunch}, proposto por \citet{Wolpert1997NoFreeLunch}: ganhos consistentes de desempenho exigem explorar a estrutura específica de cada instância. As \textit{features} operacionais do AIPE (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade) são a estrutura discriminativa que o NFL afirma existir.
+  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, encontrar $a^*(x) = \arg\max_{a \in \mathcal{A}} f(a, x)$. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ são as 12 políticas, $a^*(x)$ é a política selecionada para a instância descrita por $x$ e $f$ é o CTI negativo sujeito a NS $\geq \alpha_{\min}$.
+  \item Teorema \textit{No Free Lunch}, proposto por \citet{Wolpert1997NoFreeLunch}: ganhos consistentes de desempenho exigem explorar a estrutura específica de cada instância. As características operacionais do AIPE (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade) são a estrutura discriminativa que o NFL afirma existir.
   \item Portfólios de algoritmos, discutidos por \citet{Huberman1997AlgorithmPortfolios}: políticas não competem: complementam-se. O PSE explora a diversidade de especializações do portfólio em vez de apostar em um único generalista.
 \end{enumerate}
 
@@ -451,23 +456,24 @@ O PSE não é uma simples classificação supervisionada de algoritmos. É um me
 
 \paragraph{Seleção ciente de risco.} Além do critério de menor CTI esperado, o PSE incorpora uma dimensão de risco operacional: a confiança da recomendação (probabilidade máxima do classificador) sinaliza quando o perfil da série está fora da distribuição de treinamento. Recomendações com confiança abaixo de 0.50 são marcadas como incertas, sinalizando ao gestor que nenhuma política apresenta vantagem clara para aquela série específica, padrão que tipicamente indica séries de transição entre quadrantes Syntetos-Boylan.
 
-\subsection{Formulação do Problema de Seleção}
+\subsection{Problema de Seleção}
 
-Dado o vetor de \textit{features} $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$ e o conjunto de políticas $\mathcal{P} = \{$EOQ, $(s,S)$, Newsvendor, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$, o \textit{Policy Selection Engine} estima:
+Dado o vetor de características $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$ e o conjunto de políticas $\mathcal{P} = \{$EOQ, $(s,S)$, Newsvendor, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$, o \textit{Policy Selection Engine} estima:
 \begin{equation}
   \hat{\pi}^*(i) = \arg\min_{\pi \in \mathcal{P}} \; \mathbb{E}[\text{CTI}(\pi, i)]
   \quad \text{sujeito a } \mathbb{E}[\text{NS}(\pi, i)] \geq \alpha_{\text{min}},
   \label{eq:policy_selector}
 \end{equation}
 com $\alpha_{\text{min}} = 0.70$ (configurável). Assim, a política dominante de uma série é a política viável de menor CTI sob NS mínimo; quando nenhuma política atinge NS mínimo, seleciona-se a de maior NS.
+Na Equação~\ref{eq:policy_selector}, $\hat{\pi}^*(i)$ é a política recomendada para a série $i$, $\mathcal{P}$ é o portfólio de políticas candidatas, $\text{CTI}(\pi,i)$ é o custo total de inventário da política $\pi$ na série $i$, $\text{NS}(\pi,i)$ é o nível de serviço correspondente e $\mathbb{E}[\cdot]$ indica a média esperada sobre replicações experimentais ou fontes de aleatoriedade do simulador.
 
-\subsection{Geração de Rótulos de Política Dominante}
+\subsection{Rótulos de Política Dominante}
 
-Os rótulos $\hat{\pi}^*(i)$ são gerados a partir dos KPIs do benchmark (Seção~\ref{sec:benchmark_massivo}): para cada série, agregam-se os KPIs por política (média sobre $n_{\text{rep}} = 5$ replicações) e aplica-se o critério da Equação~\ref{eq:policy_selector}. Isso produz o \textit{dataset} de treinamento $\{(\mathbf{x}_i, \hat{\pi}^*_i)\}_{i=1}^N$.
+Os rótulos $\hat{\pi}^*(i)$ são gerados a partir dos KPIs do \textit{benchmark} (Seção~\ref{sec:benchmark_massivo}): para cada série, agregam-se os KPIs por política (média sobre $n_{\text{rep}} = 5$ replicações) e aplica-se o critério da Equação~\ref{eq:policy_selector}. Isso produz o \textit{dataset} de treinamento $\{(\mathbf{x}_i, \hat{\pi}^*_i)\}_{i=1}^N$, em que $\mathbf{x}_i$ é o vetor de características da série $i$, $\hat{\pi}^*_i$ é seu rótulo de política dominante e $N$ é o número de séries rotuladas.
 
-\subsection{Treinamento e Validação do Policy Selection Engine}
+\subsection{Treinamento do PSE}
 
-Um classificador XGBoost~\citep{ChenGuestrin2016XGBoost} multiclasse é utilizado com hiperparâmetros: $n_{\text{est}}=300$, $\text{depth}=6$, $\eta=0.05$, subsample$=0.8$. LightGBM~\citep{Ke2017LightGBM} e RandomForest são alternativas configuráveis.
+Um classificador XGBoost~\citep{ChenGuestrin2016XGBoost} multiclasse é utilizado com hiperparâmetros: $n_{\text{est}}=300$, $\text{depth}=6$, $\eta=0.05$, \textit{subsample} $=0.8$, representando, respectivamente, número de estimadores, profundidade máxima, taxa de aprendizado e fração amostrada de observações por árvore. LightGBM~\citep{Ke2017LightGBM} e RandomForest são alternativas configuráveis.
 
 A avaliação segue validação cruzada estratificada ($k=5$ folds), mantendo a proporção de rótulos por fold. As métricas primárias são:
 \begin{itemize}
@@ -476,7 +482,7 @@ A avaliação segue validação cruzada estratificada ($k=5$ folds), mantendo a 
   \item \textit{F1-weighted} (pondera pelo suporte de cada política).
 \end{itemize}
 
-A interpretabilidade do modelo é analisada por importância de \textit{features} (ganho médio de informação), identificando quais \textit{features} operacionais são mais discriminativas para a seleção de política.
+A interpretabilidade do modelo é analisada por importância de características (ganho médio de informação), identificando quais características operacionais são mais discriminativas para a seleção de política.
 
 \subsection{Saídas do PSE}
 
@@ -485,7 +491,7 @@ O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i
 \section{Artefatos Experimentais}
 \label{sec:reporting}
 
-O \textit{pipeline} AIPE produz artefatos com múltiplas funções: (i) figuras comparativas dos cinco KPIs entre as 12 políticas, mostrando heterogeneidade por quadrante Syntetos-Boylan e fronteira de Pareto CTI-NS; (ii) validação estatística visual (heatmaps Wilcoxon, Cohen's d, diagrama de diferença crítica); (iii) três \textit{datasets} analíticos — \textit{demand\_features.parquet} (17 \textit{features} por série), \textit{demand\_profiles.parquet} (classificação POD) e \textit{policy\_recommendations.parquet} (política recomendada pelo PSE com confiança) — que alimentam direto a análise da dissertação. Esses artefatos garantem rastreabilidade completa: qualquer leitor pode reconstruir figuras, tabelas e conclusões a partir dos mesmos insumos.
+O \textit{pipeline} AIPE produz artefatos com múltiplas funções: (i) figuras comparativas dos cinco KPIs entre as 12 políticas, mostrando heterogeneidade por quadrante Syntetos-Boylan e fronteira de Pareto CTI-NS; (ii) validação estatística visual (\textit{heatmaps} Wilcoxon, Cohen's d, diagrama de diferença crítica); (iii) três \textit{datasets} analíticos — \textit{demand\_features.parquet} (17 características por série), \textit{demand\_profiles.parquet} (classificação POD) e \textit{policy\_recommendations.parquet} (política recomendada pelo PSE com confiança) — que alimentam direto a análise da dissertação. Esses artefatos garantem rastreabilidade completa: qualquer leitor pode reconstruir figuras, tabelas e conclusões a partir dos mesmos insumos.
 
 \section{Protocolo Experimental}
 \label{sec:protocolo_exp}
@@ -501,20 +507,20 @@ O protocolo experimental distingue dois escopos:
   \item Fase~2 (concluída): 145 séries do estado da Bahia $\times$ 12 políticas $\times$ 5 replicações com \textit{common random numbers}, habilitando os testes de Wilcoxon e Friedman com poder estatístico adequado.
 \end{itemize}
 
-\subsection{Aplicação do Protocolo Temporal nos Experimentos}
+\subsection{Aplicação Temporal}
 
 A avaliação da Fase~2 segue um protocolo de validação temporal em janela deslizante \textit{(rolling horizon)} que integra todos os componentes do AIPE:
 
 \begin{enumerate}[(i)]
-  \item Ingestão de dados: consolidação do histórico $[t-w, t]$ a cada ciclo com atualização das estatísticas locais $\hat{\mu}$ e $\hat{\sigma}$;
-  \item Engenharia de \textit{features}: recálculo do vetor $\phi(\mathbf{x}_i) \in \mathbb{R}^{17}$ sobre a janela mais recente;
+  \item Ingestão de dados: consolidação do histórico $[t-w, t]$ a cada ciclo com atualização das estatísticas locais $\hat{\mu}$ e $\hat{\sigma}$, em que $w$ é o tamanho da janela histórica;
+  \item Engenharia de características: recálculo do vetor $\phi(\mathbf{x}_i) \in \mathbb{R}^{17}$ sobre a janela mais recente;
   \item Simulação: execução das 12 políticas candidatas na mesma janela com demanda prevista;
   \item Etiquetagem: aplicação do critério de seleção (Equação~\ref{eq:policy_selector}) para gerar rótulos de treinamento.
 \end{enumerate}
 
-\paragraph{Adaptação periódica.} A cada $\Delta t = 6$ ciclos (configurável), o vetor de features é recalculado e o POD é reavaliado. Se a série migrar entre quadrantes Syntetos-Boylan, o PSE emite nova recomendação de política para o próximo ciclo operacional. Esse mecanismo não exige reaprendizado do meta-modelo, apenas recálculo das features e consulta ao classificador: (a) recalcular $\phi(\mathbf{x}_i)$; (b) reclassificar POD; (c) consultar PSE: $\hat{\pi}^*(i) \leftarrow f(\phi(\mathbf{x}_i))$; (d) aplicar. Essa reatividade é a distinção central do AIPE: a relação regime$\rightarrow$política não é regra manual estática, mas modelo aprendido que se adapta conforme o padrão operacional evolui.
+\paragraph{Adaptação periódica.} A cada $\Delta t = 6$ ciclos (configurável), o vetor de características é recalculado e o POD é reavaliado. Se a série migrar entre quadrantes Syntetos-Boylan, o PSE emite nova recomendação de política para o próximo ciclo operacional. Esse mecanismo não exige reaprendizado do meta-modelo, apenas recálculo das características e consulta ao classificador: (a) recalcular $\phi(\mathbf{x}_i)$; (b) reclassificar POD; (c) consultar PSE: $\hat{\pi}^*(i) \leftarrow f(\phi(\mathbf{x}_i))$; (d) aplicar. Essa reatividade é a distinção central do AIPE: a relação regime$\rightarrow$política não é regra manual estática, mas modelo aprendido que se adapta conforme o padrão operacional evolui.
 
-\subsection{Rastreabilidade e Reprodutibilidade}
+\subsection{Rastreabilidade}
 
 O \textit{pipeline} experimental é implementado com rastreabilidade completa de insumos, configurações e artefatos. Reprodutibilidade é garantida por: versionamento Git de código e parâmetros, sementes aleatórias fixas por experimento, hashes de \textit{datasets} de entrada, e documentação de dependências de software. Todos os dados, scripts e resultados são versionados e criptograficamente auditáveis, permitindo reconstruir integralmente todos os experimentos a partir dos mesmos parâmetros. A matriz completa dos parâmetros experimentais, configurações e artefatos necessários à reprodução das políticas avaliadas é apresentada no Apêndice~\ref{app:reproducibility}.
 

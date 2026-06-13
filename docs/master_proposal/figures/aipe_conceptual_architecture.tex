@@ -94,13 +94,13 @@
 };
 \node[box, below=0.35cm of appTitle] (recommendation) {
     \textbf{Recomendação do AIPE}\\
-    política recomendada; ranking;\\
+    política recomendada; \textit{ranking};\\
     justificativa por perfil
 };
 \node[box, below=0.35cm of appTitle, xshift=5.2cm] (reeval) {
     \textbf{Reavaliação periódica}\\
     novos dados atualizam\\
-    \textit{features}, POD e recomendação
+    características, POD e recomendação
 };
 \begin{pgfonlayer}{background}
 \node[layer, fit=(appTitle)(newseries)(recommendation)(reeval)] (appLayer) {};
@@ -119,6 +119,6 @@
     node[pos=0.38, right=4pt, align=center, font=\scriptsize\sffamily] {ciclo\\adaptativo};
 
 \end{tikzpicture}}
-\caption{Arquitetura conceitual do framework AIPE. O framework separa a camada adaptável à base, responsável por padronizar dados transacionais e parâmetros operacionais, do núcleo metodológico reutilizável, composto pela caracterização da demanda, benchmark de políticas, simulação, validação estatística, geração de rótulos e treinamento do \textit{Policy Selection Engine}. Essa separação permite aplicar o AIPE a outras bases varejistas mediante adaptação da camada de entrada, preservando o núcleo de seleção contextual de políticas. A camada de aplicação utiliza o PSE para recomendar políticas a novas séries loja-produto e reavaliar periodicamente as recomendações conforme novos dados se acumulam.}
+\caption{Arquitetura conceitual do \textit{framework} AIPE. O \textit{framework} separa a camada adaptável à base, responsável por padronizar dados transacionais e parâmetros operacionais, do núcleo metodológico reutilizável, composto pela caracterização da demanda, \textit{benchmark} de políticas, simulação, validação estatística, geração de rótulos e treinamento do \textit{Policy Selection Engine}. Essa separação permite aplicar o AIPE a outras bases varejistas mediante adaptação da camada de entrada, preservando o núcleo de seleção contextual de políticas. A camada de aplicação utiliza o PSE para recomendar políticas a novas séries loja-produto e reavaliar periodicamente as recomendações conforme novos dados se acumulam.}
 \label{fig:aipe_architecture}
 \end{figure}

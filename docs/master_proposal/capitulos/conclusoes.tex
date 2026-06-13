@@ -1,20 +1,20 @@
-﻿\mychapter{Considerações Finais e Plano de Continuidade}{cap:conclusion}\lhead{CONSIDERAÇÕES FINAIS}
+﻿\mychapter{Considerações Finais e Próximas Etapas}{cap:conclusion}\lhead{CONSIDERAÇÕES FINAIS}
 
-\section{Balanço dos Resultados Preliminares}
+\section{Balanço dos Resultados}
 
-Os resultados preliminares sustentam uma resposta positiva à pergunta central, ainda que limitada ao escopo das Fases~1 e~2. O benchmark de 12 políticas sobre dados reais de alta intermitência (regime \textit{Lumpy}) confirma que nenhuma política domina todas as métricas: cada política apresentou vantagem em pelo menos uma métrica e em pelo menos uma série, sustentando a hipótese de heterogeneidade genuína. A posição da série no plano ADI~$\times$~CV$^2$ correlaciona-se sistematicamente com o desempenho relativo das políticas, indicando que a relação regime$\rightarrow$política é estruturada o suficiente para ser aprendida por um meta-modelo supervisionado.
+Os resultados preliminares sustentam uma resposta positiva à pergunta central, ainda que limitada ao escopo das Fases~1 e~2. O \textit{benchmark} de 12 políticas sobre dados reais de alta intermitência (regime \textit{Lumpy}) confirma que nenhuma política domina todas as métricas: cada política apresentou vantagem em pelo menos uma métrica e em pelo menos uma série, sustentando a hipótese de heterogeneidade genuína. A posição da série no plano ADI~$\times$~CV$^2$ correlaciona-se sistematicamente com o desempenho relativo das políticas, indicando que a relação regime$\rightarrow$política é estruturada o suficiente para ser aprendida por um meta-modelo supervisionado.
 
 A Fase~2 — executada sobre 145 séries do estado da Bahia com cinco replicações independentes — confirma e expande os achados da Fase~1. A ampliação de escopo preserva a heterogeneidade observada, agora com validação estatística formal (testes de Wilcoxon, Friedman e Cohen), confirmando que as diferenças de desempenho entre políticas não são atribuíveis a variação amostral. No conjunto das 145 séries, EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor compromisso custo-serviço no agregado, enquanto a dispersão pronunciada de CTI entre séries — com coeficientes de variação superiores a 100\% para políticas híbridas — demonstra que a superioridade de qualquer política é altamente dependente do perfil operacional da série individual.
 
-Os rótulos de política dominante produzidos pelo benchmark — consolidados na Tabela~\ref{tab:regime_policy_dominance} — constituem a base inicial para o treinamento do PSE, cuja capacidade de generalização para novas séries, regiões e regimes será testada na Fase~3. A concentração das séries das Fases~1 e~2 no regime \textit{Lumpy} indica que o AIPE foi validado no regime de maior complexidade operacional, mas ainda requer a Fase~3 para testar a generalização para os demais quadrantes de Syntetos-Boylan e demais regiões geográficas. Como referência de magnitude: no regime \textit{Lumpy} da Fase~1, o GA-DQN reduziu CTI em 48\% e rupturas em 55\% em relação à política $(s,S)$ padrão, com efeito chicote reduzido de 119.4 para 5.0.
+Os rótulos de política dominante produzidos pelo \textit{benchmark} — consolidados na Tabela~\ref{tab:regime_policy_dominance} — constituem a base inicial para o treinamento do PSE, cuja capacidade de generalização para novas séries, regiões e regimes será testada na Fase~3. A concentração das séries das Fases~1 e~2 no regime \textit{Lumpy} indica que o AIPE foi validado no regime de maior complexidade operacional, mas ainda requer a Fase~3 para testar a generalização para os demais quadrantes de Syntetos-Boylan e demais regiões geográficas. Como referência de magnitude: no regime \textit{Lumpy} da Fase~1, o GA-DQN reduziu CTI em 48\% e rupturas em 55\% em relação à política $(s,S)$ padrão, com efeito chicote reduzido de 119.4 para 5.0.
 
 As conclusões apresentadas devem ser interpretadas dentro do escopo experimental das Fases~1 e~2, detalhado no Capítulo~\ref{cap:results}. A ampliação para novos estados, produtos e regimes de demanda compõe a Fase~3 e orienta o plano de continuidade da pesquisa.
 
-\section{Contribuições da Dissertação}
+\section{Contribuições}
 
 Os resultados das Fases~1 e~2 indicam que o desempenho das políticas de reposição varia sistematicamente com o regime operacional da demanda e que essa relação pode ser modelada e predita via aprendizado supervisionado.
 
-Neste contexto, a dissertação propõe e avalia empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE): um framework metodológico de seleção adaptativa de políticas de reposição que, a partir do histórico transacional de uma combinação loja-produto, extrai características operacionais e determina, por meio de um meta-modelo supervisionado, a política mais adequada. O trabalho está organizado em duas fases concluídas (Paraíba, Bahia) e uma fase em andamento (escala nacional), e produz as seguintes contribuições interdependentes.
+Neste contexto, a dissertação propõe e avalia empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE): um \textit{framework} metodológico de seleção adaptativa de políticas de reposição que, a partir do histórico transacional de uma combinação loja-produto, extrai características operacionais e determina, por meio de um meta-modelo supervisionado, a política mais adequada. O trabalho está organizado em duas fases concluídas (Paraíba, Bahia) e uma fase em andamento (escala nacional), e produz as seguintes contribuições interdependentes.
 
 A primeira contribuição é o \textit{benchmarking} sistemático de 12 políticas sobre dados reais (Fases~1 e~2): um estudo comparativo para controle de inventário em regime intermitente, cobrindo políticas clássicas, meta-heurísticas, agentes de RL e arquiteturas híbridas em protocolo experimental controlado com validação estatística formal. A Fase~1 avaliou 15 lojas do Nordeste (produto 48130); a Fase~2 expandiu para 145 combinações (loja, SKU) do estado da Bahia com cinco replicações independentes, totalizando 8.700 pontos de avaliação.
 
@@ -38,7 +38,7 @@ Do ponto de vista operacional, os resultados das Fases~1 e~2 oferecem indicaçõ
   \item Sobre a operacionalização: o \textit{pipeline} requer apenas dados de histórico transacional exportado em formato tabular, podendo ser integrado a rotinas periódicas de monitoramento e atualização de parâmetros. A abordagem tem potencial para reduzir a dependência de ajuste manual por série, sujeito à validação em escala ampliada prevista na Fase~3.
 \end{itemize}
 
-\section{Próximas Etapas: Expansão Nacional}
+\section{Expansão Nacional}
 
 A Fase~3 concentra as próximas etapas do trabalho em quatro frentes:
 
@@ -78,4 +78,4 @@ Escrita e defesa da dissertação                          & & & & $\bullet$ \\
 \end{tabular}
 \end{table}
 
-As Fases~1 e~2 consolidam a contribuição empírica central da dissertação: \textit{benchmarking} sistemático de doze políticas de reposição em dados transacionais reais do varejo brasileiro, com protocolo experimental controlado e validação estatística formal em regime de alta intermitência (Syntetos-Boylan ``\textit{Lumpy}''). A integração do módulo de previsão de demanda e da engenharia de características operacionais estabelece a base para o meta-modelo adaptativo (AIPE). A Fase~3 estenderá essas contribuições à escala nacional e completará a validação e o treinamento do \textit{Policy Selection Engine}, consolidando um framework metodológico fundamentado empiricamente com potencial de aplicação em operações de varejo regional.
+As Fases~1 e~2 consolidam a contribuição empírica central da dissertação: \textit{benchmarking} sistemático de doze políticas de reposição em dados transacionais reais do varejo brasileiro, com protocolo experimental controlado e validação estatística formal em regime de alta intermitência (Syntetos-Boylan ``\textit{Lumpy}''). A integração do módulo de previsão de demanda e da engenharia de características operacionais estabelece a base para o meta-modelo adaptativo (AIPE). A Fase~3 estenderá essas contribuições à escala nacional e completará a validação e o treinamento do \textit{Policy Selection Engine}, consolidando um \textit{framework} metodológico fundamentado empiricamente com potencial de aplicação em operações de varejo regional.
