@@ -1,6 +1,6 @@
 ﻿\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
 
-Redes varejistas com múltiplas lojas enfrentam problemas recorrentes de reposição porque produtos e regiões apresentam padrões de demanda heterogêneos. Produtos com vendas regulares, intermitentes ou concentradas em picos esporádicos respondem de forma diferente às mesmas políticas de reposição. Nesse contexto, a aplicação uniforme de uma única política tende a produzir excesso de estoque, ruptura ou instabilidade nos pedidos enviados ao armazém.
+Redes varejistas com múltiplas lojas enfrentam problemas recorrentes de reposição porque produtos e regiões apresentam padrões de demanda heterogêneos. Produtos com vendas regulares, intermitentes ou concentradas em picos esporádicos respondem de forma diferente às mesmas políticas de reposição. Nesse contexto, a aplicação uniforme de uma única política tende a produzir excesso de estoque, ruptura ou instabilidade nos pedidos enviados ao armazém \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
 
 \section{Motivação}
 
@@ -8,23 +8,23 @@ Essa dificuldade é o ponto de partida desta dissertação: tomar decisões de r
 
 \subsection{Redes Varejistas Multi-Loja}
 
-Para situar esse desafio, considere a estrutura básica de uma rede varejista geograficamente dispersa: lojas espalhadas em diferentes cidades e regiões abastecidas por um ou mais centros de distribuição regionais. O desafio é que cada loja, em seu contexto local, precisa decidir quando repor estoque e em que quantidade. Essa decisão é crítica porque afeta dois objetivos em conflito: manter custos baixos (reduzindo estoque em prateleira) e manter disponibilidade (não deixando o cliente sem o produto).
+Para situar esse desafio, considere a estrutura básica de uma rede varejista geograficamente dispersa: lojas espalhadas em diferentes cidades e regiões abastecidas por um ou mais centros de distribuição regionais. O desafio é que cada loja, em seu contexto local, precisa decidir quando repor estoque e em que quantidade. Essa decisão é crítica porque afeta dois objetivos em conflito: manter custos baixos, reduzindo estoque em prateleira, e manter disponibilidade, evitando falta de produto para o cliente \citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}.
 
-Essa decisão local, entretanto, não afeta apenas a loja. Operacionalmente, cada loja recebe seu abastecimento do armazém regional; o armazém, por sua vez, recebe do fornecedor ou fábrica. Quando uma loja repõe em volume alto ou frequência alta, o armazém sente essa variabilidade amplificada, afetando a estabilidade de toda a cadeia. Inversamente, quando a loja falha em repor corretamente, produtos faltam e o cliente não é atendido. O problema está em equilibrar custo de estoque, disponibilidade de produto e estabilidade dos pedidos enviados ao armazém.
+Essa decisão local, entretanto, não afeta apenas a loja. Operacionalmente, cada loja recebe seu abastecimento do armazém regional; o armazém, por sua vez, recebe do fornecedor ou fábrica. Quando uma loja repõe em volume alto ou frequência alta, o armazém sente essa variabilidade amplificada, afetando a estabilidade de toda a cadeia. Esse comportamento está relacionado ao efeito chicote, no qual pequenas variações na demanda local podem ser amplificadas ao longo da cadeia de suprimentos \citep{LeePadmanabhanWhang1997Bullwhip}. Inversamente, quando a loja falha em repor corretamente, produtos faltam e o cliente não é atendido. O problema está em equilibrar custo de estoque, disponibilidade de produto e estabilidade dos pedidos enviados ao armazém.
 
 Uma resposta operacional tradicional a esse equilíbrio consiste em aplicar regras simples de reposição: ``quando o estoque cai abaixo de \(X\), peça \(Y\) unidades''. Essas regras funcionam bem para produtos que vendem com regularidade previsível. Contudo, em redes varejistas com milhares de combinações loja-produto, esse pressuposto raramente vale de forma uniforme.
 
-A limitação dessa resposta aparece quando se comparam séries de demanda muito distintas. Um produto de higiene pessoal que vende 50 unidades por semana em qualquer loja (padrão regular) tende a ser atendido por regras estáveis de reposição. Já um produto de linha limitada que vende ``0, 0, 0, 50, 0, 0, 30'' unidades ao longo de ciclos sucessivos (picos esporádicos de grande magnitude) impõe outro dilema: manter estoque alto o tempo todo, elevando custo, ou manter estoque baixo e correr risco de ruptura. Aplicar a mesma regra aos dois casos é ineficiente.
+A limitação dessa resposta aparece quando se comparam séries de demanda muito distintas. Um produto de higiene pessoal que vende 50 unidades por semana em qualquer loja (padrão regular) tende a ser atendido por regras estáveis de reposição. Já um produto de linha limitada que vende ``0, 0, 0, 50, 0, 0, 30'' unidades ao longo de ciclos sucessivos apresenta comportamento compatível com demanda intermitente ou \textit{lumpy}, nas quais períodos de demanda nula alternam-se com ocorrências positivas de magnitude variável \citep{Croston1972ForecastingIntermittentDemand,Syntetos2005Categorization,Boylan2008Intermittent}. Esse padrão impõe outro dilema: manter estoque alto o tempo todo, elevando custo, ou manter estoque baixo e correr risco de ruptura. Aplicar a mesma regra aos dois casos é ineficiente.
 
 Nesses casos de baixa frequência de venda ou de comportamento imprevisível, políticas simples podem alternar entre dois efeitos indesejados: excesso de estoque, que ocupa espaço e representa custo financeiro, e falta de estoque, também chamada de ruptura, que leva à perda de venda e frustra o cliente. Esse cenário combina elevação de custo operacional com degradação do nível de serviço. Além disso, decisões inadequadas de reposição amplificam a variabilidade na cadeia: quando as lojas oscilam entre períodos sem repor e períodos com reposição em lote grande, o armazém regional observa uma volatilidade maior do que a demanda real nas lojas.
 
-Esse diagnóstico desloca a discussão do ajuste pontual de parâmetros para um problema mais amplo: a escolha da política de reposição adequada a cada contexto operacional. A literatura de controle de estoques reconhece que diferentes padrões de demanda podem exigir políticas distintas. Modelos analíticos tradicionais, heurísticas, meta-heurísticas e métodos baseados em aprendizado oferecem alternativas para tratar esse problema. Permanece, entretanto, uma lacuna operacional relevante: em uma rede com milhares de produtos e centenas de lojas, qual política aplicar a cada combinação loja-produto? Fazer isso manualmente é inviável. Aplicar uma única regra a todos é ineficiente. O AIPE endereça essa lacuna ao modelar a escolha da política como um problema de seleção contextual, aprendendo a recomendar políticas de reposição a partir das características operacionais de cada série.
+Esse diagnóstico desloca a discussão do ajuste pontual de parâmetros para um problema mais amplo: a escolha da política de reposição adequada a cada contexto operacional. A literatura de controle de estoques reconhece que diferentes padrões de demanda podem exigir políticas distintas. Modelos analíticos tradicionais, heurísticas, meta-heurísticas e métodos baseados em aprendizado oferecem alternativas para tratar esse problema \citep{Axsater2006InventoryControl,Syntetos2012DemandClassificationsApplications,Boute2022DRLInventoryRoadmap}. Permanece, entretanto, uma lacuna operacional relevante: em uma rede com milhares de produtos e centenas de lojas, qual política aplicar a cada combinação loja-produto? Fazer isso manualmente é inviável. Aplicar uma única regra a todos é ineficiente. O AIPE endereça essa lacuna ao modelar a escolha da política como um problema de seleção contextual, aprendendo a recomendar políticas de reposição a partir das características operacionais de cada série. Essa formulação se aproxima do problema clássico de seleção de algoritmos, no qual características da instância são usadas para escolher o método mais adequado a cada caso \citep{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection}.
 
-Diante dessa lacuna, a hipótese central desta dissertação é que o desempenho das políticas de reposição depende do regime operacional da demanda, e que essa relação pode ser aprendida por um meta-modelo supervisionado a partir de características históricas e operacionais da série.
+Diante dessa lacuna, a hipótese central desta dissertação é que o desempenho das políticas de reposição depende do regime operacional da demanda, e que essa relação pode ser aprendida por um meta-modelo supervisionado a partir de características históricas e operacionais da série. Essa hipótese orienta a formulação do AIPE como uma abordagem de seleção contextual, e não apenas como comparação isolada entre políticas \citep{Rice1976AlgorithmSelection,Syntetos2005Categorization,Kotthoff2014AlgorithmSelection}.
 
 A partir dessa hipótese, o AIPE operacionaliza a seleção contextual em três etapas: caracteriza o histórico de venda de cada série loja-produto por meio de características operacionais; compara políticas candidatas em simulação controlada; e aprende a recomendar a política com melhor desempenho esperado para séries com perfis semelhantes. Reavaliações periódicas mantêm as recomendações atualizadas conforme novas observações se acumulam.
 
-Essa sequência é sintetizada na Figura~\ref{fig:intro_problem_selection}: redes varejistas apresentam séries heterogêneas, políticas únicas produzem desempenho irregular e a alternativa investigada nesta dissertação é selecionar políticas de forma contextual, com base nas características observadas de cada série.
+Essa sequência é sintetizada na Figura~\ref{fig:intro_problem_selection}: redes varejistas apresentam séries heterogêneas, políticas únicas produzem desempenho irregular e a alternativa investigada nesta dissertação é selecionar políticas de forma contextual, com base nas características observadas de cada série. A figura antecipa visualmente o argumento central que será desenvolvido nos capítulos seguintes.
 
 \input{figures/intro_problem_selection}
 
@@ -42,16 +42,16 @@ Portanto, o problema de otimização é este: dado um histórico de vendas de ca
 
 \subsubsection*{Engenharia de características operacionais}
 
-Para tornar esse problema tratável por modelos de seleção, é necessário representar cada série loja-produto por descritores mensuráveis. Características operacionais são descritores do padrão de venda: frequência de venda, variabilidade de tamanho de pedidos, padrões sazonais e outras medidas de comportamento operacional. Essas características alimentam a engenharia do AIPE. Os detalhes técnicos estão no Capítulo~\ref{cap:metod}.
+Para tornar esse problema tratável por modelos de seleção, é necessário representar cada série loja-produto por descritores mensuráveis. Características operacionais são descritores do padrão de venda, incluindo frequência de venda, variabilidade de tamanho de pedidos, padrões sazonais e outras medidas de comportamento operacional. No contexto de seleção de algoritmos e meta-aprendizado, esse tipo de caracterização permite associar propriedades da instância ao desempenho esperado de métodos candidatos \citep{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection}. Essas características alimentam a engenharia do AIPE. Os detalhes técnicos estão no Capítulo~\ref{cap:metod}.
 
 
 \subsection{Questões de Pesquisa e Hipóteses}
 
 % \subsubsection*{Visão geral do funcionamento do AIPE}
 
-Com o problema e a representação das séries definidos, o AIPE é estruturado em um ciclo de avaliação e recomendação composto por quatro etapas: observação do padrão de venda histórico de cada combinação loja-produto; avaliação das políticas candidatas em simulação para identificar qual apresenta melhor desempenho naquele perfil; aprendizado da relação entre padrão operacional e política dominante; e geração de recomendações para novas séries com perfis similares.
+Com o problema e a representação das séries definidos, o AIPE é estruturado em um ciclo de avaliação e recomendação composto por quatro etapas: observação do padrão de venda histórico de cada combinação loja-produto; avaliação das políticas candidatas em simulação para identificar qual apresenta melhor desempenho naquele perfil; aprendizado da relação entre padrão operacional e política dominante; e geração de recomendações para novas séries com perfis similares. Esse ciclo permite tratar a escolha da política como uma decisão aprendida a partir de evidência empírica.
 
-Com base nesse ciclo, a dissertação investiga se históricos de venda podem ser convertidos em recomendações orientadas por dados para políticas de reposição, utilizando simulações para identificar quais políticas apresentam melhor desempenho em diferentes perfis de demanda.
+Com base nesse ciclo, a dissertação investiga se históricos de venda podem ser convertidos em recomendações orientadas por dados para políticas de reposição, utilizando simulações para identificar quais políticas apresentam melhor desempenho em diferentes perfis de demanda. A investigação combina, portanto, avaliação operacional e aprendizagem supervisionada em um mesmo protocolo metodológico.
 
 \paragraph{Questão principal.} A questão que sintetiza essa investigação é: é possível construir uma abordagem metodológica que aprenda qual política de reposição é mais adequada para cada combinação loja-produto, a partir de características operacionais da série, e que supere políticas únicas aplicadas uniformemente à rede?
 
@@ -67,24 +67,13 @@ Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. S
 
 % Uma rede varejista típica tem três níveis: fábrica, armazém regional e lojas no varejo. O AIPE trabalha no nível das lojas: recomenda qual política de reposição cada loja deveria adotar, considerando seu padrão local de venda. Quando cada loja repõe de forma adequada, toda a cadeia se torna mais estável e o armazém regional recebe pedidos menos amplificados.
 
-\subsection*{Contribuições da dissertação}
-
-A partir dessas questões e hipóteses, a contribuição principal é o AIPE em si: um \textit{framework} metodológico de apoio à decisão operacional que recomenda qual política de reposição adotar para cada par loja-produto. A abordagem aprende essa relação a partir de dados históricos e pode produzir recomendações para novos produtos sem necessidade de reteste manual completo.
-
-Para sustentar essa contribuição, a avaliação do AIPE é organizada em três contribuições complementares. A primeira consiste na comparação empírica de múltiplas políticas sobre dados reais, indicando que diferentes séries favorecem políticas distintas e que a seleção contextual é uma estratégia adequada para lidar com a heterogeneidade observada. A segunda é o mapeamento entre padrões operacionais e políticas dominantes, realizado com validação estatística formal, fornecendo o alicerce sobre o qual o meta-modelo AIPE aprende. A terceira é a construção de um protocolo reprodutível de avaliação experimental, com rastreabilidade completa de dados, configurações e código.
-
-Assim, o AIPE constitui uma base experimental reprodutível e operacionalmente plausível para futura validação em ambiente real, com potencial de reduzir custos de estoque e variabilidade da cadeia sem comprometer os níveis de disponibilidade de produtos.
-
-% \subsubsection*{Estrutura de apresentação}
-
-
 \section{Objetivos}
 
-Com a motivação, o problema e as contribuições delineados, esta seção enuncia o objetivo geral, os objetivos específicos e as delimitações do escopo desta dissertação.
+Com a motivação, o problema e as hipóteses delineados, esta seção enuncia o objetivo geral, os objetivos específicos e as delimitações do escopo desta dissertação. Essa organização explicita o que a pesquisa pretende demonstrar e quais fronteiras metodológicas serão preservadas.
 
 \subsection*{Objetivo geral}
 
-O objetivo geral é propor, implementar e avaliar o \textit{Adaptive Inventory Policy Engine} (AIPE), um framework metodológico de seleção contextual de políticas de reposição que utiliza características operacionais de séries loja-produto para recomendar a política com melhor desempenho esperado em cada perfil de demanda.
+O objetivo geral é propor, implementar e avaliar o \textit{Adaptive Inventory Policy Engine} (AIPE), um framework metodológico de seleção contextual de políticas de reposição que utiliza características operacionais de séries loja-produto para recomendar a política com melhor desempenho esperado em cada perfil de demanda. Esse objetivo sintetiza a contribuição esperada da dissertação e conecta a etapa experimental ao mecanismo de recomendação.
 
 Esse objetivo se materializa em uma abordagem que combina a caracterização do comportamento da demanda, a avaliação empírica de diferentes políticas de reposição e o treinamento de um mecanismo de seleção capaz de associar perfis operacionais a políticas recomendadas. A proposta é avaliada sobre dados reais de uma rede varejista brasileira, com foco em custo de inventário, nível de serviço, ruptura, estabilidade dos pedidos e reprodutibilidade experimental.
 
@@ -106,10 +95,20 @@ Esse objetivo se materializa em uma abordagem que combina a caracterização do 
   \item \textbf{[Fase 3: Planejado]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
 \end{enumerate}
 
+\subsection*{Contribuições da dissertação}
+
+A partir dessas questões, hipóteses e objetivos, a contribuição principal é o AIPE em si: um \textit{framework} metodológico de apoio à decisão operacional que recomenda qual política de reposição adotar para cada par loja-produto. A abordagem aprende essa relação a partir de dados históricos e pode produzir recomendações para novos produtos sem necessidade de reteste manual completo.
+
+Para sustentar essa contribuição, a avaliação do AIPE é organizada em três contribuições complementares. A primeira consiste na comparação empírica de múltiplas políticas sobre dados reais, indicando que diferentes séries favorecem políticas distintas e que a seleção contextual é uma estratégia adequada para lidar com a heterogeneidade observada. A segunda é o mapeamento entre padrões operacionais e políticas dominantes, realizado com validação estatística formal, fornecendo o alicerce sobre o qual o meta-modelo AIPE aprende. A terceira é a construção de um protocolo reprodutível de avaliação experimental, com rastreabilidade completa de dados, configurações e código.
+
+Assim, o AIPE constitui uma base experimental reprodutível e operacionalmente plausível para futura validação em ambiente real, com potencial de reduzir custos de estoque e variabilidade da cadeia sem comprometer os níveis de disponibilidade de produtos. A contribuição é metodológica e experimental, mantendo a aplicação em ambiente real como etapa posterior de validação.
+
+% \subsubsection*{Estrutura de apresentação}
+
 \subsection*{Escopo e Delimitações}
 \label{sec:delimitacoes}
 
-Após explicitar os objetivos, é igualmente importante delimitar o que está fora do escopo da dissertação. As seguintes funcionalidades não são abordadas:
+Após explicitar os objetivos e contribuições, é igualmente importante delimitar o que está fora do escopo da dissertação. Essa delimitação evita atribuir ao AIPE funções que não fazem parte da contribuição proposta. As seguintes funcionalidades não são abordadas:
 
 \begin{itemize}
   \item Coordenação multiagente entre escalões: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
@@ -124,7 +123,7 @@ Essas delimitações definem o escopo metodológico da dissertação e concentra
 
 \subsection*{Organização do documento}
 
-Encerrando a Introdução, este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico, abordando demanda intermitente, políticas de controle de inventário, métricas de previsão, testes estatísticos e fundamentos de seleção contextual de políticas. O Capítulo~\ref{cap:rel} discute os trabalhos relacionados e posiciona esta dissertação em relação à literatura sobre controle de inventário, previsão de demanda intermitente, meta-heurísticas, aprendizado por reforço, hiper-heurísticas e meta-aprendizado. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE, descrevendo o \textit{dataset}, o \textit{pipeline} de pré-processamento, a engenharia de características operacionais, o ambiente de simulação, os protocolos de validação e o módulo de seleção contextual de políticas. O Capítulo~\ref{cap:results} apresenta os resultados empíricos preliminares das Fases 1 e 2. Por fim, o Capítulo~\ref{cap:conclusion} consolida as contribuições, retoma o alcance das conclusões e apresenta o plano de continuidade da dissertação.
+Encerrando a Introdução, este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico, abordando inicialmente as famílias de políticas de reposição avaliadas, seguidas da caracterização de demanda intermitente, da formulação do controle de inventário, das métricas de previsão, dos testes estatísticos e dos fundamentos de seleção contextual de políticas. O Capítulo~\ref{cap:rel} discute os trabalhos relacionados e posiciona esta dissertação em relação à literatura sobre controle de inventário, previsão de demanda intermitente, meta-heurísticas, aprendizado por reforço, hiper-heurísticas e meta-aprendizado. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE, descrevendo o \textit{dataset}, o \textit{pipeline} de pré-processamento, a engenharia de características operacionais, o ambiente de simulação, os protocolos de validação e o módulo de seleção contextual de políticas. O Capítulo~\ref{cap:results} apresenta os resultados empíricos preliminares das Fases 1 e 2. Por fim, o Capítulo~\ref{cap:conclusion} consolida as contribuições, retoma o alcance das conclusões e apresenta o plano de continuidade da dissertação.
 
 \newpage\lhead{\rightmark}
 

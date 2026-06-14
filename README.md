@@ -51,8 +51,7 @@ Propõe o AIPE (*Adaptive Inventory Policy Engine*), framework que seleciona aut
 
 ```bash
 cd docs/master_proposal
-latexmk -pdf -xelatex -outdir=build -interaction=nonstopmode tcc.tex
-# PDF gerado em build/tcc.pdf
+latexmk tcc.tex        # artefatos e PDF gerados em build/
 ```
 
 ---

@@ -1,6 +1,6 @@
 ﻿\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
 
-Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e a formalização da seleção contextual como problema de aprendizado supervisionado.
+Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e a formalização da seleção contextual como problema de aprendizado supervisionado. O objetivo é estabelecer a base conceitual usada posteriormente na metodologia e na interpretação dos resultados.
 
 O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia ADI $\times$ CV$^2$, que fundamentam a caracterização dos regimes operacionais. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão, os testes estatísticos e os fundamentos de seleção contextual de políticas.
 \section{Políticas de Reposição}
@@ -8,7 +8,7 @@ O capítulo inicia pela apresentação das principais famílias de políticas de
 Antes de discutir a taxonomia de demanda, é útil delimitar o conjunto de decisões que será comparado ao longo da dissertação. Uma política de reposição define quando emitir pedido e quanto repor, a partir do estado operacional observado em cada série loja-produto. Nesta seção, as políticas são apresentadas de forma conceitual, agrupadas por família metodológica. A formalização matemática do problema de controle aparece adiante, após a caracterização dos regimes de demanda, para conectar a escolha da política ao perfil operacional de cada série.
 \subsection{Políticas Clássicas}
 
-As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como \textit{baselines} de referência no \textit{benchmark}.
+As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como \textit{baselines} de referência no \textit{benchmark}. Elas são importantes porque representam alternativas simples, interpretáveis e amplamente utilizadas em práticas de reposição.
 
 \paragraph{EOQ (\textit{Economic Order Quantity}).}
 Minimiza o custo total anual assumindo demanda constante $\mu$, em que $\mu$ representa a demanda média por ciclo. A quantidade ótima é $Q^* = \sqrt{2\mu c_o^{\text{fix}}/h}$, na qual $Q^*$ é o lote econômico, $c_o^{\text{fix}}$ é o custo fixo por pedido e $h$ é o custo de manutenção por unidade e por ciclo. O ponto de reposição é definido como $s = \mu L$, em que $s$ representa o nível de estoque que aciona um pedido e $L$ é o prazo de entrega medido em ciclos. Em regime intermitente, o pressuposto de demanda constante é violado, elevando o custo total em relação a políticas adaptativas.
@@ -104,7 +104,7 @@ Formalmente, seja $D_t \geq 0$ a demanda observada na loja no ciclo $t \in \{1,\
 
 Na Equação~\ref{eq:n_pos}, $n_{+}$ conta quantos ciclos apresentam demanda positiva e, portanto, mede a frequência efetiva de ocorrência da demanda. Quando $n_{+}$ é pequeno em relação ao horizonte $T$, a série contém muitos ciclos sem venda, característica central da demanda intermitente. Na Equação~\ref{eq:mu_sigma}, $\mu$ representa a demanda média observada no horizonte analisado, enquanto $\sigma^2$ mede a variabilidade em torno dessa média. Em conjunto, essas grandezas permitem distinguir séries com demanda frequente e estável de séries raras, irregulares ou altamente voláteis.
 
-O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico).
+O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico). Essa medida complementa a frequência de ocorrência da demanda ao capturar a irregularidade das quantidades positivas.
 
 \subsection{\texorpdfstring{Taxonomia ADI $\times$ CV$^2$}{Taxonomia ADI × CV²}}
 \label{sec:sb_taxa}
@@ -136,7 +136,7 @@ Regime & ADI & CV$^2$ & Interpretação operacional \\
 \end{tabular}
 \end{table}
 
-Essa taxonomia é amplamente adotada na literatura de cadeias de suprimentos \citep{Boylan2008Intermittent,Syntetos2012DemandClassificationsApplications} e constitui, nesta dissertação, a base para estratificação das análises: os indicadores de desempenho (KPIs) das políticas são reportados por quadrante, permitindo identificar qual abordagem de controle é mais adequada a cada regime de demanda.
+Essa taxonomia é amplamente adotada na literatura de cadeias de suprimentos \citep{Boylan2008Intermittent,Syntetos2012DemandClassificationsApplications} e constitui, nesta dissertação, a base para estratificação das análises. Os indicadores de desempenho (KPIs) das políticas são reportados por quadrante, permitindo identificar qual abordagem de controle é mais adequada a cada regime de demanda.
 
 \subsection{Efeitos na Reposição}
 
@@ -166,7 +166,7 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem polí
 
 \section{Formulação do Controle de Inventário}
 
-Esta seção formaliza o problema de controle de inventário e organiza as doze políticas avaliadas nesta dissertação em quatro categorias de crescente sofisticação computacional.
+Esta seção formaliza o problema de controle de inventário e organiza as doze políticas avaliadas nesta dissertação em quatro categorias de crescente sofisticação computacional. Essa formalização garante que políticas distintas sejam comparadas sob a mesma estrutura de estado, ação, custo e dinâmica de estoque.
 \subsection{Modelo de Controle}
 
 \begin{defi}[Política de Reposição]
@@ -258,7 +258,7 @@ A comparação entre 12 políticas sobre múltiplas lojas e múltiplos produtos 
 
 \subsection{Teste de Wilcoxon}
 
-O teste de Wilcoxon \textit{signed-rank}, proposto por \citet{Wilcoxon1945SignedRank}, avalia se a mediana das diferenças pareadas entre duas políticas $\pi_A$ e $\pi_B$ é diferente de zero. Para o KPI $X$ (e.g., CTI) nas lojas $i = 1,\ldots,N$:
+O teste de Wilcoxon \textit{signed-rank}, proposto por \citet{Wilcoxon1945SignedRank}, avalia se a mediana das diferenças pareadas entre duas políticas $\pi_A$ e $\pi_B$ é diferente de zero. Nesta dissertação, o teste é utilizado para comparar políticas avaliadas nas mesmas séries. Para o KPI $X$ (e.g., CTI) nas lojas $i = 1,\ldots,N$:
 
 \begin{equation}
   W = \sum_{i : D_i \neq 0} \text{sgn}(D_i)\,R_i,
@@ -287,7 +287,7 @@ onde $q_\alpha$ é o quantil da distribuição de Studentized range para o níve
 
 \subsection{Tamanho de Efeito}
 
-O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas não quantifica sua magnitude prática. O $d$ de Cohen, sistematizado por \citet{Cohen1988StatisticalPower}, fornece essa quantificação:
+O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas não quantifica sua magnitude prática. O $d$ de Cohen, sistematizado por \citet{Cohen1988StatisticalPower}, fornece essa quantificação ao padronizar a diferença entre médias. Sua formulação é:
 
 \begin{equation}
   d = \frac{\bar{X}_A - \bar{X}_B}{s_{\text{pooled}}}, \quad s_{\text{pooled}} = \sqrt{\frac{(N_A-1)s_A^2 + (N_B-1)s_B^2}{N_A+N_B-2}}.
@@ -296,7 +296,7 @@ O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas
 
 Convencionalmente: $|d| < 0.2$ é efeito negligenciável, $0.2 \leq |d| < 0.5$ pequeno, $0.5 \leq |d| < 0.8$ médio, $|d| \geq 0.8$ grande. Essa gradação é reportada para cada par (política proposta, \textit{baseline}) em cada KPI e cada quadrante Syntetos-Boylan.
 
-Na Equação~\ref{eq:cohens_d}, $\bar{X}_A$ e $\bar{X}_B$ são as médias do KPI para os grupos ou políticas comparados, $s_A^2$ e $s_B^2$ são suas variâncias amostrais, $N_A$ e $N_B$ são os respectivos tamanhos amostrais e $s_{\text{pooled}}$ é o desvio-padrão combinado usado para padronizar a diferença.
+Na Equação~\ref{eq:cohens_d}, $\bar{X}_A$ e $\bar{X}_B$ são as médias do KPI para os grupos ou políticas comparados, $s_A^2$ e $s_B^2$ são suas variâncias amostrais, $N_A$ e $N_B$ são os respectivos tamanhos amostrais e $s_{\text{pooled}}$ é o desvio-padrão combinado usado para padronizar a diferença. Essa medida complementa os testes de hipótese ao indicar se a diferença observada possui relevância prática.
 
 \smallskip
 O protocolo Wilcoxon + Friedman + Nemenyi + Cohen's $d$ combina detecção de diferença, comparação múltipla e quantificação de relevância prática. Com esse encadeamento, o \textit{benchmark} reduz o risco de interpretar ruído amostral como ganho real e gera rótulos mais confiáveis para o treinamento do PSE.

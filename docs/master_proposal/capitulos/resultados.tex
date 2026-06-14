@@ -14,7 +14,7 @@ Os experimentos da Fase~1 foram conduzidos sobre 15 lojas da Paraíba, produto 4
 
 \subsection{Comparação entre Políticas}
 
-A Tabela~\ref{tab:global_prelim} apresenta as médias dos cinco indicadores sobre as 15 lojas, ordenadas por CTI crescente.
+A Tabela~\ref{tab:global_prelim} apresenta as médias dos cinco indicadores sobre as 15 lojas, ordenadas por CTI crescente. Essa ordenação facilita a leitura do compromisso entre custo e desempenho operacional.
 
 \noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
 
@@ -48,7 +48,7 @@ $(s,S)$                      & 35.589 & 0.843 & 0.050 & 119.4 & 0.15 \\
 \end{tabular}
 \end{table}
 
-Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável. 
+Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável. Esses comportamentos reforçam que a seleção de política precisa considerar simultaneamente custo, serviço e estabilidade.
 
 Entre as políticas práticas (sem degeneração), o GA-DQN apresentou o equilíbrio mais favorável: reduz custo em 48\% vs. $(s,S)$ (política padrão do varejo) enquanto reduz rupturas em 55\%, mantendo nível de serviço competitivo (82.1\% vs. 84.3\%). Mais importante: reduz o efeito chicote para 5.0 vs. 119.4 da política padrão, estabilizando toda a cadeia.
 
@@ -97,7 +97,7 @@ A Figura~\ref{fig:nacional_mapa_lojas_receita} não representa validação nacio
 
 A filial Calçada concentra 104 das 145 séries (72\%), com segmento Platina dominante: as lojas de maior ticket médio e maior regularidade de demanda. As filiais Cajazeiras (17\%) e Lauro de Freitas (11\%) exibem perfis distintos: Cajazeiras com mix mais equilibrado entre Ouro e Rubi; Lauro concentrado em Rubi e Diamante GB. Esta heterogeneidade de segmento e volume justifica a estratificação por filial e segmento na análise de desempenho das políticas. A concentração em Calçada implica que os resultados agregados são fortemente influenciados pelo perfil desta filial; os padrões específicos de cada unidade são destacados na análise estratificada da Seção~\ref{sec:estratificada_segmento}.
 
-A Figura~\ref{fig:receita_segmento} apresenta a distribuição da receita esperada por ciclo bimestral (em R\$) por filial e segmento.
+A Figura~\ref{fig:receita_segmento} apresenta a distribuição da receita esperada por ciclo comercial (em R\$) por filial e segmento. A visualização ajuda a contextualizar a heterogeneidade econômica das séries avaliadas.
 
 \begin{figure}[ht]
 \centering
@@ -113,12 +113,12 @@ A Figura~\ref{fig:receita_segmento} apresenta a distribuição da receita espera
 \label{fig:lojas_segmento}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo bimestral. O estado da Bahia concentra a cobertura da Fase~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo da Fase~3.
+A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura da Fase~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo da Fase~3.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.70\textwidth]{../../simulation/data/08_reporting/maps/nacional_mapa_lojas_receita}
-\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo bimestral (R\$). O estado da Bahia (BA) representa a cobertura atual da Fase~2; demais regiões serão incorporadas na expansão nacional (Fase~3).}
+\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo comercial (R\$). O estado da Bahia (BA) representa a cobertura atual da Fase~2; demais regiões serão incorporadas na expansão nacional (Fase~3).}
 \label{fig:nacional_mapa_lojas_receita}
 \end{figure}
 
@@ -158,13 +158,13 @@ PPO$^\dagger$         & 3.871.75        & 0.98 & 0.02 & 237.42& 0.59 \\
 \end{tabular}
 \end{table}
 
-Dois padrões de degeneração emergem na Fase~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes superior ao Jornaleiro. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
+Dois padrões de degeneração emergem na Fase~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes superior ao Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
 
 \paragraph{Grupo de custo mínimo.} O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política viável de menor custo, ao preço de taxa de ruptura de 29\%. Este agrupamento é adequado para séries de baixíssimo volume em que o custo de ruptura é inferior ao custo de manutenção de estoque.
 
 \paragraph{Grupo de alto nível de serviço (NS $\geq 0.86$).} EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor equilíbrio custo-serviço neste conjunto de séries. SA (NS\,=\,$0.86$, CTI\,=\,R\$\,635) destaca-se como alternativa compacta com bom equilíbrio entre custo e cobertura.
 
-A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS, evidenciando que nenhuma política domina simultaneamente todas as dimensões.
+A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS, evidenciando que nenhuma política domina simultaneamente todas as dimensões. Esse resultado reforça a necessidade de tratar a escolha da política como decisão contextual.
 
 \begin{figure}[ht]
 \centering
@@ -173,7 +173,7 @@ A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS, evidenciando q
 \label{fig:pareto}
 \end{figure}
 
-A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão ótima varia por série, fundamento empírico direto do AIPE.
+A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão ótima varia por série, fundamento empírico direto do AIPE. Essa evidência sustenta a formulação do PSE como componente de seleção contextual.
 
 \begin{figure}[ht]
 \centering
@@ -232,7 +232,7 @@ Este mapeamento é o insumo central do AIPE: o PSE aprende a partir dessas rela�
 \section{Validação Estatística}
 \label{sec:stats}
 
-Com cinco replicações por série, a Fase~2 habilita testes não paramétricos de significância estatística, suprindo a principal limitação dos resultados da Fase~1.
+Com cinco replicações por série, a Fase~2 habilita testes não paramétricos de significância estatística, suprindo a principal limitação dos resultados da Fase~1. Essa ampliação aumenta a confiabilidade das diferenças observadas entre políticas.
 
 \subsection{Teste de Wilcoxon}
 
@@ -320,7 +320,7 @@ ANN      & 1.12           & 135.8          & 1.12 \\
 
 O LSTM é o único modelo a superar a previsão \textit{naïve} em MASE ($0.76 < 1$), sinalizando capacidade de capturar padrões temporais mesmo em séries esparsas. O XGBoost exibe o menor sMAPE ($148.8\%$), refletindo maior estabilidade em séries com zeros frequentes, embora seu MASE acima de 1 indique que, em termos absolutos, perde para a previsão \textit{naïve} em parte das séries. O ANN tem desempenho inferior em ambas as métricas primárias.
 
-A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o LSTM atinge MASE\,=\,$0.49$; para a mais difícil, MASE\,=\,$1.87$ (série loja~10533990, produto~75792, demanda média de $0.8$ unidades por ciclo, ADI\,=\,$1.81$, tipicamente a configuração mais desafiadora do quadrante \textit{Lumpy}).
+A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o LSTM atinge MASE\,=\,$0.49$; para a mais difícil, MASE\,=\,$1.87$ (série loja~10533990, produto~75792, demanda média de $0.8$ unidades por ciclo, ADI\,=\,$1.81$, tipicamente a configuração mais desafiadora do quadrante \textit{Lumpy}). Essa variação reforça que a previsão é útil como sinal auxiliar, mas não substitui a avaliação operacional das políticas.
 
 \noindent Estes resultados complementam, mas não determinam, a seleção de política pelo AIPE. O modelo de previsão com melhor desempenho em MASE não implica necessariamente a melhor política de estoque para a mesma série.
 

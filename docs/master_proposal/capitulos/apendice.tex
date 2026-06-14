@@ -75,6 +75,12 @@ Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do li
 % TABELA A.2 — Políticas clássicas e meta-heurísticas
 % ─────────────────────────────────────────────────────────────────────────────
 
+Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas, por sua vez, cada candidato é uma política $(s,Q)$, em que $s$ representa o ponto de reposição e $Q$ representa a quantidade de pedido. A avaliação de cada candidato ocorre pela execução da política correspondente no ambiente de simulação, retornando os indicadores de custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos.
+
+Para o Algoritmo Genético, cada indivíduo da população é codificado como um vetor contínuo $(s,Q)$. A população inicial é amostrada dentro dos limites operacionais admissíveis para a série avaliada. A seleção é realizada por torneio, favorecendo indivíduos com maior aptidão. O operador de cruzamento combina os parâmetros de dois indivíduos pais por meio de cruzamento do tipo \textit{Blend}, enquanto a mutação aplica perturbação gaussiana aos genes, seguida de ajuste aos limites admissíveis. Dessa forma, o GA busca combinações de $(s,Q)$ que maximizem a aptidão definida para o experimento.
+
+As demais meta-heurísticas usam a mesma representação de solução e a mesma função de avaliação. No SA, uma solução inicial $(s,Q)$ é iterativamente perturbada por movimentos de vizinhança, aceitando pioras de custo com probabilidade controlada pela temperatura e pelo cronograma de resfriamento. No PSO, cada partícula representa um par $(s,Q)$ com velocidade própria, sendo atualizada por termos de inércia, atração ao melhor ponto individual e atração ao melhor ponto global do enxame. No DE, cada vetor $(s,Q)$ é atualizado por mutação diferencial e cruzamento binomial, preservando apenas candidatos que melhoram a função objetivo.
+
 \begingroup\setlength{\tabcolsep}{4pt}\scriptsize
 \begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.0cm} p{4.1cm} @{}}
 \caption[Parâmetros das políticas clássicas e meta-heurísticas.]{Parâmetros das políticas clássicas e meta-heurísticas.}
@@ -151,6 +157,10 @@ DE & semente & 42 & \\
 % ─────────────────────────────────────────────────────────────────────────────
 % TABELA A.3 — Agentes RL e políticas híbridas
 % ─────────────────────────────────────────────────────────────────────────────
+
+Nos agentes de aprendizado por reforço, a decisão de reposição é formulada como um problema sequencial no ambiente \textit{InventoryEnv}. O estado observado pelo agente resume a posição de estoque, demanda prevista, pedidos em trânsito, estatísticas recentes de demanda e progresso no horizonte experimental. A ação representa a quantidade de pedido, discreta no caso do DQN e do SARSA e contínua no caso do PPO. A recompensa é definida como o negativo do custo operacional do ciclo, de modo que maximizar retorno equivale a reduzir custo total, penalizando simultaneamente estoque, ruptura e emissão de pedidos.
+
+Nas políticas híbridas GA-DQN e GA-PPO, o GA fornece uma política inicial de boa qualidade para reduzir o custo de exploração dos agentes de RL em horizontes curtos. No GA-DQN, trajetórias geradas pela política calibrada pelo GA pré-populam o \textit{replay buffer}, e o agente refina a decisão por episódios adicionais. No GA-PPO, os \textit{rollouts} iniciais produzidos pelo GA servem como aquecimento antes do refinamento da política contínua. Em ambos os casos, a comparação permanece controlada porque o ambiente, os custos, o horizonte e as séries de demanda são os mesmos das demais políticas.
 
 \begingroup\setlength{\tabcolsep}{4pt}\scriptsize
 \begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.2cm} p{3.9cm} @{}}
