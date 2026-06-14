@@ -2,25 +2,25 @@
 
 Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e a formalização da seleção contextual como problema de aprendizado supervisionado. O objetivo é estabelecer a base conceitual usada posteriormente na metodologia e na interpretação dos resultados.
 
-O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia ADI $\times$ CV$^2$, que fundamentam a caracterização dos regimes operacionais. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão, os testes estatísticos e os fundamentos de seleção contextual de políticas.
+O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão, os testes estatísticos e os fundamentos de seleção contextual de políticas.
 \section{Políticas de Reposição}
 
 Antes de discutir a taxonomia de demanda, é útil delimitar o conjunto de decisões que será comparado ao longo da dissertação. Uma política de reposição define quando emitir pedido e quanto repor, a partir do estado operacional observado em cada série loja-produto. Nesta seção, as políticas são apresentadas de forma conceitual, agrupadas por família metodológica. A formalização matemática do problema de controle aparece adiante, após a caracterização dos regimes de demanda, para conectar a escolha da política ao perfil operacional de cada série.
 \subsection{Políticas Clássicas}
 
-As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como \textit{baselines} de referência no \textit{benchmark}. Elas são importantes porque representam alternativas simples, interpretáveis e amplamente utilizadas em práticas de reposição.
+As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como políticas de referência no protocolo comparativo. Elas são importantes porque representam alternativas simples, interpretáveis e amplamente utilizadas em práticas de reposição.
 
 \paragraph{EOQ (\textit{Economic Order Quantity}).}
 Minimiza o custo total anual assumindo demanda constante $\mu$, em que $\mu$ representa a demanda média por ciclo. A quantidade ótima é $Q^* = \sqrt{2\mu c_o^{\text{fix}}/h}$, na qual $Q^*$ é o lote econômico, $c_o^{\text{fix}}$ é o custo fixo por pedido e $h$ é o custo de manutenção por unidade e por ciclo. O ponto de reposição é definido como $s = \mu L$, em que $s$ representa o nível de estoque que aciona um pedido e $L$ é o prazo de entrega medido em ciclos. Em regime intermitente, o pressuposto de demanda constante é violado, elevando o custo total em relação a políticas adaptativas.
 
 \paragraph{Política $(s, S)$.}
-Emite pedido de magnitude $S - I_t$ quando $I_t \leq s$, em que $I_t$ é a posição de estoque no ciclo $t$, $s$ é o ponto de reposição e $S$ é o nível-alvo para recomposição do estoque. Neste trabalho, $s$ e $S$ são calibrados a partir da EOQ. É a política de referência mais adotada no varejo regional brasileiro por sua simplicidade operacional. Contudo, gera \textit{efeito chicote} elevado (amplificação de variabilidade entre a loja e o armazém), porque os pedidos se concentram em lotes espaçados, criando vales e picos artificiais na cadeia \citep{LeePadmanabhanWhang1997Bullwhip}.
+Emite pedido de magnitude $S - I_t$ quando $I_t \leq s$, em que $I_t$ é a posição de estoque no ciclo $t$, $s$ é o ponto de reposição e $S$ é o nível-alvo para recomposição do estoque. Neste trabalho, $s$ e $S$ são calibrados a partir da EOQ. É a política de referência mais adotada no varejo regional brasileiro por sua simplicidade operacional. Contudo, gera efeito chicote elevado (amplificação de variabilidade entre a loja e o armazém), porque os pedidos se concentram em lotes espaçados, criando vales e picos artificiais na cadeia \citep{LeePadmanabhanWhang1997Bullwhip}.
 
 \paragraph{Jornaleiro (\textit{Newsvendor}).}
 Determina o pedido ótimo de período único como um quantil da distribuição de demanda: $Q^* = \hat{\mu} + z_\alpha \hat{\sigma}$, em que $\hat{\mu}$ e $\hat{\sigma}$ são, respectivamente, a média e o desvio-padrão estimados da demanda histórica, $z_\alpha$ é o quantil da distribuição normal associado ao nível de serviço alvo e $Q^*$ é a quantidade recomendada para o período. Neste trabalho, adota-se $z_\alpha = 1.28$ para nível de serviço alvo de 90\%. A política assume independência entre períodos, o que a torna econômica em demanda de baixo volume onde os picos não são correlacionados.
 
 \smallskip
-\noindent\textit{Limitação estrutural das políticas clássicas:} EOQ, $(s,S)$ e Jornaleiro assumem homogeneidade operacional. Cada um pressupõe, implicitamente, que a série se comporta de forma previsível e regular o suficiente para que parâmetros fixos sejam adequados. Entretanto, no regime intermitente com CV $> 1.5$, essa hipótese é sistematicamente violada: a mesma parametrização que funciona para uma série \textit{Smooth} gera ruptura frequente em séries \textit{Lumpy}. Isso impede o uso de qualquer política clássica como solução universal. Portanto, ou se aceita degradação de desempenho em parte do portfólio, ou se busca adaptar a escolha da política ao perfil operacional de cada série.
+\noindent Limitação estrutural das políticas clássicas: EOQ, $(s,S)$ e Jornaleiro assumem homogeneidade operacional. Cada uma dessas políticas pressupõe, implicitamente, que a série se comporta de forma previsível e regular o suficiente para que parâmetros fixos sejam adequados. Entretanto, em séries com muitos períodos de demanda nula, alta variabilidade relativa e picos esporádicos de venda, essa hipótese é frequentemente violada. A mesma parametrização que funciona para uma série de comportamento regular pode gerar ruptura frequente em séries de comportamento irregular. Isso impede o uso de qualquer política clássica como solução universal e reforça a necessidade de adaptar a escolha da política ao perfil operacional de cada série.
 
 \subsection{Meta-Heurísticas}
 
@@ -39,7 +39,7 @@ Partículas navegam no espaço de soluções atraídas pelo melhor histórico pe
 Gera candidatos por mutação diferencial (\textit{rand/1/bin}) e cruzamento com taxa $C_R$, em que $C_R$ define a probabilidade de cada componente do candidato mutado ser incorporado à nova solução. A DE é reconhecida pela robustez em espaços contínuos de baixa dimensão \citep{Storn1997DE}.
 
 \smallskip
-Meta-heurísticas resolvem o problema de \textit{como} otimizar os parâmetros de uma política fixada, mas não o problema de \textit{qual} política selecionar para cada série. GA, SA, PSO e DE podem encontrar boas calibrações em regimes específicos; contudo, seu desempenho varia entre quadrantes Syntetos-Boylan. Assim, a seleção contextual permanece em aberto e é tratada, nesta dissertação, pelo PSE do AIPE.
+Meta-heurísticas resolvem o problema de \textit{como} otimizar os parâmetros de uma política fixada, mas não o problema de \textit{qual} política selecionar para cada série. GA, SA, PSO e DE podem encontrar boas calibrações em regimes específicos; contudo, seu desempenho tende a variar conforme o padrão operacional da demanda, formalizado na sequência pela taxonomia de Syntetos-Boylan. Assim, a seleção contextual permanece em aberto e é tratada, nesta dissertação, pelo PSE do AIPE.
 
 \subsection{Aprendizado por Reforço}
 
@@ -104,9 +104,9 @@ Formalmente, seja $D_t \geq 0$ a demanda observada na loja no ciclo $t \in \{1,\
 
 Na Equação~\ref{eq:n_pos}, $n_{+}$ conta quantos ciclos apresentam demanda positiva e, portanto, mede a frequência efetiva de ocorrência da demanda. Quando $n_{+}$ é pequeno em relação ao horizonte $T$, a série contém muitos ciclos sem venda, característica central da demanda intermitente. Na Equação~\ref{eq:mu_sigma}, $\mu$ representa a demanda média observada no horizonte analisado, enquanto $\sigma^2$ mede a variabilidade em torno dessa média. Em conjunto, essas grandezas permitem distinguir séries com demanda frequente e estável de séries raras, irregulares ou altamente voláteis.
 
-O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico). Essa medida complementa a frequência de ocorrência da demanda ao capturar a irregularidade das quantidades positivas.
+O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico). Essa medida complementa a frequência de ocorrência da demanda ao capturar a irregularidade das quantidades positivas. Na taxonomia apresentada a seguir, CV$^2$ corresponde ao quadrado desse coeficiente de variação, \textit{Smooth} designa demanda regular e \textit{Lumpy} designa demanda com baixa frequência e alta variabilidade.
 
-\subsection{\texorpdfstring{Taxonomia ADI $\times$ CV$^2$}{Taxonomia ADI × CV²}}
+\subsection[Taxonomia ADI × CV²]{\texorpdfstring{Taxonomia ADI $\times$ CV$^2$}{Taxonomia ADI × CV²}}
 \label{sec:sb_taxa}
 
 A classificação proposta por \citet{Syntetos2005Categorization} organiza séries de demanda em quatro quadrantes definidos por dois índices adimensionais:
@@ -160,7 +160,7 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem polí
   \node[align=center,font=\small] at (3.82,0.98) {\textit{Intermittent}};
   \node[align=center,font=\small] at (3.82,3.10) {\textit{Lumpy}};
 \end{tikzpicture}
-\caption{Plano ADI $\times$ CV$^2$ com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV$^{2*} = 0.49$ \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
+\caption[Plano ADI × CV². Limiares: ADI* = 1.32, CV²* = 0.49.]{Plano ADI $\times$ CV$^2$ com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV$^{2*} = 0.49$ \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
 \label{fig:sb_quadrant}
 \end{figure}
 
@@ -247,7 +247,7 @@ Proposta por \citet{Theil1966AppliedEconometrics}, essa estatística corresponde
 Na Equação~\ref{eq:theil}, $\text{RMSE}$ é a raiz do erro quadrático médio da previsão avaliada e $\text{RMSE}_{\text{naïve}}$ é a mesma métrica aplicada ao modelo ingênuo. Assim, $U_{\text{Theil}} < 1$ indica superação do \textit{naïve}; valores $U_{\text{Theil}} \gg 1$ sinalizam modelo inadequado.
 
 \paragraph{Seleção da métrica principal.}
-O MASE é adotado como métrica principal nesta dissertação por três razões: (i)~invariância à escala permite comparar modelos entre lojas com volumes heterogêneos (razão de até 124× no conjunto de dados); (ii)~definição clara quando $D_t = 0$; (iii)~interpretação intuitiva em relação ao \textit{benchmark} ingênuo. O sMAPE é métrica secundária por sua \textit{bounded range} e ampla adoção em \textit{benchmarks} competitivos. No AIPE, o MASE por série é tratado como característica operacional prospectiva: séries com menor erro de previsão tendem a favorecer políticas orientadas a previsão, enquanto séries mais imprevisíveis favorecem políticas robustas à variância.
+O MASE é adotado como métrica principal nesta dissertação por três razões: (i)~invariância à escala permite comparar modelos entre lojas com volumes heterogêneos (razão de até 124× no conjunto de dados); (ii)~definição clara quando $D_t = 0$; (iii)~interpretação intuitiva em relação ao \textit{benchmark} ingênuo. O sMAPE é métrica secundária por sua \textit{bounded range} e ampla adoção em \textit{benchmarks} competitivos. No processo de seleção contextual, o MASE por série é tratado como sinal operacional prospectivo: séries com menor erro de previsão tendem a favorecer políticas orientadas a previsão, enquanto séries mais imprevisíveis favorecem políticas robustas à variância.
 
 A avaliação de modelos de previsão em séries temporais requer protocolos que respeitem a ordem temporal dos dados. Por essa razão, esta dissertação adota validação temporal por janela deslizante, detalhada no Capítulo~\ref{cap:metod}, de modo que cada previsão seja realizada apenas com informações anteriores ao período avaliado.
 

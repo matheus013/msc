@@ -13,7 +13,7 @@
     feedback/.style={->, thick, dashed, black!60}
 ]
 
-\node[title] (adaptTitle) at (0, 0) {Camada adaptável à base};
+\node[title] (adaptTitle) at (0, 0) {Camada de entrada};
 \node[box] (base) at (-2.9, -0.9) {
     \textbf{Base transacional}\\
     vendas; lojas; produtos;\\
@@ -29,26 +29,33 @@
     série loja-produto; filtros;\\
     tratamento de zeros; agregação temporal
 };
+\node[box] (features) at (-2.9, -4.05) {
+    \textbf{Características das séries}\\
+    ADI; CV$^2$; volume;\\
+    POD; sazonalidade
+};
+\node[box] (forecast) at (2.9, -4.05) {
+    \textbf{Sinais auxiliares}\\
+    métricas de previsão;\\
+    sinais prospectivos
+};
 \begin{pgfonlayer}{background}
-\node[layer, fit=(adaptTitle)(base)(params)(prep)] (adaptLayer) {};
+\node[layer, fit=(adaptTitle)(base)(params)(prep)(features)(forecast)] (adaptLayer) {};
 \end{pgfonlayer}
-\node[title] at (adaptTitle) {Camada adaptável à base};
+\node[title] at (adaptTitle) {Camada de entrada};
 \draw[flow, shorten >=2pt] (base.south) to[out=-90,in=130] ([xshift=-1.25cm]prep.north);
 \draw[flow, shorten >=2pt] (params.south) to[out=-90,in=50] ([xshift=1.25cm]prep.north);
+\draw[flow] (prep.south) to[out=-90,in=90] (features.north);
+\draw[flow] (prep.south) to[out=-90,in=90] (forecast.north);
 
-\node[title, below=1.05cm of prep] (coreTitle) {Núcleo metodológico reutilizável do AIPE};
-\node[core, below=0.35cm of coreTitle] (features) {
-    \textbf{Caracterização da demanda}\\
-    ADI; CV$^2$; volume; \textit{burstiness};\\
-    entropia; sazonalidade; POD
-};
-\node[core, below=0.45cm of features, xshift=-3.0cm] (portfolio) {
+\node[title, below=1.05cm of forecast, xshift=-2.9cm] (coreTitle) {Núcleo de seleção contextual do AIPE};
+\node[core, below=0.45cm of coreTitle, xshift=-3.0cm] (portfolio) {
     \textbf{Portfólio de políticas candidatas}\\
     EOQ; $(s,S)$; Jornaleiro; GA; SA;\\
     PSO; DE; DQN; PPO; SARSA;\\
     GA-DQN; GA-PPO
 };
-\node[core, below=0.45cm of features, xshift=3.0cm] (sim) {
+\node[core, below=0.45cm of coreTitle, xshift=3.0cm] (sim) {
     \textbf{Ambiente de simulação}\\
     dinâmica de estoque; pedidos;\\
     \textit{lead time}; custos; falta de estoque
@@ -69,17 +76,17 @@
 };
 \node[core, below=0.45cm of labels] (pse) {
     \textbf{\textit{Policy Selection Engine}: PSE}\\
-    aprende características da série\\
+    aprende a partir das entradas\\
     $\rightarrow$ política recomendada
 };
 \begin{pgfonlayer}{background}
-\node[layer, fit=(coreTitle)(features)(portfolio)(sim)(eval)(stats)(labels)(pse)] (coreLayer) {};
+\node[layer, fit=(coreTitle)(portfolio)(sim)(eval)(stats)(labels)(pse)] (coreLayer) {};
 \end{pgfonlayer}
-\node[title] at (coreTitle) {Núcleo metodológico reutilizável do AIPE};
+\node[title] at (coreTitle) {Núcleo de seleção contextual do AIPE};
 
-\draw[flow] (prep) -- (features);
-\draw[flow] (features) -- (portfolio);
-\draw[flow] (features) -- (sim);
+\draw[flow] (features.south) to[out=-90,in=90] (portfolio.north);
+\draw[flow] (forecast.south) to[out=-90,in=90] (sim.north);
+\draw[flow] (features.south) to[out=-90,in=90] (sim.north);
 \draw[flow] (portfolio) -- (eval);
 \draw[flow] (sim) -- (stats);
 \draw[flow] (eval) -- (labels);
@@ -93,7 +100,7 @@
     parâmetros operacionais
 };
 \node[box, below=0.35cm of appTitle] (recommendation) {
-    \textbf{Recomendação do AIPE}\\
+    \textbf{Recomendação do PSE}\\
     política recomendada; \textit{ranking};\\
     justificativa por perfil
 };
@@ -114,11 +121,11 @@
 \draw[feedback]
     (reeval.east)
     -- (reeval.east   -| rightpath)
-    -- (features.east -| rightpath)
-    -- (features.east)
+    -- (forecast.east -| rightpath)
+    -- (forecast.east)
     node[pos=0.38, right=4pt, align=center, font=\scriptsize\sffamily] {ciclo\\adaptativo};
 
 \end{tikzpicture}}
-\caption{Arquitetura conceitual do \textit{framework} AIPE. O \textit{framework} separa a camada adaptável à base, responsável por padronizar dados transacionais e parâmetros operacionais, do núcleo metodológico reutilizável, composto pela caracterização da demanda, \textit{benchmark} de políticas, simulação, validação estatística, geração de rótulos e treinamento do \textit{Policy Selection Engine}. Essa separação permite aplicar o AIPE a outras bases varejistas mediante adaptação da camada de entrada, preservando o núcleo de seleção contextual de políticas. A camada de aplicação utiliza o PSE para recomendar políticas a novas séries loja-produto e reavaliar periodicamente as recomendações conforme novos dados se acumulam.}
+\caption{Arquitetura conceitual do \textit{framework} AIPE. A camada de entrada reúne dados transacionais preparados, parâmetros operacionais, características das séries e sinais auxiliares de previsão de demanda. O núcleo de seleção contextual utiliza essas entradas para avaliar políticas candidatas, gerar rótulos de política dominante, realizar validação estatística e treinar o \textit{Policy Selection Engine}. A camada de aplicação utiliza o PSE para recomendar políticas a novas séries loja-produto e reavaliar periodicamente as recomendações conforme novos dados se acumulam.}
 \label{fig:aipe_architecture}
 \end{figure}
