@@ -199,7 +199,7 @@ Para cada série $(w, s, i)$, em que $w$ identifica a loja, $s$ identifica o pro
 \end{itemize}
 
 \paragraph{Características de volume (herdadas de \texttt{scenarios\_meta}):}
-$\mu$, $\sigma$, $n_T$, $n^+$, e as métricas de perfil da revendedora (segmento, filial, estrutura), em que $n_T$ representa o número total de ciclos observados.
+$\mu$, $\sigma$, $n_T$, $n^+$, e as métricas de perfil da revendedora (segmento, filial, estrutura), em que $n_T$ representa o número total de ciclos observados. Esse grupo complementa as características de intermitência, variabilidade e sazonalidade com sinais de escala operacional.
 
 \subsection{Perfis de Demanda}
 
@@ -380,9 +380,9 @@ A Figura~\ref{fig:ga_cromossomo} ilustra a representação adotada para as solu�
 \label{fig:ga_cromossomo}
 \end{figure}
 
-\textit{SA.} Temperatura inicial $T_0=1000$, resfriamento $\alpha=0.95$; aceitação probabilística $\exp(-\Delta C / T_k)$, em que $\Delta C$ é a variação de custo e $T_k$ é a temperatura na iteração $k$.
+\textit{SA.} Temperatura inicial $T_0=1000$, resfriamento $\alpha=0.95$; aceitação probabilística $\exp(-\Delta C / T_k)$, em que $\Delta C$ é a variação de custo e $T_k$ é a temperatura na iteração $k$. Esses parâmetros definem a exploração inicial e sua redução progressiva ao longo da busca.
 
-\textit{PSO.} 40 partículas, 80 iterações; inércia $w=0.7$, acelerações $c_1=c_2=1.5$, em que $w$ controla persistência da velocidade e $c_1$, $c_2$ controlam atração cognitiva e social.
+\textit{PSO.} 40 partículas, 80 iterações; inércia $w=0.7$, acelerações $c_1=c_2=1.5$, em que $w$ controla persistência da velocidade e $c_1$, $c_2$ controlam atração cognitiva e social. Cada partícula corresponde a uma parametrização candidata da política avaliada.
 
 \textit{DE.} Evolução Diferencial \textit{rand/1/bin}; fator de mutação $F=0.8$, taxa de cruzamento $C_R=0.9$, em que $F$ controla a amplitude da mutação diferencial e $C_R$ a probabilidade de cruzamento. Representações visuais complementares do PSO e da Evolução Diferencial são apresentadas no Apêndice~\ref{ap:representacoes_politicas}.
 
@@ -542,12 +542,16 @@ Esta seção define o escopo dos experimentos, o número de replicações indepe
 
 \subsection{Escopo e Replicações}
 
-O protocolo experimental distingue dois escopos:
+Esta subseção delimita o escopo experimental adotado para avaliação preliminar do AIPE. Diferentemente da seção de escopo geral apresentada na Introdução, o foco aqui está nas escolhas operacionais do experimento: fases avaliadas, subconjuntos de dados, políticas comparadas, métricas, replicações e premissas de simulação. Com isso, a seção descreve como a avaliação foi conduzida, sem repetir as delimitações conceituais da pesquisa.
+
+O protocolo experimental distingue duas fases avaliadas:
 
 \begin{itemize}
   \item Fase~1 (concluída): 15 lojas $\times$ 1 produto $\times$ 1 estado $\times$ 12 políticas $\times$ 1 replicação (avaliação \textit{in-sample}), produzindo 180 combinações (política, loja).
   \item Fase~2 (concluída): 145 séries do estado da Bahia $\times$ 12 políticas $\times$ 5 replicações com \textit{common random numbers}, habilitando os testes de Wilcoxon e Friedman com poder estatístico adequado.
 \end{itemize}
+
+Em ambas as fases, as políticas candidatas são avaliadas no mesmo ambiente de simulação e comparadas por custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos. As premissas de horizonte temporal, \textit{lead time}, custos, estoque inicial, sementes aleatórias e hiperparâmetros das políticas permanecem fixadas conforme a matriz experimental do Apêndice~\ref{app:reproducibility}, enquanto a ampliação para outros produtos, lojas, estados e regimes de demanda é tratada como continuidade da Fase~3.
 
 \subsection{Aplicação Temporal}
 

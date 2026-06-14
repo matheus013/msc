@@ -53,7 +53,7 @@ Com o problema e a representação das séries definidos, o AIPE é estruturado 
 
 Com base nesse ciclo, a dissertação investiga se históricos de venda podem ser convertidos em recomendações orientadas por dados para políticas de reposição, utilizando simulações para identificar quais políticas apresentam melhor desempenho em diferentes perfis de demanda. A investigação combina, portanto, avaliação operacional e aprendizagem supervisionada em um mesmo protocolo metodológico.
 
-\paragraph{Questão principal.} A questão que sintetiza essa investigação é: é possível construir uma abordagem metodológica que aprenda qual política de reposição é mais adequada para cada combinação loja-produto, a partir de características operacionais da série, e que supere políticas únicas aplicadas uniformemente à rede?
+\paragraph{Questão principal.} A questão que sintetiza essa investigação é: é possível construir uma abordagem metodológica que aprenda qual política de reposição é mais adequada para cada combinação loja-produto, a partir de características operacionais da série, e que supere políticas únicas aplicadas uniformemente à rede? Essa questão orienta a avaliação empírica e define o papel do PSE como componente de seleção contextual.
 
 \paragraph{Hipótese 1: Heterogeneidade genuína.} A primeira premissa formaliza o ponto de partida da dissertação: não existe uma política universalmente melhor. Diferentes padrões de venda exigem diferentes abordagens. Algumas séries apresentam melhor desempenho sob determinadas políticas, enquanto outras favorecem políticas distintas. Se isso for verdade, não faz sentido procurar ``a'' melhor política; o que importa é aprender quando usar cada uma.
 
@@ -105,10 +105,12 @@ Assim, o AIPE constitui uma base experimental reprodutível e operacionalmente p
 
 % \subsubsection*{Estrutura de apresentação}
 
-\subsection*{Escopo e Delimitações}
+\subsection*{Escopo da Pesquisa e Delimitações}
 \label{sec:delimitacoes}
 
-Após explicitar os objetivos e contribuições, é igualmente importante delimitar o que está fora do escopo da dissertação. Essa delimitação evita atribuir ao AIPE funções que não fazem parte da contribuição proposta. As seguintes funcionalidades não são abordadas:
+Após explicitar os objetivos e contribuições, é importante delimitar o escopo geral da pesquisa. As restrições descritas nesta seção indicam quais problemas operacionais não são tratados pela dissertação, evitando atribuir ao AIPE funções que não fazem parte da contribuição proposta.
+
+Essas delimitações dizem respeito ao alcance conceitual e metodológico da proposta. O escopo experimental, incluindo fases executadas, subconjuntos de dados, políticas avaliadas, replicações e métricas, é detalhado posteriormente no Capítulo~\ref{cap:metod}, na seção de protocolo experimental. Essa separação evita confundir fronteiras da pesquisa com escolhas específicas de avaliação empírica.
 
 \begin{itemize}
   \item Coordenação multiagente entre escalões: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
@@ -119,11 +121,11 @@ Após explicitar os objetivos e contribuições, é igualmente importante delimi
   \item Integração em tempo real com ERP: o \textit{pipeline} opera sobre histórico exportado em Parquet; não há integração transacional em tempo real com plataformas de gestão corporativa.
 \end{itemize}
 
-Essas delimitações definem o escopo metodológico da dissertação e concentram a contribuição na aprendizagem da relação regime$\rightarrow$política em condições controladas e reprodutíveis sobre dados reais de varejo nacional. A partir desse escopo, os capítulos seguintes desenvolvem a fundamentação teórica, posicionam a proposta frente à literatura, detalham a metodologia experimental e apresentam os resultados preliminares.
+Essas delimitações definem o escopo geral da pesquisa e concentram a contribuição na aprendizagem da relação regime$\rightarrow$política em condições controladas e reprodutíveis sobre dados reais de varejo nacional. A partir desse escopo, os capítulos seguintes desenvolvem a fundamentação teórica, posicionam a proposta frente à literatura, detalham a metodologia experimental e apresentam os resultados preliminares.
 
 \subsection*{Organização do documento}
 
-Encerrando a Introdução, este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico, abordando inicialmente as famílias de políticas de reposição avaliadas, seguidas da caracterização de demanda intermitente, da formulação do controle de inventário, das métricas de previsão, dos testes estatísticos e dos fundamentos de seleção contextual de políticas. O Capítulo~\ref{cap:rel} discute os trabalhos relacionados e posiciona esta dissertação em relação à literatura sobre controle de inventário, previsão de demanda intermitente, meta-heurísticas, aprendizado por reforço, hiper-heurísticas e meta-aprendizado. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE, descrevendo o \textit{dataset}, o \textit{pipeline} de pré-processamento, a engenharia de características operacionais, o ambiente de simulação, os protocolos de validação e o módulo de seleção contextual de políticas. O Capítulo~\ref{cap:results} apresenta os resultados empíricos preliminares das Fases 1 e 2. Por fim, o Capítulo~\ref{cap:conclusion} consolida as contribuições, retoma o alcance das conclusões e apresenta o plano de continuidade da dissertação.
+Encerrando a Introdução, este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico, abordando inicialmente as famílias de políticas de reposição avaliadas, seguidas da caracterização de demanda intermitente, da formulação do controle de inventário, das métricas de previsão, dos testes estatísticos e dos fundamentos de seleção contextual de políticas. O Capítulo~\ref{cap:rel} discute os trabalhos relacionados e posiciona esta dissertação em relação à literatura sobre controle de inventário, previsão de demanda intermitente, meta-heurísticas, aprendizado por reforço, hiper-heurísticas e meta-aprendizado. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE, descrevendo o \textit{dataset}, o \textit{pipeline} de pré-processamento, a engenharia de características operacionais, o ambiente de simulação, os protocolos de validação, o escopo experimental e o módulo de seleção contextual de políticas. O Capítulo~\ref{cap:results} apresenta os resultados empíricos preliminares das Fases 1 e 2. Por fim, o Capítulo~\ref{cap:conclusion} consolida as contribuições, retoma o alcance das conclusões e apresenta o plano de continuidade da dissertação.
 
 \newpage\lhead{\rightmark}
 
