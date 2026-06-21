@@ -14,7 +14,7 @@ Em seguida, as políticas candidatas são avaliadas em um ambiente de simulaçã
 
 O aprendizado de máquina aparece em dois níveis distintos na metodologia. No primeiro, métodos baseados em aprendizado por reforço, como DQN, PPO e SARSA, são políticas candidatas comparadas às políticas clássicas, meta-heurísticas e híbridas. No segundo, o PSE atua como meta-modelo supervisionado que aprende a escolher qual política candidata tende a ser mais adequada para cada perfil operacional de demanda.
 
-A organização deste capítulo acompanha a arquitetura conceitual da Figura~\ref{fig:aipe_architecture} em camadas. As seções seguintes descrevem, em ordem: a formulação do problema e a camada de entrada (dados, caracterização das séries e sinais auxiliares de previsão); o portfólio de políticas candidatas e o ambiente de simulação; os protocolos de validação temporal e estatística; o núcleo de seleção contextual e o treinamento do PSE; e, por fim, a aplicação das recomendações, os artefatos experimentais e o protocolo de execução.
+A organização deste capítulo acompanha a arquitetura conceitual da Figura~\ref{fig:aipe_architecture} em camadas. As seções seguintes descrevem, em ordem: a formulação do problema e a camada de entrada (dados, caracterização das séries e sinais auxiliares de previsão); o portfólio de políticas candidatas e o ambiente de simulação; os protocolos de validação temporal e estatística; a geração de rótulos e o treinamento do PSE; e, por fim, a camada de aplicação. As seções finais de artefatos e protocolo experimental complementam a arquitetura com requisitos de rastreabilidade e execução reprodutível.
 
 A Figura~\ref{fig:aipe_architecture} ilustra essa arquitetura: a camada de entrada (dados, características e sinais de previsão) alimenta o núcleo de seleção contextual, onde são avaliadas as políticas candidatas, gerados os rótulos e treinado o PSE. Essa organização facilita a aplicação do \textit{framework} a outros contextos, desde que a camada de entrada seja adaptada.
 
@@ -376,7 +376,7 @@ A Figura~\ref{fig:ga_dqn} sintetiza a lógica de combinação entre busca evolut
 
 A política GA-PPO segue a mesma motivação geral de combinar exploração evolutiva e refinamento por aprendizado, mas utiliza o PPO como mecanismo de atualização estável da política. Sua representação visual complementar é apresentada no Apêndice~\ref{ap:representacoes_politicas}.
 
-\section{Simulação e Benchmark de Políticas}
+\section{Ambiente de Simulação e Benchmark de Políticas}
 \label{sec:simulacao_benchmark}
 
 O ambiente \textit{InventoryEnv} serve como plataforma de benchmark comum para todas as doze políticas candidatas, implementando o modelo de inventário $(s,Q)$ descrito na Seção~\ref{sec:formulacao}. A padronização das condições de avaliação garante que diferenças de desempenho sejam atribuídas ao comportamento das políticas, não ao ambiente de teste.
@@ -464,7 +464,7 @@ O arcabouço inferencial descrito na Seção~\ref{sec:stat_tests} é implementad
 
 Todos os testes são realizados ao nível de significância $\alpha = 0.05$ com correção de Bonferroni para comparações múltiplas. Esse protocolo reduz o risco de interpretações baseadas em diferenças ocasionais entre políticas.
 
-\section{Seleção Contextual e Treinamento do PSE}
+\section{Geração de Rótulos e Treinamento do PSE}
 \label{sec:selecao_contextual}
 
 O \textit{Policy Selection Engine} (PSE) mapeia o perfil operacional de cada série à política de menor custo total de inventário esperado entre as que atendem ao limiar mínimo de nível de serviço, aprendendo a partir do \textit{benchmark} das Fases~1 e~2. Essa etapa transforma os resultados simulados em uma regra de recomendação para séries não vistas.
@@ -548,7 +548,7 @@ A interpretabilidade do modelo é analisada por importância de características
 
 O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i) política recomendada; (ii) confiança da previsão; (iii) probabilidades individuais de cada política. Isso permite ao gestor entender a margem de decisão e escolher alternativas quando a recomendada não está disponível operacionalmente.
 
-\section{Aplicação, Recomendações e Reavaliação Periódica}
+\section{Camada de Aplicação: Recomendações e Reavaliação Periódica}
 \label{sec:aplicacao_aipe}
 
 Após o treinamento do PSE, a saída do AIPE é uma recomendação de política de reposição para cada nova série loja-produto descrita por suas características operacionais. Essa recomendação não substitui o sistema transacional da rede varejista, mas fornece uma decisão metodologicamente fundamentada sobre qual política do portfólio deve ser aplicada em cada perfil de demanda.
