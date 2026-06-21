@@ -86,7 +86,7 @@ A variante GA-PPO, que substitui o DQN por uma política contínua baseada em PP
 
 \section{Posicionamento da Dissertação}
 
-A Tabela~\ref{tab:relwork_intro} sintetiza o posicionamento desta dissertação em relação aos trabalhos relacionados. A comparação destaca tanto a cobertura metodológica quanto o tipo de validação empírica adotada em cada estudo.
+A Tabela~\ref{tab:relwork_intro} posiciona esta dissertação em relação aos trabalhos mais próximos segundo seis dimensões. A coluna ``Trabalho'' identifica o estudo analisado; ``Dados reais'' indica se a avaliação utilizou dados transacionais reais ou ambiente sintético; ``CV ou regime'' resume o nível de variabilidade ou o regime de demanda considerado; ``Políticas avaliadas'' informa quantas alternativas de reposição ou controle foram comparadas; ``Multinível'' indica se o estudo considera mais de um escalão da cadeia de suprimentos; e ``Indicadores avaliados'' informa o número de métricas operacionais utilizadas. Essa comparação permite situar a dissertação quanto à escala experimental, ao tipo de dado e à abrangência metodológica.
 
 \begin{table}[htb]
 \centering
@@ -94,14 +94,14 @@ A Tabela~\ref{tab:relwork_intro} sintetiza o posicionamento desta dissertação 
 \setlength{\tabcolsep}{4pt}
 \caption{Posicionamento desta dissertação em relação aos trabalhos relacionados.}
 \label{tab:relwork_intro}
-\begin{tabular}{@{}p{3.2cm}ccccl@{}}
+\begin{tabular}{@{}p{3.2cm}ccccc@{}}
 \toprule
 Trabalho &
-\makecell[c]{Dados\\Reais} &
-\makecell[c]{CV\\(regime)} &
-\makecell[c]{\# Pol.} &
+\makecell[c]{Dados\\reais} &
+\makecell[c]{CV ou\\regime} &
+\makecell[c]{Políticas\\avaliadas} &
 \makecell[c]{Multi-\\nível} &
-\makecell[l]{Indicadores} \\
+\makecell[c]{Indicadores\\avaliados} \\
 \midrule
 \footnotesize\citealt{Oroojlooyjadid2022BeerGameDQN} & Não & $<1$ & 3 & Sim & 2 \\
 \citealt{Vanvuchelen2020PPOJointReplenishment} & Não & $<1$ & 4 & Não & 1 \\
