@@ -106,8 +106,10 @@ Na Equação~\ref{eq:n_pos}, $n_{+}$ conta quantos ciclos apresentam demanda pos
 
 O coeficiente de variação $\text{CV} = \sigma/\mu$ quantifica a dispersão relativa; valores $\text{CV} > 1$ indicam demanda altamente errática, característica do portfólio estudado (CV entre 1.5 e 5.4 no conjunto de dados empírico). Essa medida complementa a frequência de ocorrência da demanda ao capturar a irregularidade das quantidades positivas. Na taxonomia apresentada a seguir, CV$^2$ corresponde ao quadrado desse coeficiente de variação, \textit{Smooth} designa demanda regular e \textit{Lumpy} designa demanda com baixa frequência e alta variabilidade.
 
-\subsection[Taxonomia ADI × CV²]{\texorpdfstring{Taxonomia ADI $\times$ CV$^2$}{Taxonomia ADI × CV²}}
+\subsection[Taxonomia ADI x CV2]{Taxonomia ADI $\times$ CV$^2$}
 \label{sec:sb_taxa}
+
+Neste trabalho, a taxonomia de Syntetos-Boylan é utilizada como método de caracterização inicial das séries loja-produto. A classificação combina duas dimensões do comportamento da demanda: o intervalo médio entre demandas positivas, representado pelo ADI (\textit{Average Demand Interval}), e a variabilidade relativa da magnitude da demanda, representada pelo CV$^2$ (quadrado do coeficiente de variação sobre os valores positivos). A partir dessas duas medidas, cada série é associada a um dos quatro regimes operacionais (\textit{Smooth}, \textit{Intermittent}, \textit{Erratic} ou \textit{Lumpy}), fornecendo uma primeira descrição do padrão de demanda que orienta a estratificação das análises e a interpretação dos resultados do \textit{benchmark}. Essa caracterização é uma etapa de entrada para o processo de seleção contextual do AIPE; ela não determina isoladamente qual política de reposição é a mais adequada para cada série. A identificação da política dominante e o aprendizado da relação entre perfil operacional e política recomendada são realizados nas etapas subsequentes, descritas no Capítulo~\ref{cap:metod}.
 
 A classificação proposta por \citet{Syntetos2005Categorization} organiza séries de demanda em quatro quadrantes definidos por dois índices adimensionais:
 
@@ -160,7 +162,7 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem polí
   \node[align=center,font=\small] at (3.82,0.98) {\textit{Intermittent}};
   \node[align=center,font=\small] at (3.82,3.10) {\textit{Lumpy}};
 \end{tikzpicture}
-\caption[Plano ADI × CV². Limiares: ADI* = 1.32, CV²* = 0.49.]{Plano ADI $\times$ CV$^2$ com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV$^{2*} = 0.49$ \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
+\caption[Plano ADI x CV2. Limiares: ADI* = 1.32, CV2* = 0.49.]{Plano ADI $\times$ CV$^2$ com os quatro quadrantes de Syntetos-Boylan. Limiares: ADI$^* = 1.32$, CV$^{2*} = 0.49$ \citep{Syntetos2005Categorization}, com ênfase no quadrante \textit{Lumpy} (alta variabilidade, baixa frequência), que representa o regime mais desafiador para políticas de reposição e concentra as séries das Fases~1 e~2 desta dissertação.}
 \label{fig:sb_quadrant}
 \end{figure}
 

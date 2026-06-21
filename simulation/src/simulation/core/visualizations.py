@@ -33,6 +33,11 @@ plt.rcParams.update({
 POLICY_ORDER = ["EOQ", "sS", "Newsvendor", "GA", "SA", "PSO", "DE",
                 "DQN", "PPO", "SARSA", "GA-DQN", "GA-PPO"]
 
+POLICY_DISPLAY = {
+    "sS": "(s,S)",
+    "Newsvendor": "Jornaleiro",
+}
+
 POLICY_CATEGORIES = {
     "classical":     ("EOQ", "sS", "Newsvendor"),
     "metaheuristic": ("GA", "SA", "PSO", "DE"),
@@ -78,6 +83,10 @@ def _policy_colors():
 def _ordered_policies(kpis_df):
     present = set(kpis_df["policy"].unique())
     return [p for p in POLICY_ORDER if p in present]
+
+
+def _display_name(policy):
+    return POLICY_DISPLAY.get(policy, policy)
 
 
 def _category_legend_handles():
@@ -225,13 +234,14 @@ def plot_boxplot_tic(kpis_df, out_dir, params):
     pcolors = _policy_colors()
     data = [kpis_df[kpis_df["policy"] == p]["TIC"].dropna().values for p in policies]
     fig, ax = plt.subplots(figsize=(max(10, len(policies) * 0.9), 5))
-    bp = ax.boxplot(data, labels=policies, patch_artist=True,
+    display_labels = [_display_name(p) for p in policies]
+    bp = ax.boxplot(data, labels=display_labels, patch_artist=True,
                     medianprops={"color": "black", "lw": 1.5})
     for patch, pol in zip(bp["boxes"], policies):
         patch.set_facecolor(pcolors.get(pol, "#888"))
         patch.set_alpha(0.7)
-    ax.set_title("Distribuição do TIC por Política (todas as lojas × replicações)")
-    ax.set_ylabel("TIC (R$)")
+    ax.set_title("Distribuição do CTI por Política (todas as lojas × replicações)")
+    ax.set_ylabel("CTI (R$)")
     ax.tick_params(axis="x", rotation=30, labelsize=8)
     ax.legend(handles=_category_legend_handles(), fontsize=7)
     fig.tight_layout()
@@ -270,7 +280,7 @@ def plot_tradeoff_scatter(kpis_df, out_dir, params):
         ax.scatter(row["TIC"], row["NS"], color=color, s=120, zorder=3)
         ax.annotate(row["policy"], (row["TIC"], row["NS"]),
                     textcoords="offset points", xytext=(6, 3), fontsize=8)
-    ax.set_xlabel("TIC médio (R$)")
+    ax.set_xlabel("CTI médio (R$)")
     ax.set_ylabel("NS médio")
     ax.set_title("Trade-off Custo × Nível de Serviço por Política")
     ax.legend(handles=_category_legend_handles(), fontsize=8)
@@ -304,14 +314,14 @@ def plot_pareto_frontier(kpis_df, out_dir, params):
     fig, ax = plt.subplots(figsize=(10, 7))
     for _, row in summary[summary["dominated"]].iterrows():
         ax.scatter(row["TIC"], row["NS"], color="lightgray", s=90, zorder=2)
-        ax.annotate(row["policy"], (row["TIC"], row["NS"]),
+        ax.annotate(_display_name(row["policy"]), (row["TIC"], row["NS"]),
                     textcoords="offset points", xytext=(5, 2), fontsize=8, color="gray")
 
     for _, row in pareto.iterrows():
         color = pcolors.get(row["policy"], "#C62828")
         ax.scatter(row["TIC"], row["NS"], color=color, s=160, zorder=4,
                    edgecolors="black", lw=0.8)
-        ax.annotate(row["policy"], (row["TIC"], row["NS"]),
+        ax.annotate(_display_name(row["policy"]), (row["TIC"], row["NS"]),
                     textcoords="offset points", xytext=(6, 3), fontsize=9, fontweight="bold")
 
     if len(pareto) > 1:
@@ -323,7 +333,7 @@ def plot_pareto_frontier(kpis_df, out_dir, params):
         mpatches.Patch(color="#C62828", label="Não-dominado (Pareto)"),
     ]
     ax.legend(handles=handles, fontsize=9)
-    ax.set_xlabel("TIC médio (R$)")
+    ax.set_xlabel("CTI médio (R$)")
     ax.set_ylabel("NS médio")
     ax.set_title("Fronteira de Pareto: Custo × Nível de Serviço", fontsize=11)
     fig.tight_layout()
