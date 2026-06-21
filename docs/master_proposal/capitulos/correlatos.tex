@@ -48,13 +48,13 @@ O regime de demanda intermitente introduz complexidades que escapam à teoria cl
 
 A previsão de demanda intermitente apresenta dois desafios estruturais: (i) a frequência de zeros impede o uso de métricas relativas clássicas como MAPE; (ii) a não-estacionariedade invalida hipóteses de modelos como Holt-Winters que pressupõem padrões suaves. Evidência empírica em competições de previsão (M4/M5) demonstra que modelos baseados em árvores de decisão e gradiente \textit{boosting} frequentemente superam redes LSTM em séries com alta intermitência, especialmente quando o volume de dados históricos por SKU é limitado~\citep{Nasseri2023RetailDemandPrediction}.
 
-No plano das métricas, \citet{Hyndman2006MASE} introduziram o MASE como substituto livre de escala para o MAPE: é definido com demanda real zero, é comparável entre séries de escalas distintas e não sofre da assimetria do MAPE. \citet{Makridakis1993SMAPE} propuseram o sMAPE como variante simétrica; a competição M4 adotou o MASE como métrica primária, consolidando seu uso \citep{Makridakis2020M4Competition}.
+No plano das métricas, \citet{Hyndman2006MASE} introduziram o MASE como substituto livre de escala para o MAPE: é definido com demanda real zero, é comparável entre séries de escalas distintas e não sofre da assimetria do MAPE. \citet{Makridakis1993SMAPE} propôs o sMAPE como variante simétrica; a competição M4 adotou o MASE como métrica primária, consolidando seu uso \citep{Makridakis2020M4Competition}.
 
 \citet{TadayonradNdiaye2023KPIDemandForecasting} argumentam que essas métricas, embora superiores ao MAPE, não capturam o impacto sobre custos operacionais e propõem KPIs alinhados ao custo e ao nível de serviço. Esta dissertação segue essa direção: o módulo de previsão alimenta características ao AIPE em vez de ser avaliado isoladamente.
 
 \section{Meta-Heurísticas e Aprendizado por Reforço}
 
-A otimização de parâmetros de políticas de inventário por meta-heurísticas tem sido extensivamente estudada. \citet{Talbi2009Metaheuristics} consolidam o arcabouço teórico de GA, SA, PSO e outros para problemas combinatórios.
+A otimização de parâmetros de políticas de inventário por meta-heurísticas tem sido extensivamente estudada. \citet{Talbi2009Metaheuristics} consolida o arcabouço teórico de GA, SA, PSO e outros para problemas combinatórios.
 
 No contexto de demanda intermitente, \citet{Yuna2023IntermittentMetaheuristics} compararam SA e Busca Tabu na otimização de $(s,S)$ em sete conjuntos com CV$>$1.5; \citet{Erkayman2025MarkovInventory} modelaram demanda como cadeia de Markov e otimizaram com GA e PSO. Ambos resolvem \textit{como} calibrar uma política já escolhida, mas não \textit{qual} política adotar dado o perfil da série. Além disso, restringem-se a modelos de único escalão sem comparação entre famílias distintas de política.
 
