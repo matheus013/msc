@@ -23,7 +23,7 @@ A Figura~\ref{fig:aipe_architecture} ilustra essa arquitetura: a camada de entra
 \section{Formulação do Problema de Otimização de Inventário}
 \label{sec:formulacao}
 
-Esta seção formaliza o espaço de decisão, as métricas de avaliação e a estrutura de rede que constituem a base do \textit{benchmark} empírico. A definição desses elementos é necessária para garantir que todas as políticas sejam avaliadas sob condições comparáveis.
+Esta seção formaliza o espaço de decisão, as métricas de avaliação, a estrutura de rede e os parâmetros operacionais locais que constituem a base do \textit{benchmark} empírico. A definição desses elementos é necessária para garantir que todas as políticas sejam avaliadas sob condições comparáveis.
 
 \subsection{Políticas e Espaço de Decisão}
 
@@ -395,7 +395,7 @@ O ambiente \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas 
 
 \subsection{Custos de Simulação}
 
-Os parâmetros de custo são uniformes: $h = 1.0$, $c_s = 5.0$, $c_o^{\text{fix}} = 50.0$ e $c_o^{\text{var}} = 0.5$. A penalidade de ruptura ($c_s = 5h$) reflete o custo de capital perdido e venda não realizada típico do varejo regional.
+Os parâmetros de custo são uniformes: $h = 1.0$, $c_s = 5.0$, $c_o^{\text{fix}} = 50.0$ e $c_o^{\text{var}} = 0.5$. Esses parâmetros locais, juntamente com o prazo de entrega $L=2$ ciclos e as regras de falta de estoque, compõem a camada de parâmetros operacionais indicada na arquitetura do AIPE. A penalidade de ruptura ($c_s = 5h$) reflete o custo de capital perdido e venda não realizada típico do varejo regional.
 
 \section{Validação Temporal e Estatística}
 \label{sec:wf_protocol}
@@ -546,7 +546,7 @@ A interpretabilidade do modelo é analisada por importância de características
 
 \subsection{Saídas do PSE}
 
-O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i) política recomendada; (ii) confiança da previsão; (iii) probabilidades individuais de cada política. Isso permite ao gestor entender a margem de decisão e escolher alternativas quando a recomendada não está disponível operacionalmente.
+O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i) política recomendada; (ii) confiança da previsão; (iii) probabilidades individuais de cada política; (iv) ranking das alternativas candidatas; e (v) justificativa associada ao perfil operacional da série. Isso permite ao gestor entender a margem de decisão e escolher alternativas quando a recomendada não está disponível operacionalmente.
 
 \section{Camada de Aplicação: Recomendações e Reavaliação Periódica}
 \label{sec:aplicacao_aipe}
