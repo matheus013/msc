@@ -1,8 +1,8 @@
 ﻿\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
 
-Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e os princípios de reprodutibilidade experimental. O objetivo é estabelecer a base conceitual usada posteriormente na metodologia e na interpretação dos resultados.
+Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e o arcabouço estatístico usado para comparação das políticas. O objetivo é estabelecer a base conceitual usada posteriormente na metodologia e na interpretação dos resultados.
 
-O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão e os princípios de reprodutibilidade experimental.
+O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão e os testes estatísticos.
 \section{Políticas de Reposição}
 \label{sec:politicas_reposicao}
 
@@ -252,8 +252,54 @@ O MASE é adotado como métrica principal nesta dissertação por três razões:
 
 A avaliação de modelos de previsão em séries temporais requer protocolos que respeitem a ordem temporal dos dados. Por essa razão, esta dissertação adota validação temporal por janela deslizante, detalhada no Capítulo~\ref{cap:metod}, de modo que cada previsão seja realizada apenas com informações anteriores ao período avaliado.
 
-\section{Reprodutibilidade e Rastreabilidade}
+\section{Testes Estatísticos}
+\label{sec:stat_tests}
 
-Experimentos computacionais em otimização e aprendizado de máquina dependem de decisões de implementação, parametrização e amostragem que podem alterar conclusões empíricas. Por isso, a reprodutibilidade é parte do arcabouço metodológico: resultados devem poder ser reconstruídos a partir dos mesmos dados, configurações, código e critérios de avaliação.
+A comparação entre 12 políticas sobre múltiplas lojas e múltiplos produtos na Fase~2 requer arcabouço inferencial formal. Como as distribuições dos KPIs em regime intermitente são fortemente assimétricas, os testes paramétricos baseados em normalidade (ANOVA, $t$ de Student) são inadequados. Os testes não paramétricos (Wilcoxon, Friedman e Nemenyi) são adotados como padrão metodológico nesta dissertação, combinados com medida de tamanho de efeito (Cohen's $d$) para distinguir significância estatística de relevância prática.
 
-Na literatura de ciência computacional experimental, práticas como versionamento de código, documentação de parâmetros, controle de aleatoriedade, preservação de artefatos e separação clara entre dados, modelos e resultados são recomendadas para reduzir ambiguidades e permitir auditoria independente \citep{Pineau2021ReproducibilityML}. Nesta dissertação, os procedimentos operacionais de rastreabilidade são descritos na Metodologia e detalhados no Apêndice~\ref{app:reproducibility}.
+\subsection{Teste de Wilcoxon}
+
+O teste de Wilcoxon \textit{signed-rank}, proposto por \citet{Wilcoxon1945SignedRank}, avalia se a mediana das diferenças pareadas entre duas políticas $\pi_A$ e $\pi_B$ é diferente de zero. Nesta dissertação, o teste é utilizado para comparar políticas avaliadas nas mesmas séries. Para o KPI $X$ (e.g., CTI) nas lojas $i = 1,\ldots,N$:
+
+\begin{equation}
+  W = \sum_{i : D_i \neq 0} \text{sgn}(D_i)\,R_i,
+  \label{eq:wilcoxon}
+\end{equation}
+
+onde $D_i = X_i^A - X_i^B$ é a diferença pareada entre as políticas $A$ e $B$ na instância $i$, $X_i^A$ e $X_i^B$ são os valores do KPI $X$ para essas políticas, $\text{sgn}(D_i)$ é o sinal da diferença e $R_i$ é o posto de $|D_i|$ após excluir diferenças nulas. Hipótese nula: $\text{mediana}(D_i) = 0$. Ao contrário do $t$-test, não assume normalidade nem homocedasticidade.
+
+\subsection{Teste de Friedman e Nemenyi}
+
+Quando se compara $K > 2$ políticas simultaneamente, o teste de Friedman, proposto por \citet{Friedman1940Ranks}, testa se os postos médios de todas as políticas são iguais:
+
+\begin{equation}
+  \chi_F^2 = \frac{12N}{K(K+1)}\sum_{j=1}^{K}\left(\bar{r}_j - \frac{K+1}{2}\right)^2,
+  \label{eq:friedman}
+\end{equation}
+
+onde $K$ é o número de políticas comparadas, $N$ é o número de instâncias avaliadas e $\bar{r}_j$ é o posto médio da política $j$ sobre as $N$ instâncias (lojas $\times$ produtos). A rejeição de $H_0$ indica que pelo menos uma política tem desempenho diferente. O \textit{post-hoc} de Nemenyi, proposto por \citet{Nemenyi1963PostHoc}, computa a diferença crítica (DC):
+
+\begin{equation}
+  \text{DC} = q_\alpha \sqrt{\frac{K(K+1)}{6N}},
+  \label{eq:cd}
+\end{equation}
+
+onde $q_\alpha$ é o quantil da distribuição de Studentized range para o nível de significância $\alpha$. Políticas cujos postos médios diferem em mais de DC são estatisticamente distinguíveis a nível $\alpha$.
+
+\subsection{Tamanho de Efeito}
+
+O teste de Wilcoxon indica se a diferença é estatisticamente significante, mas não quantifica sua magnitude prática. O $d$ de Cohen, sistematizado por \citet{Cohen1988StatisticalPower}, fornece essa quantificação ao padronizar a diferença entre médias. Sua formulação é:
+
+\begin{equation}
+  d = \frac{\bar{X}_A - \bar{X}_B}{s_{\text{pooled}}}, \quad s_{\text{pooled}} = \sqrt{\frac{(N_A-1)s_A^2 + (N_B-1)s_B^2}{N_A+N_B-2}}.
+  \label{eq:cohens_d}
+\end{equation}
+
+Convencionalmente: $|d| < 0.2$ é efeito negligenciável, $0.2 \leq |d| < 0.5$ pequeno, $0.5 \leq |d| < 0.8$ médio, $|d| \geq 0.8$ grande. Essa gradação é reportada para cada par (política proposta, \textit{baseline}) em cada KPI e cada quadrante Syntetos-Boylan.
+
+Na Equação~\ref{eq:cohens_d}, $\bar{X}_A$ e $\bar{X}_B$ são as médias do KPI para os grupos ou políticas comparados, $s_A^2$ e $s_B^2$ são suas variâncias amostrais, $N_A$ e $N_B$ são os respectivos tamanhos amostrais e $s_{\text{pooled}}$ é o desvio-padrão combinado usado para padronizar a diferença. Essa medida complementa os testes de hipótese ao indicar se a diferença observada possui relevância prática.
+
+\smallskip
+O protocolo Wilcoxon + Friedman + Nemenyi + Cohen's $d$ combina detecção de diferença, comparação múltipla e quantificação de relevância prática. Com esse encadeamento, o \textit{benchmark} reduz o risco de interpretar ruído amostral como ganho real e gera rótulos mais confiáveis para o treinamento do PSE.
+
+\noindent Os testes estatísticos apresentados nesta seção são aplicados sobre os resultados gerados pelo ambiente de simulação descrito no Capítulo~\ref{cap:metod} (Seção~\ref{sec:inventory_env}).
