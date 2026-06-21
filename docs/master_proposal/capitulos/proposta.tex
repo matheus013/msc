@@ -20,20 +20,18 @@ A Figura~\ref{fig:aipe_architecture} ilustra essa arquitetura: a camada de entra
 
 \input{figures/aipe_conceptual_architecture}
 
-\section{Formulação do Problema de Otimização de Inventário}
+\section{Instanciação Experimental do Problema de Inventário}
 \label{sec:formulacao}
 
-Esta seção formaliza o espaço de decisão, as métricas de avaliação, a estrutura de rede e os parâmetros operacionais locais que constituem a base do \textit{benchmark} empírico. A definição desses elementos é necessária para garantir que todas as políticas sejam avaliadas sob condições comparáveis.
+O Capítulo~\ref{cap:tec} apresentou a formulação conceitual do controle de inventário e as famílias de políticas de reposição. Nesta seção, essa formulação é instanciada para o \textit{benchmark} empírico: definem-se as decisões observadas em cada série loja-produto, a estrutura de rede, os parâmetros operacionais locais e a forma como as métricas são calculadas sob condições comparáveis.
 
-\subsection{Políticas e Espaço de Decisão}
+\subsection{Instanciação das Políticas e Espaço de Decisão}
 
-\begin{defi}[Política de Reposição]
-Uma \textit{política de reposição} $\pi$ é uma função de decisão que mapeia o estado observado da loja $i$ no ciclo $t$ (nível de estoque $I_{t,i}$, demanda recente $D_{t-1,i}$ e pedidos em trânsito $Q_{t-L,i}$) em uma quantidade de pedido não negativa:
+A definição formal de política de reposição foi apresentada no Capítulo~\ref{cap:tec}. Na metodologia, essa definição é operacionalizada para cada série loja-produto: no ciclo $t$, a política recebe o estado observado da loja $i$ e retorna uma quantidade de pedido não negativa:
 \[
   Q_{t,i} = \pi(I_{t,i},\, D_{t-1,i},\, Q_{t-L,i};\, \boldsymbol{\theta}),
 \]
-onde $\boldsymbol{\theta}$ é o vetor de parâmetros da política (p.ex., $(s, Q)$ para políticas clássicas; pesos de rede neural para RL). Uma \textit{família} de política é o conjunto de todas as instâncias $\pi(\cdot;\boldsymbol{\theta})$ para $\boldsymbol{\theta}$ variando no espaço de busca. Uma \textit{estratégia adaptativa} é uma meta-função $\Pi: \mathbf{x}_i \mapsto \pi^*(\cdot; \boldsymbol{\theta}^*)$ que seleciona a política e seus parâmetros a partir das características operacionais $\mathbf{x}_i$ da série.
-\end{defi}
+em que $I_{t,i}$ representa o estoque disponível, $D_{t-1,i}$ resume a demanda recente, $Q_{t-L,i}$ indica pedidos em trânsito recebidos após o prazo de entrega e $\boldsymbol{\theta}$ é o vetor de parâmetros da política. Esse vetor assume naturezas distintas conforme a família candidata, como pares $(s,Q)$ em políticas parametrizadas ou pesos de rede neural em agentes de aprendizado por reforço.
 
 Esta distinção é essencial: as 12 políticas avaliadas são instâncias de famílias distintas; o AIPE é a estratégia adaptativa que aprende qual família e parâmetros usar por série. Assim, o foco metodológico está na seleção contextual, e não na defesa de uma política isolada como solução universal.
 
@@ -45,9 +43,9 @@ Dado o espaço de séries $\mathcal{X}$, o mapeamento de características $\phi:
 tal que $\hat{\pi}^*(i) \approx \arg\min_{\pi \in \Pi} \mathbb{E}[\mathrm{CTI}(\pi, \mathbf{x}_i)]$ sujeito a $\mathbb{E}[\mathrm{NS}(\pi, \mathbf{x}_i)] \geq \alpha_{\min}$. O \textit{Adaptive Inventory Policy Engine} (AIPE) implementa $f$ como meta-modelo supervisionado treinado sobre os pares $\{(\phi(\mathbf{x}_i),\, \hat{\pi}^*(i))\}_{i=1}^N$ gerados pelo \textit{benchmark}, com reavaliação periódica de $\phi(\mathbf{x}_i)$ a cada $\Delta t$ ciclos.
 \end{defi}
 
-\subsection{Formulação do Problema}
+\subsection{Instanciação do Ambiente de Inventário}
 
-O problema considerado é um modelo de controle de inventário de único escalão com $N$ lojas varejistas atendidas por um armazém central. O horizonte de planejamento é discretizado em ciclos comerciais $t \in \{1, \ldots, T\}$, cada um com aproximadamente 21 dias corridos. As variáveis e parâmetros centrais são:
+O ambiente experimental especializa o modelo do Capítulo~\ref{cap:tec} para uma rede com $N$ lojas varejistas atendidas por um armazém central. O horizonte de planejamento é discretizado em ciclos comerciais $t \in \{1, \ldots, T\}$, cada um com aproximadamente 21 dias corridos. As variáveis e parâmetros usados na simulação são:
 
 \begin{itemize}
   \item $D_{t,i} \geq 0$: demanda observada na loja $i$ no ciclo $t$;
@@ -57,7 +55,7 @@ O problema considerado é um modelo de controle de inventário de único escalã
   \item $h$, $c_s$, $c_o^{\text{fix}}$, $c_o^{\text{var}}$: custos unitários de manutenção, ruptura, ordenação fixa e variável.
 \end{itemize}
 
-Uma \textit{política} $\pi$ mapeia o estado observado $(I_{t,i},\, D_{t-1,i},\, Q_{t-L,i})$ em uma decisão de pedido $Q_{t,i} = \pi(\cdot)$. O objetivo é determinar $\pi^*$ que minimize o custo total acumulado, considerando simultaneamente manutenção de estoque, ruptura e emissão de pedidos. A formulação adotada é:
+O custo acumulado usado no \textit{benchmark} corresponde à versão operacional, indexada por loja, da Equação~\ref{eq:obj_inv_control}. Para cada política candidata, calcula-se:
 
 \begin{equation}
   \min_\pi \sum_{t=1}^{T} \bigl[
@@ -68,9 +66,9 @@ Uma \textit{política} $\pi$ mapeia o estado observado $(I_{t,i},\, D_{t-1,i},\,
   \label{eq:obj_meio}
 \end{equation}
 
-Na Equação~\ref{eq:obj_meio}, a função indicadora $\mathbf{1}(Q_{t,i}>0)$ assume valor 1 quando há emissão de pedido no ciclo $t$ e 0 caso contrário. A formulação é escrita para uma loja $i$; no \textit{benchmark}, o mesmo cálculo é repetido para cada série loja-produto e depois agregado por política.
+Na Equação~\ref{eq:obj_meio}, a função indicadora $\mathbf{1}(Q_{t,i}>0)$ assume valor 1 quando há emissão de pedido no ciclo $t$ e 0 caso contrário. O cálculo é repetido para cada série loja-produto e depois agregado por política, permitindo comparar alternativas sob o mesmo ambiente de avaliação.
 
-sujeito à dinâmica de estoque:
+A dinâmica simulada é a versão indexada por loja da Equação~\ref{eq:balance}:
 
 \begin{equation}
   I_{t+1,i} = \max\bigl(0,\; I_{t,i} - D_{t,i}\bigr) + Q_{t-L,i}, \quad \forall\, t,\; \forall\, i.
