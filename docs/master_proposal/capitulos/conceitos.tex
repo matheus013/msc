@@ -65,7 +65,7 @@ Arquiteturas híbridas GA-RL combinam dois mecanismos complementares. O Algoritm
 
 Essa combinação é particularmente relevante quando a série histórica disponível é curta ou irregular. Nesses casos, agentes de RL isolados tendem a exigir muitas interações para aprender políticas estáveis, enquanto meta-heurísticas isoladas podem produzir parâmetros bons para o histórico observado, mas pouco reativos a mudanças de estado. Métodos GA-RL procuram reduzir essa tensão: usam busca global para evitar exploração inicial pouco informativa e aprendizado sequencial para ajustar a decisão ao estado corrente.
 
-Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialistas dentro do \textit{benchmark}. A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho.
+Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialistas dentro do \textit{benchmark}. A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho. A Figura~\ref{fig:ga_rl_arch} sintetiza essa relação entre busca evolutiva, inicialização informativa e refinamento sequencial por RL.
 
 \begin{figure}[htbp]
 \centering
@@ -118,7 +118,7 @@ A classificação proposta por \citet{Syntetos2005Categorization} organiza séri
   \text{CV}^2 &= \left(\frac{\sigma}{\mu}\right)^2 \quad (\text{quadrado do coeficiente de variação dos valores positivos}). \label{eq:cv2}
 \end{align}
 
-Os limiares empíricos $\text{ADI}^* = 1.32$ e $\text{CV}^{2*} = 0.49$, derivados analiticamente a partir das condições de erro de Croston \citep{Syntetos2005Categorization}, definem quatro regimes:
+Os limiares empíricos $\text{ADI}^* = 1.32$ e $\text{CV}^{2*} = 0.49$, derivados analiticamente a partir das condições de erro de Croston \citep{Syntetos2005Categorization}, definem quatro regimes, resumidos na Tabela~\ref{tab:sb_quad}.
 
 \begin{table}[htbp]
 \centering

@@ -106,6 +106,8 @@ A Figura~\ref{fig:receita_segmento} apresenta a distribuição da receita espera
 \label{fig:receita_segmento}
 \end{figure}
 
+A Figura~\ref{fig:lojas_segmento} complementa essa leitura ao mostrar a concentração de séries por segmento comercial, evidenciando que a composição da amostra não é uniforme entre os níveis de fidelidade da rede.
+
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.62\textwidth]{../../simulation/data/08_reporting/maps/lojas_por_segmento}
@@ -284,7 +286,7 @@ GA-PPO & PPO        & $-0.760$ & $-0.216$ & CTI: médio; NS: pequeno \\
 
 O maior efeito absoluto observado é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença fundamental entre a política analítica de baixo custo e a arquitetura híbrida de maior capacidade. Em relação à degeneração: o efeito $d=+3.492$ (GA-DQN vs DQN em CTI) confirma que o DQN isolado, ao convergir para a estratégia de não pedido, afasta-se drasticamente da solução híbrida. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo superior ao EOQ neste conjunto de séries, porém com NS\,$0.18$ pontos menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série.
 
-\noindent No diagrama a seguir, políticas conectadas pela barra horizontal não diferem significativamente no CTI ao nível $\alpha=0.05$ pelo teste \textit{post-hoc} de Nemenyi; políticas sem conexão apresentam diferença estatisticamente detectável.
+\noindent A Figura~\ref{fig:critical_diff} complementa os tamanhos de efeito ao mostrar os agrupamentos estatísticos do teste de Nemenyi. Políticas conectadas pela barra horizontal não diferem significativamente no CTI ao nível $\alpha=0.05$; políticas sem conexão apresentam diferença estatisticamente detectável.
 
 \begin{figure}[ht]
 \centering
@@ -321,6 +323,8 @@ ANN      & 1.12           & 135.8          & 1.12 \\
 O LSTM é o único modelo a superar a previsão \textit{naïve} em MASE ($0.76 < 1$), sinalizando capacidade de capturar padrões temporais mesmo em séries esparsas. O XGBoost exibe o menor sMAPE ($148.8\%$), refletindo maior estabilidade em séries com zeros frequentes, embora seu MASE acima de 1 indique que, em termos absolutos, perde para a previsão \textit{naïve} em parte das séries. O ANN tem desempenho inferior em ambas as métricas primárias.
 
 A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o LSTM atinge MASE\,=\,$0.49$; para a mais difícil, MASE\,=\,$1.87$ (série loja~10533990, produto~75792, demanda média de $0.8$ unidades por ciclo, ADI\,=\,$1.81$, tipicamente a configuração mais desafiadora do quadrante \textit{Lumpy}). Essa variação reforça que a previsão é útil como sinal auxiliar, mas não substitui a avaliação operacional das políticas.
+
+\noindent A Figura~\ref{fig:forecast_ranking} mostra essa heterogeneidade por outro ângulo, indicando a frequência com que cada modelo ocupa a primeira posição por série. O resultado reforça que a escolha do previsor também é dependente do perfil da demanda.
 
 \noindent Estes resultados complementam, mas não determinam, a seleção de política pelo AIPE. O modelo de previsão com melhor desempenho em MASE não implica necessariamente a melhor política de estoque para a mesma série.
 

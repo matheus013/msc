@@ -489,6 +489,8 @@ O PSE não se limita a uma classificação supervisionada de algoritmos. É um m
   \item Portfólios de algoritmos, discutidos por \citet{Huberman1997AlgorithmPortfolios}: políticas não competem: complementam-se. O PSE explora a diversidade de especializações do portfólio em vez de apostar em um único generalista.
 \end{enumerate}
 
+A Figura~\ref{fig:asp_rice} mostra como essa base conceitual é instanciada no AIPE: as séries loja-produto são descritas por características operacionais, as políticas formam o portfólio de alternativas e o desempenho simulado fornece a evidência usada para treinar o seletor contextual.
+
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
@@ -592,6 +594,8 @@ A avaliação da Fase~2 segue um protocolo de validação temporal em janela des
 \subsection{Síntese do Protocolo}
 
 O \textit{pipeline} experimental é implementado com rastreabilidade completa de insumos, configurações e artefatos. Reprodutibilidade é garantida por: versionamento Git de código e parâmetros, sementes aleatórias fixas por experimento, hashes de \textit{datasets} de entrada, e documentação de dependências de software. Todos os dados, scripts e resultados são versionados e criptograficamente auditáveis, permitindo reconstruir integralmente todos os experimentos a partir dos mesmos parâmetros. A matriz completa dos parâmetros experimentais, configurações e artefatos necessários à reprodução das políticas avaliadas é apresentada no Apêndice~\ref{app:reproducibility}.
+
+A Tabela~\ref{tab:met_comp_proposta} resume o papel relativo das principais famílias de métodos no contexto MEIO, destacando que a escolha metodológica envolve compromisso entre escalabilidade, interpretabilidade, custo computacional e forma de tratamento das restrições.
 
 \begin{table}[htbp]
 \centering
