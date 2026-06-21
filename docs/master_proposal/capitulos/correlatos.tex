@@ -26,7 +26,7 @@ No contexto de demanda intermitente, \citet{Yuna2023IntermittentMetaheuristics} 
 
 Na frente de RL, \citet{Oroojlooyjadid2022BeerGameDQN} demonstraram que DQN aprende políticas de reposição no \textit{Beer Game} multi-escalão sem especificar a distribuição de demanda, mas assumem séries longas e demanda contínua. \citet{Geevers2024MEIODRL} aplicaram PPO a três topologias de rede com desempenho superior ao \textit{benchmark}, porém em ambientes sintéticos com CV~$<1$. \citet{Liu2024HAPPO} introduziram HAPPO para reduzir simultaneamente custo e efeito \textit{bullwhip} em ambientes descentralizados, mas não abordam demanda intermitente.
 
-A limitação transversal desses trabalhos é a exigência da ordem de $10^6$ interações~\citep{Oroojlooyjadid2022BeerGameDQN}. Essa escala é incompatível com séries históricas curtas de varejo (38 ciclos no \textit{dataset} desta dissertação) e é a razão estrutural pela qual RL isolado degenera no regime estudado.
+A limitação transversal desses trabalhos é a exigência da ordem de $10^6$ interações agente-ambiente, isto é, passos sequenciais em que o agente observa o estado do estoque, escolhe uma ação de reposição, recebe a recompensa associada ao custo e ao nível de serviço e atualiza sua política~\citep{Oroojlooyjadid2022BeerGameDQN}. Essa escala é incompatível com séries históricas curtas de varejo (38 ciclos no \textit{dataset} desta dissertação) e é a razão estrutural pela qual RL isolado degenera no regime estudado.
 
 \section{Seleção de Políticas, Hiper-Heurísticas e Meta-Aprendizado}
 \label{sec:aas_literatura}
