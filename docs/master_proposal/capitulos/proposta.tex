@@ -91,7 +91,7 @@ A cadeia de suprimentos modela três escalões hierárquicos:
 
 \subsection{Métricas de Avaliação}
 
-Cinco indicadores de desempenho são computados ao fim de $T$ ciclos para cada combinação (política, loja):
+As métricas já foram definidas conceitualmente no Capítulo~\ref{cap:tec}; aqui elas são retomadas apenas para explicitar como o \textit{benchmark} calcula o desempenho de cada política em cada série. Ao fim de $T$ ciclos, cinco indicadores são registrados para cada combinação (política, loja):
 
 \begin{itemize}
   \item \textit{CTI} (Custo Total de Inventário): $\sum_{t}[h I_t + c_s S_t + c_o^{\text{fix}}\mathbf{1}(Q_t>0) + c_o^{\text{var}}Q_t]$;
@@ -101,7 +101,7 @@ Cinco indicadores de desempenho são computados ao fim de $T$ ciclos para cada c
   \item \textit{FP} (Frequência de Pedidos): fração de ciclos com ao menos um pedido emitido.
 \end{itemize}
 
-Na Fase~2, esses indicadores são complementados por métricas de previsão (MASE, sMAPE, RMSSE) usadas como sinais auxiliares. O objetivo da metodologia não é escolher o melhor modelo de previsão como fim em si mesmo, mas avaliar como essas informações apoiam a seleção contextual de políticas de reposição.
+Esses cinco indicadores formam a base comparativa das políticas candidatas. Na Fase~2, eles são complementados por métricas de previsão (MASE, sMAPE, RMSSE) usadas como sinais auxiliares para o PSE. Assim, a metodologia não escolhe o melhor modelo de previsão como fim em si mesmo; ela avalia se esses sinais aumentam a capacidade de selecionar políticas de reposição de forma contextual.
 
 \section{Camada de Entrada: Dados e Pré-Processamento}
 
