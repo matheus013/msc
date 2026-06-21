@@ -4,6 +4,7 @@ Este capítulo apresenta os fundamentos teóricos necessários à formulação d
 
 O capítulo inicia pela apresentação das principais famílias de políticas de reposição avaliadas nesta dissertação, incluindo políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Na sequência, são apresentados a formulação do controle de inventário, as métricas de previsão, os testes estatísticos e os fundamentos de seleção contextual de políticas.
 \section{Políticas de Reposição}
+\label{sec:politicas_reposicao}
 
 Antes de discutir a taxonomia de demanda, é útil delimitar o conjunto de decisões que será comparado ao longo da dissertação. Uma política de reposição define quando emitir pedido e quanto repor, a partir do estado operacional observado em cada série loja-produto. Nesta seção, as políticas são apresentadas de forma conceitual, agrupadas por família metodológica. A formalização matemática do problema de controle aparece adiante, após a caracterização dos regimes de demanda, para conectar a escolha da política ao perfil operacional de cada série.
 \subsection{Políticas Clássicas}
@@ -168,16 +169,14 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos exigem polí
 
 \section{Formulação do Controle de Inventário}
 
-Esta seção formaliza o problema de controle de inventário e organiza as doze políticas avaliadas nesta dissertação em quatro categorias de crescente sofisticação computacional. Essa formalização garante que políticas distintas sejam comparadas sob a mesma estrutura de estado, ação, custo e dinâmica de estoque.
+As famílias de políticas foram apresentadas conceitualmente na Seção~\ref{sec:politicas_reposicao}. Nesta seção, o objetivo é apenas estabelecer o modelo comum de comparação: quais variáveis descrevem o estado do estoque, qual decisão é tomada a cada ciclo, como o custo é acumulado e como o estoque evolui. Essa formalização evita que diferenças de desempenho sejam atribuídas a mudanças no ambiente de avaliação, e não ao comportamento das políticas.
 \subsection{Modelo de Controle}
 
-\begin{defi}[Política de Reposição]
-Uma \textit{política de reposição} $\pi$ é uma regra de decisão que, a cada ciclo $t$, observa a situação operacional da série e escolhe a quantidade a ser pedida. Formalmente, ela mapeia um estado $\mathbf{s}_t \in \mathcal{S}$ para uma ação $a_t \in \mathcal{A}$:
+No modelo adotado, qualquer política candidata $\pi$ é tratada como uma regra de decisão que observa o estado operacional da série no ciclo $t$ e escolhe uma quantidade de pedido. Formalmente:
 \[
   \pi: \mathcal{S} \rightarrow \mathcal{A}, \qquad a_t = \pi(\mathbf{s}_t;\, \boldsymbol{\theta}),
 \]
-em que $\mathcal{S}$ é o conjunto de estados possíveis, $\mathcal{A}$ é o conjunto de quantidades de pedido admissíveis, $a_t$ é a quantidade solicitada no ciclo $t$ e $\boldsymbol{\theta}$ representa os parâmetros internos da política. A natureza de $\boldsymbol{\theta}$ varia conforme a família avaliada: $(s,Q)$ ou $(s,S)$ em políticas clássicas, vetores reais otimizados por meta-heurísticas, pesos de redes neurais em DQN/PPO ou tabela-Q em SARSA. Assim, todas as 12 políticas avaliadas nesta dissertação compartilham a mesma estrutura decisória, mas diferem na forma como representam e ajustam seus parâmetros.
-\end{defi}
+em que $\mathcal{S}$ é o conjunto de estados possíveis, $\mathcal{A}$ é o conjunto de quantidades admissíveis, $a_t$ é a quantidade solicitada no ciclo $t$ e $\boldsymbol{\theta}$ representa os parâmetros internos da política. A natureza de $\boldsymbol{\theta}$ depende da família avaliada, mas a estrutura decisória é mantida comum para todo o portfólio.
 
 No contexto desta dissertação, o estado operacional é representado por $\mathbf{s}_t = (I_t, Q_{t-L}, \hat{D}_{t+1})$. O termo $I_t$ indica o estoque disponível no início do ciclo $t$; $Q_{t-L}$ indica a quantidade pedida em ciclos anteriores que chega após o prazo de entrega $L$; e $\hat{D}_{t+1}$ representa uma estimativa da demanda futura próxima. A partir desse estado, a política decide o pedido $Q_t$, que afeta custos futuros de excesso, ruptura e ordenação.
 
