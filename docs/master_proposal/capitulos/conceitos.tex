@@ -201,7 +201,7 @@ Na Equação~\ref{eq:balance}, a demanda observada no ciclo é denotada por $D_t
 
 \section{Métricas de Previsão}
 
-As métricas clássicas MAE, RMSE e MAPE apresentam deficiências estruturais em regime intermitente: o MAPE é indefinido quando $D_t = 0$ (frequente na série estudada), o RMSE penaliza excessivamente erros em picos isolados, e nenhuma delas é invariante à escala, dificultando comparações entre séries de volume heterogêneo. A competição M4 e o trabalho de \citet{Hyndman2006MASE} motivaram métricas especificamente desenvolvidas para contornar essas limitações \citep{Makridakis2020M4Competition}, adotadas nesta dissertação.
+As métricas clássicas MAE, RMSE e MAPE apresentam deficiências estruturais em regime intermitente: o MAPE é indefinido quando $D_t = 0$ (frequente na série estudada), o RMSE penaliza excessivamente erros em picos isolados, e nenhuma delas é invariante à escala, dificultando comparações entre séries de volume heterogêneo. A M4, quarta edição da \textit{Makridakis Forecasting Competition} e referência internacional para comparação de métodos de previsão de séries temporais, junto ao trabalho de \citet{Hyndman2006MASE}, motivou métricas especificamente desenvolvidas para contornar essas limitações \citep{Makridakis2020M4Competition}, adotadas nesta dissertação.
 
 \subsection{Métricas Utilizadas}
 
@@ -224,7 +224,7 @@ Proposto por \citet{Makridakis1993SMAPE}, utiliza denominador simétrico para li
 Na Equação~\ref{eq:smape}, $D_t$ e $\hat{D}_t$ aparecem simetricamente no denominador, reduzindo a dependência da escala da série. A métrica é limitada ao intervalo $[0\%, 200\%]$ e não apresenta singularidade quando $D_t = 0$ e $\hat{D}_t > 0$.
 
 \paragraph{RMSSE (\textit{Root Mean Squared Scaled Error}).}
-Versão escalada do RMSE, utilizada como métrica principal da competição M4 \citep{Makridakis2020M4Competition}:
+Versão escalada do RMSE, utilizada como métrica principal na M4, competição internacional de previsão de séries temporais \citep{Makridakis2020M4Competition}:
 \begin{equation}
   \text{RMSSE} = \sqrt{\frac{\frac{1}{T}\sum_t e_t^2}{\frac{1}{T-1}\sum_{t=2}^{T}(D_t - D_{t-1})^2}}.
   \label{eq:rmsse}
