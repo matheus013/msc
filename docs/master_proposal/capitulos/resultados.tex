@@ -126,7 +126,7 @@ A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a a
 
 \subsection{Comparação Agregada entre Políticas}
 
-A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. O experimento confirma e expande os achados da Fase~1, agora com evidência estatisticamente fundada sobre uma base representativa do varejo regional baiano.
+A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. Esses valores correspondem às médias globais de cada política sobre o conjunto completo e confirmam e expandem os achados da Fase~1, agora com evidência estatisticamente fundada sobre uma base representativa do varejo regional baiano. Essa visão agrega todas as séries em uma única linha por política e não mede diretamente o ganho de selecionar políticas por perfil operacional, análise realizada na Seção~\ref{sec:custo_politica_unica_vs_perfil}.
 
 \noindent\textbf{Como ler a tabela:} a tabela deve ser lida como evidência de que a ampliação de 15 para 145 séries preserva os \textit{trade-offs} fundamentais: não existe política que minimize CTI e maximize NS simultaneamente. A ordem por CTI crescente facilita a identificação dos agrupamentos de custo, mas a escolha operacional depende do equilíbrio desejado entre custo, serviço e estabilidade de pedidos.
 
@@ -219,6 +219,23 @@ A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio po
 \caption{CTI médio por política e Perfil Operacional de Demanda (Fase~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, fundamento empírico do \textit{Adaptive Inventory Policy Engine}.}
 \label{fig:heatmap_cti_pod}
 \end{figure}
+
+\subsection{Custo da Política Única versus Seleção por Perfil}
+\label{sec:custo_politica_unica_vs_perfil}
+
+Para avaliar diretamente a motivação do AIPE, esta seção compara o custo de adotar uma única política para todas as séries com o custo de selecionar políticas por perfil operacional. A primeira estratégia representa a padronização global: uma mesma política é aplicada indiscriminadamente a todas as séries loja-produto. A segunda estratégia utiliza os perfis operacionais para escolher, em cada estrato, a política com menor CTI médio entre aquelas com NS médio $\geq 0{,}70$ no perfil. A comparação mede a diferença de CTI entre essas estratégias, preservando o NS médio como restrição operacional.
+
+Na Tabela~\ref{tab:strategy_cost_comparison}, a coluna ``Estratégia'' identifica a forma de escolha; ``CTI total'' e ``CTI médio'' quantificam o custo de inventário resultante sobre as 145 séries; ``NS médio'' permite verificar se a redução de custo preserva o nível de serviço; e as colunas de redução percentual medem o ganho de custo em relação a cada estratégia de referência, calculado como $100 \times (\mathrm{CTI}_{\text{ref}} - \mathrm{CTI}_{\text{est.}}) / \mathrm{CTI}_{\text{ref}}$.
+
+\input{../../simulation/data/08_reporting/strategy/table_strategy_comparison}
+
+A análise considera quatro estratégias. As estratégias A1 e A2 representam políticas únicas globais: A1 é a política com menor CTI médio entre todas as viáveis (NS médio $\geq 0{,}70$ global), que na Fase~2 é o EOQ; A2 adota o EOQ diretamente como \textit{baseline} operacional de referência, representando a escolha clássica comum na prática varejista. Neste experimento, A1 e A2 coincidem porque o EOQ emerge simultaneamente como melhor opção viável global e referência operacional natural.
+
+A estratégia B, seleção por perfil, aloca: Jornaleiro para séries \textit{Sparse High Impact} (116 séries, 80\% do conjunto); SARSA para séries \textit{High Vol.~Seasonal} (11 séries, evidência exploratória); e EOQ para séries \textit{Unstable Trend} (18 séries, evidência exploratória). A Tabela~\ref{tab:strategy_cost_comparison} indica redução de aproximadamente 37\% no CTI médio em relação à política única. Essa redução é alcançada mantendo NS médio acima do limiar de $0{,}70$ ($\mathrm{NS}\approx 0{,}74$), porém com NS inferior ao da estratégia A1 (EOQ, NS\,=\,$0{,}95$). Esse \textit{trade-off} é esperado e consistente com o objetivo do AIPE: as séries \textit{Sparse High Impact} têm demanda intermitente com impacto de custo alto, e o Jornaleiro reduz CTI ao custo de menor nível de serviço, que permanece viável pelo critério adotado.
+
+A estratégia C, oráculo por série, serve como referência exploratória. Ela assume conhecimento perfeito da política ótima de cada série individualmente, obtendo o limite inferior empírico do CTI alcançável com as políticas avaliadas. A diferença entre B e C indica o ganho adicional que seria obtível com seleção individualizada, como a que o PSE do AIPE provê.
+
+Essa comparação fornece suporte empírico direto à motivação do AIPE: a heterogeneidade de demanda observada dentro do regime \textit{Lumpy} da Fase~2 já produz diferença econômica mensurável entre as estratégias. A análise permanece concentrada nas séries \textit{Lumpy} da Fase~2; a extensão a outros regimes é objetivo da Fase~3.
 
 \subsection{Heterogeneidade e Evidência para o AIPE}
 
