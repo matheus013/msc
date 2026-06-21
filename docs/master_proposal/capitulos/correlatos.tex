@@ -4,6 +4,40 @@ Este capítulo posiciona a dissertação em relação à literatura existente so
 
 A análise está organizada em cinco eixos: controle de inventário em redes varejistas, previsão de demanda intermitente, métodos de otimização e aprendizado por reforço, seleção adaptativa de políticas e arquiteturas híbridas GA-RL. O objetivo é explicitar o posicionamento da dissertação sem repetir fundamentos já apresentados, destacando sua contribuição como um \textit{framework} metodológico de seleção contextual de políticas de reposição.
 
+\section{Visão Geral dos Métodos e Resultados da Literatura}
+\label{sec:visao_geral_literatura}
+
+A literatura de controle de inventário dispõe de uma base consolidada de políticas clássicas — EOQ, $(s,S)$, estoque-base e jornaleiro~\citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory} — reconhecidas pela simplicidade, interpretabilidade e facilidade de implantação operacional. Em paralelo, métodos de previsão de demanda intermitente, como Croston~\citep{Croston1972ForecastingIntermittentDemand}, SBA, ARIMA/SARIMAX, LSTM e XGBoost~\citep{Makridakis2020M4Competition,Nasseri2023RetailDemandPrediction}, produzem estimativas que qualificam o comportamento esperado das séries. Contudo, políticas clássicas enfrentam dificuldades em regimes de alta intermitência e demanda heterogênea, e a previsão não determina, por si só, qual política de reposição adotar para cada perfil de série.
+
+A Tabela~\ref{tab:sintese_metodos_literatura} sintetiza as principais famílias de métodos, seus resultados típicos e as limitações que motivam esta dissertação.
+
+\begin{table}[htb]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Síntese dos principais métodos e lacunas da literatura.}
+\label{tab:sintese_metodos_literatura}
+\begin{tabular}{@{}p{2.8cm}p{3.6cm}p{3.4cm}p{3.4cm}@{}}
+\toprule
+Família & Exemplos & Resultado típico & Limitação \\
+\midrule
+Políticas clássicas & EOQ, $(s,S)$, estoque-base, Jornaleiro & Simplicidade, interpretabilidade e facilidade de implantação & Baixa adaptação a séries heterogêneas e regimes intermitentes \\
+\addlinespace
+Previsão de demanda & Croston, SBA, ARIMA, LSTM, XGBoost & Melhora estimativas e fornece sinais preditivos & Não define qual política de reposição aplicar \\
+\addlinespace
+Otimização e meta-heurísticas & GA, SA, PSO, DE, MILP & Calibração de parâmetros e redução de custo em cenários específicos & Otimiza política ou formulação específica, sem selecionar entre famílias \\
+\addlinespace
+Aprendizado por reforço & DQN, PPO, SARSA, DRL & Decisões sequenciais em ambientes simulados & Sensível à recompensa, ao ambiente e ao histórico disponível \\
+\addlinespace
+Seleção e meta-aprendizado & ASP, hiper-heurísticas, AutoML & Escolha de método conforme características da instância & Pouco explorado para seleção de políticas em redes varejistas reais \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para superar essas limitações isoladas, a literatura explorou meta-heurísticas para calibrar parâmetros em espaços não convexos~\citep{Talbi2009Metaheuristics,Yuna2023IntermittentMetaheuristics}, agentes de aprendizado por reforço para aprender decisões sequenciais em ambientes simulados~\citep{Oroojlooyjadid2022BeerGameDQN,Gijsbrechts2022DRLInventoryMSOM} e abordagens de seleção de algoritmos para mapear características de instâncias em métodos adequados~\citep{Rice1976AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection}. Meta-heurísticas normalmente otimizam uma política ou formulação específica, sem resolver automaticamente a escolha entre famílias distintas; agentes de RL demandam históricos longos e são sensíveis à função de recompensa e à modelagem do ambiente; a seleção de algoritmos, por sua vez, tem pouca aplicação direta à escolha de políticas de reposição por série em redes varejistas reais.
+
+A literatura oferece, assim, blocos metodológicos sólidos para previsão de demanda, otimização de parâmetros e controle sequencial de estoque, mas ainda há espaço para integrá-los em um \textit{framework} único que caracterize as séries, avalie empiricamente um portfólio de políticas candidatas e aprenda a selecionar contextualmente a política mais adequada. As seções seguintes detalham como cada frente contribui e onde persistem as lacunas.
+
 \section{Inventário em Redes Varejistas}
 
 A literatura de controle de estoques em redes multi-escalão parte do trabalho fundador de \citet{ClarkScarf1960MultiEchelon}, que estabelece, para estruturas seriadas, que políticas ótimas podem ser decompostas por escalão sob hipóteses específicas. \citet{Axsater2006InventoryControl} e \citet{Zipkin2000FoundationsInventory} consolidam esse arcabouço em textos clássicos que formalizam custos de posse e ruptura, políticas de estoque-base (\textit{base-stock}) e medidas de nível de serviço. Em ambientes industriais, modelos Guaranteed Service Model (GSM)~\citep{GravesWillems2000SafetyStock} e suas extensões~\citep{Achkar2024GSMExtensions,Eruguz2016GSMsurvey} constituem a principal família de abordagens para posicionamento estratégico de estoques de segurança em redes gerais, sendo amplamente empregados em planejamento integrado.
@@ -46,7 +80,9 @@ A literatura de ASP, \textit{hyper-heuristics} e meta-aprendizado converge para 
 
 \section{Políticas Híbridas GA-RL}
 
-A frente mais próxima combina busca global de meta-heurísticas com adaptação local do RL. \citet{Zabraoui2025GaDQN} introduziram GA-DQN sobre o conjunto Walmart~M5 (CV típico $<1$): o GA otimiza parâmetros globalmente enquanto o DQN refina decisões a cada ciclo, elevando o NS de 61\% para 94\% com redução de custo. Esta dissertação incorpora GA-DQN como \textit{uma das doze políticas avaliadas} (a que demonstra melhor desempenho em séries de volume médio com alta intermitência, CV entre 2.5 e 5.4), mas posiciona o \textit{Policy Selection Engine} como contribuição principal: o objetivo não é provar que GA-DQN vence, mas aprender \textit{quando} cada política vence. Esse enquadramento é mais honesto (nenhuma política domina todas as métricas em todos os regimes) e mais ambicioso: o PSE permite incorporar novas políticas ao \textit{benchmark}, desde que seus desempenhos sejam avaliados e os rótulos do meta-modelo sejam atualizados.
+A frente mais próxima combina busca global de meta-heurísticas com adaptação local do RL. \citet{Zabraoui2025GaDQN} introduziram GA-DQN sobre o conjunto Walmart~M5 (CV típico $<1$): o GA otimiza parâmetros globalmente enquanto o DQN refina decisões a cada ciclo, elevando o NS de 61\% para 94\% com redução de custo. Esta dissertação incorpora GA-DQN como \textit{uma das doze políticas avaliadas} no portfólio, mas posiciona o \textit{Policy Selection Engine} como contribuição principal: o objetivo não é provar que GA-DQN vence em todos os regimes, mas aprender \textit{quando} cada política do portfólio apresenta vantagem relativa. Esse enquadramento é, ao mesmo tempo, mais honesto — nenhuma política domina todas as métricas em todos os regimes — e mais ambicioso: o PSE pode incorporar novas políticas ao \textit{benchmark} desde que seus desempenhos sejam avaliados e os rótulos do meta-modelo sejam atualizados.
+
+A variante GA-PPO, que substitui o DQN por uma política contínua baseada em PPO~\citep{Vanvuchelen2020PPOJointReplenishment,Gijsbrechts2022DRLInventoryMSOM}, segue a mesma motivação de combinar busca evolutiva global com refinamento por gradiente de política, mas apresenta dinâmicas distintas em regimes de alta volatilidade. Ambas as arquiteturas híbridas figuram como políticas especialistas dentro do portfólio de doze candidatas avaliadas empiricamente nesta dissertação. A presença de GA-DQN e GA-PPO no portfólio possibilita ao PSE identificar, para cada perfil operacional de demanda, se uma abordagem híbrida supera as políticas clássicas ou se estas últimas oferecem melhor compromisso entre custo e nível de serviço.
 
 \section{Posicionamento da Dissertação}
 
