@@ -204,9 +204,7 @@ O segmento Platina (maior ticket e regularidade) apresenta diferença relativa d
 
 Um resultado crítico da Fase~2 é que não existe política universalmente dominante: para um subconjunto de séries, o Jornaleiro minimiza CTI sem sacrifício expressivo de NS; para outro, EOQ ou $(s,S)$ oferecem o melhor equilíbrio custo-serviço; para séries em que o efeito \textit{bullwhip} é a métrica prioritária, PSO e DE apresentam os menores valores entre as meta-heurísticas (BE\,=\,$0.40$ e BE\,=\,$0.20$, respectivamente). A dispersão ilustrada na Figura~\ref{fig:boxplot_tic}, com coeficientes de variação do CTI superiores a 100\% para GA, GA-DQN e GA-PPO, indica que a política ótima é altamente dependente das características da série.
 
-Este achado fundamenta empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE). A Tabela~\ref{tab:regime_policy_dominance} sintetiza o mapeamento empírico regime$\rightarrow$política dominante obtido pelas Fases~1 e~2, que constitui os rótulos de treinamento do \textit{Policy Selection Engine}.
-
-\noindent A tabela a seguir é o resultado mais diretamente ligado ao AIPE: converte os experimentos de simulação em um mapeamento operacional entre perfil de demanda e política recomendada, constituindo os rótulos de treinamento do \textit{Policy Selection Engine}.
+Este achado fundamenta empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE). A Tabela~\ref{tab:regime_policy_dominance} sintetiza o mapeamento empírico regime$\rightarrow$política dominante obtido pelas Fases~1 e~2, convertendo os experimentos de simulação em rótulos de treinamento para o \textit{Policy Selection Engine}.
 
 \begin{table}[ht]
 \centering
@@ -227,9 +225,6 @@ Alta cobertura obrigatória & NS $\geq 0.95$ como restrição & EOQ & Melhor cus
 \end{tabular}
 }% end resizebox
 \end{table}
-
-Este mapeamento é o insumo central do AIPE: o PSE aprende a partir dessas relações e generaliza para novas séries não vistas no \textit{benchmark}. A contribuição não é provar que uma política é superior, mas aprender \textit{quando} cada política é superior.
-
 
 \section{Validação Estatística}
 \label{sec:stats}
@@ -353,15 +348,11 @@ Ainda assim, a avaliação atual permanece concentrada em séries classificadas 
 
 Algumas escolhas experimentais também delimitam a interpretação dos resultados. O horizonte disponível de 38~ciclos comerciais restringe a observação de mudanças estruturais de longo prazo. Os custos de manutenção, ruptura e pedido foram parametrizados a partir de valores compatíveis com o varejo regional, e diferentes relações entre esses custos podem alterar o desempenho relativo das políticas. Além disso, o prazo de entrega foi mantido fixo em dois ciclos, o que favorece a comparação controlada entre políticas, mas não captura variações operacionais de \textit{lead time}.
 
-Os resultados de previsão devem ser entendidos como evidência auxiliar sobre a previsibilidade das séries, e não como critério final de escolha da política de reposição. De forma semelhante, os métodos baseados em aprendizado por reforço são avaliados como políticas candidatas dentro do \textit{benchmark}, não como garantia de desempenho em ambiente de produção.
+De forma semelhante, os métodos baseados em aprendizado por reforço são avaliados como políticas candidatas dentro do \textit{benchmark}, não como garantia de desempenho em ambiente de produção.
 
 A Fase~3 dará continuidade a essa avaliação ao ampliar o conjunto de produtos, lojas, regiões e regimes de demanda. Essa expansão permitirá avaliar a generalização do AIPE, consolidar a geração de rótulos de política dominante e testar o \textit{Policy Selection Engine} em séries não observadas durante o treinamento.
 \section{Discussão dos Resultados}
 
-Os resultados preliminares das Fases~1 e~2 sustentam a premissa central desta dissertação: o desempenho das políticas de reposição depende do perfil operacional da série analisada. Nenhuma política avaliada domina simultaneamente as demais em custo total de inventário, nível de serviço, ruptura, estabilidade dos pedidos e frequência de reposição. Esse resultado reforça a inadequação de uma política única para todo o portfólio e oferece evidência empírica para a formulação do AIPE.
+Os resultados preliminares das Fases~1 e~2 sustentam a premissa central desta dissertação: o desempenho das políticas de reposição depende do perfil operacional da série analisada. Nenhuma política avaliada domina simultaneamente as demais em custo total de inventário, nível de serviço, ruptura, estabilidade dos pedidos e frequência de reposição. A ampliação de 15~séries na Paraíba para 145~séries na Bahia preservou essa heterogeneidade e permitiu aplicar validação estatística formal às comparações.
 
-A expansão da Fase~1 para a Fase~2 preservou a heterogeneidade observada inicialmente. A ampliação de 15~séries na Paraíba para 145~séries na Bahia permitiu avaliar o comportamento das políticas em um conjunto mais amplo e aplicar validação estatística formal às comparações. Mesmo nesse cenário ampliado, os resultados indicam que diferentes perfis operacionais favorecem políticas distintas, o que sustenta a formulação do \textit{Policy Selection Engine} como mecanismo de seleção contextual.
-
-Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados preliminares reforçam a relevância de abordagens que não assumem uma política única como solução universal para todos os perfis de demanda. A evidência empírica obtida nas Fases~1 e~2 indica que políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos. Esse comportamento sustenta o posicionamento do AIPE como um \textit{framework} de seleção contextual, e não como uma nova política isolada de reposição.
-
-A principal conclusão do capítulo é que os resultados preliminares não apontam para uma política universal, mas para a necessidade de selecionar políticas de reposição de acordo com o perfil da série loja-produto. A Fase~3 dará continuidade a essa avaliação ao expandir o \textit{benchmark} para outros estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.
+Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados reforçam a relevância de abordagens que não assumem uma política única como solução universal. Políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos, sustentando o posicionamento do AIPE como \textit{framework} de seleção contextual. A Fase~3 dará continuidade a essa avaliação ao expandir o \textit{benchmark} para outros estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.

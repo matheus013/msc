@@ -1,16 +1,14 @@
 \mychapter{Metodologia}{cap:metod}\lhead{METODOLOGIA}
 
-Este capítulo apresenta o arcabouço metodológico do AIPE, fundamentado na hipótese central de que o desempenho de políticas de reposição depende do regime operacional da demanda e que essa relação pode ser aprendida por um meta-modelo supervisionado. A exposição distingue a camada de entrada, composta por dados preparados, características operacionais e sinais auxiliares de previsão, do núcleo de seleção contextual responsável pela recomendação de políticas.
-
-O AIPE é o \textit{framework} metodológico de seleção adaptativa; o PSE (\textit{Policy Selection Engine}) é o componente interno responsável por aprender a associação entre perfil de demanda e política recomendada. A ingestão, o pré-processamento, a extração de características operacionais e a previsão de demanda formam a camada de entrada que alimenta esse mecanismo de seleção. A partir desses insumos, o AIPE organiza o \textit{benchmark} das 12 políticas candidatas, a validação estatística formal, a geração de rótulos de política dominante e o treinamento do PSE, culminando na geração de relatórios e recomendações. A metodologia foi aplicada em duas fases: Fase~1 (concluída) e Fase~2, igualmente concluída, abrangendo 145 séries do estado da Bahia com validação estatística formal.
+Este capítulo apresenta o arcabouço metodológico do AIPE, fundamentado na hipótese central de que o desempenho de políticas de reposição depende do regime operacional da demanda e que essa relação pode ser aprendida por um meta-modelo supervisionado. A metodologia organiza a camada de entrada (dados preparados, características operacionais e sinais auxiliares de previsão), o \textit{benchmark} das 12 políticas candidatas, a validação estatística, a geração de rótulos de política dominante e o treinamento do PSE. As Fases~1 e~2 já foram executadas, abrangendo 145 séries do estado da Bahia com validação estatística formal.
 \section{Visão Geral do AIPE}
 \label{sec:visao_geral_aipe}
 
-Nesta dissertação, o AIPE é a proposta metodológica principal: um \textit{framework} de seleção contextual de políticas de reposição. O \textit{framework} recebe como entrada históricos loja-produto preparados, características operacionais extraídas das séries e, quando disponíveis, sinais auxiliares de previsão de demanda. A partir dessas entradas, o AIPE organiza a avaliação de políticas candidatas, gera rótulos de política dominante e treina o \textit{Policy Selection Engine} (PSE), responsável por recomendar a política mais adequada para novas séries. O PSE é, portanto, seu componente de seleção, e as políticas avaliadas compõem o portfólio de alternativas sobre o qual o \textit{framework} aprende a recomendar.
+Nesta dissertação, o AIPE é a proposta metodológica principal: um \textit{framework} de seleção contextual de políticas de reposição. O PSE é seu componente de seleção, e as políticas avaliadas compõem o portfólio de alternativas sobre o qual o \textit{framework} aprende a recomendar.
 
 Dados preparados, características das séries e sinais de previsão compõem a camada de entrada. O foco do AIPE está em transformar esses insumos em decisões de política por comparação empírica, validação estatística e aprendizado supervisionado; as etapas de entrada, tomadas isoladamente, não constituem a contribuição central.
 
-Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, seleciona-se a alternativa de maior NS, conforme formalizado na Equação~\ref{eq:policy_selector}. Os rótulos gerados por esse \textit{benchmark} alimentam o PSE, que aprende o mapeamento entre características operacionais e política recomendada. A saída do \textit{framework} é, portanto, uma recomendação de regra ou algoritmo de reposição para novas séries loja-produto.
+Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, seleciona-se a alternativa de maior NS, conforme formalizado na Equação~\ref{eq:policy_selector}. Esses rótulos alimentam o PSE, cuja saída é uma recomendação de regra ou algoritmo de reposição para novas séries loja-produto.
 
 O aprendizado de máquina aparece em dois níveis distintos na metodologia. No primeiro, métodos baseados em aprendizado por reforço, como DQN, PPO e SARSA, são políticas candidatas comparadas às políticas clássicas, meta-heurísticas e híbridas. No segundo, o PSE atua como meta-modelo supervisionado que aprende a escolher qual política candidata tende a ser mais adequada para cada perfil operacional de demanda.
 
@@ -236,7 +234,7 @@ O POD é a linguagem operacional usada como entrada pelo PSE: toda recomendaçã
 \[
   \underbrace{\mathbf{x}_i}_{\text{série}} \;\xrightarrow{\;\phi\;}\; \underbrace{\phi(\mathbf{x}_i) \in \mathbb{R}^{17}}_{\text{características}} \;\xrightarrow{\;\mathrm{POD}\;}\; \underbrace{p \in \{1,\ldots,5\}}_{\text{perfil}} \;\xrightarrow{\;f\;}\; \underbrace{\hat{\pi}^*(i) \in \Pi}_{\text{política}} \;\xrightarrow{\;\mathrm{sim}\;}\; \underbrace{(\mathrm{CTI},\,\mathrm{NS},\,\mathrm{BE})}_{\text{KPI esperado}}
 \]
-A cadeia de dependências é clara: \textit{benchmark} $\rightarrow$ rótulos $\hat{\pi}^*(i)$ $\rightarrow$ características $\phi(\mathbf{x}_i)$ $\rightarrow$ PSE aprende $f$. A generalização para séries não vistas é alcançada via validação cruzada estratificada.
+A generalização para séries não vistas é avaliada por validação cruzada estratificada.
 
 \begin{figure}[ht]
 \centering
@@ -465,19 +463,15 @@ Todos os testes são realizados ao nível de significância $\alpha = 0.05$ com 
 \section{Geração de Rótulos e Treinamento do PSE}
 \label{sec:selecao_contextual}
 
-O \textit{Policy Selection Engine} (PSE) mapeia o perfil operacional de cada série à política de menor custo total de inventário esperado entre as que atendem ao limiar mínimo de nível de serviço, aprendendo a partir do \textit{benchmark} das Fases~1 e~2. Essa etapa transforma os resultados simulados em uma regra de recomendação para séries não vistas.
-
-Nesta dissertação, a seleção de políticas é formulada como uma instância supervisionada do problema de seleção de algoritmos (\textit{Algorithm Selection Problem}, ASP), no qual cada série loja-produto é tratada como uma instância descrita por atributos operacionais. O método não busca uma política universal para toda a rede, mas aprende, a partir dos resultados simulados, qual política do portfólio apresenta melhor desempenho para cada tipo de série. A política dominante é a de menor custo total de inventário entre as políticas que atendem ao limiar mínimo de nível de serviço, tornando a seleção orientada simultaneamente por eficiência de custo e viabilidade operacional.
-
-Assim, a taxonomia de Syntetos-Boylan e as demais características operacionais caracterizam a série; o \textit{benchmark} simulado identifica a política dominante segundo CTI e NS; e o PSE aprende a relação entre perfil operacional e política recomendada.
+O \textit{Policy Selection Engine} (PSE) transforma os resultados simulados em uma regra de recomendação para séries não vistas. A seleção de políticas é formulada como uma instância supervisionada do problema de seleção de algoritmos (\textit{Algorithm Selection Problem}, ASP): cada série loja-produto é descrita por atributos operacionais, o \textit{benchmark} identifica a política dominante segundo CTI e NS, e o PSE aprende a relação entre perfil operacional e política recomendada.
 
 \subsection{Base Conceitual}
 
-O \textit{Policy Selection Engine} (PSE) é uma instância de \textit{meta-aprendizado} aplicado a decisões operacionais: aprende, a partir da experiência acumulada no \textit{benchmark} (``quais políticas funcionaram bem em séries com estas características?''), a mapear o perfil de uma nova série para a política de menor custo total de inventário esperado. Essa formulação aproxima o problema de reposição de uma tarefa de seleção supervisionada de políticas.
+O PSE é uma instância de \textit{meta-aprendizado} aplicado a decisões operacionais: aprende, a partir da experiência acumulada no \textit{benchmark} (``quais políticas funcionaram bem em séries com estas características?''), a mapear o perfil de uma nova série para a política de menor custo total de inventário esperado.
 
 A ideia central é que as características operacionais da demanda: intermitência (ADI), variabilidade (CV$^2$), concentração (\textit{burstiness} $B$), difusividade (entropia $H$), tendência ($\beta_t/\mu$) e sazonalidade ($\rho_S$) capturam estrutura que prediz a dominância de uma família de política sobre as demais. Exemplos de relações esperadas: séries com ADI alto e picos intensos favorecem políticas que toleram longos períodos sem pedido (Jornaleiro, GA-DQN); séries com alta autocorrelação sazonal favorecem políticas que capturam periodicidade (PSO com espaço de busca amplo); séries de baixo volume e alta entropia são estruturalmente não preditíveis e favorecem políticas conservadoras (Jornaleiro).
 
-O PSE não se limita a uma classificação supervisionada de algoritmos. É um mecanismo metodológico de seleção contextual: aprende, a partir da experiência acumulada no \textit{benchmark}, quais estruturas de demanda favorecem quais famílias de política. Sua saída não é um rótulo de algoritmo, mas uma recomendação acionável com probabilidades de confiança, o que permite ao gestor compreender a margem de decisão e selecionar alternativas quando a política recomendada não está disponível.
+Sua saída não é apenas um rótulo de algoritmo, mas uma recomendação acionável com probabilidades de confiança, o que permite ao gestor compreender a margem de decisão e selecionar alternativas quando a política recomendada não está disponível.
 
 \paragraph{Fundamentos teóricos.} O PSE fundamenta-se em três pilares convergentes:
 
