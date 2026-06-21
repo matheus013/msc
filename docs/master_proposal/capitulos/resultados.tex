@@ -124,7 +124,7 @@ A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a a
 \label{fig:nacional_mapa_lojas_receita}
 \end{figure}
 
-\subsection{Comparação entre Políticas}
+\subsection{Comparação Agregada entre Políticas}
 
 A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. O experimento confirma e expande os achados da Fase~1, agora com evidência estatisticamente fundada sobre uma base representativa do varejo regional baiano.
 
@@ -199,6 +199,26 @@ A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro polí
 O resultado principal é que a sensibilidade à política varia entre segmentos. Em alguns segmentos, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. Esse padrão reforça a tese do AIPE: a recomendação de política não deve ser uniforme para toda a rede.
 
 O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB esta diferença cai para 40\%. Isso reforça que a escolha da política deve ser contextualizada pelo perfil da loja, fundamento empírico direto do módulo AIPE.
+
+\subsection{Comparação por Perfil Operacional de Demanda}
+\label{sec:comparacao_pod}
+
+A análise agregada da Tabela~\ref{tab:kpis_fase2} condensa 145 séries em uma única linha por política, obscurecendo diferenças de comportamento entre grupos de séries com padrões de demanda distintos. Para expor essa heterogeneidade, as séries foram segmentadas nos Perfis Operacionais de Demanda (POD) definidos na Tabela~\ref{tab:pod} (Seção~\ref{sec:carac_series}): \textit{Sparse High Impact}, \textit{Unstable Trend} e \textit{High Vol.~Seasonal}. Os perfis \textit{Low Vol.~Stable} e \textit{Fast Moving} não têm representação no conjunto da Bahia (Fase~2, regime \textit{Lumpy}).
+
+A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a política dominante segundo a regra de menor CTI médio entre as políticas com NS médio $\geq 0{,}70$. Os três perfis exibem padrões de dominância distintos, confirmando que a seleção ótima é contextual.
+
+\input{../../simulation/data/08_reporting/profiles/table_dominancia_por_perfil}
+
+O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o Jornaleiro minimiza CTI ao ajustar o pedido ao consumo esperado sem manter estoque de segurança excessivo, mantendo NS no limite mínimo viável. O perfil \textit{Unstable Trend} (18 séries) apresenta padrão de demanda com tendência não estacionária; o EOQ, com parâmetros calculados sobre a demanda média, oferece o melhor equilíbrio custo-serviço, atingindo NS\,=\,$0{,}95$ ao custo de CTI mais elevado. O perfil \textit{High Vol.~Seasonal} (11 séries), com menor $n$, deve ser interpretado de forma exploratória; o SARSA emergiu como dominante, sugerindo que a capacidade de adaptação on-line favorece séries com sazonalidade irregular.
+
+A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio por política e perfil, evidenciando a heterogeneidade de custo que fundamenta o AIPE: o custo ótimo de cada política varia de forma expressiva entre perfis, de modo que nenhuma política minimiza CTI em todos os contextos simultaneamente.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{../../simulation/data/08_reporting/profiles/profile_policy_heatmap_cti}
+\caption{CTI médio por política e Perfil Operacional de Demanda (Fase~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, fundamento empírico do \textit{Adaptive Inventory Policy Engine}.}
+\label{fig:heatmap_cti_pod}
+\end{figure}
 
 \subsection{Heterogeneidade e Evidência para o AIPE}
 
