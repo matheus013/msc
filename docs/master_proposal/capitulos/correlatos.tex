@@ -9,7 +9,7 @@ A análise está organizada em cinco eixos: controle de inventário em redes var
 
 A literatura de controle de inventário dispõe de uma base consolidada de políticas clássicas — EOQ, $(s,S)$, estoque-base e jornaleiro~\citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory} — reconhecidas pela simplicidade, interpretabilidade e facilidade de implantação operacional. Em paralelo, métodos de previsão de demanda intermitente, como Croston~\citep{Croston1972ForecastingIntermittentDemand}, SBA, ARIMA/SARIMAX, LSTM e XGBoost~\citep{Makridakis2020M4Competition,Nasseri2023RetailDemandPrediction}, produzem estimativas que qualificam o comportamento esperado das séries. Contudo, políticas clássicas enfrentam dificuldades em regimes de alta intermitência e demanda heterogênea, e a previsão não determina, por si só, qual política de reposição adotar para cada perfil de série.
 
-A Tabela~\ref{tab:sintese_metodos_literatura} sintetiza as principais famílias de métodos, seus resultados típicos e as limitações que motivam esta dissertação.
+A Tabela~\ref{tab:sintese_metodos_literatura} sintetiza as principais famílias de métodos, seus resultados típicos e as limitações que motivam esta dissertação. Na tabela, a coluna ``Família'' agrupa os métodos por linha de pesquisa; ``Exemplos'' lista métodos representativos de cada família; ``Resultado típico'' resume o tipo de ganho ou aplicação mais comum reportado na literatura; e ``Limitação'' indica a lacuna que persiste em relação ao problema tratado nesta dissertação.
 
 \begin{table}[htb]
 \centering
