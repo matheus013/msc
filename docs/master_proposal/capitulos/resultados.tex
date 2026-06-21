@@ -295,27 +295,27 @@ O maior efeito absoluto observado é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), r
 
 \noindent Os resultados de previsão são avaliados aqui como componente auxiliar para caracterização das séries, não como contribuição central da dissertação. As métricas preditivas funcionam como sinais adicionais de previsibilidade da série para o \textit{Policy Selection Engine}.
 
-O módulo de previsão avalia três modelos de aprendizado de máquina por validação \textit{walk-forward} sobre 145 séries de demanda intermitente (BA, regime \textit{Lumpy}). As métricas adotadas são alinhadas ao regime intermitente: MASE (\textit{Mean Absolute Scaled Error}), que penaliza erros proporcionalmente ao modelo \textit{naïve}; sMAPE (\textit{symmetric MAPE}), robusto a demandas próximas de zero; e Theil's U, que compara o modelo contra a previsão do período anterior.
+O módulo de previsão avalia três modelos de aprendizado de máquina por validação \textit{walk-forward} sobre 145 séries de demanda intermitente (BA, regime \textit{Lumpy}). As métricas adotadas são alinhadas ao regime intermitente: MASE (\textit{Mean Absolute Scaled Error}), que escala o erro absoluto médio em relação ao modelo \textit{naïve} sazonal; sMAPE (\textit{symmetric Mean Absolute Percentage Error}), robusto a demandas próximas de zero; e RMSSE (\textit{Root Mean Squared Scaled Error}), que escala o erro quadrático médio pelo mesmo \textit{benchmark naïve}. Em todas as três métricas, valores menores indicam melhor desempenho preditivo.
 
-\noindent A Tabela~\ref{tab:forecast_metrics} não determina a política recomendada; avalia a qualidade dos modelos de previsão usados como fonte auxiliar de características para o PSE.
+A Tabela~\ref{tab:forecast_metrics} apresenta as médias dessas métricas por modelo. A coluna ``Modelo'' identifica o método de previsão; ``MASE'' e ``RMSSE'' são escalados em relação ao modelo \textit{naïve} (valores $< 1$ indicam desempenho superior ao \textit{naïve}); e ``sMAPE'' expressa o erro percentual simétrico. A tabela não determina a política recomendada; avalia a qualidade dos modelos de previsão como fonte auxiliar de características para o PSE.
 
 \begin{table}[ht]
 \centering
 \small
-\caption{Métricas de qualidade da previsão por modelo (médias sobre 145 séries, BA, regime \textit{Lumpy}). MASE $< 1$: modelo com desempenho superior à previsão \textit{naïve}; sMAPE em \%.}
+\caption{Métricas de qualidade da previsão por modelo (médias sobre 145 séries, BA, regime \textit{Lumpy}). MASE e RMSSE são escalados em relação ao modelo \textit{naïve}; valores $< 1$ indicam desempenho superior ao \textit{naïve}. sMAPE em \%. Valores menores indicam melhor desempenho.}
 \label{tab:forecast_metrics}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
-Modelo   & MASE & sMAPE (\%) & Theil's U \\
+Modelo   & MASE & sMAPE (\%) & RMSSE \\
 \midrule
-LSTM     & 0.76 & 193.5 & 0.76 \\
-XGBoost  & 1.05           & 148.8 & 1.05 \\
-ANN      & 1.12           & 135.8          & 1.12 \\
+LSTM     & 0.76 & 193.5 & 0.86 \\
+XGBoost  & 1.05 & 148.8 & 0.99 \\
+ANN      & 1.12 & 135.8 & 0.99 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O LSTM é o único modelo a superar a previsão \textit{naïve} em MASE ($0.76 < 1$), sinalizando capacidade de capturar padrões temporais mesmo em séries esparsas. O XGBoost exibe o menor sMAPE ($148.8\%$), refletindo maior estabilidade em séries com zeros frequentes, embora seu MASE acima de 1 indique que, em termos absolutos, perde para a previsão \textit{naïve} em parte das séries. O ANN tem desempenho inferior em ambas as métricas primárias.
+O LSTM é o único modelo a superar a previsão \textit{naïve} nas métricas escaladas (MASE\,=\,$0.76$ e RMSSE\,=\,$0.86$, ambos $< 1$), sinalizando capacidade de capturar padrões temporais mesmo em séries esparsas. O XGBoost exibe o menor sMAPE ($148.8\%$), refletindo maior estabilidade em séries com zeros frequentes, embora MASE e RMSSE acima de 1 indiquem que, em termos do \textit{benchmark naïve}, perde para o LSTM na maior parte das séries. O ANN apresenta desempenho inferior nas três métricas.
 
 A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o LSTM atinge MASE\,=\,$0.49$; para a mais difícil, MASE\,=\,$1.87$ (série loja~10533990, produto~75792, demanda média de $0.8$ unidades por ciclo, ADI\,=\,$1.81$, tipicamente a configuração mais desafiadora do quadrante \textit{Lumpy}). Essa variação reforça que a previsão é útil como sinal auxiliar, mas não substitui a avaliação operacional das políticas.
 
@@ -333,11 +333,11 @@ A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.80\textwidth]{../../simulation/data/08_reporting/forecast/forecast_metrics_boxplot}
-\caption[Distribuição das métricas de previsão por modelo.]{Distribuição das métricas de previsão por modelo (boxplots): MASE, RMSSE, sMAPE, MBE e Theil's U para ANN, LSTM e XGBoost. Valores abaixo de 1 em MASE, RMSSE e Theil's U indicam desempenho superior ao \textit{baseline naïve} quando aplicável.}
+\caption[Distribuição das métricas de previsão por modelo.]{Distribuição das métricas de previsão por modelo (boxplots): MASE, RMSSE, sMAPE, MBE e Theil's U para ANN, LSTM e XGBoost. A figura inclui métricas adicionais de diagnóstico além das reportadas na síntese tabular; valores abaixo de 1 em MASE e RMSSE indicam desempenho superior ao \textit{baseline naïve}.}
 \label{fig:forecast_boxplot}
 \end{figure}
 
-A Figura~\ref{fig:forecast_boxplot} apresenta a distribuição das métricas de previsão por modelo. Os resultados de previsão devem ser interpretados como evidência auxiliar sobre a previsibilidade das séries, e não como critério final de escolha da política de reposição. Detalhes adicionais sobre resíduos e previsões por série específica encontram-se no apêndice.
+A Figura~\ref{fig:forecast_boxplot} complementa a Tabela~\ref{tab:forecast_metrics} ao mostrar a distribuição das métricas por série, incluindo diagnósticos adicionais como MBE e Theil's U. A síntese principal de MASE, sMAPE e RMSSE permanece na tabela. Os resultados de previsão devem ser interpretados como evidência auxiliar sobre a previsibilidade das séries, e não como critério final de escolha da política de reposição. Detalhes adicionais sobre resíduos e previsões por série específica encontram-se no apêndice.
 
 \section{Alcance dos Resultados}
 \label{sec:threats}
