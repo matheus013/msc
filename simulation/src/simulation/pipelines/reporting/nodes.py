@@ -569,6 +569,35 @@ def _latex_wilcoxon_table(wilcoxon: pd.DataFrame, cfg: dict) -> str:
     return "\n".join(lines)
 
 
+def generate_profile_policy_analysis(kpis: pd.DataFrame,
+                                      demand_profiles: pd.DataFrame,
+                                      params: dict) -> None:
+    """
+    Wrapper Kedro para reporting/profile_policy_analysis.py.
+    O script le kpis.parquet e demand_profiles.parquet diretamente do disco
+    (mesmos caminhos do catalog); os argumentos aqui apenas fixam a ordem de
+    execucao no DAG (depois que esses datasets foram salvos).
+    """
+    from reporting.profile_policy_analysis import run
+    run()
+
+
+def generate_strategy_cost_comparison(kpis: pd.DataFrame,
+                                       demand_profiles: pd.DataFrame,
+                                       params: dict) -> None:
+    """Wrapper Kedro para reporting/strategy_cost_comparison.py (mesmo padrao de I/O)."""
+    from reporting.strategy_cost_comparison import run
+    run()
+
+
+def generate_cti_adjusted_analysis(kpis: pd.DataFrame,
+                                    demand_profiles: pd.DataFrame,
+                                    params: dict) -> None:
+    """Wrapper Kedro para reporting/cti_adjusted_analysis.py (mesmo padrao de I/O)."""
+    from reporting.cti_adjusted_analysis import run
+    run()
+
+
 def _latex_effect_sizes_table(effect_sizes: pd.DataFrame, cfg: dict) -> str:
     """Tabela de Cohen's d."""
     sep = cfg.get("decimal_sep", "{,}")

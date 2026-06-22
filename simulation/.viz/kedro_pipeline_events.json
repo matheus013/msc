@@ -1,21 +1,21 @@
 [
   {
     "event": "before_pipeline_run",
-    "timestamp": "2026-06-08T03:53:19.229030+00:00"
+    "timestamp": "2026-06-22T00:21:32.317954+00:00"
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 60532
+    "size": 60797
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "wilcoxon_results",
     "node_id": "2af3d158",
     "status": "Available",
-    "size": 8275
+    "size": 8212
   },
   {
     "event": "after_dataset_loaded",
@@ -29,7 +29,7 @@
     "dataset": "effect_sizes",
     "node_id": "8ee7c35a",
     "status": "Available",
-    "size": 5292
+    "size": 5295
   },
   {
     "event": "after_dataset_loaded",
@@ -42,7 +42,7 @@
     "event": "after_node_run",
     "node": "generate_comparison_plots",
     "node_id": "74c88f4a",
-    "duration": 7.871682100027101,
+    "duration": 8.129096999997273,
     "status": "success"
   },
   {
@@ -51,6 +51,34 @@
     "node_id": "58cb4bac",
     "status": "Available",
     "size": 1128
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "kpis",
+    "node_id": "51c39841",
+    "status": "Available",
+    "size": 60797
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "demand_profiles",
+    "node_id": "c9555c3e",
+    "status": "Available",
+    "size": 40224
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:reporting",
+    "node_id": "961b6053",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "generate_cti_adjusted_analysis",
+    "node_id": "826dad05",
+    "duration": 0.9997746000008192,
+    "status": "success"
   },
   {
     "event": "after_dataset_loaded",
@@ -71,14 +99,14 @@
     "dataset": "forecast_predictions",
     "node_id": "a6a5a091",
     "status": "Available",
-    "size": 90551
+    "size": 122999
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "forecast_metrics",
     "node_id": "78b0ba6c",
     "status": "Available",
-    "size": 430079
+    "size": 639085
   },
   {
     "event": "after_dataset_loaded",
@@ -91,7 +119,7 @@
     "event": "after_node_run",
     "node": "generate_demand_plots",
     "node_id": "d03b8602",
-    "duration": 57.6180475000001,
+    "duration": 76.47864249999839,
     "status": "success"
   },
   {
@@ -113,14 +141,14 @@
     "dataset": "forecast_metrics",
     "node_id": "78b0ba6c",
     "status": "Available",
-    "size": 430079
+    "size": 639085
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 60532
+    "size": 60797
   },
   {
     "event": "after_dataset_loaded",
@@ -133,7 +161,7 @@
     "event": "after_node_run",
     "node": "generate_dissertation_report",
     "node_id": "b2de854f",
-    "duration": 0.050434400007361546,
+    "duration": 0.03217969999968773,
     "status": "success"
   },
   {
@@ -148,21 +176,21 @@
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 60532
+    "size": 60797
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "wilcoxon_results",
     "node_id": "2af3d158",
     "status": "Available",
-    "size": 8275
+    "size": 8212
   },
   {
     "event": "after_dataset_loaded",
     "dataset": "effect_sizes",
     "node_id": "8ee7c35a",
     "status": "Available",
-    "size": 5292
+    "size": 5295
   },
   {
     "event": "after_dataset_loaded",
@@ -182,7 +210,7 @@
     "event": "after_node_run",
     "node": "generate_latex_tables",
     "node_id": "ef929e29",
-    "duration": 0.05951890000142157,
+    "duration": 0.03636399999959394,
     "status": "success"
   },
   {
@@ -190,7 +218,7 @@
     "dataset": "latex_tables",
     "node_id": "dfa6c001",
     "status": "Available",
-    "size": 21583
+    "size": 21584
   },
   {
     "event": "after_dataset_loaded",
@@ -204,7 +232,7 @@
     "dataset": "kpis",
     "node_id": "51c39841",
     "status": "Available",
-    "size": 60532
+    "size": 60797
   },
   {
     "event": "after_dataset_loaded",
@@ -217,7 +245,7 @@
     "event": "after_node_run",
     "node": "generate_map_plots",
     "node_id": "6adc35bd",
-    "duration": 36.70625089999521,
+    "duration": 57.34685489999538,
     "status": "success"
   },
   {
@@ -228,7 +256,63 @@
     "size": 269
   },
   {
+    "event": "after_dataset_loaded",
+    "dataset": "kpis",
+    "node_id": "51c39841",
+    "status": "Available",
+    "size": 60797
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "demand_profiles",
+    "node_id": "c9555c3e",
+    "status": "Available",
+    "size": 40224
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:reporting",
+    "node_id": "961b6053",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "generate_profile_policy_analysis",
+    "node_id": "c167f364",
+    "duration": 0.6309601000029943,
+    "status": "success"
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "kpis",
+    "node_id": "51c39841",
+    "status": "Available",
+    "size": 60797
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "demand_profiles",
+    "node_id": "c9555c3e",
+    "status": "Available",
+    "size": 40224
+  },
+  {
+    "event": "after_dataset_loaded",
+    "dataset": "params:reporting",
+    "node_id": "961b6053",
+    "status": "Available",
+    "size": 0
+  },
+  {
+    "event": "after_node_run",
+    "node": "generate_strategy_cost_comparison",
+    "node_id": "f5fcc38c",
+    "duration": 0.20967169999494217,
+    "status": "success"
+  },
+  {
     "event": "after_pipeline_run",
-    "timestamp": "2026-06-08T03:55:01.684827+00:00"
+    "timestamp": "2026-06-22T00:23:56.368476+00:00"
   }
 ]

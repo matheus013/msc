@@ -1,4 +1,4 @@
-% apendice.tex — Apêndice A: Matriz Completa de Parâmetros Experimentais
+% apendice.tex: Apêndice A: Matriz Completa de Parâmetros Experimentais
 
 \appendix
 \chapter{Matriz de Parâmetros Experimentais}
@@ -11,7 +11,7 @@
 Este apêndice consolida os parâmetros utilizados nos experimentos reportados, organizados por camada experimental. A formulação conceitual de cada política permanece nos Capítulos~2 e~3; o registro aqui serve para auditoria e reprodução. Os valores foram obtidos a partir das configurações, scripts e artefatos versionados do projeto. A organização segue a sequência experimental: parâmetros globais (Tabela~\ref{tab:global_params}), políticas clássicas e meta-heurísticas (Tabela~\ref{tab:classic_meta_params}), agentes de aprendizado por reforço e políticas híbridas (Tabela~\ref{tab:rl_params}), previsão e geração de rótulos (Tabela~\ref{tab:forecast_label_params}) e ambiente de validação e reprodução (Tabela~\ref{tab:validation_env}).
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.1 — Parâmetros globais do experimento
+% TABELA A.1: Parâmetros globais do experimento
 % ─────────────────────────────────────────────────────────────────────────────
 
 \begingroup\setlength{\tabcolsep}{4pt}\scriptsize
@@ -72,7 +72,7 @@ Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do li
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.2 — Políticas clássicas e meta-heurísticas
+% TABELA A.2: Políticas clássicas e meta-heurísticas
 % ─────────────────────────────────────────────────────────────────────────────
 
 Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas, por sua vez, cada candidato é uma política $(s,Q)$, em que $s$ representa o ponto de reposição e $Q$ representa a quantidade de pedido. A avaliação de cada candidato ocorre pela execução da política correspondente no ambiente de simulação, retornando os indicadores de custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos.
@@ -155,7 +155,7 @@ DE & semente & 42 & \\
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.3 — Agentes RL e políticas híbridas
+% TABELA A.3: Agentes RL e políticas híbridas
 % ─────────────────────────────────────────────────────────────────────────────
 
 Nos agentes de aprendizado por reforço, a decisão de reposição é formulada como um problema sequencial no ambiente \textit{InventoryEnv}. O estado observado pelo agente resume a posição de estoque, demanda prevista, pedidos em trânsito, estatísticas recentes de demanda e progresso no horizonte experimental. A ação representa a quantidade de pedido, discreta no caso do DQN e do SARSA e contínua no caso do PPO. A recompensa é definida como o negativo do custo operacional do ciclo, de modo que maximizar retorno equivale a reduzir custo total, penalizando simultaneamente estoque, ruptura e emissão de pedidos.
@@ -243,7 +243,7 @@ GA-PPO & semente & 42 & \\
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.4 — Previsão, características operacionais e geração de rótulos
+% TABELA A.4: Previsão, características operacionais e geração de rótulos
 % ─────────────────────────────────────────────────────────────────────────────
 
 \begingroup\setlength{\tabcolsep}{4pt}\scriptsize
@@ -316,7 +316,7 @@ Rótulos & colsample\_bytree (PSE) & 0,8 & \\
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.5 — Validação estatística, ambiente computacional e artefatos
+% TABELA A.5: Validação estatística, ambiente computacional e artefatos
 % ─────────────────────────────────────────────────────────────────────────────
 
 \begingroup\setlength{\tabcolsep}{4pt}\scriptsize
@@ -369,3 +369,48 @@ testes estatísticos & \nolinkurl{results/statistical_tests/} & & Wilcoxon, Frie
 rótulos PSE & \nolinkurl{results/policy_labels/} & & política dominante por série \\
 \end{longtable}
 \endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.6: Resultados agregados da Fase 1 (Paraíba)
+% ─────────────────────────────────────────────────────────────────────────────
+
+\section{Resultados Agregados da Fase 1}
+\label{app:fase1_resultados}
+
+Esta seção registra a tabela completa de indicadores agregados da Fase~1 (15 lojas da Paraíba, produto~48130, regime \textit{Lumpy}), citada na Seção~\ref{sec:custo_politica_unica_vs_perfil} apenas em forma resumida para evitar duplicação com a comparação agregada da Fase~2 (Tabela~\ref{tab:kpis_fase2}).
+
+\noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Médias dos indicadores de desempenho por política (15 lojas, regime \textit{Lumpy}). Melhores valores por coluna. $^\dagger$SARSA e PPO apresentam degeneração (FP\,=\,0 e FP\,=\,0.98, respectivamente); resultados degenerados não constituem soluções operacionalmente viáveis.}
+\label{tab:global_prelim}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Política &
+\makecell[r]{CTI\\(R\$)} &
+\makecell[r]{NS} &
+\makecell[r]{TR} &
+\makecell[r]{BE} &
+\makecell[r]{FP} \\
+\midrule
+SARSA$^\dagger$              & 16.139 & 0.785 & 0.200 & 0.00 & 0.00 \\
+Jornaleiro                   & 16.402 & 0.794 & 0.111 & 0.003 & 0.27 \\
+DQN                          & 17.974 & 0.806 & 0.078 & 4.1   & 0.37 \\
+GA-DQN (Híbrido)             & 18.502 & 0.821 & 0.050 & 5.0   & 0.31 \\
+PSO                          & 19.100 & 0.819 & 0.056 & 6.2   & 0.31 \\
+GA-PPO (Híbrido)             & 19.801 & 0.833 & 0.050 & 6.6   & 0.35 \\
+GA                           & 20.015 & 0.825 & 0.061 & 19.7  & 0.30 \\
+DE                           & 20.252 & 0.813 & 0.056 & 31.0  & 0.27 \\
+SA                           & 20.967 & 0.820 & 0.056 & 36.4  & 0.27 \\
+EOQ                          & 31.034 & 0.840 & 0.050 & 23.0  & 0.20 \\
+PPO$^\dagger$                & 34.637 & 0.848 & 0.039 & 15.9 & 0.98 \\
+$(s,S)$                      & 35.589 & 0.843 & 0.050 & 119.4 & 0.15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável.
+
+\noindent A redução de ``até 48\%'' citada no resumo deste trabalho origina-se exatamente desta comparação, calculada diretamente da Tabela~\ref{tab:global_prelim}: CTI médio GA-DQN (R\$\,18.502) versus $(s,S)$ (R\$\,35.589), $(35.589-18.502)/35.589 \approx 48\%$, sobre as 15 lojas da Fase~1, produto~48130 (Paraíba). O valor representa o ganho máximo observado neste experimento, não uma redução média universal: na Fase~2 (145 séries, BA) o GA-DQN não domina o EOQ em CTI, e o Jornaleiro apresenta menor custo bruto, mas não atinge o nível de serviço mínimo de $0{,}70$ (Seção~\ref{sec:custo_politica_unica_vs_perfil}).
