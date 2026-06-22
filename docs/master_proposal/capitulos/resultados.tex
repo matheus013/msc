@@ -14,45 +14,7 @@ Os experimentos da Fase~1 foram conduzidos sobre 15 lojas da Paraíba, produto 4
 
 \subsection{Comparação entre Políticas}
 
-A Tabela~\ref{tab:global_prelim} apresenta as médias dos cinco indicadores sobre as 15 lojas, ordenadas por CTI crescente. Essa ordenação facilita a leitura do compromisso entre custo e desempenho operacional.
-
-\noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
-
-\begin{table}[ht]
-\centering
-\small
-\caption{Médias dos indicadores de desempenho por política (15 lojas, regime \textit{Lumpy}). Melhores valores por coluna. $^\dagger$SARSA e PPO apresentam degeneração (FP\,=\,0 e FP\,=\,0.98, respectivamente); resultados degenerados não constituem soluções operacionalmente viáveis.}
-\label{tab:global_prelim}
-\begin{tabular}{@{}lrrrrr@{}}
-\toprule
-Política &
-\makecell[r]{CTI\\(R\$)} &
-\makecell[r]{NS} &
-\makecell[r]{TR} &
-\makecell[r]{BE} &
-\makecell[r]{FP} \\
-\midrule
-SARSA$^\dagger$              & 16.139 & 0.785 & 0.200 & 0.00 & 0.00 \\
-Jornaleiro                   & 16.402 & 0.794 & 0.111 & 0.003 & 0.27 \\
-DQN                          & 17.974 & 0.806 & 0.078 & 4.1   & 0.37 \\
-GA-DQN (Híbrido)             & 18.502 & 0.821 & 0.050 & 5.0   & 0.31 \\
-PSO                          & 19.100 & 0.819 & 0.056 & 6.2   & 0.31 \\
-GA-PPO (Híbrido)             & 19.801 & 0.833 & 0.050 & 6.6   & 0.35 \\
-GA                           & 20.015 & 0.825 & 0.061 & 19.7  & 0.30 \\
-DE                           & 20.252 & 0.813 & 0.056 & 31.0  & 0.27 \\
-SA                           & 20.967 & 0.820 & 0.056 & 36.4  & 0.27 \\
-EOQ                          & 31.034 & 0.840 & 0.050 & 23.0  & 0.20 \\
-PPO$^\dagger$                & 34.637 & 0.848 & 0.039 & 15.9 & 0.98 \\
-$(s,S)$                      & 35.589 & 0.843 & 0.050 & 119.4 & 0.15 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável. Esses comportamentos reforçam que a seleção de política precisa considerar simultaneamente custo, serviço e estabilidade.
-
-Entre as políticas práticas (sem degeneração), o GA-DQN apresentou o equilíbrio mais favorável: reduz custo em 48\% vs. $(s,S)$ (política padrão do varejo) enquanto reduz rupturas em 55\%, mantendo nível de serviço competitivo (82.1\% vs. 84.3\%). Mais importante: reduz o efeito chicote para 5.0 vs. 119.4 da política padrão, estabilizando toda a cadeia.
-
-\noindent A redução de ``até 48\%'' citada no resumo deste trabalho origina-se exatamente desta comparação, calculada diretamente da Tabela~\ref{tab:global_prelim}: CTI médio GA-DQN (R\$\,18.502) versus $(s,S)$ (R\$\,35.589), $(35.589-18.502)/35.589 \approx 48\%$, sobre as 15 lojas da Fase~1, produto~48130 (Paraíba). O valor representa o ganho máximo observado neste experimento, não uma redução média universal: na Fase~2 (145 séries, BA) o GA-DQN não domina o EOQ em CTI, e o Jornaleiro apresenta o menor custo viável naquele regime.
+A Fase~1, conduzida com 15 lojas da Paraíba (produto~48130, regime \textit{Lumpy}), foi usada como validação inicial do ambiente de simulação e do protocolo de comparação entre políticas. Os resultados indicaram heterogeneidade entre políticas e presença de comportamentos degenerados em parte dos agentes de aprendizado por reforço (SARSA$^\dagger$ convergindo a FP\,=\,$0$; PPO$^\dagger$ emitindo pedidos em 98\% dos ciclos), motivando a ampliação para a Fase~2. Entre as políticas sem degeneração, o GA-DQN apresentou o equilíbrio mais favorável: reduz custo em 48\% em relação ao $(s,S)$ (política padrão do varejo) enquanto reduz rupturas em 55\% e o efeito \textit{bullwhip} de 119.4 para 5.0, mantendo nível de serviço competitivo (82.1\% vs. 84.3\%). A tabela completa com os indicadores agregados da Fase~1 (Tabela~\ref{tab:global_prelim}) foi deslocada para o Apêndice~\ref{app:reproducibility}, preservando a rastreabilidade dos resultados preliminares, incluindo a derivação da redução de ``até 48\%'' citada no resumo deste trabalho, sem duplicar no corpo principal a comparação agregada apresentada para a Fase~2 (Tabela~\ref{tab:kpis_fase2}). O valor de 48\% representa o ganho máximo observado neste experimento preliminar, não uma redução média universal: na Fase~2 (145 séries, BA), o GA-DQN não domina o EOQ em CTI.
 
 \subsection{Análise por Volume de Demanda}
 
