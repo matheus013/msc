@@ -1,8 +1,8 @@
-# simulation — Pipeline Kedro (AIPE)
+# simulation - Pipeline Kedro do AIPE
 
-Pipeline de simulação e seleção de políticas de inventário para a dissertação de mestrado.
-Suporta qualquer estado brasileiro e qualquer produto com demanda intermitente,
-com parâmetros totalmente configuráveis via YAML.
+Pipeline de simulação, validação estatística e geração de relatórios para a dissertação de mestrado sobre seleção contextual de políticas de reposição.
+
+O projeto suporta recortes por estado e produto, com parâmetros configuráveis em YAML.
 
 ## Instalação
 
@@ -14,7 +14,7 @@ pip install -e . -r requirements.txt
 ## Execução
 
 ```bash
-# Pipeline completo — configuração padrão (PB)
+# Pipeline completo com configuração padrão
 kedro run
 
 # Fase 1: Paraíba
@@ -23,77 +23,95 @@ kedro run --params "data_ingestion.states=['PB']"
 # Fase 2: Bahia
 kedro run --params "data_ingestion.states=['BA']"
 
-# Todos os estados com demanda intermitente
-kedro run --params "data_ingestion.states=['all'],data_ingestion.products=null"
-
-# Pipelines individuais
-kedro run --pipeline demand_profiling
+# Validação estatística
 kedro run --pipeline statistical_validation
 
-# DAG visual
+# Figuras, tabelas e relatórios
+kedro run --pipeline reporting
+
+# Visualização do DAG
 kedro viz
 ```
 
-## Pipelines (7)
+## Pipelines
 
 | Pipeline | Descrição |
 |---|---|
-| `data_ingestion` | Carrega Parquet por UF, filtra, limpa, gera cenários por (estado, produto, loja) |
-| `demand_profiling` | Classifica séries em Perfis Operacionais de Demanda (POD) via ADI × CV² |
-| `demand_forecasting` | Treina modelos de previsão por loja (Croston, ARIMA, XGBoost, ANN) |
-| `inventory_simulation` | Simula 12 políticas × todas as lojas × n réplicas |
-| `policy_selection` | Gera rótulos e features para o Policy Selection Engine (PSE) |
-| `statistical_validation` | Wilcoxon, Friedman-Nemenyi, Cohen's d com correção Bonferroni |
-| `reporting` | Figuras PDF, tabelas LaTeX (booktabs) |
+| `data_ingestion` | Carrega Parquet por UF, filtra dados e gera cenários por estado, produto e loja. |
+| `demand_profiling` | Classifica séries em Perfis Operacionais de Demanda usando características como ADI e CV². |
+| `demand_forecasting` | Treina modelos auxiliares de previsão e calcula métricas de erro. |
+| `inventory_simulation` | Simula as políticas candidatas em ambiente comum de inventário. |
+| `policy_selection` | Gera rótulos de política dominante e artefatos para o Policy Selection Engine. |
+| `statistical_validation` | Executa Wilcoxon, Friedman, Nemenyi e tamanhos de efeito. |
+| `reporting` | Gera figuras PDF, tabelas LaTeX e relatórios de validação. |
 
 ## Configuração
 
-Edite os arquivos em `conf/base/parameters/`:
+Os parâmetros ficam em:
+
+```text
+conf/base/parameters/
+```
 
 | Arquivo | Controla |
 |---|---|
-| `data_ingestion.yml` | Estado(s), produto(s), intervalo de datas |
-| `data_cleaning.yml` | Regras de limpeza, outliers, missing |
-| `demand_profiling.yml` | Limiares ADI, CV², burstiness, sazonalidade |
-| `forecasting.yml` | Modelos, lookback, hiperparâmetros |
-| `simulation.yml` | Políticas, custos, lead time, réplicas |
-| `policy_selection.yml` | Critério de rótulo (NS mínimo), random seed |
-| `reporting.yml` | Formato das figuras e tabelas |
+| `data_ingestion.yml` | Estados, produtos e intervalo de datas. |
+| `data_cleaning.yml` | Regras de limpeza, dados ausentes e outliers. |
+| `demand_profiling.yml` | Limiares de ADI, CV², burstiness e sazonalidade. |
+| `forecasting.yml` | Modelos, janelas e hiperparâmetros de previsão. |
+| `simulation.yml` | Custos, lead time, réplicas e políticas avaliadas. |
+| `policy_selection.yml` | Critério de rótulo, NS mínimo e sementes aleatórias. |
+| `reporting.yml` | Formato de figuras, tabelas e relatórios. |
 
-## Políticas Avaliadas (12)
+## Políticas avaliadas
 
 | Categoria | Políticas |
 |---|---|
-| Clássicas | EOQ, (s,S), Jornaleiro (Newsvendor) |
+| Clássicas | EOQ, `(s,S)`, Jornaleiro |
 | Meta-heurísticas | GA, SA, PSO, DE |
-| Aprendizado por Reforço | DQN, PPO, SARSA |
-| Híbridas (AIPE) | GA-DQN, GA-PPO |
+| Aprendizado por reforço | DQN, PPO, SARSA |
+| Híbridas | GA-DQN, GA-PPO |
 
-## KPIs (5)
+## Métricas
 
-| KPI | Descrição |
+| Sigla | Descrição |
 |---|---|
-| **TIC** | Custo Total de Inventário (R$) |
-| **NS** | Nível de Serviço (0–1) |
-| **TR** | Taxa de Ruptura (0–1) |
-| **BE** | Efeito Bullwhip (razão de variâncias) |
-| **FP** | Frequência de Pedidos (0–1) |
+| CTI | Custo Total de Inventário |
+| NS | Nível de Serviço |
+| TR | Taxa de Ruptura |
+| BE | Efeito Bullwhip |
+| FP | Frequência de Pedidos |
 
 ## Estrutura do código
 
-```
+```text
 src/simulation/
-├── core/
-│   ├── inventory_env.py   ← ambiente de simulação (InventoryEnv)
-│   ├── policies.py        ← 12 políticas de reposição
-│   ├── forecasting.py     ← modelos de previsão
-│   └── visualizations.py  ← helpers de visualização
-└── pipelines/
-    ├── data_ingestion/
-    ├── demand_profiling/
-    ├── demand_forecasting/
-    ├── inventory_simulation/
-    ├── policy_selection/
-    ├── statistical_validation/
-    └── reporting/
+|-- core/
+|   |-- inventory_env.py
+|   |-- policies.py
+|   |-- forecasting.py
+|   `-- visualizations.py
+`-- pipelines/
+    |-- data_ingestion/
+    |-- demand_profiling/
+    |-- demand_forecasting/
+    |-- inventory_simulation/
+    |-- policy_selection/
+    |-- statistical_validation/
+    `-- reporting/
 ```
+
+## Saídas principais
+
+```text
+data/08_reporting/
+|-- comparison/
+|-- demand/
+|-- forecast/
+|-- maps/
+|-- profiles/
+|-- statistical/
+`-- strategy/
+```
+
+Essas saídas alimentam diretamente as tabelas e figuras da proposta em `docs/master_proposal`.

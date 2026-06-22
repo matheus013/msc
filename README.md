@@ -1,44 +1,47 @@
-# AIPE — Adaptive Inventory Policy Engine
+# AIPE - Adaptive Inventory Policy Engine
 
-Repositório da dissertação de mestrado e artigo SBPO 2026 sobre seleção adaptativa de políticas de reposição em redes warehouse→loja com demanda intermitente, usando dados reais de varejo regional brasileiro.
+Repositório da dissertação de mestrado e do artigo SBPO 2026 sobre seleção contextual de políticas de reposição em redes varejistas com demanda intermitente.
 
----
+O projeto combina uma proposta em LaTeX, um artigo científico e um pipeline Kedro para simulação, validação estatística e geração de artefatos experimentais.
 
-## Estrutura
+## Visão geral
 
-```
+O AIPE, Adaptive Inventory Policy Engine, é um framework metodológico para recomendar políticas de reposição de estoque de acordo com o perfil operacional de cada série loja-produto.
+
+A dissertação avalia políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e arquiteturas híbridas GA-RL em dados reais de uma rede varejista brasileira.
+
+## Estrutura do repositório
+
+```text
 sbpo/
-├── docs/
-│   ├── sbpo/                  ← Artigo SBPO 2026 (LaTeX)
-│   │   ├── main.tex
-│   │   └── figuras/
-│   ├── master_proposal/       ← Proposta de dissertação (LaTeX/XeLaTeX)
-│   │   ├── tcc.tex
-│   │   ├── capitulos/
-│   │   ├── figures/
-│   │   └── build/             ← Artefatos de compilação (gitignored)
-│   └── references/            ← PDFs de referência
-│
-└── simulation/                ← Pipeline Kedro
-    ├── conf/base/parameters/  ← YAMLs configuráveis
-    ├── src/simulation/
-    │   ├── core/              ← InventoryEnv, políticas, forecasters
-    │   └── pipelines/         ← 7 pipelines Kedro
-    └── data/                  ← Dados (gitignored)
+|-- docs/
+|   |-- master_proposal/       Proposta de dissertação em LaTeX
+|   |   |-- tcc.tex            Documento raiz
+|   |   |-- capitulos/         Capítulos da proposta
+|   |   |-- figures/           Figuras em LaTeX/TikZ
+|   |   |-- img/               Figuras em PDF
+|   |   |-- build/             PDF e artefatos de compilação
+|   |   `-- README.md
+|   |
+|   |-- sbpo/                  Artigo SBPO 2026
+|   `-- references/            PDFs e materiais de referência
+|
+`-- simulation/                Projeto Kedro
+    |-- conf/base/parameters/  Parâmetros em YAML
+    |-- src/simulation/        Código-fonte
+    |-- data/                  Dados e artefatos experimentais
+    `-- README.md
 ```
 
----
+## Proposta de dissertação
 
-## Dissertação de Mestrado
+Título:
 
-**"Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos"**
-UFAL — Instituto de Computação
+**Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos**
 
-Propõe o AIPE (*Adaptive Inventory Policy Engine*), framework que seleciona automaticamente a política de reposição mais adequada para cada série loja-produto com base no perfil operacional de demanda (taxonomia ADI × CV²).
+Capítulos atuais:
 
-### Capítulos
-
-| # | Título |
+| Capítulo | Título |
 |---|---|
 | 1 | Introdução |
 | 2 | Referencial Teórico |
@@ -47,93 +50,84 @@ Propõe o AIPE (*Adaptive Inventory Policy Engine*), framework que seleciona aut
 | 5 | Resultados Preliminares |
 | 6 | Considerações Finais e Próximas Etapas |
 
-### Compilar
+Compilação:
 
 ```bash
 cd docs/master_proposal
-latexmk tcc.tex        # artefatos e PDF gerados em build/
+latexmk tcc.tex
 ```
 
----
+O PDF final é gerado em:
 
-## Artigo SBPO 2026
+```text
+docs/master_proposal/build/tcc.pdf
+```
 
-**"Otimização Multi-Echelon de Inventário com Demanda Intermitente: Uma Arquitetura Híbrida GA-RL"**
+A configuração de compilação fica em `docs/master_proposal/.latexmkrc` e direciona os artefatos para `build/`.
 
-Avalia 12 políticas sobre dados reais (Fase 1: Paraíba, Fase 2: Bahia).
-Fonte: [`docs/sbpo/main.tex`](docs/sbpo/main.tex)
+## Resultados consolidados na proposta
 
----
+| Fase | Escopo | Leitura principal |
+|---|---|---|
+| Fase 1 | 15 lojas da Paraíba, produto 48130 | GA-DQN apresentou redução de CTI de até 48% em relação a políticas de referência no recorte preliminar. |
+| Fase 2 | 145 séries da Bahia | A seleção por perfil reduziu o CTI médio em 6,2% frente à política única global, mantendo NS acima do limiar mínimo adotado. |
 
-## Pipeline de Simulação (Kedro)
+Os resultados são interpretados como evidência de contextualidade na escolha de políticas, não como dominância universal de uma única política.
+
+## Pipeline de simulação
+
+Instalação:
 
 ```bash
-cd simulation/
+cd simulation
 pip install -e . -r requirements.txt
-
-kedro run                                      # pipeline completo (padrão: PB)
-kedro run --params "data_ingestion.states=['BA']"  # Fase 2 — Bahia
-kedro run --pipeline statistical_validation    # só validação estatística
-kedro viz                                      # DAG visual
 ```
 
-### Pipelines (7)
+Execução:
 
-| Pipeline | Entrada | Saída |
-|---|---|---|
-| `data_ingestion` | Parquet por UF | `scenarios.parquet` |
-| `demand_profiling` | Cenários | Perfis POD (ADI × CV²) |
-| `demand_forecasting` | Cenários | `forecasters.pkl`, métricas |
-| `inventory_simulation` | Cenários + params | `kpis.parquet` |
-| `policy_selection` | KPIs + perfis | Rótulos PSE, features |
-| `statistical_validation` | KPIs | Wilcoxon, Friedman-Nemenyi |
-| `reporting` | KPIs + testes | Figuras PDF, tabelas LaTeX |
+```bash
+kedro run
+kedro run --params "data_ingestion.states=['PB']"
+kedro run --params "data_ingestion.states=['BA']"
+kedro run --pipeline statistical_validation
+kedro run --pipeline reporting
+kedro viz
+```
 
-### Parâmetros configuráveis
+Pipelines principais:
 
-| Arquivo | Controla |
+| Pipeline | Função |
 |---|---|
-| `data_ingestion.yml` | Estados, produtos, período |
-| `data_cleaning.yml` | Filtros, thresholds de outlier |
-| `demand_profiling.yml` | Limiares ADI, CV², burstiness |
-| `forecasting.yml` | Modelos de previsão |
-| `simulation.yml` | Custos, lead time, hiperparâmetros |
-| `policy_selection.yml` | Critério de rótulo, random seed |
-| `reporting.yml` | Formato das figuras e tabelas |
+| `data_ingestion` | Carrega, filtra e prepara séries por estado, produto e loja. |
+| `demand_profiling` | Calcula características operacionais e classifica perfis de demanda. |
+| `demand_forecasting` | Treina modelos auxiliares de previsão. |
+| `inventory_simulation` | Simula políticas de reposição sob um ambiente comum. |
+| `policy_selection` | Gera rótulos de política dominante para o PSE. |
+| `statistical_validation` | Aplica testes estatísticos e tamanhos de efeito. |
+| `reporting` | Gera tabelas LaTeX, figuras e relatórios auxiliares. |
 
----
-
-## 12 Políticas Avaliadas
+## Políticas avaliadas
 
 | Categoria | Políticas |
 |---|---|
-| Clássicas | EOQ, (s,S), Jornaleiro |
+| Clássicas | EOQ, `(s,S)`, Jornaleiro |
 | Meta-heurísticas | GA, SA, PSO, DE |
-| Aprendizado por Reforço | DQN, PPO, SARSA |
-| Híbridas (AIPE) | GA-DQN, GA-PPO |
+| Aprendizado por reforço | DQN, PPO, SARSA |
+| Híbridas | GA-DQN, GA-PPO |
 
-## 5 KPIs
+## Métricas
 
-| KPI | Descrição |
+| Sigla | Descrição |
 |---|---|
-| **TIC** | Custo total de inventário (holding + ruptura + pedido) |
-| **NS** | Nível de serviço — proporção da demanda atendida |
-| **TR** | Taxa de ruptura — ciclos com falta / total |
-| **BE** | Efeito Bullwhip — Var(pedidos) / Var(demanda) |
-| **FP** | Frequência de pedidos — pedidos / ciclos |
+| CTI | Custo Total de Inventário |
+| NS | Nível de Serviço |
+| TR | Taxa de Ruptura |
+| BE | Efeito Bullwhip |
+| FP | Frequência de Pedidos |
 
----
+## Observações
 
-## Requisitos
-
-```
-python >= 3.9
-kedro >= 0.19
-pandas, numpy, scikit-learn, xgboost
-deap, scipy, scikit-posthocs
-matplotlib
-```
-
-```bash
-pip install -r simulation/requirements.txt
-```
+- Os dados transacionais são proprietários e não devem ser versionados.
+- Artefatos de build da dissertação devem permanecer em `docs/master_proposal/build/`.
+- O PDF de entrega principal fica em `docs/master_proposal/build/tcc.pdf`.
+- Use `git status` antes de alterar resultados, tabelas ou artefatos experimentais.

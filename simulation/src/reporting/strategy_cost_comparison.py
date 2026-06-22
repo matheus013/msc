@@ -36,6 +36,7 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -51,6 +52,7 @@ OUT_DIR      = DATA_DIR / "08_reporting" / "strategy"
 
 NS_THRESHOLD     = 0.70
 BASELINE_POLICY  = "EOQ"
+METRIC_COLS      = ["CTI", "NS", "TR", "BE", "FP"]
 
 POLICY_DISPLAY = {
     "sS":         "(s,S)",
@@ -253,6 +255,126 @@ def _strategy_per_series(df: pd.DataFrame, best_global: str,
     piv_cti["CTI_C"] = piv_cti.apply(oracle_row, axis=1)
 
     return piv_cti
+
+
+def _holm_adjust(p_values: pd.Series) -> pd.Series:
+    """Holm step-down adjusted p-values, kept monotonic in original order."""
+    p = p_values.astype(float).to_numpy()
+    order = np.argsort(p)
+    adjusted = np.empty_like(p)
+    running_max = 0.0
+    m = len(p)
+    for rank, idx in enumerate(order):
+        adj = min((m - rank) * p[idx], 1.0)
+        running_max = max(running_max, adj)
+        adjusted[idx] = running_max
+    return pd.Series(adjusted, index=p_values.index)
+
+
+def _paired_strategy_observations(
+    df: pd.DataFrame,
+    best_global: str,
+    dominant: pd.DataFrame,
+) -> pd.DataFrame:
+    """One row per series with A1, A2 and profile-selection KPIs."""
+    series_key = ["warehouse", "store_id", "item_id", "operational_profile"]
+    base = df[series_key].drop_duplicates().reset_index(drop=True)
+    dom_map = dict(zip(dominant.operational_profile, dominant.dominant_policy))
+
+    for metric in METRIC_COLS:
+        if metric not in df.columns:
+            continue
+        piv = df.pivot_table(
+            index=series_key,
+            columns="policy",
+            values=metric,
+        ).reset_index()
+        piv[f"{metric}_A1"] = piv[best_global]
+        piv[f"{metric}_A2"] = piv[BASELINE_POLICY]
+        piv[f"{metric}_B"] = piv.apply(
+            lambda r: r.get(dom_map.get(r["operational_profile"], best_global), r[best_global]),
+            axis=1,
+        )
+        keep_cols = series_key + [f"{metric}_A1", f"{metric}_A2", f"{metric}_B"]
+        base = base.merge(piv[keep_cols], on=series_key, how="left")
+
+    return base
+
+
+def _strategy_hypothesis_tests(paired_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Paired tests between single-policy strategies and profile selection.
+
+    Primary hypothesis for CTI:
+      H0: median(CTI_B - CTI_A) = 0
+      H1: median(CTI_B - CTI_A) < 0
+
+    Other KPIs use two-sided Wilcoxon tests to document trade-offs.
+    """
+    rows = []
+    comparisons = [
+        ("A1_vs_B", "A1", "B", "Global single policy vs profile selection"),
+        ("A2_vs_B", "A2", "B", "EOQ baseline vs profile selection"),
+    ]
+
+    for comparison_id, ref_suffix, profile_suffix, description in comparisons:
+        for metric in METRIC_COLS:
+            ref_col = f"{metric}_{ref_suffix}"
+            prof_col = f"{metric}_{profile_suffix}"
+            if ref_col not in paired_df.columns or prof_col not in paired_df.columns:
+                continue
+
+            paired = paired_df[[ref_col, prof_col]].dropna()
+            if len(paired) < 5:
+                continue
+
+            ref = paired[ref_col].astype(float).to_numpy()
+            prof = paired[prof_col].astype(float).to_numpy()
+            diff = prof - ref
+            alternative = "less" if metric == "CTI" else "two-sided"
+
+            if np.all(np.abs(diff) <= 1e-12):
+                stat, p_value = 0.0, 1.0
+            else:
+                stat, p_value = stats.wilcoxon(
+                    prof,
+                    ref,
+                    alternative=alternative,
+                    zero_method="wilcox",
+                )
+
+            mean_ref = float(np.mean(ref))
+            mean_profile = float(np.mean(prof))
+            mean_delta = mean_profile - mean_ref
+            median_delta = float(np.median(diff))
+            sd_delta = float(np.std(diff, ddof=1)) if len(diff) > 1 else np.nan
+            dz = mean_delta / sd_delta if sd_delta and not np.isnan(sd_delta) else np.nan
+            rel_change = 100.0 * mean_delta / (abs(mean_ref) + 1e-12)
+
+            rows.append({
+                "comparison": comparison_id,
+                "description": description,
+                "reference_strategy": ref_suffix,
+                "profile_strategy": profile_suffix,
+                "metric": metric,
+                "alternative": alternative,
+                "n_pairs": int(len(paired)),
+                "mean_reference": mean_ref,
+                "mean_profile": mean_profile,
+                "mean_delta_profile_minus_reference": mean_delta,
+                "median_delta_profile_minus_reference": median_delta,
+                "relative_change_pct": rel_change,
+                "wilcoxon_statistic": float(stat),
+                "p_value": float(p_value),
+                "cohens_dz": float(dz) if not np.isnan(dz) else np.nan,
+            })
+
+    tests = pd.DataFrame(rows)
+    if not tests.empty:
+        tests["p_value_holm"] = _holm_adjust(tests["p_value"])
+        tests["significant_0_05"] = tests["p_value"] < 0.05
+        tests["significant_holm_0_05"] = tests["p_value_holm"] < 0.05
+    return tests
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -540,6 +662,92 @@ def _latex_table(strategy: pd.DataFrame, best_global: str,
     log.info(f"Tabela LaTeX: {out_path}")
 
 
+def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
+    def _fmt_num(v, decimals=2):
+        if v is None or (isinstance(v, float) and np.isnan(v)):
+            return r"\textemdash{}"
+        return f"{v:.{decimals}f}"
+
+    def _fmt_p(v):
+        if v is None or (isinstance(v, float) and np.isnan(v)):
+            return r"\textemdash{}"
+        if v < 0.001:
+            return r"$<0.001$"
+        return f"{v:.3f}"
+
+    if tests.empty:
+        lines = [
+            r"\begin{table}[htb]",
+            r"\centering",
+            r"\caption{Teste pareado entre politica unica e selecao por perfil.}",
+            r"\label{tab:strategy_hypothesis_tests}",
+            r"\begin{tabular}{@{}lrrrr@{}}",
+            r"\toprule",
+            r"Comparacao & n & $\Delta$ medio & $p$ & $p_{\mathrm{Holm}}$ \\",
+            r"\midrule",
+            r"\multicolumn{5}{c}{Sem pares suficientes para teste.} \\",
+            r"\bottomrule",
+            r"\end{tabular}",
+            r"\end{table}",
+        ]
+        out_path.write_text("\n".join(lines), encoding="utf-8")
+        return
+
+    metric_order = {metric: i for i, metric in enumerate(METRIC_COLS)}
+    selected = tests.copy()
+    selected["metric_order"] = selected["metric"].map(metric_order)
+    selected = selected.sort_values(["comparison", "metric_order"])
+
+    comparison_label = {
+        "A1_vs_B": "A1 vs B",
+        "A2_vs_B": "A2 vs B",
+    }
+    metric_label = {
+        "CTI": "CTI",
+        "NS": "NS",
+        "TR": "TR",
+        "BE": "BE",
+        "FP": "FP",
+    }
+
+    lines = [
+        r"\begin{table}[htb]",
+        r"\centering",
+        r"\small",
+        r"\caption{Teste de hipotese pareado entre politica unica e selecao por perfil"
+        r" (Wilcoxon signed-rank, Fase~2). Para CTI, a hipotese alternativa e"
+        r" $\mathrm{CTI}_{B}<\mathrm{CTI}_{A}$; para os demais KPIs, o teste e bilateral.}",
+        r"\label{tab:strategy_hypothesis_tests}",
+        r"\begin{tabular}{@{}llrrrrr@{}}",
+        r"\toprule",
+        r"Comparacao & KPI & n & Media A & Media B & $\Delta$ B-A & $p_{\mathrm{Holm}}$ \\",
+        r"\midrule",
+    ]
+
+    for _, row in selected.iterrows():
+        comp = comparison_label.get(row["comparison"], row["comparison"])
+        metric = metric_label.get(row["metric"], row["metric"])
+        delta = row["mean_delta_profile_minus_reference"]
+        p_holm = row.get("p_value_holm", np.nan)
+        sig = r"$^{*}$" if row.get("significant_holm_0_05", False) else ""
+        lines.append(
+            f"{comp} & {metric} & {int(row['n_pairs'])} & "
+            f"{_fmt_num(row['mean_reference'], 3)} & "
+            f"{_fmt_num(row['mean_profile'], 3)} & "
+            f"{_fmt_num(delta, 3)} & {_fmt_p(p_holm)}{sig} \\\\"
+        )
+
+    lines += [
+        r"\bottomrule",
+        r"\multicolumn{7}{l}{\scriptsize $^{*}$ significativo apos correcao de Holm, $\alpha=0{,}05$.} \\",
+        r"\end{tabular}",
+        r"\end{table}",
+    ]
+
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    log.info(f"Tabela LaTeX de testes pareados: {out_path}")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Entrada principal
 # ─────────────────────────────────────────────────────────────────────────────
@@ -569,10 +777,16 @@ def run() -> None:
 
     # 4. CTI por estratégia, por série
     series_df = _strategy_per_series(df, best_global, dominant)
+    paired_df = _paired_strategy_observations(df, best_global, dominant)
+    paired_df.to_csv(OUT_DIR / "strategy_paired_observations.csv", index=False)
+    log.info(f"Observacoes pareadas: {OUT_DIR / 'strategy_paired_observations.csv'}")
 
     # 5. Tabela de comparação de estratégias
     strategy = _strategy_table(series_df, global_agg, best_global, dominant)
     strategy.to_csv(OUT_DIR / "strategy_cost_comparison.csv", index=False)
+    hypothesis_tests = _strategy_hypothesis_tests(paired_df)
+    hypothesis_tests.to_csv(OUT_DIR / "strategy_hypothesis_tests.csv", index=False)
+    log.info(f"Testes pareados: {OUT_DIR / 'strategy_hypothesis_tests.csv'}")
     log.info(f"Comparação de estratégias: {OUT_DIR / 'strategy_cost_comparison.csv'}")
 
     # 6. Relatório de validação
@@ -581,6 +795,7 @@ def run() -> None:
 
     # 7. Tabela LaTeX
     _latex_table(strategy, best_global, dominant, OUT_DIR / "table_strategy_comparison.tex")
+    _latex_hypothesis_table(hypothesis_tests, OUT_DIR / "table_strategy_hypothesis_tests.tex")
 
     # Sumário no console
     log.info("=" * 60)
