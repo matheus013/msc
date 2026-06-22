@@ -124,7 +124,7 @@ PPO$^\dagger$        & 3.871.75        & \textbf{0.98} & \textbf{0.02} & 237.42 
 
 Dois padrões de degeneração emergem na Fase~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes superior ao Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
 
-\paragraph{Grupo de custo mínimo.} O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política viável de menor custo, ao preço de taxa de ruptura de 29\%. Este agrupamento é adequado para séries de baixíssimo volume em que o custo de ruptura é inferior ao custo de manutenção de estoque.
+\paragraph{Grupo de custo mínimo bruto.} O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
 
 \paragraph{Grupo de alto nível de serviço (NS $\geq 0.86$).} EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor equilíbrio custo-serviço neste conjunto de séries. SA (NS\,=\,$0.86$, CTI\,=\,R\$\,635) destaca-se como alternativa compacta com bom equilíbrio entre custo e cobertura.
 
