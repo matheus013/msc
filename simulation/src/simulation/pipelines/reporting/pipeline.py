@@ -5,6 +5,9 @@ from simulation.pipelines.reporting.nodes import (
     generate_map_plots,
     generate_latex_tables,
     generate_dissertation_report,
+    generate_profile_policy_analysis,
+    generate_strategy_cost_comparison,
+    generate_cti_adjusted_analysis,
 )
 
 
@@ -52,5 +55,23 @@ def create_pipeline(**kwargs) -> Pipeline:
             ],
             outputs="dissertation_report",
             name="generate_dissertation_report",
+        ),
+        node(
+            func=generate_profile_policy_analysis,
+            inputs=["kpis", "demand_profiles", "params:reporting"],
+            outputs=None,
+            name="generate_profile_policy_analysis",
+        ),
+        node(
+            func=generate_strategy_cost_comparison,
+            inputs=["kpis", "demand_profiles", "params:reporting"],
+            outputs=None,
+            name="generate_strategy_cost_comparison",
+        ),
+        node(
+            func=generate_cti_adjusted_analysis,
+            inputs=["kpis", "demand_profiles", "params:reporting"],
+            outputs=None,
+            name="generate_cti_adjusted_analysis",
         ),
     ])
