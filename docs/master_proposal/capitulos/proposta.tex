@@ -99,6 +99,12 @@ As métricas já foram definidas conceitualmente no Capítulo~\ref{cap:tec}; aqu
 
 Esses cinco indicadores formam a base comparativa das políticas candidatas. Na Fase~2, eles são complementados por métricas de previsão (MASE, sMAPE, RMSSE) usadas como sinais auxiliares para o PSE. Assim, a metodologia não escolhe o melhor modelo de previsão como fim em si mesmo; ela avalia se esses sinais aumentam a capacidade de selecionar políticas de reposição de forma contextual.
 
+Além do CTI original, usado como custo direto de inventário, esta dissertação reporta uma métrica complementar de custo operacional ajustado por estabilidade. Essa métrica combina o CTI normalizado e uma penalidade baseada no BE normalizado, permitindo avaliar se políticas de menor custo direto também preservam estabilidade nos pedidos enviados ao armazém:
+\begin{equation}
+J(\pi, g) = \mathrm{CTI}_{\text{norm}}(\pi, g) + \lambda_{BE} \cdot \mathrm{BE}_{\text{norm}}(\pi, g)
+\end{equation}
+em que $\pi$ é a política, $g$ é o perfil operacional (ou o conjunto global, no caso da política única), $\mathrm{CTI}_{\text{norm}}$ e $\mathrm{BE}_{\text{norm}}$ são o CTI e o BE normalizados por min-max sobre o conjunto de políticas avaliadas, e $\lambda_{BE} \geq 0$ é o peso da penalidade por instabilidade: $\lambda_{BE}=0$ recupera o custo puro (equivalente a ordenar apenas por CTI); valores de $\lambda_{BE} > 0$ aumentam a penalização de políticas com efeito \textit{bullwhip} elevado. O CTI ajustado não substitui o CTI original; ele é reportado como análise complementar de sensibilidade (Seção~\ref{sec:custo_politica_unica_vs_perfil}), de caráter preliminar, para apoiar a discussão sobre seleção contextual de políticas considerando custo e estabilidade conjuntamente.
+
 \section{Camada de Entrada: Dados e Pré-Processamento}
 
 Esta seção descreve o conjunto de dados transacional utilizado nos experimentos e os estágios de pré-processamento que transformam os registros brutos em séries prontas para simulação. A descrição também explicita as escolhas de filtragem que delimitam o escopo empírico das Fases~1 e~2.
