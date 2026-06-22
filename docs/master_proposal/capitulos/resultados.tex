@@ -167,7 +167,7 @@ O segmento Platina (maior ticket e regularidade) apresenta diferença relativa d
 
 A análise agregada da Tabela~\ref{tab:kpis_fase2} condensa 145 séries em uma única linha por política, obscurecendo diferenças de comportamento entre grupos de séries com padrões de demanda distintos. Para expor essa heterogeneidade, as séries foram segmentadas nos Perfis Operacionais de Demanda (POD) definidos na Tabela~\ref{tab:pod} (Seção~\ref{sec:carac_series}): \textit{Sparse High Impact}, \textit{Unstable Trend} e \textit{High Vol.~Seasonal}. Os perfis \textit{Low Vol.~Stable} e \textit{Fast Moving} não têm representação no conjunto da Bahia (Fase~2, regime \textit{Lumpy}).
 
-A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a política dominante segundo a regra de menor CTI médio entre as políticas com NS médio $\geq 0{,}70$. Os três perfis exibem padrões de dominância distintos, confirmando que a seleção ótima é contextual.
+A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a política dominante segundo a regra de menor CTI médio entre as políticas com NS médio $\geq 0{,}70$. Os perfis exibem diferenças relevantes de dominância, indicando que a seleção da política depende do perfil operacional.
 
 \input{../../simulation/data/08_reporting/profiles/table_dominancia_por_perfil}
 
@@ -178,7 +178,7 @@ A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio po
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/profiles/profile_policy_heatmap_cti}
-\caption{CTI médio por política e Perfil Operacional de Demanda (Fase~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, fundamento empírico do \textit{Adaptive Inventory Policy Engine}.}
+\caption{CTI médio por política e Perfil Operacional de Demanda (Fase~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, evidência empírica para a formulação do \textit{Adaptive Inventory Policy Engine}.}
 \label{fig:heatmap_cti_pod}
 \end{figure}
 
