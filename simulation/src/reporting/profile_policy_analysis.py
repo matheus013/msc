@@ -66,7 +66,7 @@ PROFILE_DISPLAY = {
     "Fast_Moving":        "Fast Moving",
 }
 
-DEGENERATE_POLICIES = {"DQN", "PPO"}  # marcadas como degeneradas na Fase 2
+DEGENERATE_POLICIES = {"DQN", "PPO"}  # marcadas como degeneradas no Experimento 2
 
 plt.rcParams.update({
     "figure.facecolor": "white",
@@ -270,7 +270,7 @@ def _validation_report(kpis: pd.DataFrame, merged: pd.DataFrame,
         f"- Resultados agregados sobre replicações na geração de kpis.parquet",
         f"",
         f"## Cobertura",
-        f"- Séries (loja, produto): **{n_series}** (Fase 2, BA)",
+        f"- Séries (loja, produto): **{n_series}** (Experimento 2, BA)",
         f"- Políticas avaliadas: **{n_policies}**",
         f"- Perfis operacionais presentes: **{len(profiles)}** de 5 definidos",
         f"",
@@ -303,10 +303,10 @@ def _validation_report(kpis: pd.DataFrame, merged: pd.DataFrame,
     lines += [
         f"",
         f"## Limitações",
-        f"- Análise concentrada no regime *Lumpy* (Fases 1 e 2).",
-        f"- Perfis `Low_Vol_Stable` e `Fast_Moving` não têm séries na Fase 2.",
+        f"- Análise concentrada no regime *Lumpy* (Experimentos 1 e 2).",
+        f"- Perfis `Low_Vol_Stable` e `Fast_Moving` não têm séries no Experimento 2.",
         f"- Perfis com poucas séries (n < 20) devem ser interpretados de forma exploratória.",
-        f"- Generalização para outros regimes é objetivo da Fase 3.",
+        f"- Generalização para outros regimes é objetivo do Experimento 3.",
     ]
 
     out_path.write_text("\n".join(lines), encoding="utf-8")
@@ -322,7 +322,7 @@ def _latex_dominance_table(dominant: pd.DataFrame, out_path: Path) -> None:
         r"\begin{table}[htb]",
         r"\centering",
         r"\small",
-        r"\caption{Política dominante por Perfil Operacional de Demanda (Fase~2, BA,"
+        r"\caption{Política dominante por Perfil Operacional de Demanda (Experimento~2, BA,"
         r" regime \textit{Lumpy}). Para cada perfil, são reportados o número de séries,"
         r" a política dominante (menor CTI médio entre políticas com NS médio"
         r" $\geq 0{,}70$), o CTI médio e o NS médio da política dominante."

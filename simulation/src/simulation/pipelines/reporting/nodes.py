@@ -477,7 +477,7 @@ def _latex_global_table(kpis: pd.DataFrame, cfg: dict) -> str:
     lines = [
         "\\begin{table}[htb]",
         "\\centering",
-        "\\caption{Resultados medios das politicas de inventario (todas as lojas)}",
+        "\\caption{Resultados médios das políticas de inventário (todas as lojas)}",
         "\\label{tab:kpis_global}",
         f"\\begin{{tabular}}{{{col_spec}}}",
         rule_top,

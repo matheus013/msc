@@ -371,13 +371,13 @@ rótulos PSE & \nolinkurl{results/policy_labels/} & & política dominante por s�
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
-% TABELA A.6: Resultados agregados da Fase 1 (Paraíba)
+% TABELA A.6: Resultados agregados do Experimento 1 (Paraíba)
 % ─────────────────────────────────────────────────────────────────────────────
 
-\section{Resultados Agregados da Fase 1}
+\section{Resultados Agregados do Experimento 1}
 \label{app:fase1_resultados}
 
-Esta seção registra a tabela completa de indicadores agregados da Fase~1 (15 lojas da Paraíba, produto~48130, regime \textit{Lumpy}), citada na Seção~\ref{sec:custo_politica_unica_vs_perfil} apenas em forma resumida para evitar duplicação com a comparação agregada da Fase~2 (Tabela~\ref{tab:kpis_fase2}).
+Esta seção registra a tabela completa de indicadores agregados do Experimento~1 (15 lojas da Paraíba, produto~48130, regime \textit{Lumpy}), citada na Seção~\ref{sec:custo_politica_unica_vs_perfil} apenas em forma resumida para evitar duplicação com a comparação agregada do Experimento~2 (Tabela~\ref{tab:kpis_fase2}).
 
 \noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
 
@@ -413,4 +413,4 @@ $(s,S)$                      & 35.589 & 0.843 & 0.050 & 119.4 & 0.15 \\
 
 Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável.
 
-\noindent A redução de ``até 48\%'' citada no resumo deste trabalho origina-se exatamente desta comparação, calculada diretamente da Tabela~\ref{tab:global_prelim}: CTI médio GA-DQN (R\$\,18.502) versus $(s,S)$ (R\$\,35.589), $(35.589-18.502)/35.589 \approx 48\%$, sobre as 15 lojas da Fase~1, produto~48130 (Paraíba). O valor representa o ganho máximo observado neste experimento, não uma redução média universal: na Fase~2 (145 séries, BA) o GA-DQN não domina o EOQ em CTI, e o Jornaleiro apresenta menor custo bruto, mas não atinge o nível de serviço mínimo de $0{,}70$ (Seção~\ref{sec:custo_politica_unica_vs_perfil}).
+\noindent A redução de ``até 48\%'' citada no resumo deste trabalho origina-se exatamente desta comparação, calculada diretamente da Tabela~\ref{tab:global_prelim}: CTI médio GA-DQN (R\$\,18.502) versus $(s,S)$ (R\$\,35.589), $(35.589-18.502)/35.589 \approx 48\%$, sobre as 15 lojas do Experimento~1, produto~48130 (Paraíba). O valor representa o ganho máximo observado neste experimento, não uma redução média universal: no Experimento~2 (145 séries, BA) o GA-DQN não domina o EOQ em CTI, e o Jornaleiro apresenta menor custo bruto, mas não atinge o nível de serviço mínimo de $0{,}70$ (Seção~\ref{sec:custo_politica_unica_vs_perfil}).

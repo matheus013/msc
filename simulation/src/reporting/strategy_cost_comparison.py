@@ -522,7 +522,7 @@ def _validation_report(df_raw: pd.DataFrame, global_agg: pd.DataFrame,
         "- KPIs: `data/07_model_output/kpis.parquet`",
         "- Perfis: `data/04_feature/demand_profiles.parquet`",
         "\n## Cobertura",
-        f"- Séries (loja, produto): **{df_raw[['warehouse','store_id','item_id']].drop_duplicates().shape[0]}** (Fase 2, BA)",
+        f"- Séries (loja, produto): **{df_raw[['warehouse','store_id','item_id']].drop_duplicates().shape[0]}** (Experimento 2, BA)",
         f"- Políticas avaliadas: **{df_raw.policy.nunique()}**",
         f"- Perfis operacionais: **{df_raw.operational_profile.nunique()}** de 5 definidos",
         "\n## Checagem 1 — Quantidade de séries",
@@ -585,10 +585,10 @@ def _validation_report(df_raw: pd.DataFrame, global_agg: pd.DataFrame,
         lines.append("  EOQ CTI médio (Tabela 5.2 final):    628,42")
 
     lines.append("\n## Limitações")
-    lines.append("- Perfis Low_Vol_Stable e Fast_Moving ausentes na Fase 2 (regime Lumpy, BA).")
+    lines.append("- Perfis Low_Vol_Stable e Fast_Moving ausentes no Experimento 2 (regime Lumpy, BA).")
     lines.append("- Perfis com n < 20 séries: evidência exploratória.")
     lines.append("- Oráculo por série (C) é limite superior exploratório, não estratégia operacional.")
-    lines.append("- Generalização para regimes não-Lumpy: objetivo da Fase 3.")
+    lines.append("- Generalização para regimes não-Lumpy: objetivo do Experimento 3.")
 
     out_path.write_text("\n".join(lines), encoding="utf-8")
     log.info(f"Relatório de validação: {out_path}")
@@ -617,7 +617,7 @@ def _latex_table(strategy: pd.DataFrame, best_global: str,
         r"\small",
         r"\setlength{\tabcolsep}{4pt}",
         r"\caption{Comparação de custo entre estratégias de seleção de política"
-        r" (Fase~2, BA, 145 séries, regime \textit{Lumpy}). Redução calculada como"
+        r" (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). Redução calculada como"
         r" $100 \times (\mathrm{CTI}_{\text{ref}} - \mathrm{CTI}_{\text{estratégia}}) /"
         r" \mathrm{CTI}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência"
         r" exploratória: assume conhecimento perfeito da política ótima de cada série.}",
@@ -679,11 +679,11 @@ def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
         lines = [
             r"\begin{table}[htb]",
             r"\centering",
-            r"\caption{Teste pareado entre politica unica e selecao por perfil.}",
+            r"\caption{Teste pareado entre política única e seleção por perfil.}",
             r"\label{tab:strategy_hypothesis_tests}",
             r"\begin{tabular}{@{}lrrrr@{}}",
             r"\toprule",
-            r"Comparacao & n & $\Delta$ medio & $p$ & $p_{\mathrm{Holm}}$ \\",
+            r"Comparação & n & $\Delta$ médio & $p$ & $p_{\mathrm{Holm}}$ \\",
             r"\midrule",
             r"\multicolumn{5}{c}{Sem pares suficientes para teste.} \\",
             r"\bottomrule",
@@ -714,13 +714,13 @@ def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
         r"\begin{table}[htb]",
         r"\centering",
         r"\small",
-        r"\caption{Teste de hipotese pareado entre politica unica e selecao por perfil"
-        r" (Wilcoxon signed-rank, Fase~2). Para CTI, a hipotese alternativa e"
-        r" $\mathrm{CTI}_{B}<\mathrm{CTI}_{A}$; para os demais KPIs, o teste e bilateral.}",
+        r"\caption{Teste de hipótese pareado entre política única e seleção por perfil"
+        r" (Wilcoxon signed-rank, Experimento~2). Para CTI, a hipótese alternativa é"
+        r" $\mathrm{CTI}_{B}<\mathrm{CTI}_{A}$; para os demais KPIs, o teste é bilateral.}",
         r"\label{tab:strategy_hypothesis_tests}",
         r"\begin{tabular}{@{}llrrrrr@{}}",
         r"\toprule",
-        r"Comparacao & KPI & n & Media A & Media B & $\Delta$ B-A & $p_{\mathrm{Holm}}$ \\",
+        r"Comparação & KPI & n & Média A & Média B & $\Delta$ B-A & $p_{\mathrm{Holm}}$ \\",
         r"\midrule",
     ]
 
@@ -739,7 +739,7 @@ def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
 
     lines += [
         r"\bottomrule",
-        r"\multicolumn{7}{l}{\scriptsize $^{*}$ significativo apos correcao de Holm, $\alpha=0{,}05$.} \\",
+        r"\multicolumn{7}{l}{\scriptsize $^{*}$ significativo após correção de Holm, $\alpha=0{,}05$.} \\",
         r"\end{tabular}",
         r"\end{table}",
     ]

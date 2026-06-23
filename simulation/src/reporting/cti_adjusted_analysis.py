@@ -506,7 +506,7 @@ def _latex_strategy_table(strat_df: pd.DataFrame, out_path: Path,
         r"\small",
         r"\setlength{\tabcolsep}{3pt}",
         r"\caption{Comparação de custo entre estratégias de seleção de política com"
-        r" CTI ajustado por estabilidade operacional (Fase~2, BA, 145 séries,"
+        r" CTI ajustado por estabilidade operacional (Experimento~2, BA, 145 séries,"
         r" regime \textit{Lumpy}). CTI~Adj. $= \mathrm{CTI_{norm}} + \lambda_{BE}"
         r" \cdot \mathrm{BE_{norm}}$, normalizado por escopo global."
         r" Redução\% calculada contra estratégia~A (política única, CTI puro)."
@@ -566,7 +566,7 @@ def _latex_dominant_table(dominant_table: pd.DataFrame, out_path: Path) -> None:
         r"\small",
         r"\setlength{\tabcolsep}{3pt}",
         r"\caption{Política dominante por Perfil Operacional de Demanda para diferentes"
-        r" pesos de penalidade por BE (Fase~2, BA). ``CTI puro'': menor CTI médio viável"
+        r" pesos de penalidade por BE (Experimento~2, BA). ``CTI puro'': menor CTI médio viável"
         r" no perfil. ``CTI ajustado'': menor"
         r" $\mathrm{CTI_{norm}} + \lambda_{BE} \cdot \mathrm{BE_{norm}}$ viável no perfil,"
         r" normalizado dentro de cada perfil."
@@ -651,7 +651,7 @@ def _validation_report(df: pd.DataFrame, global_agg: pd.DataFrame,
     lines.append("- kpis.parquet é rodada anterior; valores serão atualizados após re-simulação.")
     lines.append("- Perfis com n < 20: evidência exploratória.")
     lines.append("- Oráculo por série: limite exploratório, não estratégia operacional.")
-    lines.append("- Análise concentrada no regime Lumpy da Fase 2.")
+    lines.append("- Análise concentrada no regime Lumpy do Experimento 2.")
     out_path.write_text("\n".join(lines), encoding="utf-8")
     log.info(f"Relatório de validação: {out_path}")
 
