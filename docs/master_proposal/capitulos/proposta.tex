@@ -44,38 +44,27 @@ tal que $\hat{\pi}^*(i) \approx \arg\min_{\pi \in \Pi} \mathbb{E}[\mathrm{CTI}(\
 \end{defi}
 
 \subsection{Instanciação do Ambiente de Inventário}
+\label{sec:instanciacao_ambiente}
 
-O ambiente experimental especializa o modelo do Capítulo~\ref{cap:tec} para uma rede com $N$ lojas varejistas atendidas por um armazém central. O horizonte de planejamento é discretizado em ciclos comerciais $t \in \{1, \ldots, T\}$, cada um com aproximadamente 21 dias corridos. As variáveis e parâmetros usados na simulação são:
+A formulação conceitual do problema de reposição, incluindo a função objetivo e a dinâmica de estoque, foi apresentada na Seção~\ref{sec:funcao_objetivo}. Nesta seção, descreve-se como essa formulação é instanciada no ambiente experimental usado nos experimentos: o ambiente especializa o modelo para uma rede varejista com $N$ lojas atendidas por um armazém central, horizonte discreto de $T$ ciclos comerciais (cada um com aproximadamente 21 dias corridos) e séries loja-produto avaliadas individualmente.
+
+Para cada série, o ambiente recebe a demanda observada por ciclo, o estoque inicial, o prazo de entrega, os parâmetros de custo e a política a ser testada. A cada ciclo, a política decide se emite um pedido e em qual quantidade; em seguida, o ambiente atualiza o estoque, registra demanda atendida e não atendida, incorpora pedidos recebidos após o prazo de entrega e acumula os custos operacionais. Ao final da simulação, são calculados os indicadores CTI, NS, TR, BE e FP, usados no \textit{benchmark} das políticas e na geração dos rótulos de política dominante.
+
+As variáveis desta instanciação, indexadas por loja $i$, são:
 
 \begin{itemize}
   \item $D_{t,i} \geq 0$: demanda observada na loja $i$ no ciclo $t$;
   \item $I_{t,i}$: nível de estoque da loja $i$ no início de $t$;
   \item $Q_{t,i} \geq 0$: quantidade pedida em $t$, recebida após prazo $L$ ciclos;
   \item $S_{t,i} = \max(0, D_{t,i} - I_{t,i})$: ruptura no ciclo $t$;
-  \item $h$, $c_s$, $c_o^{\text{fix}}$, $c_o^{\text{var}}$: custos unitários de manutenção, ruptura, ordenação fixa e variável.
+  \item $h$, $c_s$, $c_o^{\text{fix}}$, $c_o^{\text{var}}$: custos unitários de manutenção, ruptura, ordenação fixa e variável, definidos na Seção~\ref{sec:funcao_objetivo}.
 \end{itemize}
 
-O custo acumulado usado no \textit{benchmark} corresponde à versão operacional, indexada por loja, da Equação~\ref{eq:obj_inv_control}. Para cada política candidata, calcula-se:
+O CTI usado no \textit{benchmark} corresponde à versão indexada por loja da função de custo definida na Seção~\ref{sec:funcao_objetivo}: o cálculo é repetido para cada série loja-produto e depois agregado por política, permitindo comparar alternativas sob o mesmo ambiente de avaliação.
 
-\begin{equation}
-  \min_\pi \sum_{t=1}^{T} \bigl[
-    h\, I_{t,i} + c_s\, S_{t,i}
-    + c_o^{\text{fix}}\,\mathbf{1}(Q_{t,i}>0)
-    + c_o^{\text{var}}\, Q_{t,i}
-  \bigr],
-  \label{eq:obj_meio}
-\end{equation}
+A atualização do estoque segue a dinâmica conceitual apresentada na Seção~\ref{sec:funcao_objetivo}, com indexação adicional por loja e série: o operador $\max(0,\cdot)$ preserva o pressuposto de venda perdida, isto é, a demanda que excede o estoque disponível não é acumulada para ciclos futuros, e $Q_{t-L,i}$ representa pedidos emitidos $L$ ciclos antes e recebidos no ciclo corrente.
 
-Na Equação~\ref{eq:obj_meio}, a função indicadora $\mathbf{1}(Q_{t,i}>0)$ assume valor 1 quando há emissão de pedido no ciclo $t$ e 0 caso contrário. O cálculo é repetido para cada série loja-produto e depois agregado por política, permitindo comparar alternativas sob o mesmo ambiente de avaliação.
-
-A dinâmica simulada é a versão indexada por loja da Equação~\ref{eq:balance}:
-
-\begin{equation}
-  I_{t+1,i} = \max\bigl(0,\; I_{t,i} - D_{t,i}\bigr) + Q_{t-L,i}, \quad \forall\, t,\; \forall\, i.
-  \label{eq:balance_meio}
-\end{equation}
-
-Na Equação~\ref{eq:balance_meio}, o operador $\max(0,\cdot)$ representa o pressuposto de venda perdida: a demanda que excede o estoque disponível não é acumulada para ciclos futuros. O termo $Q_{t-L,i}$ representa pedidos emitidos $L$ ciclos antes e recebidos no ciclo corrente.
+Essa instanciação permite avaliar todas as políticas sob as mesmas condições de demanda, custo e prazo de reposição. A próxima seção descreve a estrutura da rede varejista considerada nos experimentos.
 
 \subsection{Rede Varejista}
 
@@ -329,7 +318,7 @@ A função objetivo é definida antes da aplicação dos algoritmos de busca. Pa
   \label{eq:obj_metaheuristicas}
 \end{equation}
 
-\noindent em que $\Theta_i$ é o espaço viável de parâmetros da série $i$, $\pi_{\boldsymbol{\theta}}$ é a política induzida pelo par $(s,Q)$, CTI é calculado pela Equação~\ref{eq:obj_meio} e $\alpha_{\min}=0{,}70$ é o nível mínimo de serviço adotado na seleção contextual. Quando o algoritmo requer uma função escalar de aptidão, a restrição de serviço é implementada por penalização de candidatos inviáveis ou por descarte no momento de geração do rótulo. Assim, GA, SA, PSO e DE diferem no mecanismo de busca, mas compartilham a mesma representação, o mesmo ambiente de avaliação e os mesmos critérios de viabilidade operacional.
+\noindent em que $\Theta_i$ é o espaço viável de parâmetros da série $i$, $\pi_{\boldsymbol{\theta}}$ é a política induzida pelo par $(s,Q)$, CTI é calculado pela função de custo definida na Seção~\ref{sec:funcao_objetivo} e $\alpha_{\min}=0{,}70$ é o nível mínimo de serviço adotado na seleção contextual. Quando o algoritmo requer uma função escalar de aptidão, a restrição de serviço é implementada por penalização de candidatos inviáveis ou por descarte no momento de geração do rótulo. Assim, GA, SA, PSO e DE diferem no mecanismo de busca, mas compartilham a mesma representação, o mesmo ambiente de avaliação e os mesmos critérios de viabilidade operacional.
 
 \textit{GA.} O Algoritmo Genético mantém uma população de parametrizações candidatas. Cada indivíduo codifica o par $(s,Q)$; a seleção por torneio ($k=3$) escolhe pais, o cruzamento ($p_c=0.9$) combina seus parâmetros e a mutação gaussiana perturba os valores dentro dos limites viáveis. Cada indivíduo é avaliado por simulação no \textit{InventoryEnv}, usando a função objetivo da Equação~\ref{eq:obj_metaheuristicas}. A configuração usada possui 100 indivíduos e 50 gerações. A representação visual do cromossomo foi deslocada para o Apêndice~\ref{ap:representacoes_politicas}.
 
@@ -372,7 +361,7 @@ O ambiente \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas 
 
 \begin{itemize}
   \item Entrada formada por série de demanda, custos operacionais, prazo de entrega, estoque inicial e política candidata;
-  \item Dinâmica de estoque conforme Equação~\ref{eq:balance_meio};
+  \item Dinâmica de estoque conforme Seção~\ref{sec:funcao_objetivo};
   \item Prazo de entrega fixo $L=2$ ciclos nos dois experimentos executados;
   \item Execução ciclo a ciclo, com recebimento de pedidos em trânsito, realização da demanda, cálculo de ruptura, emissão de novo pedido e atualização do estoque;
   \item API compatível com Gymnasium (\texttt{reset}, \texttt{step}), permitindo que qualquer agente SB3 treine no mesmo ambiente;
