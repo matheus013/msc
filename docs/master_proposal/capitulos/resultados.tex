@@ -2,19 +2,19 @@
 
 \noindent Este capítulo não busca identificar uma política universalmente superior. O objetivo é verificar se diferentes políticas apresentam desempenhos distintos em diferentes perfis de série, sustentando a necessidade de seleção contextual. Os resultados são organizados em três níveis: (i)~caracterização da amostra; (ii)~comparação de políticas por KPIs operacionais; (iii)~validação estatística da heterogeneidade observada.
 
-Este capítulo apresenta os resultados das duas fases do estudo. A Fase~1 constitui a evidência empírica inicial que sustenta a hipótese central; a Fase~2 expande a análise para 145 séries do estado da Bahia com validação estatística formal. A apresentação está organizada por fase, seguida da validação estatística, dos resultados auxiliares de previsão, do escopo dos resultados preliminares e da discussão integrada.
+Este capítulo apresenta os resultados dos dois experimentos executados. O Experimento~1 constitui a evidência empírica inicial que sustenta a hipótese central; o Experimento~2 expande a análise para 145 séries do estado da Bahia com validação estatística formal. A apresentação está organizada por experimento, seguida da validação estatística, dos resultados auxiliares de previsão, do escopo dos resultados preliminares e da discussão integrada.
 
 \section{Visão Geral}
 
-A Fase~1 avalia 15 lojas da Paraíba para o produto~48130, em regime \textit{Lumpy}, e fornece a primeira evidência empírica de que diferentes políticas de reposição apresentam vantagens relativas conforme o perfil operacional da série. A Fase~2 amplia essa análise para 145 combinações loja-produto do estado da Bahia, preservando o mesmo horizonte de simulação e incorporando cinco replicações experimentais por série. Em conjunto, as duas fases permitem avaliar a heterogeneidade de desempenho entre políticas antes da expansão nacional prevista para a Fase~3.
+O Experimento~1 avalia 15 lojas da Paraíba para o produto~48130, em regime \textit{Lumpy}, e fornece a primeira evidência empírica de que diferentes políticas de reposição apresentam vantagens relativas conforme o perfil operacional da série. O Experimento~2 amplia essa análise para 145 combinações loja-produto do estado da Bahia, preservando o mesmo horizonte de simulação e incorporando cinco replicações experimentais por série. Em conjunto, os dois experimentos permitem avaliar a heterogeneidade de desempenho entre políticas antes da expansão nacional prevista.
 
-\section{Fase 1: Paraíba}
+\section{Experimento 1: Estudo Piloto na Paraíba}
 
-Os experimentos da Fase~1 foram conduzidos sobre 15 lojas da Paraíba, produto 48130 (de alta intermitência com CV entre 2.5 e 5.4), horizonte $T=38$ ciclos comerciais e prazo de entrega $L=2$ ciclos. Todas as 15 lojas foram classificadas como \textit{Lumpy} no espaço ADI $\times$ CV$^2$ de Syntetos-Boylan (ADI $\geq 1.32$, CV$^2 \geq 0.49$), confirmando que o experimento foi conduzido no regime de demanda de maior complexidade operacional: muitos ciclos com demanda zero intercalados com picos irregulares de grande magnitude. Este é exatamente o cenário onde políticas fixas falham mais severamente.
+O Experimento~1 foi conduzido sobre 15 lojas da Paraíba, produto 48130 (de alta intermitência com CV entre 2.5 e 5.4), horizonte $T=38$ ciclos comerciais e prazo de entrega $L=2$ ciclos. Todas as 15 lojas foram classificadas como \textit{Lumpy} no espaço ADI $\times$ CV$^2$ de Syntetos-Boylan (ADI $\geq 1.32$, CV$^2 \geq 0.49$), indicando que o estudo piloto foi conduzido em um regime de alta complexidade operacional: muitos ciclos com demanda zero intercalados com picos irregulares de grande magnitude.
 
 \subsection{Comparação entre Políticas}
 
-A Fase~1, conduzida com 15 lojas da Paraíba (produto~48130, regime \textit{Lumpy}), foi usada como validação inicial do ambiente de simulação e do protocolo de comparação entre políticas. Os resultados indicaram heterogeneidade entre políticas e presença de comportamentos degenerados em parte dos agentes de aprendizado por reforço (SARSA$^\dagger$ convergindo a FP\,=\,$0$; PPO$^\dagger$ emitindo pedidos em 98\% dos ciclos), motivando a ampliação para a Fase~2. Entre as políticas sem degeneração, o GA-DQN apresentou o equilíbrio mais favorável: reduz custo em 48\% em relação ao $(s,S)$ (política padrão do varejo) enquanto reduz rupturas em 55\% e o efeito \textit{bullwhip} de 119.4 para 5.0, mantendo nível de serviço competitivo (82.1\% vs. 84.3\%). A tabela completa com os indicadores agregados da Fase~1 (Tabela~\ref{tab:global_prelim}) foi deslocada para o Apêndice~\ref{app:reproducibility}, preservando a rastreabilidade dos resultados preliminares, incluindo a derivação da redução de ``até 48\%'' citada no resumo deste trabalho, sem duplicar no corpo principal a comparação agregada apresentada para a Fase~2 (Tabela~\ref{tab:kpis_fase2}). O valor de 48\% representa o ganho máximo observado neste experimento preliminar, não uma redução média universal: na Fase~2 (145 séries, BA), o GA-DQN não domina o EOQ em CTI.
+O Experimento~1, conduzido com 15 lojas da Paraíba (produto~48130, regime \textit{Lumpy}), foi usado como validação inicial do ambiente de simulação e do protocolo de comparação entre políticas. Os resultados indicaram heterogeneidade entre políticas e presença de comportamentos degenerados em parte dos agentes de aprendizado por reforço (SARSA$^\dagger$ convergindo a FP\,=\,$0$; PPO$^\dagger$ emitindo pedidos em 98\% dos ciclos), motivando a ampliação para o Experimento~2. Entre as políticas sem degeneração, o GA-DQN apresentou o equilíbrio mais favorável neste recorte: reduz custo em 48\% em relação ao $(s,S)$ (política padrão do varejo) enquanto reduz rupturas em 55\% e o efeito \textit{bullwhip} de 119.4 para 5.0, mantendo nível de serviço competitivo (82.1\% vs. 84.3\%). A tabela completa com os indicadores agregados do Experimento~1 (Tabela~\ref{tab:global_prelim}) foi deslocada para o Apêndice~\ref{app:reproducibility}, preservando a rastreabilidade dos resultados preliminares, incluindo a derivação da redução de ``até 48\%'' citada no resumo deste trabalho, sem duplicar no corpo principal a comparação agregada apresentada para o Experimento~2 (Tabela~\ref{tab:kpis_fase2}). O valor de 48\% representa o ganho máximo observado neste experimento preliminar, não uma redução média universal: no Experimento~2 (145 séries, BA), o GA-DQN não domina o EOQ em CTI.
 
 \subsection{Análise por Volume de Demanda}
 
@@ -40,13 +40,13 @@ Meta-heurísticas otimizam diretamente $(s,Q)$ pela simulação do horizonte com
 \paragraph{Efeito \textit{bullwhip}.}
 As políticas práticas variam de $0.003$ (Jornaleiro) a $119.4$ em $(s,S)$, razão superior a 40.000 vezes. O GA-DQN ($\text{BE}=5.0$) e o DQN isolado ($\text{BE}=4.1$) apresentam menor amplificação por aprenderem a antecipar picos de demanda, dimensão crítica para distribuidores e operadores logísticos no regime \textit{Lumpy}.
 
-\section{Fase 2: Bahia}
+\section{Experimento 2: Expansão na Bahia}
 
-A Fase~2 executou o \textit{pipeline} completo sobre o estado da Bahia, cobrindo 145 combinações (loja, produto) classificadas no quadrante \textit{Lumpy} do espaço ADI $\times$ CV$^2$ de Syntetos-Boylan. Para cada série, foram realizadas cinco replicações com sementes independentes (\textit{common random numbers}), totalizando 725 observações por política e $725 \times 12 = 8.700$ pontos de avaliação no experimento. O horizonte de simulação é $T=38$ ciclos comerciais com prazo de entrega $L=2$ ciclos, idêntico à Fase~1.
+O Experimento~2 executou o \textit{pipeline} completo sobre o estado da Bahia, cobrindo 145 combinações (loja, produto) classificadas no quadrante \textit{Lumpy} do espaço ADI $\times$ CV$^2$ de Syntetos-Boylan. Para cada série, foram realizadas cinco replicações com sementes independentes (\textit{common random numbers}), totalizando 725 observações por política e $725 \times 12 = 8.700$ pontos de avaliação no experimento. O horizonte de simulação é $T=38$ ciclos comerciais com prazo de entrega $L=2$ ciclos, idêntico ao Experimento~1.
 
 \subsection{Dataset e Distribuição Geográfica}
 
-O conjunto de dados da Fase~2 cobre 145 combinações (loja, produto) de uma rede varejista do estado da Bahia, distribuídas em três filiais (Calçada, Cajazeiras e Lauro de Freitas) e seis segmentos comerciais (Platina, Ouro, Rubi, Diamante GB, Esmeralda GB e Prata). A Figura~\ref{fig:distribuicao_lojas} ilustra a distribuição de séries por filial e segmento.
+O conjunto de dados do Experimento~2 cobre 145 combinações (loja, produto) de uma rede varejista do estado da Bahia, distribuídas em três filiais (Calçada, Cajazeiras e Lauro de Freitas) e seis segmentos comerciais (Platina, Ouro, Rubi, Diamante GB, Esmeralda GB e Prata). A Figura~\ref{fig:distribuicao_lojas} ilustra a distribuição de séries por filial e segmento.
 
 \begin{figure}[ht]
 \centering
@@ -55,7 +55,7 @@ O conjunto de dados da Fase~2 cobre 145 combinações (loja, produto) de uma red
 \label{fig:distribuicao_lojas}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} não representa validação nacional completa; a cobertura experimental da Fase~2 restringe-se à Bahia. O mapa contextualiza a escala potencial do \textit{pipeline}, não os resultados reportados neste capítulo.
+A Figura~\ref{fig:nacional_mapa_lojas_receita} não representa validação nacional completa; a cobertura experimental do Experimento~2 restringe-se à Bahia. O mapa contextualiza a escala potencial do \textit{pipeline}, não os resultados reportados neste capítulo.
 
 A filial Calçada concentra 104 das 145 séries (72\%), com segmento Platina dominante: as lojas de maior ticket médio e maior regularidade de demanda. As filiais Cajazeiras (17\%) e Lauro de Freitas (11\%) exibem perfis distintos: Cajazeiras com mix mais equilibrado entre Ouro e Rubi; Lauro concentrado em Rubi e Diamante GB. Esta heterogeneidade de segmento e volume justifica a estratificação por filial e segmento na análise de desempenho das políticas. A concentração em Calçada implica que os resultados agregados são fortemente influenciados pelo perfil desta filial; os padrões específicos de cada unidade são destacados na análise estratificada da Seção~\ref{sec:estratificada_segmento}.
 
@@ -77,18 +77,18 @@ A Figura~\ref{fig:lojas_segmento} complementa essa leitura ao mostrar a concentr
 \label{fig:lojas_segmento}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura da Fase~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo da Fase~3.
+A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura do Experimento~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo da expansão nacional.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.70\textwidth]{../../simulation/data/08_reporting/maps/nacional_mapa_lojas_receita}
-\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo comercial (R\$). O estado da Bahia (BA) representa a cobertura atual da Fase~2; demais regiões serão incorporadas na expansão nacional (Fase~3).}
+\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo comercial (R\$). O estado da Bahia (BA) representa a cobertura atual do Experimento~2; demais regiões serão incorporadas na expansão nacional.}
 \label{fig:nacional_mapa_lojas_receita}
 \end{figure}
 
 \subsection{Comparação Agregada entre Políticas}
 
-A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. Esses valores correspondem às médias globais de cada política sobre o conjunto completo e confirmam e expandem os achados da Fase~1, agora com evidência estatisticamente fundada sobre uma base representativa do varejo regional baiano. Essa visão agrega todas as séries em uma única linha por política e não mede diretamente o ganho de selecionar políticas por perfil operacional, análise realizada na Seção~\ref{sec:custo_politica_unica_vs_perfil}.
+A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. Esses valores correspondem às médias globais de cada política sobre o conjunto completo e ampliam os achados do Experimento~1, agora com evidência estatística sobre uma base do varejo regional baiano. Essa visão agrega todas as séries em uma única linha por política e não mede diretamente o ganho de selecionar políticas por perfil operacional, análise realizada na Seção~\ref{sec:custo_politica_unica_vs_perfil}.
 
 \noindent\textbf{Como ler a tabela:} a tabela deve ser lida como evidência de que a ampliação de 15 para 145 séries preserva os \textit{trade-offs} fundamentais: não existe política que minimize CTI e maximize NS simultaneamente. A ordem por CTI crescente facilita a identificação dos agrupamentos de custo, mas a escolha operacional depende do equilíbrio desejado entre custo, serviço e estabilidade de pedidos.
 
@@ -122,7 +122,7 @@ PPO$^\dagger$        & 3.871.75        & \textbf{0.98} & \textbf{0.02} & 237.42 
 \end{tabular}
 \end{table}
 
-Dois padrões de degeneração emergem na Fase~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes superior ao Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
+Dois padrões de degeneração emergem no Experimento~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes superior ao Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
 
 \paragraph{Grupo de custo mínimo bruto.} O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
 
@@ -133,11 +133,11 @@ A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS, evidenciando q
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.72\textwidth]{../../simulation/data/08_reporting/comparison/pareto_frontier}
-\caption{Fronteira de Pareto CTI e NS: cada ponto representa a média de uma política sobre as 145 séries. O eixo horizontal representa o CTI médio (R\$), a ser minimizado; o eixo vertical representa o NS médio, a ser maximizado. A região superior-esquerda representa o melhor compromisso custo-serviço. Nenhuma política ocupa simultaneamente o menor CTI e o maior NS, confirmando a ausência de dominância universal.}
+\caption{Fronteira de Pareto CTI e NS: cada ponto representa a média de uma política sobre as 145 séries. O eixo horizontal representa o CTI médio (R\$), a ser minimizado; o eixo vertical representa o NS médio, a ser maximizado. A região superior-esquerda representa o melhor compromisso custo-serviço. Nenhuma política ocupa simultaneamente o menor CTI e o maior NS, indicando ausência de dominância universal no recorte avaliado.}
 \label{fig:pareto}
 \end{figure}
 
-A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão ótima varia por série, fundamento empírico direto do AIPE. Essa evidência sustenta a formulação do PSE como componente de seleção contextual.
+A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão ótima varia por série, oferecendo evidência empírica para o AIPE. Essa evidência sustenta a formulação do PSE como componente de seleção contextual.
 
 \begin{figure}[ht]
 \centering
@@ -160,25 +160,25 @@ A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro polí
 
 O resultado principal é que a sensibilidade à política varia entre segmentos. Em alguns segmentos, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. Esse padrão reforça a tese do AIPE: a recomendação de política não deve ser uniforme para toda a rede.
 
-O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB esta diferença cai para 40\%. Isso reforça que a escolha da política deve ser contextualizada pelo perfil da loja, fundamento empírico direto do módulo AIPE.
+O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB esta diferença cai para 40\%. Isso reforça que a escolha da política deve ser contextualizada pelo perfil da loja, oferecendo evidência empírica para o módulo AIPE.
 
 \subsection{Comparação por Perfil Operacional de Demanda}
 \label{sec:comparacao_pod}
 
-A análise agregada da Tabela~\ref{tab:kpis_fase2} condensa 145 séries em uma única linha por política, obscurecendo diferenças de comportamento entre grupos de séries com padrões de demanda distintos. Para expor essa heterogeneidade, as séries foram segmentadas nos Perfis Operacionais de Demanda (POD) definidos na Tabela~\ref{tab:pod} (Seção~\ref{sec:carac_series}): \textit{Sparse High Impact}, \textit{Unstable Trend} e \textit{High Vol.~Seasonal}. Os perfis \textit{Low Vol.~Stable} e \textit{Fast Moving} não têm representação no conjunto da Bahia (Fase~2, regime \textit{Lumpy}).
+A análise agregada da Tabela~\ref{tab:kpis_fase2} condensa 145 séries em uma única linha por política, obscurecendo diferenças de comportamento entre grupos de séries com padrões de demanda distintos. Para expor essa heterogeneidade, as séries foram segmentadas nos Perfis Operacionais de Demanda (POD) definidos na Tabela~\ref{tab:pod} (Seção~\ref{sec:carac_series}): \textit{Sparse High Impact}, \textit{Unstable Trend} e \textit{High Vol.~Seasonal}. Os perfis \textit{Low Vol.~Stable} e \textit{Fast Moving} não têm representação no conjunto da Bahia (Experimento~2, regime \textit{Lumpy}).
 
 A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a política dominante segundo a regra de menor CTI médio entre as políticas com NS médio $\geq 0{,}70$. Os perfis exibem diferenças relevantes de dominância, indicando que a seleção da política depende do perfil operacional.
 
 \input{../../simulation/data/08_reporting/profiles/table_dominancia_por_perfil}
 
-O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o SA (\textit{Simulated Annealing}) é a política dominante (CTI\,=\,R\$\,584, NS\,=\,$0{,}87$) entre as politicamente viáveis (NS médio $\geq 0{,}70$). O Jornaleiro apresenta o menor CTI bruto neste perfil (R\$\,284), mas é excluído pelo critério de viabilidade: seu NS médio (0,55) fica abaixo do limiar de $0{,}70$, configurando ruptura de estoque excessiva para uso operacional direto: o ganho de custo do Jornaleiro nesse perfil não é, portanto, alcançável sem violar o nível de serviço mínimo adotado. O perfil \textit{Unstable Trend} (18 séries, evidência exploratória por $n<20$) apresenta padrão de demanda com tendência não estacionária; o EOQ, com parâmetros calculados sobre a demanda média, oferece o melhor equilíbrio custo-serviço, atingindo NS\,=\,$0{,}95$ ao custo de CTI mais elevado. O perfil \textit{High Vol.~Seasonal} (11 séries, evidência exploratória por $n<20$) também tem o EOQ como dominante (CTI\,=\,R\$\,619, NS\,=\,$0{,}97$); o SARSA, cujo NS médio nesse perfil é de apenas $0{,}61$, não atinge o limiar de viabilidade e não deve ser interpretado como dominante.
+O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o SA (\textit{Simulated Annealing}) é a política dominante (CTI\,=\,R\$\,584, NS\,=\,$0{,}87$) entre as operacionalmente viáveis (NS médio $\geq 0{,}70$). O Jornaleiro apresenta o menor CTI bruto neste perfil (R\$\,284), mas é excluído pelo critério de viabilidade: seu NS médio (0,55) fica abaixo do limiar de $0{,}70$, configurando ruptura de estoque excessiva para uso operacional direto. O ganho de custo do Jornaleiro nesse perfil não é, portanto, alcançável sem violar o nível de serviço mínimo adotado. O perfil \textit{Unstable Trend} (18 séries, evidência exploratória por $n<20$) apresenta padrão de demanda com tendência não estacionária; o EOQ, com parâmetros calculados sobre a demanda média, oferece o melhor equilíbrio custo-serviço, atingindo NS\,=\,$0{,}95$ ao custo de CTI mais elevado. O perfil \textit{High Vol.~Seasonal} (11 séries, evidência exploratória por $n<20$) também tem o EOQ como dominante (CTI\,=\,R\$\,619, NS\,=\,$0{,}97$); o SARSA, cujo NS médio nesse perfil é de apenas $0{,}61$, não atinge o limiar de viabilidade e não deve ser interpretado como dominante.
 
 A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio por política e perfil, evidenciando a heterogeneidade de custo que fundamenta o AIPE: o custo ótimo de cada política varia de forma expressiva entre perfis, de modo que nenhuma política minimiza CTI em todos os contextos simultaneamente.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/profiles/profile_policy_heatmap_cti}
-\caption{CTI médio por política e Perfil Operacional de Demanda (Fase~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, evidência empírica para a formulação do \textit{Adaptive Inventory Policy Engine}.}
+\caption{CTI médio por política e Perfil Operacional de Demanda (Experimento~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) revela que a mesma política produz custos muito distintos segundo o padrão de demanda, oferecendo evidência empírica para a formulação do \textit{Adaptive Inventory Policy Engine}.}
 \label{fig:heatmap_cti_pod}
 \end{figure}
 
@@ -193,7 +193,7 @@ Na Tabela~\ref{tab:strategy_cost_comparison}, a coluna ``Estratégia'' identific
 
 \input{../../simulation/data/08_reporting/strategy/table_strategy_hypothesis_tests}
 
-A análise considera quatro estratégias. As estratégias A1 e A2 representam políticas únicas globais: A1 é a política com menor CTI médio entre todas as viáveis (NS médio $\geq 0{,}70$ global), que na Fase~2 é o EOQ; A2 adota o EOQ diretamente como \textit{baseline} operacional de referência, representando a escolha clássica comum na prática varejista. Neste experimento, A1 e A2 coincidem porque o EOQ emerge simultaneamente como melhor opção viável global e referência operacional natural (CTI médio\,=\,R\$\,628,42; NS médio\,=\,$0{,}942$).
+A análise considera quatro estratégias. As estratégias A1 e A2 representam políticas únicas globais: A1 é a política com menor CTI médio entre todas as viáveis (NS médio $\geq 0{,}70$ global), que no Experimento~2 é o EOQ; A2 adota o EOQ diretamente como \textit{baseline} operacional de referência, representando a escolha clássica comum na prática varejista. Neste experimento, A1 e A2 coincidem porque o EOQ emerge simultaneamente como melhor opção viável global e referência operacional natural (CTI médio\,=\,R\$\,628,42; NS médio\,=\,$0{,}942$).
 
 A estratégia B, seleção por perfil, aloca: SA para séries \textit{Sparse High Impact} (116 séries, 80\% do conjunto); EOQ para séries \textit{Unstable Trend} (18 séries, evidência exploratória); e EOQ para séries \textit{High Vol.~Seasonal} (11 séries, evidência exploratória). Como o EOQ já é a política única global, a única substituição efetiva da estratégia B em relação à A1/A2 ocorre no perfil \textit{Sparse High Impact}, que concentra 80\% das séries. A Tabela~\ref{tab:strategy_cost_comparison} indica redução de $6{,}2\%$ no CTI médio em relação à política única (R\$\,628,42 para R\$\,589,62), acompanhada de queda de NS médio de $0{,}942$ para $0{,}883$, ainda acima do limiar de viabilidade de $0{,}70$. Esse resultado deve ser lido como \textit{trade-off} custo-serviço, e não como ganho puro: a redução de custo é modesta e vem com perda real, ainda que limitada, de nível de serviço. Essa leitura cautelosa é consistente com o objetivo do AIPE de tornar a escolha de política sensível ao perfil operacional, sem prometer ganhos de custo sem contrapartida de serviço.
 
@@ -205,18 +205,18 @@ A Tabela~\ref{tab:strategy_cost_comparison_adjusted} reporta uma análise comple
 
 \input{../../simulation/data/08_reporting/strategy/table_strategy_adjusted}
 
-Essa comparação fornece suporte empírico direto à motivação do AIPE: a heterogeneidade de demanda observada dentro do regime \textit{Lumpy} da Fase~2 já produz diferença econômica mensurável entre as estratégias, mesmo quando essa diferença é modesta em magnitude. A análise permanece concentrada nas séries \textit{Lumpy} da Fase~2; a extensão a outros regimes é objetivo da Fase~3.
+Essa comparação fornece suporte empírico à motivação do AIPE: a heterogeneidade de demanda observada dentro do regime \textit{Lumpy} do Experimento~2 já produz diferença econômica mensurável entre as estratégias, mesmo quando essa diferença é modesta em magnitude. A análise permanece concentrada nas séries \textit{Lumpy} do Experimento~2; a extensão a outros regimes é objetivo da expansão nacional.
 
 \subsection{Heterogeneidade e Evidência para o AIPE}
 
-Um resultado crítico da Fase~2 é que não existe política universalmente dominante: para o perfil que concentra a maior parte das séries, o SA oferece o menor custo entre as políticas viáveis, enquanto o Jornaleiro, apesar do menor CTI bruto, exige sacrifício de NS incompatível com o limiar mínimo de serviço adotado; para outros perfis, EOQ ou $(s,S)$ oferecem o melhor equilíbrio custo-serviço; para séries em que o efeito \textit{bullwhip} é a métrica prioritária, PSO e DE apresentam os menores valores entre as meta-heurísticas (BE\,=\,$0.40$ e BE\,=\,$0.20$, respectivamente). A dispersão ilustrada na Figura~\ref{fig:boxplot_tic}, com coeficientes de variação do CTI superiores a 100\% para GA, GA-DQN e GA-PPO, indica que a política ótima é altamente dependente das características da série.
+Um resultado central do Experimento~2 é que não existe política universalmente dominante: para o perfil que concentra a maior parte das séries, o SA oferece o menor custo entre as políticas viáveis, enquanto o Jornaleiro, apesar do menor CTI bruto, exige sacrifício de NS incompatível com o limiar mínimo de serviço adotado; para outros perfis, EOQ ou $(s,S)$ oferecem o melhor equilíbrio custo-serviço; para séries em que o efeito \textit{bullwhip} é a métrica prioritária, PSO e DE apresentam os menores valores entre as meta-heurísticas (BE\,=\,$0.40$ e BE\,=\,$0.20$, respectivamente). A dispersão ilustrada na Figura~\ref{fig:boxplot_tic}, com coeficientes de variação do CTI superiores a 100\% para GA, GA-DQN e GA-PPO, indica que a política ótima é dependente das características da série.
 
-Este achado fundamenta empiricamente o \textit{Adaptive Inventory Policy Engine} (AIPE). A Tabela~\ref{tab:regime_policy_dominance} sintetiza o mapeamento empírico regime$\rightarrow$política dominante obtido pelas Fases~1 e~2, convertendo os experimentos de simulação em rótulos de treinamento para o \textit{Policy Selection Engine}.
+Este achado oferece fundamento empírico para o \textit{Adaptive Inventory Policy Engine} (AIPE). A Tabela~\ref{tab:regime_policy_dominance} sintetiza o mapeamento empírico regime$\rightarrow$política dominante obtido nos dois experimentos executados, convertendo os resultados de simulação em rótulos de treinamento para o \textit{Policy Selection Engine}.
 
 \begin{table}[ht]
 \centering
 \small
-\caption{Mapeamento empírico de dominância regime$\rightarrow$política. ``Dominante'' é a política com menor CTI entre aquelas que atingem NS $\geq 0.70$ no estrato. Fonte: análise estratificada das Fases~1 e~2.}
+\caption{Mapeamento empírico de dominância regime$\rightarrow$política. ``Dominante'' é a política com menor CTI entre aquelas que atingem NS $\geq 0.70$ no estrato. Fonte: análise estratificada dos dois experimentos executados.}
 \label{tab:regime_policy_dominance}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}p{3.6cm}p{4.0cm}p{2.6cm}p{5.0cm}@{}}
@@ -236,7 +236,7 @@ Alta cobertura obrigatória & NS $\geq 0.95$ como restrição & EOQ & Melhor cus
 \section{Validação Estatística}
 \label{sec:stats}
 
-Com cinco replicações por série, a Fase~2 habilita testes não paramétricos de significância estatística, suprindo a principal limitação dos resultados da Fase~1. Essa ampliação aumenta a confiabilidade das diferenças observadas entre políticas.
+Com cinco replicações por série, o Experimento~2 permite aplicar testes não paramétricos de significância estatística, reduzindo a principal limitação do estudo piloto. Essa ampliação aumenta a confiabilidade das diferenças observadas entre políticas.
 
 \subsection{Teste de Wilcoxon}
 
@@ -257,7 +257,7 @@ GA-PPO vs \textit{baselines} & 10/10 & 10/10 & 10/10 & 10/10 & 8/10 & 48/50 (96\
 \end{tabular}
 \end{table}
 
-As comparações não significativas concentram-se em pares próximos no espaço de desempenho: GA-DQN vs GA em CTI ($p=0.614$) e GA-DQN vs GA em BE ($p=0.339$), refletindo a proximidade das duas arquiteturas que compartilham o mesmo inicializador genético. Para as comparações mais relevantes (GA-DQN vs EOQ e GA-DQN vs $(s,S)$), todos os cinco KPIs apresentaram $p < 0.0001$, confirmando que as diferenças observadas na Tabela~\ref{tab:kpis_fase2} não são atribuíveis a variação amostral.
+As comparações não significativas concentram-se em pares próximos no espaço de desempenho: GA-DQN vs GA em CTI ($p=0.614$) e GA-DQN vs GA em BE ($p=0.339$), refletindo a proximidade das duas arquiteturas que compartilham o mesmo inicializador genético. Para as comparações mais relevantes (GA-DQN vs EOQ e GA-DQN vs $(s,S)$), todos os cinco KPIs apresentaram $p < 0.0001$, indicando que as diferenças observadas na Tabela~\ref{tab:kpis_fase2} não são explicadas apenas por variação amostral.
 
 \subsection{Tamanho de Efeito}
 
@@ -286,7 +286,7 @@ GA-PPO & PPO        & $-0.760$ & $-0.216$ & CTI: médio; NS: pequeno \\
 \end{tabular}
 \end{table}
 
-O maior efeito absoluto observado é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença fundamental entre a política analítica de baixo custo e a arquitetura híbrida de maior capacidade. Em relação à degeneração: o efeito $d=+3.492$ (GA-DQN vs DQN em CTI) confirma que o DQN isolado, ao convergir para a estratégia de não pedido, afasta-se drasticamente da solução híbrida. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo superior ao EOQ neste conjunto de séries, porém com NS\,$0.18$ pontos menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série.
+O maior efeito absoluto observado é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença entre a política analítica de baixo custo e a arquitetura híbrida de maior capacidade. Em relação à degeneração: o efeito $d=+3.492$ (GA-DQN vs DQN em CTI) indica que o DQN isolado, ao convergir para a estratégia de não pedido, afasta-se substancialmente da solução híbrida. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo superior ao EOQ neste conjunto de séries, porém com NS\,$0.18$ pontos menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série.
 
 \noindent A Figura~\ref{fig:critical_diff} complementa os tamanhos de efeito ao mostrar os agrupamentos estatísticos do teste de Nemenyi. Políticas conectadas pela barra horizontal não diferem significativamente no CTI ao nível $\alpha=0.05$; políticas sem conexão apresentam diferença estatisticamente detectável.
 
@@ -349,17 +349,17 @@ A Figura~\ref{fig:forecast_boxplot} complementa a Tabela~\ref{tab:forecast_metri
 \section{Alcance dos Resultados}
 \label{sec:threats}
 
-Os resultados apresentados neste capítulo devem ser interpretados considerando o escopo experimental das Fases~1 e~2. A Fase~2 ampliou a avaliação inicial ao incorporar 145~séries do estado da Bahia, cinco replicações experimentais, testes estatísticos formais e resultados auxiliares de previsão. Esses avanços fortalecem a análise em relação à Fase~1, especialmente por permitirem comparar políticas sob maior diversidade de séries e com suporte estatístico mais consistente.
+Os resultados apresentados neste capítulo devem ser interpretados considerando o escopo experimental dos dois experimentos executados. O Experimento~2 ampliou a avaliação inicial ao incorporar 145~séries do estado da Bahia, cinco replicações experimentais, testes estatísticos formais e resultados auxiliares de previsão. Esses avanços fortalecem a análise em relação ao Experimento~1, especialmente por permitirem comparar políticas sob maior diversidade de séries e com suporte estatístico mais consistente.
 
-Ainda assim, a avaliação atual permanece concentrada em séries classificadas no regime \textit{Lumpy}. Essa concentração é relevante porque permite analisar o AIPE em um regime de alta complexidade operacional, caracterizado por baixa frequência e alta variabilidade da demanda. Por outro lado, a generalização para os regimes \textit{Smooth}, \textit{Erratic} e \textit{Intermittent}, bem como para outras regiões da rede varejista, depende da expansão prevista na Fase~3.
+Ainda assim, a avaliação atual permanece concentrada em séries classificadas no regime \textit{Lumpy}. Essa concentração é relevante porque permite analisar o AIPE em um regime de alta complexidade operacional, caracterizado por baixa frequência e alta variabilidade da demanda. Por outro lado, a generalização para os regimes \textit{Smooth}, \textit{Erratic} e \textit{Intermittent}, bem como para outras regiões da rede varejista, depende da expansão nacional prevista.
 
 Algumas escolhas experimentais também delimitam a interpretação dos resultados. O horizonte disponível de 38~ciclos comerciais restringe a observação de mudanças estruturais de longo prazo. Os custos de manutenção, ruptura e pedido foram parametrizados a partir de valores compatíveis com o varejo regional, e diferentes relações entre esses custos podem alterar o desempenho relativo das políticas. Além disso, o prazo de entrega foi mantido fixo em dois ciclos, o que favorece a comparação controlada entre políticas, mas não captura variações operacionais de \textit{lead time}.
 
 De forma semelhante, os métodos baseados em aprendizado por reforço são avaliados como políticas candidatas dentro do \textit{benchmark}, não como garantia de desempenho em ambiente de produção.
 
-A Fase~3 dará continuidade a essa avaliação ao ampliar o conjunto de produtos, lojas, regiões e regimes de demanda. Essa expansão permitirá avaliar a generalização do AIPE, consolidar a geração de rótulos de política dominante e testar o \textit{Policy Selection Engine} em séries não observadas durante o treinamento.
+A etapa de expansão nacional dará continuidade a essa avaliação ao ampliar o conjunto de produtos, lojas, regiões e regimes de demanda. Essa expansão permitirá avaliar a generalização do AIPE, consolidar a geração de rótulos de política dominante e testar o \textit{Policy Selection Engine} em séries não observadas durante o treinamento.
 \section{Discussão dos Resultados}
 
-Os resultados preliminares das Fases~1 e~2 sustentam a premissa central desta dissertação: o desempenho das políticas de reposição depende do perfil operacional da série analisada. Nenhuma política avaliada domina simultaneamente as demais em custo total de inventário, nível de serviço, ruptura, estabilidade dos pedidos e frequência de reposição. A ampliação de 15~séries na Paraíba para 145~séries na Bahia preservou essa heterogeneidade e permitiu aplicar validação estatística formal às comparações.
+Os resultados preliminares dos dois experimentos executados sustentam a premissa central desta dissertação: o desempenho das políticas de reposição depende do perfil operacional da série analisada. Nenhuma política avaliada domina simultaneamente as demais em custo total de inventário, nível de serviço, ruptura, estabilidade dos pedidos e frequência de reposição. A ampliação de 15~séries na Paraíba para 145~séries na Bahia preservou essa heterogeneidade e permitiu aplicar validação estatística formal às comparações.
 
-Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados reforçam a relevância de abordagens que não assumem uma política única como solução universal. Políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos, sustentando o posicionamento do AIPE como \textit{framework} de seleção contextual. A Fase~3 dará continuidade a essa avaliação ao expandir o \textit{benchmark} para outros estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.
+Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados reforçam a relevância de abordagens que não assumem uma política única como solução universal. Políticas clássicas, políticas parametrizadas por meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos, sustentando o posicionamento do AIPE como \textit{framework} de seleção contextual. A expansão nacional dará continuidade a essa avaliação ao ampliar o \textit{benchmark} para outros estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.
