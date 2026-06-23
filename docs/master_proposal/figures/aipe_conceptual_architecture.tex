@@ -51,9 +51,9 @@
 \node[title, below=1.05cm of forecast, xshift=-2.9cm] (coreTitle) {Núcleo de seleção contextual do AIPE};
 \node[core, below=0.45cm of coreTitle, xshift=-3.0cm] (portfolio) {
     \textbf{Portfólio de políticas candidatas}\\
-    EOQ; $(s,S)$; Jornaleiro; GA; SA;\\
-    PSO; DE; DQN; PPO; SARSA;\\
-    GA-DQN; GA-PPO
+    clássicas: EOQ; $(s,S)$; Jornaleiro;\\
+    parametrizadas: GA; SA; PSO; DE;\\
+    RL: DQN; PPO; SARSA; híbridas GA-RL
 };
 \node[core, below=0.45cm of coreTitle, xshift=3.0cm] (sim) {
     \textbf{Ambiente de simulação}\\
