@@ -1,4 +1,4 @@
-﻿\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
+\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
 
 Redes varejistas com múltiplas lojas enfrentam problemas recorrentes de reposição porque produtos e regiões apresentam padrões de demanda heterogêneos. Produtos com vendas regulares, intermitentes ou concentradas em picos esporádicos respondem de forma diferente às mesmas políticas de reposição. Nesse contexto, a aplicação uniforme de uma única política tende a produzir excesso de estoque, ruptura ou instabilidade nos pedidos enviados ao armazém \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
 
@@ -30,9 +30,9 @@ Essa sequência é sintetizada na Figura~\ref{fig:intro_problem_selection}: rede
 
 A motivação apresentada anteriormente pode ser formalizada como um problema recorrente de otimização de inventário. No contexto operacional considerado, cada loja precisa responder continuamente a duas decisões: quando repor e quanto repor.
 
-O trade-off aparece porque essas decisões, embora simples na formulação, têm consequências de longo alcance. Se a loja repõe muito frequentemente, os custos sobem porque o armazém recebe pedidos pequenos e repetidos. Se repõe pouco frequentemente, corre risco de falta de estoque. Se pede muita quantidade por vez, consome espaço e pode gerar sobra caso a demanda não se concretize. Se pede pouca quantidade, aumenta a frequência de reposição.
+O \textit{trade-off} aparece porque essas decisões, embora simples na formulação, têm consequências de longo alcance. Se a loja repõe muito frequentemente, os custos sobem porque o armazém recebe pedidos pequenos e repetidos. Se repõe pouco frequentemente, corre risco de falta de estoque. Se pede muita quantidade por vez, consome espaço e pode gerar sobra caso a demanda não se concretize. Se pede pouca quantidade, aumenta a frequência de reposição.
 
-Quando esse trade-off é observado em uma rede heterogênea, as decisões de reposição deixam de admitir uma regra única de bom desempenho. O comportamento adequado para um produto de demanda regular pode ser inadequado para outro de demanda intermitente, e decisões locais inadequadas podem amplificar custos em toda a cadeia.
+Quando esse \textit{trade-off} é observado em uma rede heterogênea, as decisões de reposição deixam de admitir uma regra única de bom desempenho. O comportamento adequado para um produto de demanda regular pode ser inadequado para outro de demanda intermitente, e decisões locais inadequadas podem amplificar custos em toda a cadeia.
 
 Desse modo, a rede apresenta um desafio estrutural: cada loja decide independentemente, mas seus produtos variam drasticamente em padrão de demanda. A heterogeneidade operacional é o ponto central: diferentes séries exigem diferentes políticas.
 
@@ -52,7 +52,7 @@ Com base nesse ciclo, a dissertação investiga se históricos de venda podem se
 
 \paragraph{Hipótese 3: Generalização operacional.} Como consequência esperada dessa aprendizagem, a terceira premissa é que um modelo treinado dessa forma generaliza para novas séries. Ou seja, não é necessário testar manualmente cada novo produto; a abordagem utiliza o padrão de venda observado para produzir uma recomendação empiricamente fundamentada.
 
-Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. Se forem confirmadas pelos dados, o AIPE é viável e operacionalmente plausível. Os resultados preliminares sustentam parcialmente essas hipóteses, especialmente quanto à heterogeneidade entre políticas e à viabilidade do meta-modelo de seleção. A validação da generalização do PSE para novas séries dentro dos regimes observados será aprofundada na Fase 3.
+Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. Se forem confirmadas pelos dados, o AIPE é viável e operacionalmente plausível. Os resultados preliminares sustentam parcialmente essas hipóteses, especialmente quanto à heterogeneidade entre políticas e à viabilidade do meta-modelo de seleção. A validação da generalização do PSE para novas séries dentro dos regimes observados será aprofundada na etapa futura de expansão nacional.
 
 \section{Objetivos}
 
@@ -64,20 +64,22 @@ O objetivo geral é propor, implementar e avaliar o \textit{Adaptive Inventory P
 
 \subsection*{Objetivos específicos}
 
+Os objetivos específicos são organizados em dois experimentos já executados e uma etapa futura. O Experimento 1 corresponde ao estudo piloto na Paraíba, usado para validar o ambiente de simulação e o protocolo inicial de comparação entre políticas. O Experimento 2 corresponde à expansão experimental para 145 séries da Bahia, usada para avaliar heterogeneidade, dominância por perfil e comparação entre política única e seleção contextual. A etapa seguinte corresponde à expansão nacional, voltada à generalização dos resultados e ao treinamento e avaliação ampliada do PSE.
+
 \begin{enumerate}
-  \item \textbf{[Fase 1: Concluído]} Construir e validar um ambiente de simulação para avaliar políticas de reposição em séries loja-produto reais, considerando dinâmica de estoque, prazo de entrega e indicadores operacionais de custo, serviço, ruptura, estabilidade e frequência de pedidos \citep{Law2015SimulationModeling,Axsater2006InventoryControl};
+  \item \textbf{[Experimento 1: estudo piloto na Paraíba, concluído]} Construir e validar um ambiente de simulação para avaliar políticas de reposição em séries loja-produto reais, considerando dinâmica de estoque, prazo de entrega e indicadores operacionais de custo, serviço, ruptura, estabilidade e frequência de pedidos \citep{Law2015SimulationModeling,Axsater2006InventoryControl};
 
-  \item \textbf{[Fase 1: Concluído]} Comparar sistematicamente diferentes famílias de políticas de reposição, incluindo políticas clássicas, meta-heurísticas, métodos baseados em aprendizado por reforço e abordagens híbridas, em dados reais de varejo com demanda intermitente \citep{Boute2022DRLInventoryRoadmap,Talbi2009Metaheuristics};
+  \item \textbf{[Experimento 1: estudo piloto na Paraíba, concluído]} Comparar sistematicamente diferentes famílias de políticas de reposição, incluindo políticas clássicas, políticas parametrizadas por meta-heurísticas, métodos baseados em aprendizado por reforço e abordagens híbridas, em dados reais de varejo com demanda intermitente \citep{Boute2022DRLInventoryRoadmap,Talbi2009Metaheuristics};
 
-  \item \textbf{[Fase 1: Concluído]} Caracterizar o desempenho das políticas híbridas baseadas em meta-heurística e aprendizado por reforço como políticas especialistas dentro do portfólio avaliado, identificando os perfis de demanda nos quais apresentam melhor desempenho relativo \citep{Oroojlooyjadid2022BeerGameDQN,Zabraoui2025GaDQN};
+  \item \textbf{[Experimento 1: estudo piloto na Paraíba, concluído]} Caracterizar o desempenho das políticas híbridas baseadas em meta-heurística e aprendizado por reforço como políticas especialistas dentro do portfólio avaliado, identificando os perfis de demanda nos quais apresentam melhor desempenho relativo \citep{Oroojlooyjadid2022BeerGameDQN,Zabraoui2025GaDQN};
 
-  \item \textbf{[Fase 2: Concluído]} Implementar o \textit{pipeline} experimental de apoio ao AIPE, contemplando preparação dos dados, extração de características operacionais da demanda, classificação de perfis, simulação das políticas candidatas e geração de rótulos de política dominante por série loja-produto;
+  \item \textbf{[Experimento 2: expansão experimental na Bahia, concluído]} Implementar o \textit{pipeline} experimental de apoio ao AIPE, contemplando preparação dos dados, extração de características operacionais da demanda, classificação de perfis, simulação das políticas candidatas e geração de rótulos de política dominante por série loja-produto;
 
-  \item \textbf{[Fase 2: Concluído]} Realizar validação estatística dos resultados obtidos, verificando a consistência das diferenças observadas entre políticas e a robustez das conclusões experimentais;
+  \item \textbf{[Experimento 2: expansão experimental na Bahia, concluído]} Realizar validação estatística dos resultados obtidos, verificando a consistência das diferenças observadas entre políticas e a estabilidade das conclusões experimentais no recorte avaliado;
 
-  \item \textbf{[Fase 3: Em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante, definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
+  \item \textbf{[Etapa futura: expansão nacional e generalização, em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante, definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
 
-  \item \textbf{[Fase 3: Planejado]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
+  \item \textbf{[Etapa futura: expansão nacional e generalização, planejado]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
 \end{enumerate}
 
 \subsection*{Contribuições da dissertação}
@@ -106,9 +108,8 @@ O escopo experimental, incluindo fases executadas, políticas avaliadas, replica
 
 Essas delimitações definem o escopo geral da pesquisa e concentram a contribuição na aprendizagem da relação regime$\rightarrow$política em condições controladas e reprodutíveis sobre dados reais de varejo nacional. A partir desse escopo, os capítulos seguintes desenvolvem a fundamentação teórica, posicionam a proposta frente à literatura, detalham a metodologia experimental e apresentam os resultados preliminares.
 
-\subsection*{Organização do documento}
-
-Encerrando a Introdução, este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico: famílias de políticas de reposição, demanda intermitente, formulação do controle de inventário, métricas de previsão e testes estatísticos. O Capítulo~\ref{cap:rel} posiciona a dissertação na literatura de controle de inventário, meta-heurísticas, aprendizado por reforço e seleção de algoritmos. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE: dados, características operacionais e sinais de previsão como camada de entrada; simulação, validação estatística e treinamento do PSE como núcleo da proposta. O Capítulo~\ref{cap:results} apresenta os resultados das Fases~1 e~2. O Capítulo~\ref{cap:conclusion} consolida as contribuições e o plano de continuidade.
+% \subsection*{Organização do documento}
+Este trabalho procede em seis capítulos estruturados para construir progressivamente o argumento. O Capítulo~\ref{cap:tec} apresenta o referencial teórico: famílias de políticas de reposição, demanda intermitente, formulação do controle de inventário, métricas de previsão e testes estatísticos. O Capítulo~\ref{cap:rel} posiciona a dissertação na literatura de controle de inventário, meta-heurísticas, aprendizado por reforço e seleção de algoritmos. O Capítulo~\ref{cap:metod} operacionaliza a metodologia do AIPE: dados, características operacionais e sinais de previsão como camada de entrada; simulação, validação estatística e treinamento do PSE como núcleo da proposta. O Capítulo~\ref{cap:results} apresenta os resultados do estudo piloto na Paraíba e da expansão experimental na Bahia. O Capítulo~\ref{cap:conclusion} consolida as contribuições e o plano de continuidade.
 
 \newpage\lhead{\rightmark}
 
