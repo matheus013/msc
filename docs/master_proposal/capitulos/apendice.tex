@@ -56,8 +56,8 @@ InventoryEnv & frequência de reavaliação (AIPE) & 6 ciclos & intervalo $\Delt
 \multicolumn{4}{@{}l}{\textit{Custos}} \\[2pt]
 Custos & custo de manutenção $h$ & 1,0 & por unidade por ciclo \\
 Custos & custo de ruptura $c_s$ & 5,0 & por unidade de demanda não atendida \\
-Custos & custo fixo de pedido $K$ & 50,0 & por ordem emitida \\
-Custos & custo variável de pedido $c_v$ & 0,5 & por unidade pedida \\
+Custos & custo fixo de pedido $c_o^{\text{fix}}$ & 50,0 & por ordem emitida \\
+Custos & custo variável de pedido $c_o^{\text{var}}$ & 0,5 & por unidade pedida \\
 Custos & razão $c_s/h$ & 5,0 & nível de serviço crítico ${\approx}83\%$ \\
 Custos & unidade monetária & adimensional & valores relativos, não em R\$ \\
 Custos & custos globais ou por série & globais & mesmos parâmetros para todas as séries \\[4pt]
@@ -101,13 +101,12 @@ As demais meta-heurísticas usam a mesma representação de solução e a mesma 
 \endlastfoot
 
 \multicolumn{4}{@{}l}{\textit{EOQ}} \\[2pt]
-EOQ & lote ótimo $Q^*$ & $\sqrt{2KD/h}$ & $K{=}50$, $h{=}1$ (globais) \\
-EOQ & estimativa de demanda $D$ & previsão auxiliar & série histórica filtrada \\
-EOQ & ponto de reposição & $\mu L + z\sigma\sqrt{L}$ & $L{=}2$; $z{\approx}0{,}97$ \\[4pt]
+EOQ & lote econômico $Q^*$ ($Q_{\text{ref}}$ na implementação) & $\sqrt{2\hat{\mu} T\, c_o^{\text{fix}}/h}$ & $c_o^{\text{fix}}{=}50$, $h{=}1$ (globais); $\hat{\mu}$ estimado por série; $T$ é o horizonte de referência \\
+EOQ & ponto de pedido $s$ ($s_{\text{ref}}$ na implementação) & $\hat{\mu} L + z\sigma\sqrt{L}$ & $L{=}2$; $z{\approx}0{,}97$; ponto de pedido também chamado de ponto de reposição \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{$(s,S)$}} \\[2pt]
-$(s,S)$ & ponto de disparo $s$ & ROP $= \mu L + z\sigma\sqrt{L}$ & $L{=}2$ \\
-$(s,S)$ & nível alvo $S$ & $s + Q^*$ & derivado do EOQ \\
+$(s,S)$ & ponto de pedido $s$ & $\hat{\mu} L + z\sigma\sqrt{L}$ (igual a $s_{\text{ref}}$ da EOQ) & $L{=}2$ \\
+$(s,S)$ & nível alvo $S$ & $s + Q^*$ & $Q^*$ derivado da EOQ ($Q_{\text{ref}}$) \\
 $(s,S)$ & fator de segurança $z$ & $\Phi^{-1}(c_s/(c_s{+}h)) \approx 0{,}97$ & $c_s{=}5$, $h{=}1$ \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Jornaleiro (Newsvendor)}} \\[2pt]
