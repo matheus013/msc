@@ -1,14 +1,55 @@
-﻿\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
+\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
 
 Este capítulo apresenta os fundamentos teóricos necessários à formulação do \textit{Adaptive Inventory Policy Engine} (AIPE), articulando a caracterização de regimes de demanda, a avaliação de políticas de reposição e a estrutura estatística usada para comparação das políticas. O objetivo é estabelecer a base conceitual usada posteriormente na metodologia e na interpretação dos resultados.
 
-O capítulo inicia pela apresentação das principais famílias de decisões de reposição avaliadas nesta dissertação, incluindo políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas GA-RL. Em seguida, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Por fim, são apresentados a formulação do controle de inventário, as métricas de previsão e os testes estatísticos.
-\section{Políticas de Reposição}
+O capítulo inicia pela formulação do problema de reposição, definindo estado, ação, parâmetros, função objetivo e dinâmica de estoque, base comum a todas as famílias de políticas avaliadas. Em seguida, apresentam-se as famílias de políticas de reposição, incluindo políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas GA-RL. Na sequência, discute-se a demanda intermitente e a taxonomia de Syntetos-Boylan, que fundamenta a caracterização dos regimes operacionais a partir da frequência e da variabilidade da demanda. Por fim, são apresentadas as métricas de previsão e os testes estatísticos.
+
+\section{Formulação do Problema de Reposição}
+\label{sec:formulacao_problema}
+
+Antes de descrever as famílias de políticas avaliadas, é necessário definir o problema comum a todas elas. Nesta dissertação, uma política de reposição é uma regra de decisão que observa o estado operacional de uma série loja-produto em cada ciclo e escolhe uma quantidade de pedido. A diferença entre as famílias de políticas está na forma como essa regra é especificada, parametrizada ou aprendida. A estrutura do problema, entretanto, permanece a mesma: há um estado observado, uma ação de reposição, uma dinâmica de estoque e uma função de custo a ser minimizada.
+
+\subsection{Política de Reposição: Estado, Ação e Parâmetros}
+\label{sec:estado_acao_parametros}
+
+No modelo adotado, qualquer política candidata $\pi$ é tratada como uma regra de decisão que observa o estado operacional da série no ciclo $t$ e escolhe uma quantidade de pedido. Formalmente:
+\[
+  \pi: \mathcal{S} \rightarrow \mathcal{A}, \qquad a_t = \pi(\mathbf{s}_t;\, \boldsymbol{\theta}),
+\]
+em que $\mathcal{S}$ é o conjunto de estados possíveis, $\mathcal{A}$ é o conjunto de quantidades admissíveis, $a_t$ é a quantidade solicitada no ciclo $t$ e $\boldsymbol{\theta}$ representa os parâmetros internos da política. Em políticas clássicas, $\boldsymbol{\theta}$ pode conter parâmetros como ponto de pedido, lote ou nível máximo de estoque; em políticas parametrizadas por meta-heurísticas, esses parâmetros são otimizados por busca; em políticas aprendidas por reforço, a regra de decisão é aprendida a partir da interação com o ambiente simulado. A natureza de $\boldsymbol{\theta}$ depende, portanto, da família avaliada, mas a estrutura decisória é mantida comum para todo o portfólio.
+
+No contexto desta dissertação, o estado operacional é representado por $\mathbf{s}_t = (I_t, Q_{t-L}, \hat{D}_{t+1})$. O termo $I_t$ indica o estoque disponível no início do ciclo $t$; $Q_{t-L}$ indica a quantidade pedida em ciclos anteriores que chega após o prazo de entrega (\textit{lead time}) $L$; e $\hat{D}_{t+1}$ representa uma estimativa da demanda futura próxima. A partir desse estado, a política decide o pedido $Q_t$ (a ação $a_t$), que afeta custos futuros de excesso, ruptura e ordenação.
+
+\subsection{Função Objetivo e Dinâmica de Estoque}
+\label{sec:funcao_objetivo}
+
+Com o estado e a ação definidos, o problema de reposição pode ser formulado como a escolha de uma política que minimize o custo esperado ao longo de um horizonte de planejamento. Essa formulação também define o critério usado para avaliar parametrizações geradas por meta-heurísticas e políticas aprendidas por reforço.
+
+O objetivo é escolher a política $\pi$ que minimize o custo total esperado ao longo de um horizonte finito $T$:
+
+\begin{equation}
+  \min_\pi \; \mathbb{E}\left[\sum_{t=1}^{T} \bigl(h\,I_t + c_s\,S_t + c_o^{\text{fix}}\,\mathbf{1}(Q_t>0) + c_o^{\text{var}}\,Q_t\bigr)\right],
+  \label{eq:obj_inv_control}
+\end{equation}
+
+Na Equação~\ref{eq:obj_inv_control}, a soma acumula os custos em todos os ciclos do horizonte experimental. O termo $h\,I_t$ representa o custo de manter unidades em estoque; $c_s\,S_t$ representa o custo associado à demanda não atendida; $c_o^{\text{fix}}\,\mathbf{1}(Q_t>0)$ cobra um custo fixo sempre que há pedido, por meio da função indicadora $\mathbf{1}(Q_t>0)$; e $c_o^{\text{var}}\,Q_t$ representa o custo variável proporcional à quantidade pedida. A esperança $\mathbb{E}[\cdot]$ indica que o desempenho da política é avaliado considerando a incerteza da demanda e, quando aplicável, a variabilidade dos métodos estocásticos de otimização ou aprendizado.
+
+A evolução do estoque é descrita pela dinâmica:
+
+\begin{equation}
+  I_{t+1} = \max(0,\, I_t - D_t) + Q_{t-L}, \quad S_t = \max(0,\, D_t - I_t).
+  \label{eq:balance}
+\end{equation}
+
+Na Equação~\ref{eq:balance}, a demanda observada no ciclo é denotada por $D_t$. O estoque do próximo ciclo, $I_{t+1}$, corresponde ao saldo remanescente após atender a demanda, acrescido dos pedidos que chegam após o prazo de entrega. A variável $S_t$ mede a ruptura, isto é, a parcela da demanda que excede o estoque disponível. Os parâmetros $h$, $c_s$, $c_o^{\text{fix}}$ e $c_o^{\text{var}}$ representam, respectivamente, os custos unitários de manutenção, ruptura, pedido fixo e pedido variável. A razão $c_s/h = 5$ adotada nos experimentos reflete a penalização de vendas não atendidas no contexto de varejo regional.
+
+Com essa formulação definida, as famílias de políticas avaliadas podem ser interpretadas como diferentes formas de escolher a ação de reposição $Q_t$. As políticas clássicas usam regras analíticas ou parâmetros fixos; as políticas parametrizadas por meta-heurísticas buscam valores de parâmetros que minimizam a função objetivo definida nesta seção, avaliada por simulação; e as políticas aprendidas por reforço aprendem diretamente uma regra de decisão a partir da interação com o ambiente.
+
+\section{Famílias de Políticas de Reposição}
 \label{sec:politicas_reposicao}
 
-Antes de discutir a taxonomia de demanda, é útil delimitar o conjunto de decisões que será comparado ao longo da dissertação. Neste trabalho, uma política de reposição é uma regra de decisão que, a partir do estado observado de uma série loja-produto, define se um pedido deve ser emitido e qual quantidade deve ser solicitada. As entradas típicas dessa decisão incluem histórico de demanda, estoque disponível, pedidos em trânsito, tempo de reposição e parâmetros de custo. A saída da política é uma ação de reposição, normalmente representada por uma quantidade de pedido ou por uma decisão de não pedir.
+A partir da formulação anterior, este trabalho organiza as alternativas de reposição em quatro famílias: políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas GA-RL. A distinção entre essas famílias está na forma como a regra de decisão é definida ou ajustada, não no problema operacional subjacente, que permanece comum a todas, conforme apresentado na Seção~\ref{sec:formulacao_problema}.
 
-O objetivo operacional de uma política é equilibrar custo de inventário, nível de serviço, taxa de ruptura, frequência de pedidos e estabilidade dos pedidos enviados ao armazém. Políticas clássicas especificam essa regra por fórmulas fechadas ou parâmetros simples. Métodos de otimização buscam bons valores para esses parâmetros. Políticas aprendidas por reforço constroem a regra de decisão a partir da interação com o ambiente simulado. Nesta seção, essas alternativas são apresentadas de forma conceitual, agrupadas por família metodológica.
 \subsection{Políticas Clássicas}
 
 As três políticas clássicas utilizam parâmetros analíticos derivados das estatísticas locais de cada série e servem como políticas de referência no protocolo comparativo. Elas são importantes porque representam alternativas simples, interpretáveis e amplamente utilizadas em práticas de reposição.
@@ -31,7 +72,7 @@ Determina o pedido ótimo de período único como um quantil da distribuição d
 
 \subsection{Parametrização de Políticas via Meta-Heurísticas}
 
-Nesta dissertação, GA, SA, PSO e DE não são tratados como políticas de reposição autônomas. Eles são métodos de otimização usados para parametrizar uma regra de reposição, principalmente por meio de vetores como $(s,Q)$, em que $s$ é o ponto de reposição e $Q$ é o lote solicitado. Para cada vetor candidato, a política parametrizada é executada no ambiente de simulação e recebe uma avaliação baseada no custo total e nos critérios de viabilidade operacional.
+Nesta dissertação, GA, SA, PSO e DE não são tratados como políticas de reposição independentes. Eles são métodos de busca/otimização usados para parametrizar uma regra de reposição, principalmente por meio de vetores como $(s,Q)$, em que $s$ é o ponto de reposição e $Q$ é o lote solicitado. Eles buscam parametrizações que minimizem a função objetivo definida na Seção~\ref{sec:funcao_objetivo}, avaliada por simulação: para cada vetor candidato, a política parametrizada é executada no ambiente de simulação e recebe uma avaliação baseada no custo total e nos critérios de viabilidade operacional.
 
 Essa abordagem é útil em demanda intermitente porque não exige pressupor uma distribuição paramétrica para a demanda. Em vez disso, a busca avalia diretamente como cada parametrização se comporta sobre o histórico observado, incluindo períodos de demanda nula e picos esporádicos.
 
@@ -177,38 +218,6 @@ A taxonomia Syntetos-Boylan mostra que regimes de demanda distintos podem favore
 \label{fig:sb_quadrant}
 \end{figure}
 
-\section{Formulação do Controle de Inventário}
-
-As famílias de políticas foram apresentadas conceitualmente na Seção~\ref{sec:politicas_reposicao}. Nesta seção, o objetivo é apenas estabelecer o modelo comum de comparação: quais variáveis descrevem o estado do estoque, qual decisão é tomada a cada ciclo, como o custo é acumulado e como o estoque evolui. Essa formalização evita que diferenças de desempenho sejam atribuídas a mudanças no ambiente de avaliação, e não ao comportamento das políticas.
-\subsection{Modelo de Controle}
-
-No modelo adotado, qualquer política candidata $\pi$ é tratada como uma regra de decisão que observa o estado operacional da série no ciclo $t$ e escolhe uma quantidade de pedido. Formalmente:
-\[
-  \pi: \mathcal{S} \rightarrow \mathcal{A}, \qquad a_t = \pi(\mathbf{s}_t;\, \boldsymbol{\theta}),
-\]
-em que $\mathcal{S}$ é o conjunto de estados possíveis, $\mathcal{A}$ é o conjunto de quantidades admissíveis, $a_t$ é a quantidade solicitada no ciclo $t$ e $\boldsymbol{\theta}$ representa os parâmetros internos da política. A natureza de $\boldsymbol{\theta}$ depende da família avaliada, mas a estrutura decisória é mantida comum para todo o portfólio.
-
-No contexto desta dissertação, o estado operacional é representado por $\mathbf{s}_t = (I_t, Q_{t-L}, \hat{D}_{t+1})$. O termo $I_t$ indica o estoque disponível no início do ciclo $t$; $Q_{t-L}$ indica a quantidade pedida em ciclos anteriores que chega após o prazo de entrega $L$; e $\hat{D}_{t+1}$ representa uma estimativa da demanda futura próxima. A partir desse estado, a política decide o pedido $Q_t$, que afeta custos futuros de excesso, ruptura e ordenação.
-
-O objetivo é escolher a política $\pi$ que minimize o custo total esperado ao longo de um horizonte finito $T$:
-
-\begin{equation}
-  \min_\pi \; \mathbb{E}\left[\sum_{t=1}^{T} \bigl(h\,I_t + c_s\,S_t + c_o^{\text{fix}}\,\mathbf{1}(Q_t>0) + c_o^{\text{var}}\,Q_t\bigr)\right],
-  \label{eq:obj_inv_control}
-\end{equation}
-
-Na Equação~\ref{eq:obj_inv_control}, a soma acumula os custos em todos os ciclos do horizonte experimental. O termo $h\,I_t$ representa o custo de manter unidades em estoque; $c_s\,S_t$ representa o custo associado à demanda não atendida; $c_o^{\text{fix}}\,\mathbf{1}(Q_t>0)$ cobra um custo fixo sempre que há pedido, por meio da função indicadora $\mathbf{1}(Q_t>0)$; e $c_o^{\text{var}}\,Q_t$ representa o custo variável proporcional à quantidade pedida. A esperança $\mathbb{E}[\cdot]$ indica que o desempenho da política é avaliado considerando a incerteza da demanda e, quando aplicável, a variabilidade dos métodos de otimização.
-
-A evolução do estoque é descrita pela dinâmica:
-
-\begin{equation}
-  I_{t+1} = \max(0,\, I_t - D_t) + Q_{t-L}, \quad S_t = \max(0,\, D_t - I_t).
-  \label{eq:balance}
-\end{equation}
-
-Na Equação~\ref{eq:balance}, a demanda observada no ciclo é denotada por $D_t$. O estoque do próximo ciclo, $I_{t+1}$, corresponde ao saldo remanescente após atender a demanda, acrescido dos pedidos que chegam após o prazo de entrega. A variável $S_t$ mede a ruptura, isto é, a parcela da demanda que excede o estoque disponível. Os parâmetros $h$, $c_s$, $c_o^{\text{fix}}$ e $c_o^{\text{var}}$ representam, respectivamente, os custos unitários de manutenção, ruptura, pedido fixo e pedido variável. A razão $c_s/h = 5$ adotada nos experimentos reflete a penalização de vendas não atendidas no contexto de varejo regional.
-
-
 \section{Métricas de Previsão}
 
 As métricas clássicas MAE, RMSE e MAPE apresentam deficiências estruturais em regime intermitente: o MAPE é indefinido quando $D_t = 0$ (frequente na série estudada), o RMSE penaliza excessivamente erros em picos isolados, e nenhuma delas é invariante à escala, dificultando comparações entre séries de volume heterogêneo. A M4, quarta edição da \textit{Makridakis Forecasting Competition} e referência internacional para comparação de métodos de previsão de séries temporais, junto ao trabalho de \citet{Hyndman2006MASE}, motivou métricas especificamente desenvolvidas para contornar essas limitações \citep{Makridakis2020M4Competition}, adotadas nesta dissertação.
@@ -276,7 +285,7 @@ O teste de Wilcoxon \textit{signed-rank}, proposto por \citet{Wilcoxon1945Signed
   \label{eq:wilcoxon}
 \end{equation}
 
-onde $D_i = X_i^A - X_i^B$ é a diferença pareada entre as políticas $A$ e $B$ na instância $i$, $X_i^A$ e $X_i^B$ são os valores do KPI $X$ para essas políticas, $\text{sgn}(D_i)$ é o sinal da diferença e $R_i$ é o posto de $|D_i|$ após excluir diferenças nulas. Hipótese nula: $\text{mediana}(D_i) = 0$. Ao contrário do $t$-test, não assume normalidade nem homocedasticidade.
+em que $D_i = X_i^A - X_i^B$ é a diferença pareada entre as políticas $A$ e $B$ na instância $i$, $X_i^A$ e $X_i^B$ são os valores do KPI $X$ para essas políticas, $\text{sgn}(D_i)$ é o sinal da diferença e $R_i$ é o posto de $|D_i|$ após excluir diferenças nulas. Hipótese nula: $\text{mediana}(D_i) = 0$. Ao contrário do $t$-test, não assume normalidade nem homocedasticidade.
 
 \subsection{Teste de Friedman e Nemenyi}
 
@@ -287,14 +296,14 @@ Quando se compara $K > 2$ políticas simultaneamente, o teste de Friedman, propo
   \label{eq:friedman}
 \end{equation}
 
-onde $K$ é o número de políticas comparadas, $N$ é o número de instâncias avaliadas e $\bar{r}_j$ é o posto médio da política $j$ sobre as $N$ instâncias (lojas $\times$ produtos). A rejeição de $H_0$ indica que pelo menos uma política tem desempenho diferente. O \textit{post-hoc} de Nemenyi, proposto por \citet{Nemenyi1963PostHoc}, computa a diferença crítica (DC):
+em que $K$ é o número de políticas comparadas, $N$ é o número de instâncias avaliadas e $\bar{r}_j$ é o posto médio da política $j$ sobre as $N$ instâncias (lojas $\times$ produtos). A rejeição de $H_0$ indica que pelo menos uma política tem desempenho diferente. O \textit{post-hoc} de Nemenyi, proposto por \citet{Nemenyi1963PostHoc}, computa a diferença crítica (DC):
 
 \begin{equation}
   \text{DC} = q_\alpha \sqrt{\frac{K(K+1)}{6N}},
   \label{eq:cd}
 \end{equation}
 
-onde $q_\alpha$ é o quantil da distribuição de Studentized range para o nível de significância $\alpha$. Políticas cujos postos médios diferem em mais de DC são estatisticamente distinguíveis a nível $\alpha$.
+em que $q_\alpha$ é o quantil da distribuição de Studentized range para o nível de significância $\alpha$. Políticas cujos postos médios diferem em mais de DC são estatisticamente distinguíveis a nível $\alpha$.
 
 \subsection{Tamanho de Efeito}
 
