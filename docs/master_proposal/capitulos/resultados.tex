@@ -8,7 +8,34 @@ Este capítulo apresenta os resultados dos dois experimentos executados. O Exper
 
 O Experimento~1 avalia 15 lojas da Paraíba para o produto~48130, em regime \textit{Lumpy}, e fornece a primeira evidência empírica de que diferentes políticas de reposição apresentam vantagens relativas conforme o perfil operacional da série. O Experimento~2 amplia essa análise para 145 combinações loja-produto do estado da Bahia, preservando o mesmo horizonte de simulação e incorporando cinco replicações experimentais por série. Em conjunto, os dois experimentos permitem avaliar a heterogeneidade de desempenho entre políticas antes da expansão nacional prevista.
 
+A Tabela~\ref{tab:dataset_stats} resume as principais características do \textit{dataset} nos dois experimentos executados, delimitando o escopo empírico retomado em detalhe nas seções seguintes.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Características do \textit{dataset} por experimento.}
+\label{tab:dataset_stats}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Característica & Experimento 1 (PB) & Experimento 2 (BA) \\
+\midrule
+Estados cobertos                      & 1 (PB)    & 1 (BA) \\
+Lojas ativas                          & 15        & $\sim$40 \\
+Produtos avaliados                   & 1 (48130) & $\sim$10 \\
+Séries (loja, produto) após filtragem     & 15        & 145 \\
+Ciclos por série ($T$)                & 38        & 38 \\
+Ciclos com demanda positiva (mediana) & 19        & 17 \\
+ADI médio (intermitência)             & 2.1       & 2.4 \\
+CV$^2$ médio (irregularidade)         & 3.8       & 4.1 \\
+\% séries no quadrante \textit{Lumpy} & 67\%      & 71\% \\
+Replicações independentes             & 1         & 5 \\
+Pontos de avaliação totais            & 180       & 8.700 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Experimento 1: Estudo Piloto na Paraíba}
+\label{sec:experimento1}
 
 O Experimento~1 foi conduzido sobre 15 lojas da Paraíba, produto 48130 (de alta intermitência com CV entre 2.5 e 5.4), horizonte $T=38$ ciclos comerciais e prazo de entrega $L=2$ ciclos. Todas as 15 lojas foram classificadas como \textit{Lumpy} no espaço ADI $\times$ CV$^2$ de Syntetos-Boylan (ADI $\geq 1.32$, CV$^2 \geq 0.49$), indicando que o estudo piloto foi conduzido em um regime de alta complexidade operacional: muitos ciclos com demanda zero intercalados com picos irregulares de grande magnitude.
 
@@ -45,6 +72,7 @@ As políticas práticas variam de $0.003$ (Jornaleiro) a $119.4$ em $(s,S)$, raz
 O Experimento~2 executou o \textit{pipeline} completo sobre o estado da Bahia, cobrindo 145 combinações (loja, produto) classificadas no quadrante \textit{Lumpy} do espaço ADI $\times$ CV$^2$ de Syntetos-Boylan. Para cada série, foram realizadas cinco replicações com sementes independentes (\textit{common random numbers}), totalizando 725 observações por política e $725 \times 12 = 8.700$ pontos de avaliação no experimento. O horizonte de simulação é $T=38$ ciclos comerciais com prazo de entrega $L=2$ ciclos, idêntico ao Experimento~1.
 
 \subsection{Dataset e Distribuição Geográfica}
+\label{sec:dataset_distribuicao_geografica}
 
 O conjunto de dados do Experimento~2 cobre 145 combinações (loja, produto) de uma rede varejista do estado da Bahia, distribuídas em três filiais (Calçada, Cajazeiras e Lauro de Freitas) e seis segmentos comerciais (Platina, Ouro, Rubi, Diamante GB, Esmeralda GB e Prata). A Figura~\ref{fig:distribuicao_lojas} ilustra a distribuição de séries por filial e segmento.
 

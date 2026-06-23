@@ -79,7 +79,7 @@ A cadeia de suprimentos modela três escalões hierárquicos:
 \subsection{Métricas de Avaliação}
 \label{sec:metricas_avaliacao}
 
-As métricas já foram definidas conceitualmente no Capítulo~\ref{cap:tec}; aqui elas são retomadas apenas para explicitar como o \textit{benchmark} calcula o desempenho de cada política em cada série. Esta etapa recebe as trajetórias simuladas e entrega cinco indicadores para cada combinação (política, loja) ao fim de $T$ ciclos:
+As métricas conceituais foram apresentadas no Capítulo~\ref{cap:tec}. Nesta seção, elas são retomadas apenas para indicar sua função no \textit{pipeline} experimental. Cada política avaliada no ambiente de simulação gera um conjunto de indicadores por série loja-produto ao fim de $T$ ciclos. Esses indicadores são usados em quatro pontos do AIPE: comparação de políticas no \textit{benchmark}, definição de viabilidade operacional, geração de rótulos de política dominante e análise complementar de estabilidade.
 
 \begin{itemize}
   \item \textit{CTI} (Custo Total de Inventário): $\sum_{t}[h I_t + c_s S_t + c_o^{\text{fix}}\mathbf{1}(Q_t>0) + c_o^{\text{var}}Q_t]$;
@@ -89,7 +89,9 @@ As métricas já foram definidas conceitualmente no Capítulo~\ref{cap:tec}; aqu
   \item \textit{FP} (Frequência de Pedidos): fração de ciclos com ao menos um pedido emitido.
 \end{itemize}
 
-Esses cinco indicadores formam a base comparativa das políticas candidatas. No segundo experimento, eles são complementados por métricas de previsão (MASE, sMAPE, RMSSE) usadas como sinais auxiliares para o PSE. Assim, a metodologia não escolhe o melhor modelo de previsão como fim em si mesmo; ela avalia se esses sinais aumentam a capacidade de selecionar políticas de reposição de forma contextual.
+No \textit{pipeline} experimental, o CTI é usado como critério principal de custo na comparação entre políticas e na definição de política dominante. O NS atua como restrição de viabilidade: políticas com nível de serviço abaixo do limiar mínimo ($\alpha_{\min}=0{,}70$) não são consideradas dominantes, mesmo que apresentem baixo custo. A TR é métrica complementar para interpretar a frequência de falhas de atendimento. O BE é usado para avaliar a estabilidade operacional dos pedidos e compõe a análise complementar de custo ajustado por estabilidade, apresentada a seguir. A FP identifica padrões degenerados de decisão, como ausência quase total de pedidos ou emissão excessiva de pedidos. Assim, as métricas não aparecem apenas como indicadores descritivos: elas determinam quais políticas são comparáveis, quais são viáveis e quais geram rótulos para o PSE.
+
+No segundo experimento, esses cinco indicadores são complementados por métricas de previsão (MASE, sMAPE, RMSSE), usadas como sinais auxiliares de caracterização para o PSE, não como critério final de escolha da política: a metodologia não escolhe o melhor modelo de previsão como fim em si mesmo, mas avalia se esses sinais aumentam a capacidade de selecionar políticas de reposição de forma contextual.
 
 Além do CTI original, usado como custo direto de inventário, esta dissertação reporta uma métrica complementar de custo operacional ajustado por estabilidade. Essa métrica combina o CTI normalizado e uma penalidade baseada no BE normalizado, permitindo avaliar se políticas de menor custo direto também preservam estabilidade nos pedidos enviados ao armazém:
 \begin{equation}
@@ -103,39 +105,9 @@ Esta seção descreve o conjunto de dados transacional utilizado nos experimento
 
 \subsection{Base de Dados}
 
-Os dados provêm de uma base transacional de gestão de vendas de uma rede de varejo do Nordeste brasileiro. O conjunto completo compreende aproximadamente 48 milhões de transações, cobrindo 26 estados e o DF, com cerca de 12 mil produtos e 3 milhões de pares (loja, produto) ao longo de 38 ciclos comerciais (janeiro/2023 a abril/2025). O \textit{dataset} é proprietário e de acesso restrito. A rastreabilidade do \textit{pipeline} permite reproduzir integralmente todos os experimentos a partir dos dados originais, configurações e código-fonte com sementes aleatórias fixas.
+A base de dados utilizada nesta proposta é composta por registros transacionais de venda de uma rede varejista brasileira, agregados por ciclo comercial. Na metodologia, a base é tratada como entrada do \textit{pipeline} experimental: os registros brutos são agregados em séries loja-produto, organizados em ciclos comerciais e submetidos a critérios mínimos de qualidade antes da simulação (Seção~\ref{sec:pipeline_experimental}). Por se tratar de uma base proprietária, os dados brutos não são disponibilizados publicamente. A rastreabilidade dos experimentos é preservada por meio dos scripts de pré-processamento, parâmetros de configuração, sementes aleatórias e artefatos derivados gerados pelo \textit{pipeline}.
 
-A Tabela~\ref{tab:dataset_stats} resume as principais características do \textit{dataset} nos dois experimentos executados. Essa síntese é usada apenas para delimitar o escopo metodológico; a análise empírica detalhada de distribuição geográfica, perfis e desempenho das políticas é apresentada no Capítulo~\ref{cap:results}.
-
-\begin{table}[ht]
-\centering
-\small
-\caption{Características do \textit{dataset} por experimento.}
-\label{tab:dataset_stats}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Característica & Experimento 1 (PB) & Experimento 2 (BA) \\
-\midrule
-Estados cobertos                      & 1 (PB)    & 1 (BA) \\
-Lojas ativas                          & 15        & $\sim$40 \\
-Produtos avaliados                   & 1 (48130) & $\sim$10 \\
-Séries (loja, produto) após filtragem     & 15        & 145 \\
-Ciclos por série ($T$)                & 38        & 38 \\
-Ciclos com demanda positiva (mediana) & 19        & 17 \\
-ADI médio (intermitência)             & 2.1       & 2.4 \\
-CV$^2$ médio (irregularidade)         & 3.8       & 4.1 \\
-\% séries no quadrante \textit{Lumpy} & 67\%      & 71\% \\
-Replicações independentes             & 1         & 5 \\
-Pontos de avaliação totais            & 180       & 8.700 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-A dominância do quadrante \textit{Lumpy} (ADI $>1.32$ e CV$^2 > 0.49$) nos dois experimentos delimita um contexto de demanda intermitente e irregular: vendas concentradas em poucas revendedoras ativas por ciclo, com picos de grande magnitude. Esse regime é desafiador para políticas clássicas e justifica a avaliação de seleção contextual, sem pressupor que uma única política seja a mais adequada para todas as séries.
-
-O primeiro experimento aplica um recorte controlado: estado da Paraíba, produto único (48130, alta intermitência), lojas com $\geq 17$ ciclos com demanda positiva. Esse recorte foi usado para validar a dinâmica experimental em escala reduzida antes da ampliação do portfólio.
-
-O segundo experimento expande o escopo para o estado da Bahia e para múltiplos produtos ativos. A filtragem automática seleciona séries com CV $\geq 1.5$ e ciclos positivos suficientes para discriminar entre políticas. A extensão para todos os estados brasileiros compõe a etapa futura de generalização nacional.
+Detalhes sobre o recorte efetivamente usado em cada experimento, incluindo estados, número de séries, distribuição geográfica e predominância de regimes de demanda, são apresentados no Capítulo~\ref{cap:results} (Seções~\ref{sec:experimento1} e~\ref{sec:dataset_distribuicao_geografica}).
 
 \subsection{Estrutura Temporal}
 
@@ -143,11 +115,12 @@ A base registra vendas por \textit{ciclo comercial} (17 ciclos por ano, $\approx
 
 \subsection{Regimes de Demanda}
 
-Após a agregação por ciclo, cada série (loja, produto) é caracterizada pelos índices de Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) e classificada em um dos quatro quadrantes: \textit{Smooth} (ADI $\leq 1.32$, CV$^2 \leq 0.49$), \textit{Erratic} (ADI $\leq 1.32$, CV$^2 > 0.49$), \textit{Intermittent} (ADI $> 1.32$, CV$^2 \leq 0.49$) e \textit{Lumpy} (ADI $> 1.32$, CV$^2 > 0.49$). A Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório geral do AIPE.
+A classificação por regime de demanda é aplicada após a agregação das vendas em ciclos comerciais. Para cada série loja-produto, calculam-se ADI e CV$^2$ conforme a taxonomia de Syntetos-Boylan apresentada na Seção~\ref{sec:sb_taxa}. O regime resultante é usado como característica operacional da série e como apoio à estratificação das análises; a Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório geral do AIPE. Nesta metodologia, a classificação não é tratada como resultado em si, mas como uma etapa de preparação das entradas usadas pelo AIPE.
 
-A heterogeneidade dos regimes no \textit{dataset} é marcante: o ADI varia de $1.02$ a $8.7$ e o CV$^2$ de $0.8$ a $18.4$ nas séries do segundo experimento, cobrindo desde séries quase regulares até padrões de demanda extremamente esporádica. Essa diversidade é um ativo central do estudo: a vantagem relativa de uma política em relação a outra varia com a posição da série no plano ADI $\times$ CV$^2$, e é exatamente essa relação que o PSE busca aprender a partir das entradas operacionais. Essa classificação orienta a estratificação das análises e a seleção de modelos de previsão e políticas recomendadas por regime.
+A distribuição efetiva dos regimes nos recortes experimentais, incluindo a predominância de séries \textit{Lumpy}, é discutida no Capítulo~\ref{cap:results} (Seção~\ref{sec:threats}).
 
 \subsection{Pipeline Experimental}
+\label{sec:pipeline_experimental}
 
 O pré-processamento recebe dados transacionais brutos e entrega séries de demanda estruturadas para simulação. Esse \textit{pipeline} é necessário porque: (i) dados brutos contêm inconsistências, (ii) a granularidade deve refletir decisões operacionais reais, e (iii) as séries precisam ter qualidade suficiente para discriminar entre políticas. As etapas são:
 
