@@ -55,17 +55,21 @@ Dentro do quadrante \textit{Lumpy}, as 15 lojas apresentam heterogeneidade consi
 
 \subsection{Explicação dos Resultados}
 
-\paragraph{Por que o GA-DQN teve melhor desempenho que o DQN isolado em regime \textit{Lumpy} com horizonte curto.}
-O GA pré-popula o \textit{replay buffer} com 5.000 avaliações simuladas ($100 \times 50$ gerações), reduzindo a dependência de exploração em horizonte de apenas 570 transições reais ($15 \times 38$) e contornando o requisito da ordem de $10^6$ passos do DQN isolado \citep{Oroojlooyjadid2022BeerGameDQN}.
+\subsubsection*{Desempenho do GA-DQN em horizonte curto}
 
-\paragraph{Por que o PPO isolado degenera.}
-Sem inicialização, o gradiente da política estocástica converge para maximizar NS imediato, ignorando o custo de manutenção (FP\,=\,$0.98$). O buffer pré-populado pelo GA força o GA-PPO a partir de uma região de equilíbrio custo-serviço, evitando essa degeneração e reduzindo FP para $0.35$.
+No recorte avaliado, o GA-DQN apresentou desempenho superior ao DQN isolado porque partiu de uma região de decisão previamente explorada por simulação. O GA pré-popula o \textit{replay buffer} com 5.000 avaliações simuladas ($100 \times 50$ gerações), reduzindo a dependência de exploração em um horizonte de apenas 570 transições reais ($15 \times 38$). Essa inicialização sugere uma explicação para o ganho observado, especialmente porque o DQN isolado costuma demandar uma ordem de $10^6$ passos para estabilizar o aprendizado em problemas de inventário \citep{Oroojlooyjadid2022BeerGameDQN}. A interpretação, portanto, é restrita ao horizonte curto e ao regime \textit{Lumpy} do experimento piloto.
 
-\paragraph{Meta-heurísticas versus RL em horizonte curto.}
-Meta-heurísticas otimizam diretamente $(s,Q)$ pela simulação do horizonte completo, integrando toda a informação disponível de uma vez. Em $T=38$, a otimização global tende a ser mais adequada, justificando o papel do GA como inicializador nas arquiteturas híbridas. A combinação recupera a eficiência do RL em horizontes longos sem sacrificar a estabilidade das meta-heurísticas.
+\subsubsection*{Degeneração do PPO isolado}
 
-\paragraph{Efeito \textit{bullwhip}.}
-As políticas práticas variam de $0.003$ (Jornaleiro) a $119.4$ em $(s,S)$, razão acima de 40.000 vezes. O GA-DQN ($\text{BE}=5.0$) e o DQN isolado ($\text{BE}=4.1$) apresentam menor amplificação por aprenderem a antecipar picos de demanda, dimensão relevante para distribuidores e operadores logísticos no regime \textit{Lumpy}.
+O PPO isolado apresentou comportamento degenerado no recorte avaliado. Sem inicialização, o gradiente da política estocástica tendeu a maximizar NS imediato por meio de pedidos muito frequentes, elevando FP para $0.98$ e ignorando parte relevante do custo de manutenção. O GA-PPO reduziu esse efeito porque o \textit{replay buffer} pré-populado pelo GA deslocou o treinamento para uma região inicial de maior equilíbrio custo-serviço, reduzindo FP para $0.35$. Esse resultado indica benefício da inicialização híbrida, mas não implica que o PPO seja inadequado em horizontes maiores ou com outra configuração de recompensa.
+
+\subsubsection*{Meta-heurísticas e aprendizado por reforço em horizonte curto}
+
+As meta-heurísticas avaliam diretamente parametrizações $(s,Q)$ por simulação no horizonte disponível, integrando toda a informação observada de uma vez. O aprendizado por reforço, por sua vez, depende de interação sequencial e pode exigir mais episódios para distinguir ações úteis de ações apenas oportunistas. Em $T=38$, essa diferença favorece métodos que exploram o espaço de parâmetros de forma direta, o que ajuda a explicar o papel do GA como inicializador nas arquiteturas híbridas. Essa leitura não significa que meta-heurísticas sejam sempre superiores ao RL; ela indica apenas que, no horizonte curto do Experimento~1, a inicialização por simulação reduziu instabilidade de treinamento.
+
+\subsubsection*{Efeito \textit{bullwhip}}
+
+O efeito \textit{bullwhip} complementa a leitura de custo e serviço ao medir instabilidade dos pedidos enviados ao armazém. No Experimento~1, as políticas práticas variaram de $0.003$ (Jornaleiro) a $119.4$ em $(s,S)$, razão acima de 40.000 vezes. Valores extremos de BE indicam que pequenas variações de demanda podem gerar pedidos muito mais voláteis a montante, criando pressão sobre armazém, transporte e planejamento logístico. Nesse recorte, GA-DQN ($\text{BE}=5.0$) e DQN isolado ($\text{BE}=4.1$) apresentaram menor amplificação, sugerindo que aprenderam padrões de antecipação de picos de demanda no regime \textit{Lumpy}.
 
 \section{Experimento 2: Expansão na Bahia}
 
