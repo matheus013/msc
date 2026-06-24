@@ -181,7 +181,11 @@ O resultado desta etapa é um vetor $\phi(\mathbf{x}_i)$ associado a cada série
 
 \subsection{Perfis Operacionais de Demanda}
 
-Com base nas características acima, cada série é classificada em um dos cinco \textit{Perfis Operacionais de Demanda} (POD) por regras hierárquicas (Tabela~\ref{tab:pod}). O POD é uma heurística operacional baseada em limiares interpretáveis, não um agrupamento obtido por algoritmo de \textit{clustering}. Ao contrário da classificação Syntetos-Boylan, o POD é orientado à decisão: seu objetivo é fornecer uma linguagem intermediária para o PSE, não apenas descrever o padrão de demanda. Na tabela, a coluna ``POD'' nomeia o perfil; ``Característica principal'' resume o comportamento dominante da demanda naquele perfil; ``Critério'' apresenta a regra hierárquica utilizada para classificar a série; e ``Política de referência inicial'' indica a associação usada pelo módulo de perfilamento antes do \textit{benchmark}. Essa associação não substitui a seleção final: a política dominante efetiva é definida posteriormente pela simulação, pela validação estatística e pelo critério da Equação~\ref{eq:policy_selector}.
+Com base no vetor de características $\phi(\mathbf{x}_i)$, cada série é associada a um \textit{Perfil Operacional de Demanda} (POD). Os PODs são definidos por regras heurísticas interpretáveis, configuradas no \textit{pipeline} experimental, e têm a função de aproximar características estatísticas da série de situações operacionais reconhecíveis pela gestão de estoque.
+
+Diferentemente da taxonomia ADI-CV$^2$, que classifica regimes gerais de demanda, os PODs foram definidos para apoiar a decisão de reposição. Eles agrupam séries que podem exigir políticas semelhantes, mesmo quando pertencem ao mesmo quadrante Syntetos-Boylan. Assim, o POD não substitui a taxonomia Syntetos-Boylan; ele acrescenta uma camada operacional de estratificação usada nesta proposta.
+
+Os critérios da Tabela~\ref{tab:pod} foram definidos a partir das características calculadas na seção anterior e parametrizados em arquivo de configuração do experimento. Essa escolha preserva rastreabilidade e permite recalibrar os limiares em recortes futuros, especialmente na expansão nacional. Na tabela, a coluna ``POD'' nomeia o perfil operacional; ``Característica principal'' resume o comportamento dominante da série; ``Critério'' apresenta a regra usada para atribuir a série ao perfil; e ``Política de referência inicial'' indica uma associação preliminar usada na etapa metodológica. Essa última coluna não antecipa dominância definitiva: a dominância empírica é avaliada nos resultados, a partir do CTI e do NS observados em simulação.
 
 \begin{table}[htbp]
 \centering
@@ -203,13 +207,15 @@ Fast Moving        & Demanda frequente & ADI $< 1.32$ & $(s,S)$ \\
 }% end resizebox
 \end{table}
 
-As regras são aplicadas de forma hierárquica, na ordem apresentada na Tabela~\ref{tab:pod}: primeiro são identificadas séries esparsas de alto impacto, depois padrões sazonais ou explosivos, séries com tendência ou distribuição difusa, séries estáveis de baixo volume e, por fim, séries de demanda frequente. Os limiares são configuráveis via \texttt{demand\_profiling.yml} e calibráveis por análise exploratória do \textit{dataset}. Essa parametrização preserva a reprodutibilidade e permite adaptar o perfilamento a outros recortes de dados.
+As regras são aplicadas de forma hierárquica, na ordem apresentada na Tabela~\ref{tab:pod}: primeiro são identificadas séries esparsas de alto impacto, depois padrões sazonais ou explosivos, séries com tendência ou distribuição difusa, séries estáveis de baixo volume e, por fim, séries de demanda frequente. Os limiares são configuráveis via \texttt{demand\_profiling.yml} e foram definidos inicialmente por análise exploratória e conhecimento operacional. Essa parametrização preserva a reprodutibilidade e permite adaptar o perfilamento a outros recortes de dados.
 
-O POD é a linguagem operacional usada como entrada pelo PSE: toda recomendação de política parte do perfil da série, não de características isoladas. O fluxo decisório completo organiza-se sequencialmente como:
+Os PODs funcionam como uma representação operacional intermediária para o PSE. A recomendação não depende apenas do nome do perfil, mas do conjunto de características que descreve a série e permite comparar sua proximidade com séries já avaliadas. O fluxo de uso dos PODs pode ser resumido da seguinte forma: cada série $\mathbf{x}_i$ é transformada em um vetor de características $\phi(\mathbf{x}_i)$; esse vetor permite atribuir um perfil $p$; o perfil e as demais características alimentam o seletor $f$, que recomenda uma política $\hat{\pi}^*(i)$; por fim, a política recomendada é avaliada por KPIs simulados, como CTI, NS, TR, BE e FP.
+
+Assim, o POD não é o resultado final do AIPE. Ele é uma representação intermediária usada para tornar a seleção de políticas mais interpretável, e a notação abaixo explicita essa sequência:
 \[
   \underbrace{\mathbf{x}_i}_{\text{série}} \;\xrightarrow{\;\phi\;}\; \underbrace{\phi(\mathbf{x}_i) \in \mathbb{R}^{17}}_{\text{características}} \;\xrightarrow{\;\mathrm{POD}\;}\; \underbrace{p \in \{1,\ldots,5\}}_{\text{perfil}} \;\xrightarrow{\;f\;}\; \underbrace{\hat{\pi}^*(i) \in \Pi}_{\text{política}} \;\xrightarrow{\;\mathrm{sim}\;}\; \underbrace{(\mathrm{CTI},\,\mathrm{NS},\,\mathrm{TR},\,\mathrm{BE},\,\mathrm{FP})}_{\text{KPIs esperados}}
 \]
-A generalização para séries não vistas é avaliada por validação cruzada estratificada.
+A generalização para séries não vistas é avaliada por validação cruzada estratificada. Essa avaliação verifica se o seletor treinado sobre séries já rotuladas mantém desempenho preditivo quando aplicado a perfis não usados diretamente no ajuste.
 
 \begin{figure}[ht]
 \centering
