@@ -75,9 +75,9 @@ Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do li
 % TABELA A.2: Políticas clássicas e meta-heurísticas
 % ─────────────────────────────────────────────────────────────────────────────
 
-Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas, por sua vez, cada candidato é uma política $(s,Q)$, em que $s$ representa o ponto de reposição e $Q$ representa a quantidade de pedido. A avaliação de cada candidato ocorre pela execução da política correspondente no ambiente de simulação, retornando os indicadores de custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos.
+Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas, por sua vez, cada candidato é uma parametrização da política $(s,Q)$, em que $s$ representa o ponto de reposição e $Q$ representa a quantidade de pedido. A avaliação de cada candidato ocorre pela execução da política correspondente no ambiente de simulação, retornando os indicadores de custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos.
 
-Para o Algoritmo Genético, cada indivíduo da população é codificado como um vetor contínuo $(s,Q)$. A população inicial é amostrada dentro dos limites operacionais admissíveis para a série avaliada. A seleção é realizada por torneio, favorecendo indivíduos com maior aptidão. O operador de cruzamento combina os parâmetros de dois indivíduos pais por meio de cruzamento do tipo \textit{Blend}, enquanto a mutação aplica perturbação gaussiana aos genes, seguida de ajuste aos limites admissíveis. Dessa forma, o GA busca combinações de $(s,Q)$ que maximizem a aptidão definida para o experimento.
+Para o Algoritmo Genético, cada indivíduo da população é codificado como um vetor contínuo $(s,Q)$. A população inicial é amostrada dentro dos limites operacionais admissíveis para a série avaliada. A seleção é realizada por torneio, favorecendo indivíduos com melhor avaliação; o cruzamento combina os parâmetros de dois indivíduos pais por meio de cruzamento do tipo \textit{Blend}; e a mutação aplica perturbação gaussiana aos genes, seguida de ajuste aos limites admissíveis. Dessa forma, o GA busca combinações de $(s,Q)$ que reduzam o custo simulado sem perder viabilidade de serviço.
 
 As demais meta-heurísticas usam a mesma representação de solução e a mesma função de avaliação. No SA, uma solução inicial $(s,Q)$ é iterativamente perturbada por movimentos de vizinhança, aceitando pioras de custo com probabilidade controlada pela temperatura e pelo cronograma de resfriamento. No PSO, cada partícula representa um par $(s,Q)$ com velocidade própria, sendo atualizada por termos de inércia, atração ao melhor ponto individual e atração ao melhor ponto global do enxame. No DE, cada vetor $(s,Q)$ é atualizado por mutação diferencial e cruzamento binomial, preservando apenas candidatos que melhoram a função objetivo.
 
@@ -120,7 +120,7 @@ GA & número de gerações & 50 & \\
 GA & taxa de crossover & 0,9 & operador Blend, $\alpha{=}0{,}5$ \\
 GA & taxa de mutação & 0,05 & gaussiana, $\sigma{=}\mathrm{range}/10$ \\
 GA & método de seleção & torneio de tamanho 3 & \\
-GA & função fitness & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & maximiza NS com penalidade de custo \\
+GA & função de avaliação & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & aptidão escalar; rótulos finais usam menor CTI viável \\
 GA & semente & 42 & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{SA (Simulated Annealing)}} \\[2pt]
