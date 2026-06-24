@@ -345,21 +345,28 @@ As políticas GA-DQN e GA-PPO são tratadas como especialistas do portfólio ava
 \section{Ambiente de Simulação e Benchmark de Políticas}
 \label{sec:simulacao_benchmark}
 
-O ambiente \textit{InventoryEnv} serve como plataforma de \textit{benchmark} comum para todas as doze políticas candidatas. Ele não é uma política de reposição; é o simulador que recebe uma série histórica de demanda, parâmetros de custo, estoque inicial, prazo de entrega e uma política candidata, executando a dinâmica de inventário ciclo a ciclo. A padronização das condições de avaliação permite atribuir as diferenças de desempenho ao comportamento das políticas, não ao ambiente de teste.
+O ambiente de simulação é o componente que permite comparar todas as políticas sob as mesmas condições. Para cada série loja-produto, o \textit{InventoryEnv} recebe a demanda observada por ciclo, o estoque inicial, o prazo de reposição, os custos operacionais e a política a ser avaliada. Em cada ciclo, a política observa o estado disponível, decide se emite pedido e em qual quantidade, e o ambiente atualiza estoque, demanda atendida, ruptura, pedidos em trânsito e custos acumulados. Ao final do horizonte, o ambiente devolve os indicadores CTI, NS, TR, BE e FP. Esses indicadores compõem o \textit{benchmark} de políticas e são usados posteriormente para gerar rótulos de política dominante para o PSE.
+
+O \textit{InventoryEnv} não é uma política de reposição. Ele é o simulador comum no qual políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas são avaliadas de forma comparável. Essa padronização permite atribuir diferenças de desempenho às decisões das políticas, e não a mudanças no ambiente de avaliação.
 
 \subsection{Ambiente InventoryEnv}\label{sec:inventory_env}
 
-O ambiente \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas e Stable-Baselines3 (\textit{backend} PyTorch), simula a reposição em horizonte discreto com as seguintes características:
+O \textit{InventoryEnv}, implementado em Python~3.11 com NumPy, Pandas e Stable-Baselines3 (\textit{backend} PyTorch), simula a reposição em horizonte discreto. A descrição a seguir organiza o ambiente em entradas, processo de simulação e saídas.
+
+\paragraph{Entradas.}
+Cada chamada de simulação recebe a série de demanda por ciclo, o estoque inicial, o prazo de entrega $L$, os custos de manutenção, ruptura, pedido fixo e pedido variável, a política candidata e seus parâmetros. Para políticas clássicas e meta-heurísticas, esses parâmetros incluem limiares e lotes de pedido, como $s$, $S$ e $Q$. Para agentes de aprendizado por reforço, a entrada inclui também o estado observado pelo agente e a ação retornada a cada chamada do método \texttt{step}.
+
+\paragraph{Processo de simulação.}
+A cada ciclo $t$, a política recebe o estado disponível e retorna uma ação de reposição. O ambiente registra o pedido, atualiza a chegada de pedidos emitidos em ciclos anteriores após o prazo $L$, observa a demanda real do ciclo e calcula quanto foi atendido e quanto virou ruptura. Em seguida, atualiza o estoque, acumula custos, registra pedidos em trânsito e avança para o próximo ciclo. Essa sequência é repetida até o final do horizonte experimental.
+
+\paragraph{Saídas.}
+Ao final da simulação, o ambiente devolve a trajetória de estoque, os pedidos emitidos, a demanda atendida, as rupturas e os KPIs agregados CTI, NS, TR, BE e FP. Para agentes de aprendizado por reforço, também fornece a recompensa de ciclo, definida a partir do custo operacional. A mesma série de demanda, a mesma semente aleatória (\textit{seed}=42) e os mesmos parâmetros de custo são mantidos entre políticas para viabilizar comparação controlada.
 
 \begin{itemize}
-  \item Entrada formada por série de demanda, custos operacionais, prazo de entrega, estoque inicial e política candidata;
   \item Dinâmica de estoque conforme Seção~\ref{sec:funcao_objetivo};
   \item Prazo de entrega fixo $L=2$ ciclos nos dois experimentos executados;
-  \item Execução ciclo a ciclo, com recebimento de pedidos em trânsito, realização da demanda, cálculo de ruptura, emissão de novo pedido e atualização do estoque;
   \item API compatível com Gymnasium (\texttt{reset}, \texttt{step}), permitindo que qualquer agente SB3 treine no mesmo ambiente;
-  \item Semente aleatória fixa (\textit{seed}=42) e \textit{common random numbers} para comparações controladas;
-  \item Série de demanda real mantida idêntica para todas as políticas;
-  \item Saída formada por trajetória simulada, recompensa de ciclo para agentes de RL e KPIs agregados CTI, NS, TR, BE e FP.
+  \item Uso de \textit{common random numbers} quando há aleatoriedade na política ou no treinamento.
 \end{itemize}
 
 \subsection{Custos de Simulação}
