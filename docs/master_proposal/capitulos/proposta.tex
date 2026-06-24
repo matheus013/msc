@@ -8,7 +8,7 @@ Nesta dissertação, o AIPE é a proposta metodológica principal: um \textit{fr
 
 Dados preparados, características das séries e sinais de previsão compõem a camada de entrada. O foco do AIPE está em transformar esses insumos em decisões de política por comparação empírica, validação estatística e aprendizado supervisionado; as etapas de entrada, tomadas isoladamente, não constituem a contribuição central.
 
-Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, seleciona-se a alternativa de maior NS, conforme formalizado na Equação~\ref{eq:policy_selector}. Esses rótulos alimentam o PSE, cuja saída é uma recomendação de política de reposição para novas séries loja-produto.
+Em seguida, as políticas candidatas são avaliadas em um ambiente de simulação comum. Para cada série, a política dominante é definida como aquela que apresenta o menor CTI entre as políticas operacionalmente viáveis, considerando o limiar mínimo de NS $\geq 0{,}70$. Quando nenhuma política satisfaz esse limiar, a série é registrada como caso limite e a alternativa de maior NS pode ser usada apenas como fallback analítico, conforme formalizado na Equação~\ref{eq:policy_selector}. Esses rótulos alimentam o PSE, cuja saída é uma recomendação de política de reposição para novas séries loja-produto.
 
 O aprendizado de máquina aparece em dois níveis distintos na metodologia. No primeiro, políticas aprendidas por reforço, como DQN, PPO e SARSA, são candidatas comparadas às políticas clássicas, às políticas parametrizadas por meta-heurísticas e às políticas híbridas. No segundo, o PSE atua como meta-modelo supervisionado que aprende a escolher qual política candidata tende a ser mais adequada para cada perfil operacional de demanda.
 
@@ -443,25 +443,25 @@ Todos os testes são realizados ao nível de significância $\alpha = 0.05$, com
 \section{Geração de Rótulos e Treinamento do PSE}
 \label{sec:selecao_contextual}
 
-O \textit{Policy Selection Engine} (PSE) transforma os resultados simulados em uma regra de recomendação para séries não vistas. A seleção de políticas é formulada como uma instância supervisionada do problema de seleção de algoritmos (\textit{Algorithm Selection Problem}, ASP): cada série loja-produto é descrita por atributos operacionais, o \textit{benchmark} identifica a política dominante segundo CTI e NS, e o PSE aprende a relação entre perfil operacional e política recomendada.
+Depois que as políticas são avaliadas no ambiente de simulação, o próximo passo é transformar esses resultados em exemplos de treinamento para o PSE. Cada série loja-produto passa a ter dois tipos de informação: suas características operacionais e o desempenho observado de cada política no \textit{benchmark}. A partir desses resultados, define-se um rótulo de política para a série: a política viável de menor CTI, considerando o limiar mínimo de NS. O PSE aprende a aproximar essa relação, isto é, a associar características da série a uma política recomendada.
 
 \subsection{Base Conceitual}
 
-O PSE é uma instância de \textit{meta-aprendizado} aplicado a decisões operacionais. Ele recebe as características operacionais das séries e aprende, a partir da experiência acumulada no \textit{benchmark} (``quais políticas funcionaram bem em séries com estas características?''), a mapear o perfil de uma nova série para a política de menor custo total de inventário esperado.
+O PSE é treinado como um classificador supervisionado. A entrada é o vetor de características da série. A saída é a política recomendada. O rótulo de treinamento vem do \textit{benchmark} simulado, que identifica qual política obteve menor CTI entre as políticas viáveis. Essa formulação se aproxima do problema de seleção de algoritmos, pois o objetivo é escolher, para cada instância, a alternativa com melhor desempenho esperado.
 
-A ideia central é que as características operacionais da demanda: intermitência (ADI), variabilidade (CV$^2$), concentração (\textit{burstiness} $B$), difusividade (entropia $H$), tendência ($\beta_t/\mu$) e sazonalidade ($\rho_S$) capturam estrutura que prediz a dominância de uma família de política sobre as demais. Exemplos de relações esperadas: séries com ADI alto e picos intensos favorecem políticas que toleram longos períodos sem pedido (Jornaleiro, GA-DQN); séries com alta autocorrelação sazonal favorecem políticas que capturam periodicidade (PSO com espaço de busca amplo); séries de baixo volume e alta entropia são estruturalmente não preditíveis e favorecem políticas conservadoras (Jornaleiro).
+A hipótese operacional é simples: séries com padrões diferentes tendem a favorecer políticas diferentes. O vetor de entrada reúne intermitência (ADI), variabilidade (CV$^2$), concentração (\textit{burstiness} $B$), difusividade (entropia $H$), tendência ($\beta_t/\mu$) e sazonalidade ($\rho_S$). Esses sinais permitem distinguir, por exemplo, séries com longos períodos sem venda, séries com picos concentrados e séries com comportamento mais regular. O PSE usa esses sinais para estimar qual política do portfólio tende a produzir melhor compromisso entre custo e serviço.
 
-A saída do PSE não é apenas um rótulo de algoritmo. Ela corresponde a uma recomendação acionável com probabilidades de confiança, o que permite ao gestor compreender a margem de decisão e selecionar alternativas quando a política recomendada não está disponível.
+A saída do PSE é uma recomendação de política acompanhada de medidas de confiança. Essa confiança não elimina a necessidade de revisão operacional; ela indica quão concentrada foi a preferência do classificador entre as políticas candidatas e ajuda a identificar casos em que a recomendação deve ser tratada com cautela.
 
-\paragraph{Fundamentos teóricos.} O PSE fundamenta-se em três pilares convergentes:
+\paragraph{Fundamentos teóricos.} A formulação adota três referências principais:
 
 \begin{enumerate}[(a)]
-  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, encontrar $a^*(x) = \arg\max_{a \in \mathcal{A}} f(a, x)$. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ são as 12 políticas, $a^*(x)$ é a política selecionada para a instância descrita por $x$ e $f$ é o CTI negativo sujeito a NS $\geq \alpha_{\min}$.
-  \item Teorema \textit{No Free Lunch}, proposto por \citet{Wolpert1997NoFreeLunch}: ganhos consistentes de desempenho exigem explorar a estrutura específica de cada instância. As características operacionais fornecidas ao AIPE (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade) são a estrutura discriminativa que o NFL afirma existir.
-  \item Portfólios de algoritmos, discutidos por \citet{Huberman1997AlgorithmPortfolios}: diferentes políticas podem ser úteis em regiões distintas do espaço de instâncias. O PSE explora essa diversidade de especializações do portfólio em vez de assumir um único generalista.
+  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, escolher a alternativa com melhor desempenho. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ são as 12 políticas e o desempenho é medido por CTI, respeitando NS $\geq \alpha_{\min}$.
+  \item Teorema \textit{No Free Lunch}, proposto por \citet{Wolpert1997NoFreeLunch}: nenhum método domina todos os tipos de instância. Na dissertação, isso justifica usar características operacionais para distinguir quando uma política tende a ser mais adequada que outra.
+  \item Portfólios de algoritmos, discutidos por \citet{Huberman1997AlgorithmPortfolios}: alternativas diferentes podem funcionar melhor em regiões distintas do espaço de instâncias. O PSE usa o portfólio avaliado no \textit{benchmark} em vez de assumir uma política única para todas as séries.
 \end{enumerate}
 
-A Figura~\ref{fig:asp_rice} mostra como essa base conceitual é instanciada no AIPE: as séries loja-produto são descritas por características operacionais, as políticas formam o portfólio de alternativas e o desempenho simulado fornece a evidência usada para treinar o seletor contextual.
+A Figura~\ref{fig:asp_rice} mostra essa estrutura no AIPE: as séries loja-produto são as instâncias, as características operacionais descrevem essas instâncias, as políticas formam o portfólio de alternativas e o desempenho simulado fornece os rótulos usados no treinamento.
 
 \begin{figure}[htbp]
 \centering
@@ -484,32 +484,34 @@ A Figura~\ref{fig:asp_rice} mostra como essa base conceitual é instanciada no A
 \label{fig:asp_rice}
 \end{figure}
 
-\paragraph{Seleção ciente de risco.} Além do critério de menor CTI esperado, o PSE incorpora uma dimensão de risco operacional: a confiança da recomendação (probabilidade máxima do classificador) sinaliza quando o perfil da série está fora da distribuição de treinamento. Recomendações com confiança abaixo de 0.50 são marcadas como incertas, sinalizando ao gestor que nenhuma política apresenta vantagem clara para aquela série específica, padrão que tipicamente indica séries de transição entre quadrantes Syntetos-Boylan.
+\paragraph{Seleção ciente de risco.} Além do critério de menor CTI esperado, a confiança da recomendação funciona como alerta operacional. Recomendações com confiança abaixo de 0.50 são marcadas como incertas, indicando que nenhuma política apresentou vantagem clara para aquela série no padrão aprendido pelo classificador. Esses casos exigem revisão do gestor ou nova simulação antes de adoção direta.
 
 \subsection{Problema de Seleção}
 
-Dado o vetor de características $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$ e o conjunto de políticas $\mathcal{P} = \{$EOQ, $(s,S)$, Newsvendor, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$, o \textit{Policy Selection Engine} estima:
+O problema supervisionado tem entrada, saída e rótulo bem definidos. A entrada é o vetor de características $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$. A saída é uma política do conjunto $\mathcal{P} = \{$EOQ, $(s,S)$, Newsvendor, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$. O rótulo é obtido do \textit{benchmark}: a política com menor CTI entre aquelas que atingem o NS mínimo.
+
+Formalmente, o \textit{Policy Selection Engine} estima:
 \begin{equation}
   \hat{\pi}^*(i) = \arg\min_{\pi \in \mathcal{P}} \; \mathbb{E}[\text{CTI}(\pi, i)]
   \quad \text{sujeito a } \mathbb{E}[\text{NS}(\pi, i)] \geq \alpha_{\text{min}},
   \label{eq:policy_selector}
 \end{equation}
-com $\alpha_{\text{min}} = 0.70$ (configurável). Assim, a política dominante de uma série é a política viável de menor CTI sob NS mínimo; quando nenhuma política atinge NS mínimo, seleciona-se a de maior NS.
+com $\alpha_{\text{min}} = 0.70$ (configurável). Assim, a política dominante de uma série é a política viável de menor CTI sob NS mínimo. Quando nenhuma política atinge o NS mínimo, a série é registrada como caso limite e pode receber a política de maior NS apenas como fallback analítico, não como evidência de dominância operacional.
 Na Equação~\ref{eq:policy_selector}, $\hat{\pi}^*(i)$ é a política recomendada para a série $i$, $\mathcal{P}$ é o portfólio de políticas candidatas, $\text{CTI}(\pi,i)$ é o custo total de inventário da política $\pi$ na série $i$, $\text{NS}(\pi,i)$ é o nível de serviço correspondente e $\mathbb{E}[\cdot]$ indica a média esperada sobre replicações experimentais ou fontes de aleatoriedade do simulador.
 
 \subsection{Rótulos de Política Dominante}
 
 Para cada série loja-produto, o rótulo supervisionado é obtido a partir do \textit{benchmark} simulado das políticas candidatas, seguindo cinco etapas encadeadas.
 
-Primeiro, cada política candidata é avaliada no mesmo ambiente de simulação, com as mesmas séries de demanda e os mesmos parâmetros operacionais. Segundo, para cada política, são calculadas as métricas CTI, NS, TR, BE e FP ao fim do horizonte de $T$ ciclos. Terceiro, políticas que não atingem o limiar mínimo de nível de serviço ($\alpha_{\min} = 0{,}70$) são descartadas para fins de rótulo. Quarto, entre as políticas restantes, seleciona-se aquela com menor custo total de inventário (CTI), que passa a representar a política dominante da série. Quinto, o rótulo gerado é atribuído à série e, junto com seu vetor de características operacionais, compõe o \textit{dataset} de treinamento supervisionado do PSE.
+Primeiro, cada política candidata é avaliada no mesmo ambiente de simulação, com as mesmas séries de demanda e os mesmos parâmetros operacionais. Segundo, para cada política, são calculadas as métricas CTI, NS, TR, BE e FP ao fim do horizonte de $T$ ciclos. Terceiro, políticas que não atingem o limiar mínimo de nível de serviço ($\alpha_{\min} = 0{,}70$) são descartadas para fins de rótulo, assim como comportamentos degenerados, como ausência sistemática de pedidos ou pedido excessivo incompatível com a operação. Quarto, entre as políticas restantes, seleciona-se aquela com menor CTI, que passa a representar a política dominante da série. Quinto, o rótulo gerado é atribuído à série e, junto com seu vetor de características operacionais, compõe o \textit{dataset} de treinamento supervisionado do PSE.
 
-Esse procedimento transforma a comparação empírica entre políticas em um problema supervisionado de classificação, no qual as características operacionais da série são as entradas e a política dominante é a classe-alvo.
+Esse procedimento transforma a comparação empírica entre políticas em um problema supervisionado de classificação, no qual as características operacionais da série são as entradas e a política dominante é a classe-alvo. O rótulo resume o melhor resultado observado no \textit{benchmark} para aquela série; ele não deve ser lido como recomendação definitiva nem aplicado sem reavaliação.
 
 Formalmente, os rótulos $\hat{\pi}^*(i)$ são gerados a partir dos KPIs do \textit{benchmark} (Seção~\ref{sec:benchmark_massivo}): para cada série, agregam-se os KPIs por política (média sobre $n_{\text{rep}} = 5$ replicações) e aplica-se o critério da Equação~\ref{eq:policy_selector}. Isso produz o \textit{dataset} de treinamento $\{(\mathbf{x}_i, \hat{\pi}^*_i)\}_{i=1}^N$, em que $\mathbf{x}_i$ é o vetor de características da série $i$, $\hat{\pi}^*_i$ é seu rótulo de política dominante e $N$ é o número de séries rotuladas.
 
 \subsection{Treinamento do PSE}
 
-Um classificador XGBoost~\citep{ChenGuestrin2016XGBoost} multiclasse é utilizado com hiperparâmetros: $n_{\text{est}}=300$, $\text{depth}=6$, $\eta=0.05$, \textit{subsample} $=0.8$, representando, respectivamente, número de estimadores, profundidade máxima, taxa de aprendizado e fração amostrada de observações por árvore. LightGBM~\citep{Ke2017LightGBM} e RandomForest são alternativas configuráveis.
+O treinamento do PSE usa o conjunto de pares $(\mathbf{x}_i,\hat{\pi}^*_i)$ produzido na etapa anterior. No estágio atual da dissertação, o classificador principal é um XGBoost~\citep{ChenGuestrin2016XGBoost} multiclasse com hiperparâmetros: $n_{\text{est}}=300$, $\text{depth}=6$, $\eta=0.05$, \textit{subsample} $=0.8$, representando, respectivamente, número de estimadores, profundidade máxima, taxa de aprendizado e fração amostrada de observações por árvore. LightGBM~\citep{Ke2017LightGBM} e RandomForest permanecem como alternativas configuráveis.
 
 A avaliação segue validação cruzada estratificada ($k=5$ folds), mantendo a proporção de rótulos por fold. As métricas primárias são:
 \begin{itemize}
@@ -518,11 +520,13 @@ A avaliação segue validação cruzada estratificada ($k=5$ folds), mantendo a 
   \item \textit{F1-weighted} (pondera pelo suporte de cada política).
 \end{itemize}
 
-A interpretabilidade do modelo é analisada por importância de características (ganho médio de informação), identificando quais características operacionais são mais discriminativas para a seleção de política. Essa análise permite verificar se o PSE está usando sinais coerentes com a lógica operacional do problema.
+A interpretabilidade do modelo é analisada por importância de características (ganho médio de informação), identificando quais características operacionais são mais discriminativas para a seleção de política. A etapa de expansão nacional deverá ampliar o número de séries e regimes de demanda, permitindo revalidar o classificador em escala maior e avaliar sua generalização fora dos recortes piloto e Bahia.
 
 \subsection{Saídas do PSE}
 
-O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i) política recomendada; (ii) confiança da previsão; (iii) probabilidades individuais de cada política; (iv) ranking das alternativas candidatas; e (v) justificativa associada ao perfil operacional da série. Isso permite ao gestor entender a margem de decisão e escolher alternativas quando a recomendada não está disponível operacionalmente.
+O arquivo \texttt{policy\_recommendations.parquet} contém, para cada série: (i) política recomendada; (ii) confiança da previsão; (iii) probabilidades individuais de cada política; (iv) ranking das alternativas candidatas; e (v) justificativa associada ao perfil operacional da série. Quando os KPIs simulados estão disponíveis, eles podem acompanhar a recomendação como expectativa de custo, serviço e estabilidade para aquela série.
+
+A recomendação do PSE é um apoio à decisão. Ela indica qual política do portfólio parece mais adequada para uma série descrita por suas características, mas não substitui a avaliação operacional, a disponibilidade da política no sistema de reposição nem a necessidade de reavaliação periódica quando o padrão de demanda muda.
 
 \section{Camada de Aplicação: Recomendações e Reavaliação Periódica}
 \label{sec:aplicacao_aipe}
