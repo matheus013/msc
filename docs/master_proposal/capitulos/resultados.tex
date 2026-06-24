@@ -122,7 +122,7 @@ A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a a
 
 A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobre as 145 séries, ordenados pelo CTI crescente. Esses valores correspondem às médias globais de cada política sobre o conjunto completo e ampliam os achados do Experimento~1, agora com evidência estatística sobre uma base do varejo regional baiano. Essa visão agrega todas as séries em uma única linha por política e não mede diretamente o ganho de selecionar políticas por perfil operacional, análise realizada na Seção~\ref{sec:custo_politica_unica_vs_perfil}.
 
-\noindent\textbf{Como ler a tabela:} a tabela deve ser lida como evidência de que a ampliação de 15 para 145 séries preserva os \textit{trade-offs} fundamentais: não existe política que minimize CTI e maximize NS simultaneamente. A ordem por CTI crescente facilita a identificação dos agrupamentos de custo, mas a escolha operacional depende do equilíbrio desejado entre custo, serviço e estabilidade de pedidos.
+\noindent A tabela evidencia de que a ampliação de 15 para 145 séries preserva os \textit{trade-offs} fundamentais: não existe política que minimize CTI e maximize NS simultaneamente. A ordem por CTI crescente facilita a identificação dos agrupamentos de custo, mas a escolha operacional depende do equilíbrio desejado entre custo, serviço e estabilidade de pedidos.
 
 \begin{table}[ht]
 \centering
@@ -156,9 +156,10 @@ PPO$^\dagger$        & 3.871.75        & \textbf{0.98} & \textbf{0.02} & 237.42 
 
 Dois padrões de degeneração emergem no Experimento~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes maior que o Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
 
-\paragraph{Grupo de custo mínimo bruto.} O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
+O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
 
-\paragraph{Grupo de alto nível de serviço (NS $\geq 0.86$).} EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor equilíbrio custo-serviço neste conjunto de séries. SA (NS\,=\,$0.86$, CTI\,=\,R\$\,635) destaca-se como alternativa compacta com bom equilíbrio entre custo e cobertura.
+% \paragraph{Grupo de alto nível de serv1iço (NS $\geq 0.86$).} 
+EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor equilíbrio custo-serviço neste conjunto de séries. SA (NS\,=\,$0.86$, CTI\,=\,R\$\,635) destaca-se como alternativa compacta com bom equilíbrio entre custo e cobertura.
 
 A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS e mostra que nenhuma política domina simultaneamente todas as dimensões. Esse resultado reforça a necessidade de tratar a escolha da política como decisão contextual.
 
@@ -181,7 +182,7 @@ A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política dep
 \subsection{Análise Estratificada por Filial e Segmento}
 \label{sec:estratificada_segmento}
 
-A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro políticas representativas, estratificados por segmento comercial. \textbf{Como ler:} CTI indica o custo absoluto das políticas (minimizar); NS mostra a proporção da demanda atendida (maximizar); TR indica a frequência de falta de estoque (minimizar). Diferenças entre segmentos indicam que a mesma política pode se comportar de forma distinta conforme o perfil comercial da loja.
+A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro políticas representativas, estratificados por segmento comercial. CTI indica o custo absoluto das políticas (minimizar); NS mostra a proporção da demanda atendida (maximizar); TR indica a frequência de falta de estoque (minimizar). Diferenças entre segmentos indicam que a mesma política pode se comportar de forma distinta conforme o perfil comercial da loja.
 
 \begin{figure}[ht]
 \centering
