@@ -149,7 +149,9 @@ A classificação Syntetos-Boylan (Seção~\ref{sec:sb_taxa}) usa apenas dois í
 
 \subsection{Características Operacionais Calculadas}
 
-Para cada série $(w, s, i)$, em que $w$ identifica a loja, $s$ identifica o produto e $i$ indexa a série loja-produto no conjunto experimental, calculam-se 17 características numéricas organizadas em quatro grupos:
+Para cada série loja-produto, as características operacionais são calculadas para transformar o histórico bruto de demanda em uma representação numérica utilizável pelo AIPE. Essas variáveis não são métricas finais de desempenho; elas funcionam como entradas da etapa de caracterização e conectam os dados observados às decisões posteriores de seleção.
+
+No \textit{pipeline}, essas características são usadas para três finalidades. Primeiro, apoiam a atribuição dos Perfis Operacionais de Demanda (POD). Segundo, compõem o vetor de entrada do PSE. Terceiro, permitem estratificar as análises e interpretar por que uma mesma política pode apresentar desempenho distinto em séries diferentes. Para cada série $(w, s, i)$, em que $w$ identifica a loja, $s$ identifica o produto e $i$ indexa a série loja-produto no conjunto experimental, calculam-se 17 características numéricas organizadas em quatro grupos:
 
 \paragraph{Características de intermitência:}
 \begin{itemize}
@@ -174,6 +176,8 @@ Para cada série $(w, s, i)$, em que $w$ identifica a loja, $s$ identifica o pro
 
 \paragraph{Características de volume (herdadas de \texttt{scenarios\_meta}):}
 $\mu$, $\sigma$, $n_T$, $n^+$, e as métricas de perfil da revendedora (segmento, filial, estrutura), em que $n_T$ representa o número total de ciclos observados. Esse grupo complementa as características de intermitência, variabilidade e sazonalidade com sinais de escala operacional.
+
+O resultado desta etapa é um vetor $\phi(\mathbf{x}_i)$ associado a cada série $\mathbf{x}_i$. Esse vetor resume o comportamento operacional da demanda e alimenta a etapa seguinte, na qual cada série é associada a um POD e, posteriormente, a uma política recomendada pelo PSE.
 
 \subsection{Perfis Operacionais de Demanda}
 
