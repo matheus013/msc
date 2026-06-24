@@ -256,10 +256,14 @@ A generalização para séries não vistas é avaliada por validação cruzada e
 \label{fig:aipe_decision_flow}
 \end{figure}
 
-\section{Sinais Auxiliares de Previsão de Demanda}
+\section{Sinais de Previsão como Entrada Auxiliar}
 \label{sec:sinais_previsao}
 
-A previsão de demanda fornece sinais auxiliares sobre o comportamento esperado de cada série, incorporados à camada de entrada e ao treinamento do PSE. Quatro modelos (Croston, ARIMA/SARIMAX, XGBoost e LSTM) são treinados por série e selecionados por validação \textit{walk-forward} com métrica MASE \citep{Croston1972ForecastingIntermittentDemand}. A janela mínima de treinamento é $T_{\min} = 12$ ciclos; cada passo avança um ciclo, produzindo 20 a 26 pontos de teste. O protocolo reduz viés \textit{in-sample} e mantém as previsões alinhadas à ordem temporal dos dados. O modelo com menor MASE é selecionado como \textit{forecaster} oficial da série e suas métricas de acurácia (MASE, sMAPE, RMSSE) são incorporadas como sinais auxiliares de entrada.
+A previsão de demanda é usada nesta dissertação como fonte de sinais auxiliares para caracterizar o comportamento esperado das séries. Ela não substitui a etapa de seleção de políticas e não define, isoladamente, qual regra de reposição deve ser adotada. Os modelos de previsão produzem indicadores de erro e sinais de comportamento futuro que são incorporados à camada de entrada e ao treinamento do PSE.
+
+Quatro modelos (Croston, ARIMA/SARIMAX, XGBoost e LSTM) são treinados por série e selecionados por validação \textit{walk-forward} com métrica MASE \citep{Croston1972ForecastingIntermittentDemand}. A janela mínima de treinamento é $T_{\min} = 12$ ciclos; cada passo avança um ciclo, produzindo 20 a 26 pontos de teste. O protocolo reduz viés \textit{in-sample} e mantém as previsões alinhadas à ordem temporal dos dados. O modelo com menor MASE é selecionado como \textit{forecaster} oficial da série e suas métricas de acurácia (MASE, sMAPE, RMSSE) são incorporadas como sinais auxiliares de entrada.
+
+Dessa forma, a previsão atua como componente informativo do AIPE. A decisão central permanece sendo a seleção contextual da política de reposição, avaliada por métricas de custo, serviço e estabilidade no ambiente de simulação.
 
 Os parâmetros de referência para as políticas ($I_0$, $Q_{\text{ref}}$, $s_{\text{ref}}$) são calculados a partir das estatísticas locais $\hat{\mu}$ e $\hat{\sigma}$ de cada série por calibração adaptativa:
 
