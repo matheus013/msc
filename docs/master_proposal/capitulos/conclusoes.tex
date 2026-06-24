@@ -42,46 +42,4 @@ Do ponto de vista operacional, os resultados dos dois experimentos oferecem indi
   \item Sobre a operacionalização: o \textit{pipeline} requer apenas dados de histórico transacional exportado em formato tabular, podendo ser integrado a rotinas periódicas de monitoramento e atualização de parâmetros. A abordagem tem potencial para reduzir a dependência de ajuste manual por série, sujeito à validação em escala ampliada prevista na expansão nacional.
 \end{itemize}
 
-\section{Expansão Nacional}
-
-A expansão nacional concentra as próximas etapas do trabalho em quatro frentes:
-
-\begin{enumerate}
-  \item Escalonamento nacional multi-estado e multi-SKU: Aplicar o \textit{pipeline} completo ao conjunto de dados nacional ($\approx 10.4$ milhões de séries em 26 estados e DF), com processamento distribuído por estado (Parquet particionado). A extensão habilitará análise de heterogeneidade regional e identificação de padrões de demanda por perfis socioeconômicos e geográficos (Nordeste, Sudeste, Centro-Oeste).
-
-  \item Treinamento e avaliação do \textit{Policy Selection Engine}: Com os resultados dos dois experimentos executados como dados iniciais de treinamento (características operacionais $\rightarrow$ política dominante por série), treinar o meta-modelo supervisionado do AIPE e avaliar sua capacidade preditiva via validação cruzada estratificada por POD. A expansão nacional aumentará substancialmente a diversidade de perfis e permitirá estimar a estabilidade do meta-modelo.
-
-  \item Análise de sensibilidade e condições de contorno: Variar parâmetros de custo ($c_s/h$), prazo de entrega ($L$) e limiares de classificação para identificar as condições sob as quais cada família de política apresenta vantagem relativa, produzindo um mapa operacional de recomendação por quadrante Syntetos-Boylan.
-
-  \item Integração do impacto da previsão sobre a política: Avaliar como a qualidade da previsão (MASE por série) se propaga para o desempenho operacional (CTI, NS, BE), quantificando o valor marginal de modelos de previsão mais acurados para cada regime de demanda.
-\end{enumerate}
-
-\section{Cronograma}
-
-A Tabela~\ref{tab:cronograma} organiza as etapas concluídas, em andamento e planejadas, permitindo situar os dois experimentos já consolidados em relação à expansão nacional e à finalização do PSE.
-
-\begin{table}[h]
-\centering
-\small
-\caption{Cronograma de atividades (referência: maio de 2026). \checkmark: concluído; $\bullet$: em andamento; $\circ$: planejado.}
-\label{tab:cronograma}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Atividade & 2024 S2 & 2025 S1 & 2025 S2 & 2026 \\
-\midrule
-Formulação do problema e revisão de literatura           & \checkmark & & & \\
-Benchmarking Experimento~1 (15 lojas, PB, 12 políticas) & \checkmark & \checkmark & & \\
-Submissão artigo SBPO~2026                               & & & & $\circ$ \\
-Pipeline Kedro + módulo previsão de demanda              & & \checkmark & \checkmark & \\
-Simulação Experimento~2 (145 séries, BA, 5 replicações) & & & \checkmark & \\
-Validação estatística (Wilcoxon, Friedman, Cohen's $d$)  & & & \checkmark & \\
-Módulo \texttt{demand\_profiling} e PODs                 & & & \checkmark & \\
-Expansão nacional e meta-modelo AIPE                     & & & & $\bullet$ \\
-Análise de sensibilidade e mapa de recomendação          & & & & $\circ$ \\
-Submissão de artigos adicionais                          & & & & $\circ$ \\
-Escrita e defesa da dissertação                          & & & & $\bullet$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Os dois experimentos executados consolidam a contribuição empírica inicial da dissertação: \textit{benchmarking} sistemático de doze políticas de reposição em dados transacionais reais do varejo brasileiro, com protocolo experimental controlado e validação estatística formal em regime de alta intermitência (Syntetos-Boylan ``\textit{Lumpy}''). A expansão nacional estenderá essas contribuições à escala ampliada e completará a validação e o treinamento do \textit{Policy Selection Engine}.
+As próximas etapas de continuidade, incluindo expansão nacional, treinamento do PSE, análise de sensibilidade, otimização em janela móvel e cronograma consolidado, são detalhadas no Capítulo~\ref{cap:plano_continuidade}.
