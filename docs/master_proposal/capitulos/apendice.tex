@@ -47,11 +47,11 @@ Dados & tipos de venda excluídos & Brinde & transações de brinde não entram 
 Dados & deduplicação & por armazém, produto, loja e ciclo & chave de deduplicação dos registros \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Ambiente de simulação}} \\[2pt]
-InventoryEnv & lead time & 2 ciclos & uniforme; mesmo valor para todas as políticas \\
-InventoryEnv & estoque inicial $I_0$ & escalonado por série & $\mathrm{rop\_ref} = \hat{\mu} L + z\hat{\sigma}\sqrt{L}$; ajustado por série \\
-InventoryEnv & tipo de falta & perda de venda & demanda não atendida é perdida; sem acúmulo \\
-InventoryEnv & regra de arredondamento & inteiro superior & aplicada a todos os pedidos calculados \\
-InventoryEnv & frequência de reavaliação (AIPE) & 6 ciclos & intervalo $\Delta t$ definido conceitualmente \\[4pt]
+Ambiente & lead time & 2 ciclos & uniforme; mesmo valor para todas as políticas \\
+Ambiente & estoque inicial $I_0$ & escalonado por série & $\mathrm{rop\_ref} = \hat{\mu} L + z\hat{\sigma}\sqrt{L}$; ajustado por série \\
+Ambiente & tipo de falta & perda de venda & demanda não atendida é perdida; sem acúmulo \\
+Ambiente & regra de arredondamento & inteiro superior & aplicada a todos os pedidos calculados \\
+Ambiente & frequência de reavaliação (AIPE) & 6 ciclos & intervalo $\Delta t$ definido conceitualmente \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Custos}} \\[2pt]
 Custos & custo de manutenção $h$ & 1,0 & por unidade por ciclo \\
@@ -157,7 +157,7 @@ DE & semente & 42 & \\
 % TABELA A.3: Agentes RL e políticas híbridas
 % ─────────────────────────────────────────────────────────────────────────────
 
-Nos agentes de aprendizado por reforço, a decisão de reposição é formulada como um problema sequencial no ambiente \textit{InventoryEnv}. O estado observado pelo agente resume a posição de estoque, demanda prevista, pedidos em trânsito, estatísticas recentes de demanda e progresso no horizonte experimental. A ação representa a quantidade de pedido, discreta no caso do DQN e do SARSA e contínua no caso do PPO. A recompensa é definida como o negativo do custo operacional do ciclo, de modo que maximizar retorno equivale a reduzir custo total, penalizando simultaneamente estoque, ruptura e emissão de pedidos.
+Nos agentes de aprendizado por reforço, a decisão de reposição é formulada como um problema sequencial no ambiente de simulação. O estado observado pelo agente resume a posição de estoque, demanda prevista, pedidos em trânsito, estatísticas recentes de demanda e progresso no horizonte experimental. A ação representa a quantidade de pedido, discreta no caso do DQN e do SARSA e contínua no caso do PPO. A recompensa é definida como o negativo do custo operacional do ciclo, de modo que maximizar retorno equivale a reduzir custo total, penalizando simultaneamente estoque, ruptura e emissão de pedidos.
 
 Nas políticas híbridas GA-DQN e GA-PPO, o GA fornece uma política inicial de boa qualidade para reduzir o custo de exploração dos agentes de RL em horizontes curtos. No GA-DQN, trajetórias geradas pela política calibrada pelo GA pré-populam o \textit{replay buffer}, e o agente refina a decisão por episódios adicionais. No GA-PPO, os \textit{rollouts} iniciais produzidos pelo GA servem como aquecimento antes do refinamento da política contínua. Em ambos os casos, a comparação permanece controlada porque o ambiente, os custos, o horizonte e as séries de demanda são os mesmos das demais políticas.
 
@@ -181,9 +181,9 @@ Nas políticas híbridas GA-DQN e GA-PPO, o GA fornece uma política inicial de 
 \endlastfoot
 
 \multicolumn{4}{@{}l}{\textit{Ambiente compartilhado (todos os agentes)}} \\[2pt]
-InventoryEnv & vetor de estado (dim.\ 1 a 3) & $I_t/I_0$,\; $\hat{D}/\mu$,\; $\mathrm{OP}/I_0$ & nível de estoque, previsão, pedido aberto \\
-InventoryEnv & vetor de estado (dim.\ 4 a 6) & $\mu_6/\mu$,\; $\sigma_6/\sigma$,\; $t/T$ & tendências de curto prazo e posição no horizonte \\
-InventoryEnv & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\[4pt]
+Ambiente & vetor de estado (dim.\ 1 a 3) & $I_t/I_0$,\; $\hat{D}/\mu$,\; $\mathrm{OP}/I_0$ & nível de estoque, previsão, pedido aberto \\
+Ambiente & vetor de estado (dim.\ 4 a 6) & $\mu_6/\mu$,\; $\sigma_6/\sigma$,\; $t/T$ & tendências de curto prazo e posição no horizonte \\
+Ambiente & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{DQN}} \\[2pt]
 DQN & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
