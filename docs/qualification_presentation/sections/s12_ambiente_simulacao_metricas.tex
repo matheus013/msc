@@ -1,0 +1,37 @@
+% Slide 12 — Ambiente de simulação e métricas
+\begin{frame}{Ambiente de simulação e métricas}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Parâmetros fixos}
+      \small
+      \begin{itemize}
+        \item Horizonte $T=38$ ciclos comerciais
+        \item Prazo de entrega $L=2$ ciclos
+        \item $h=1{,}0$; $c_s=5{,}0$; $c_o^{\text{fix}}=50{,}0$; $c_o^{\text{var}}=0{,}5$
+        \item Restrição de viabilidade: NS $\geq \alpha_{\min}=0{,}70$
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{Indicadores (KPIs)}
+      \small
+      \begin{itemize}
+        \item \textbf{CTI}: custo total de inventário
+        \item \textbf{NS}: nível de serviço
+        \item \textbf{TR}: taxa de ruptura
+        \item \textbf{BE}: efeito \textit{bullwhip} ($\mathrm{Var}(Q)/\mathrm{Var}(D)$)
+        \item \textbf{FP}: frequência de pedidos
+      \end{itemize}
+  \end{columns}
+  \vfill
+  \small Todas as políticas são avaliadas no \highlight{mesmo simulador}, com
+  a mesma demanda real, custos e sementes -- garantindo comparação controlada.
+  \note{
+    O ambiente de simulação é o que torna a comparação entre políticas
+    válida: todas rodam sob as mesmas séries de demanda real, os mesmos
+    custos e o mesmo prazo de entrega de dois ciclos. Cinco indicadores são
+    calculados ao final de cada simulação. O CTI é o critério principal de
+    custo; o NS funciona como restrição de viabilidade -- políticas com
+    nível de serviço abaixo de 0,70 não são consideradas dominantes mesmo
+    que tenham custo baixo; TR, BE e FP são complementares, com o BE sendo
+    usado mais adiante na análise de estabilidade.
+  }
+\end{frame}

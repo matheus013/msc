@@ -1,0 +1,27 @@
+% Slide 6 — Hipótese
+\begin{frame}{Hipótese central}
+  \begin{center}
+    \large O desempenho das políticas de reposição depende do
+    \highlight{regime / perfil operacional da demanda}, e essa relação pode
+    ser \highlight{aprendida} por um meta-modelo supervisionado.
+  \end{center}
+  \vspace{1em}
+  \begin{enumerate}
+    \item \textbf{Heterogeneidade genuína:} não existe política universalmente melhor.
+    \item \textbf{Aprendibilidade:} a relação perfil~$\rightarrow$~política pode ser
+      aprendida a partir de características operacionais.
+    \item \textbf{Generalização:} um modelo treinado dessa forma pode
+      recomendar políticas para novas séries.
+  \end{enumerate}
+  \note{
+    A hipótese central se desdobra em três premissas. A primeira é que não
+    existe uma política universalmente melhor -- diferentes séries favorecem
+    políticas diferentes. A segunda é que essa relação entre características
+    da série e desempenho relativo das políticas pode ser aprendida por um
+    modelo supervisionado. A terceira, consequência das duas anteriores, é
+    que esse modelo treinado pode generalizar para séries novas, reduzindo
+    a necessidade de testar manualmente cada produto. Os resultados que vou
+    apresentar sustentam parcialmente essas três premissas -- a validação
+    completa da generalização ainda é trabalho futuro.
+  }
+\end{frame}

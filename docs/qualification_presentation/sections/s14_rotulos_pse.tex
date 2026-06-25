@@ -1,0 +1,38 @@
+% Slide 14 — Geração de rótulos e PSE
+\begin{frame}{Geração de rótulos e o PSE}
+  \[
+    \hat{\pi}^*(i) = \arg\min_{\pi \in \mathcal{P}} \; \mathbb{E}[\mathrm{CTI}(\pi,i)]
+    \quad \text{sujeito a } \mathbb{E}[\mathrm{NS}(\pi,i)] \geq 0{,}70
+  \]
+  \small Para cada série, o rótulo é a política viável de \highlight{menor
+  CTI} entre as que atingem o NS mínimo.
+  \vspace{0.8em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{PSE (estágio atual)}
+      \small
+      \begin{itemize}
+        \item Classificador XGBoost multiclasse
+        \item Entrada: vetor de 17 características
+        \item Saída: política recomendada + confiança + \textit{ranking}
+      \end{itemize}
+    \column{0.5\textwidth}
+      \begin{alertblock}{Ainda não finalizado}
+        \small O PSE foi formulado e testado nos rótulos disponíveis; o
+        treinamento em escala e a validação de generalização são etapa da
+        expansão nacional.
+      \end{alertblock}
+  \end{columns}
+  \note{
+    O rótulo de cada série vem diretamente do benchmark simulado: entre as
+    políticas que atingem o nível de serviço mínimo de 0,70, escolhe-se a
+    de menor custo total de inventário. Esses pares -- características e
+    rótulo -- formam o dataset supervisionado do PSE, que no estágio atual
+    é um classificador XGBoost. É importante deixar claro que o PSE não
+    está finalizado: ele foi formulado e testado sobre os rótulos
+    disponíveis dos dois experimentos, mas o treinamento em escala nacional
+    e a validação de generalização para novas séries e regimes ainda são
+    etapas futuras.
+  }
+\end{frame}

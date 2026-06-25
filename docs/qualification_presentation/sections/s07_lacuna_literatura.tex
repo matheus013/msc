@@ -1,0 +1,39 @@
+% Slide 7 — Lacuna na literatura
+\begin{frame}{A lacuna não é falta de algoritmos}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.55\textwidth}
+      \textbf{O que já existe}
+      \begin{itemize}
+        \small
+        \item Modelos analíticos clássicos (EOQ, $(s,S)$, Jornaleiro)
+        \item Políticas parametrizadas por meta-heurísticas
+        \item Políticas aprendidas por reforço
+        \item Comparações isoladas entre famílias
+      \end{itemize}
+    \column{0.45\textwidth}
+      \textbf{O que falta}
+      \begin{itemize}
+        \small
+        \item \highlight{Seleção contextual} validada em dados reais
+        \item Evidência em \highlight{varejo brasileiro} intermitente
+        \item Ligação explícita entre perfil e política dominante
+      \end{itemize}
+  \end{columns}
+  \vfill
+  \begin{alertblock}{Posicionamento}
+    \small O problema se aproxima da \textbf{seleção de algoritmos}
+    (Rice, 1976) -- escolher, para cada instância, a alternativa com melhor
+    desempenho esperado.
+  \end{alertblock}
+  \note{
+    A literatura de controle de inventário já oferece muitas alternativas:
+    modelos analíticos, meta-heurísticas, aprendizado por reforço. O que
+    falta não é mais um algoritmo -- é um mecanismo de seleção contextual
+    validado sobre dados reais, especialmente em um contexto pouco coberto,
+    que é o varejo brasileiro com demanda intermitente. A formulação que eu
+    adoto se aproxima do problema clássico de seleção de algoritmos, de
+    Rice, 1976: dado um conjunto de instâncias e um portfólio de
+    alternativas, aprender a escolher a alternativa mais adequada para
+    cada instância.
+  }
+\end{frame}

@@ -1,0 +1,36 @@
+% Slide 10 — Entradas do AIPE
+\begin{frame}{Entradas do AIPE}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.33\textwidth}
+      \begin{block}{Dados preparados}
+        \small Séries loja-produto, ciclos comerciais (17/ano,
+        $\approx$21 dias), filtragem e limpeza.
+      \end{block}
+    \column{0.33\textwidth}
+      \begin{block}{Características operacionais}
+        \small 17 variáveis: intermitência, distribuição, tendência,
+        sazonalidade, volume.
+      \end{block}
+    \column{0.33\textwidth}
+      \begin{block}{Sinais de previsão}
+        \small MASE, sMAPE, RMSSE de 4 modelos (Croston, ARIMA, XGBoost,
+        LSTM).
+      \end{block}
+  \end{columns}
+  \vfill
+  \begin{alertblock}{Atenção}
+    \small Caracterização e previsão são \highlight{entradas}, não a
+    responsabilidade final do AIPE. A previsão é \highlight{sinal auxiliar},
+    não critério final de escolha de política.
+  \end{alertblock}
+  \note{
+    É importante posicionar corretamente essas três entradas. Os dados
+    preparados padronizam séries loja-produto a partir do histórico
+    transacional. As características operacionais resumem o comportamento
+    da demanda em 17 variáveis numéricas. E a previsão de demanda entra como
+    sinal auxiliar -- ela ajuda a caracterizar a previsibilidade da série,
+    mas não decide isoladamente qual política usar. Essa distinção evita um
+    erro comum: tratar previsão e caracterização como se fossem o produto
+    final do AIPE, quando na verdade elas alimentam o núcleo de seleção.
+  }
+\end{frame}

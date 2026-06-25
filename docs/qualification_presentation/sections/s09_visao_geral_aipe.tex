@@ -1,0 +1,35 @@
+% Slide 9 — Visão geral do AIPE
+\begin{frame}{Visão geral do AIPE}
+  \centering
+  \begin{tikzpicture}[
+      >=Stealth,
+      every node/.style={font=\small\sffamily},
+      layer/.style={rectangle, rounded corners=4pt, draw=slategray, fill=lightgray,
+                    minimum width=3.6cm, minimum height=1.7cm, align=center, text width=3.3cm},
+      core/.style={rectangle, rounded corners=4pt, draw=darkblue, fill=darkblue!12,
+                   minimum width=3.6cm, minimum height=1.7cm, align=center, text width=3.3cm},
+      flow/.style={->, thick, darkblue}
+    ]
+    \node[layer] (entrada) {\textbf{Entrada}\\[2pt]\footnotesize dados, características, sinais de previsão};
+    \node[core, right=1.1cm of entrada] (nucleo) {\textbf{Núcleo de seleção contextual}\\[2pt]\footnotesize simulação $\cdot$ rótulos $\cdot$ PSE};
+    \node[layer, right=1.1cm of nucleo] (aplicacao) {\textbf{Aplicação}\\[2pt]\footnotesize recomendação $\cdot$ reavaliação periódica};
+
+    \draw[flow] (entrada) -- (nucleo);
+    \draw[flow] (nucleo) -- (aplicacao);
+  \end{tikzpicture}
+
+  \small O \highlight{PSE} é o componente de seleção do AIPE; as 12 políticas
+  formam o portfólio sobre o qual ele aprende a recomendar. A cada
+  $\Delta t$ ciclos, a aplicação realimenta a entrada (reavaliação periódica).
+  \note{
+    O AIPE é organizado em três camadas. A camada de entrada reúne dados
+    preparados, características operacionais e sinais auxiliares de
+    previsão. O núcleo de seleção contextual é onde as políticas candidatas
+    são avaliadas por simulação, os rótulos de política dominante são
+    gerados, e o PSE -- o Policy Selection Engine -- é treinado. A camada de
+    aplicação usa o PSE para recomendar uma política a novas séries, com
+    reavaliação periódica conforme novos ciclos de venda chegam. O AIPE não
+    é uma política nova: é o mecanismo que decide qual política do
+    portfólio usar em cada contexto.
+  }
+\end{frame}

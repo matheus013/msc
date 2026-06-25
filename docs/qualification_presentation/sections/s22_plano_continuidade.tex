@@ -1,0 +1,38 @@
+% Slide 22 — Plano de continuidade
+\begin{frame}{Plano de continuidade}
+  \centering
+  {\scriptsize
+  \renewcommand{\arraystretch}{0.92}
+  \begin{tabular}{@{}p{7.4cm}cccc@{}}
+    \toprule
+    \textbf{Atividade} & \textbf{24 S2} & \textbf{25 S1} & \textbf{25 S2} & \textbf{26} \\
+    \midrule
+    Formulação e revisão da literatura & \checkmark & & & \\
+    Benchmarking Experimento 1 (PB) & \checkmark & \checkmark & & \\
+    Pipeline Kedro e previsão de demanda & & \checkmark & \checkmark & \\
+    Simulação Exp.\ 2 (BA) e validação estatística & & & \checkmark & \\
+    Módulo \texttt{demand\_profiling} e PODs & & & \checkmark & \\
+    \rowcolor{accenteal!12}Expansão nacional multiestado/multi-SKU & & & & $\bullet$ \\
+    \rowcolor{accenteal!12}Treinamento e avaliação do PSE & & & & $\bullet$ \\
+    Análise de sensibilidade e janela móvel & & & & $\circ$ \\
+    Escrita e defesa da dissertação & & & & $\bullet$ \\
+    \bottomrule
+  \end{tabular}}
+  \vspace{0.4em}
+
+  \scriptsize \checkmark\ concluído \quad $\bullet$\ em andamento \quad $\circ$\ planejado
+  \vspace{0.4em}
+
+  \small Expansão nacional: $\approx$10,4 milhões de séries, 26 estados + DF.
+  \note{
+    O cronograma resume o que já foi feito e o que falta. Os dois
+    experimentos executados, a validação estatística e o módulo de
+    caracterização estão concluídos. As atividades em andamento, destacadas
+    em verde, são a expansão nacional -- que vai aplicar o pipeline a
+    aproximadamente 10,4 milhões de séries em 26 estados e o Distrito
+    Federal -- e o treinamento efetivo do PSE em escala. A análise de
+    sensibilidade, o mapa de recomendação e a otimização em janela móvel
+    são etapas planejadas, que dependem dos resultados da expansão
+    nacional. A escrita e defesa da dissertação acompanham esse processo.
+  }
+\end{frame}

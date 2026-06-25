@@ -1,0 +1,40 @@
+% Slide 15 — Experimento 1: estudo piloto PB
+\begin{frame}{Experimento 1: estudo piloto (Paraíba)}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Escopo}
+      \small
+      \begin{itemize}
+        \item 15 lojas $\times$ 1 produto (48130)
+        \item 12 políticas $\times$ 1 replicação
+        \item 180 combinações (política, loja)
+        \item Regime \textit{Lumpy} (100\% das lojas)
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{O que validou}
+      \small
+      \begin{itemize}
+        \item Ambiente de simulação e métricas
+        \item Protocolo de comparação entre políticas
+        \item Comportamentos degenerados (SARSA: FP\,$=$\,0; PPO: FP\,$=$\,0,98)
+      \end{itemize}
+  \end{columns}
+  \vfill
+  \begin{alertblock}{Resultado de referência (não generalizável)}
+    \small Em volume médio, GA-DQN reduziu CTI em \highlight{48\%} e rupturas
+    em 55\% vs.\ $(s,S)$, com BE caindo de 119,4 para 5,0 -- o
+    \textbf{ganho máximo observado} neste recorte piloto, não uma média
+    universal.
+  \end{alertblock}
+  \note{
+    O Experimento 1 funcionou como piloto: 15 lojas da Paraíba, um único
+    produto de alta intermitência, testando o ambiente de simulação e o
+    protocolo de comparação com apenas uma replicação. Ele revelou
+    comportamentos degenerados em alguns agentes de RL isolados -- o SARSA
+    parou de pedir, o PPO pediu em quase todos os ciclos -- o que motivou
+    a ampliação para o Experimento 2. O resultado citado de 48% de redução
+    de custo do GA-DQN é o ganho máximo observado no estrato de volume
+    médio deste piloto; não é, e não deve ser lido como, uma redução média
+    universal -- no Experimento 2 esse padrão não se repete da mesma forma.
+  }
+\end{frame}

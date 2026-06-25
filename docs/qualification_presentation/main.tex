@@ -1,0 +1,78 @@
+% Apresentação de Qualificação de Mestrado
+% AIPE: Seleção Contextual de Políticas de Reposição em Redes Varejistas
+% Compilar com: latexmk -xelatex main.tex  (ver Makefile)
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+
+% --- Idioma e fontes ---
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage[variant=brazilian]{portuguese}
+
+% --- Pacotes de suporte ---
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+\usepackage{amsmath}
+\usepackage{textcomp}
+
+% --- Paleta sóbria: azul escuro, cinza, branco, destaque discreto ---
+\definecolor{darkblue}{HTML}{1B3A5C}
+\definecolor{slategray}{HTML}{5B6B79}
+\definecolor{lightgray}{HTML}{EDEFF1}
+\definecolor{accenteal}{HTML}{3E7C8C}
+\definecolor{warnred}{HTML}{8C3E3E}
+
+\setbeamercolor{palette primary}{bg=darkblue,fg=white}
+\setbeamercolor{palette secondary}{bg=slategray,fg=white}
+\setbeamercolor{palette tertiary}{bg=darkblue,fg=white}
+\setbeamercolor{frametitle}{bg=darkblue,fg=white}
+\setbeamercolor{progress bar}{fg=accenteal,bg=lightgray}
+\setbeamercolor{alerted text}{fg=accenteal}
+\setbeamercolor{normal text}{fg=black!85}
+
+\setbeamertemplate{frame numbering}[fraction]
+\metroset{block=fill,sectionpage=progressbar,numbering=fraction,progressbar=frametitle}
+
+% --- Comandos auxiliares de estilo ---
+\newcommand{\highlight}[1]{\textcolor{accenteal}{\textbf{#1}}}
+\newcommand{\fonte}[1]{{\footnotesize\textcolor{slategray}{Fonte: #1}}}
+
+\title{Seleção Contextual de Políticas de Reposição em Redes Varejistas}
+\subtitle{O AIPE como \textit{framework} metodológico de apoio à decisão}
+\author{Matheus Inácio Batista Santos}
+\institute{\small Instituto de Computação --- UFAL\\
+\scriptsize Orientadores: Dr. Rian G. S. Pinheiro e Dr. Bruno C. S. Nogueira}
+\date{\small Exame de Qualificação de Mestrado}
+
+\begin{document}
+
+\input{sections/s01_titulo}
+\input{sections/s02_problema_em_uma_frase}
+\input{sections/s03_heterogeneidade_demanda}
+\input{sections/s04_consequencias_operacionais}
+\input{sections/s05_pergunta_pesquisa}
+\input{sections/s06_hipotese}
+\input{sections/s07_lacuna_literatura}
+\input{sections/s08_contribuicao}
+\input{sections/s09_visao_geral_aipe}
+\input{sections/s10_entradas_aipe}
+\input{sections/s11_caracterizacao_pods}
+\input{sections/s12_ambiente_simulacao_metricas}
+\input{sections/s13_portfolio_politicas}
+\input{sections/s14_rotulos_pse}
+\input{sections/s15_experimento1_pb}
+\input{sections/s16_experimento2_ba}
+\input{sections/s17_nenhuma_politica_domina}
+\input{sections/s18_politica_unica_vs_perfil}
+\input{sections/s19_heterogeneidade_por_perfil}
+\input{sections/s20_cti_ajustado_estabilidade}
+\input{sections/s21_limitacoes}
+\input{sections/s22_plano_continuidade}
+\input{sections/s23_fechamento}
+
+\end{document}

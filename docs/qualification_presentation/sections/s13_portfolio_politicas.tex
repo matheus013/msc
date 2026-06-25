@@ -1,0 +1,33 @@
+% Slide 13 — Portfólio de políticas
+\begin{frame}{Portfólio de 12 políticas candidatas}
+  \centering
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    \textbf{Clássicas} & \textbf{Param. por meta-heurística} & \textbf{Aprendidas por reforço} & \textbf{Híbridas GA-RL} \\
+    \midrule
+    EOQ & GA & DQN & GA-DQN \\
+    $(s,S)$ & SA & PPO & GA-PPO \\
+    Jornaleiro & PSO, DE & SARSA & \\
+    \bottomrule
+  \end{tabular}}
+  \vspace{1em}
+
+  \begin{alertblock}{Cuidado conceitual}
+    \small GA, SA, PSO e DE \highlight{não são políticas autônomas}: são
+    métodos de busca usados para parametrizar a regra $(s,Q)$. Quem decide é
+    sempre a regra de reposição; a meta-heurística apenas a calibra.
+  \end{alertblock}
+  \note{
+    O portfólio reúne quatro famílias. As políticas clássicas são regras
+    analíticas: EOQ, (s,S) e o Jornaleiro. As meta-heurísticas -- GA, SA, PSO
+    e DE -- não são políticas no sentido decisório: elas são algoritmos de
+    busca usados para encontrar os melhores parâmetros (s, Q) de uma regra
+    de reposição, avaliada sempre pelo mesmo simulador. As políticas
+    aprendidas por reforço -- DQN, PPO e SARSA -- modelam a reposição como
+    um processo de decisão sequencial. E as híbridas GA-DQN e GA-PPO usam o
+    GA para inicializar o treinamento do agente de RL, funcionando como
+    especialistas do portfólio, não como a contribuição central do
+    trabalho.
+  }
+\end{frame}

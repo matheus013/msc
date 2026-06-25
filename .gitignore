@@ -231,6 +231,10 @@ data
 *.run.xml
 *.synctex.gz
 *.toc
+*.nav
+*.snm
+*.vrb
+*.xdv
 docs/master_proposal/IC-eps-converted-to.pdf
 docs/master_proposal/tcc.pdf
 
