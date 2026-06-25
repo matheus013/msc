@@ -1,0 +1,23 @@
+\begin{table}[htb]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Comparação de custo entre estratégias de seleção de política (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). Redução calculada como $100 \times (\mathrm{CTI}_{\text{ref}} - \mathrm{CTI}_{\text{estratégia}}) / \mathrm{CTI}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência exploratória: assume conhecimento perfeito da política ótima de cada série.}
+\label{tab:strategy_cost_comparison}
+\begin{tabular}{@{}p{4.0cm}rrrrr@{}}
+\toprule
+\makecell[l]{Estratégia} &
+\makecell[r]{CTI total\\(R\$)} &
+\makecell[r]{CTI médio\\(R\$)} &
+\makecell[r]{NS\\médio} &
+\makecell[r]{Red. vs A1\\(\%)} &
+\makecell[r]{Red. vs A2\\(\%)} \\
+\midrule
+A1: política única (melhor viável) & 91120.69 & 628.42 & 0.942 & 0.0 & 0.0 \\
+A2: política única (EOQ, \textit{baseline}) & 91120.69 & 628.42 & 0.942 & 0.0 & 0.0 \\
+B\phantom{0}: seleção por perfil & 85495.48 & 589.62 & 0.883 & +6.2 & +6.2 \\
+C$^\dagger$: oráculo por série & 50433.59 & 347.82 & 0.700 & +44.6 & +44.6 \\
+\bottomrule
+\multicolumn{6}{l}{\scriptsize $^\dagger$Não é estratégia operacional direta; representa limite inferior exploratório.} \\
+\end{tabular}
+\end{table}
