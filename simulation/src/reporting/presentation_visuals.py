@@ -487,6 +487,8 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
                   .reindex(index=profiles_order, columns=policies)
     pivot_ns = df.pivot(index="operational_profile", columns="policy", values="NS_mean") \
                  .reindex(index=profiles_order, columns=policies)
+    pivot_be = df.pivot(index="operational_profile", columns="policy", values="BE_mean") \
+                 .reindex(index=profiles_order, columns=policies)
 
     row_labels = [PROFILE_DISPLAY.get(p, p) for p in pivot_cti.index]
     col_labels = [POLICY_DISPLAY.get(p, p) for p in pivot_cti.columns]
@@ -512,11 +514,13 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
         for c, policy_key in enumerate(pivot_cti.columns):
             val = data[r, c]
             ns_val = pivot_ns.values[r, c]
+            be_val = pivot_be.values[r, c]
             if np.isnan(val):
                 continue
             viable = ns_val >= NS_THRESHOLD
             text_color = "black" if row_norm[r, c] < 0.6 else "white"
-            cell_text = f"{val:.0f}" + ("" if viable else "\n(inviável)")
+            be_line = f"BE {be_val:.1f}" if not np.isnan(be_val) else "BE --"
+            cell_text = f"{val:.0f}\n{be_line}"
             ax.text(c, r, cell_text, ha="center", va="center",
                     fontsize=10.5 if viable else 9.5, color=text_color,
                     fontweight="bold" if policy_key == dominant_lookup.get(profile_key) else "normal")
@@ -532,16 +536,16 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
                 ))
 
     ax.set_title(
-        "CTI médio por perfil e política (subconjunto legível)\n"
-        f"Hachura = inviável (NS médio < {NS_THRESHOLD:.2f}); contorno = dominante do perfil",
+        "CTI e efeito bullwhip (BE) médios por perfil e política (subconjunto legível)\n"
+        f"Hachura = inviável (NS médio < {NS_THRESHOLD:.2f}); contorno = política viável de menor CTI",
         fontsize=14.5, fontweight="bold", color=COLOR_DARKBLUE, pad=12,
     )
     fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02, label="CTI relativo dentro do perfil (0=menor, 1=maior)")
 
     fig.text(
         0.01, 0.01,
-        "Jornaleiro pode ter menor CTI bruto, mas é inviável quando NS < 0,70 "
-        "(ex.: Sparse High Impact, NS=0,55). "
+        "Cada célula mostra CTI médio (R$) e BE médio (Var(Q)/Var(D)). Jornaleiro pode ter "
+        "menor CTI bruto, mas é inviável quando NS < 0,70 (ex.: Sparse High Impact, NS=0,55). "
         "Fonte: data/08_reporting/profiles/profile_policy_metrics.csv.",
         fontsize=8.5, color=COLOR_GRAY, wrap=True,
     )
@@ -555,7 +559,7 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
     log.info(f"Figura salva: {png_path}")
 
     out_table = df[["operational_profile", "profile_display", "policy", "policy_display",
-                     "TIC_mean", "NS_mean", "n_series"]].copy()
+                     "TIC_mean", "NS_mean", "BE_mean", "n_series"]].copy()
     out_table["viable_ns70"] = out_table["NS_mean"] >= NS_THRESHOLD
     out_table["is_dominant"] = out_table.apply(
         lambda r: dominant_lookup.get(r["operational_profile"]) == r["policy"], axis=1
@@ -1003,9 +1007,10 @@ def run() -> dict:
     )
     entries.append(ManifestEntry(
         filename="profile_policy_heatmap_simplified.png/.pdf/.csv",
-        description="Heatmap de CTI médio (perfil x política), restrito a um "
-                     "subconjunto legível de políticas + dominantes; hachura = "
-                     "inviável (NS<0.70); contorno = política dominante do perfil.",
+        description="Heatmap de CTI e BE médios (perfil x política), restrito a um "
+                     "subconjunto legível de políticas + dominantes; cada célula mostra "
+                     "CTI e BE médios; hachura = inviável (NS<0.70); contorno = "
+                     "política viável de menor CTI do perfil.",
         source_data="data/08_reporting/profiles/profile_policy_metrics.csv, "
                      "data/08_reporting/profiles/dominant_policy_by_profile.csv",
         generator="plot_policy_profile_heatmap_simplified",
