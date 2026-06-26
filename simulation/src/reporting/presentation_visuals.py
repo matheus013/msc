@@ -520,10 +520,12 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
             viable = ns_val >= NS_THRESHOLD
             text_color = "black" if row_norm[r, c] < 0.6 else "white"
             be_line = f"BE {be_val:.1f}" if not np.isnan(be_val) else "BE --"
-            cell_text = f"{val:.0f}\n{be_line}"
+            ns_line = f"NS {ns_val:.2f}" if not np.isnan(ns_val) else "NS --"
+            cell_text = f"{val:.0f}\n{be_line}\n{ns_line}"
             ax.text(c, r, cell_text, ha="center", va="center",
-                    fontsize=10.5 if viable else 9.5, color=text_color,
-                    fontweight="bold" if policy_key == dominant_lookup.get(profile_key) else "normal")
+                    fontsize=9.5 if viable else 8.7, color=text_color,
+                    fontweight="bold" if policy_key == dominant_lookup.get(profile_key) else "normal",
+                    linespacing=1.35)
             if not viable:
                 ax.add_patch(mpatches.Rectangle(
                     (c - 0.5, r - 0.5), 1, 1, fill=False, hatch="////",
@@ -536,7 +538,7 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
                 ))
 
     ax.set_title(
-        "CTI e efeito bullwhip (BE) médios por perfil e política (subconjunto legível)\n"
+        "CTI, BE e NS médios por perfil e política (subconjunto legível)\n"
         f"Hachura = inviável (NS médio < {NS_THRESHOLD:.2f}); contorno = política viável de menor CTI",
         fontsize=14.5, fontweight="bold", color=COLOR_DARKBLUE, pad=12,
     )
@@ -544,8 +546,8 @@ def plot_policy_profile_heatmap_simplified(profile_metrics: pd.DataFrame,
 
     fig.text(
         0.01, 0.01,
-        "Cada célula mostra CTI médio (R$) e BE médio (Var(Q)/Var(D)). Jornaleiro pode ter "
-        "menor CTI bruto, mas é inviável quando NS < 0,70 (ex.: Sparse High Impact, NS=0,55). "
+        "Cada célula mostra CTI médio (R$), BE médio (Var(Q)/Var(D)) e NS médio. Jornaleiro pode "
+        "ter menor CTI bruto, mas é inviável quando NS < 0,70 (ex.: Sparse High Impact, NS=0,55). "
         "Fonte: data/08_reporting/profiles/profile_policy_metrics.csv.",
         fontsize=8.5, color=COLOR_GRAY, wrap=True,
     )
@@ -1007,9 +1009,9 @@ def run() -> dict:
     )
     entries.append(ManifestEntry(
         filename="profile_policy_heatmap_simplified.png/.pdf/.csv",
-        description="Heatmap de CTI e BE médios (perfil x política), restrito a um "
+        description="Heatmap de CTI, BE e NS médios (perfil x política), restrito a um "
                      "subconjunto legível de políticas + dominantes; cada célula mostra "
-                     "CTI e BE médios; hachura = inviável (NS<0.70); contorno = "
+                     "CTI, BE e NS médios; hachura = inviável (NS<0.70); contorno = "
                      "política viável de menor CTI do perfil.",
         source_data="data/08_reporting/profiles/profile_policy_metrics.csv, "
                      "data/08_reporting/profiles/dominant_policy_by_profile.csv",

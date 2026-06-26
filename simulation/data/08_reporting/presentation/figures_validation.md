@@ -1,6 +1,6 @@
 # Validação dos novos artefatos de apresentação
 
-Gerado em: 2026-06-26 14:11
+Gerado em: 2026-06-26 14:18
 
 ## Fontes usadas
 - `data\04_feature\demand_profiles.parquet`

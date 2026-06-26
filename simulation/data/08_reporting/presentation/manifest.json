@@ -4,7 +4,7 @@
     "description": "Plano ADI x CV2 (Syntetos-Boylan) com os 4 quadrantes; cada ponto é uma série loja-produto; quadrante Lumpy destacado.",
     "source_data": "data/04_feature/demand_profiles.parquet (colunas adi, cv2, group)",
     "generator": "plot_syntetos_boylan_plane",
-    "generated_at": "2026-06-26T14:11:16",
+    "generated_at": "2026-06-26T14:17:59",
     "notes": "100.0% das séries classificadas como Lumpy no recorte avaliado (recomputado de adi/cv2; ver figures_validation.md para divergência com a tabela da dissertação que cita 71%)."
   },
   {
@@ -12,7 +12,7 @@
     "description": "CTI médio e NS médio por estratégia (A1/A2 política única, B seleção por perfil, C oráculo por série exploratório).",
     "source_data": "data/08_reporting/strategy/strategy_cost_comparison.csv",
     "generator": "plot_strategy_tradeoff",
-    "generated_at": "2026-06-26T14:11:17",
+    "generated_at": "2026-06-26T14:17:59",
     "notes": "C (oráculo) explicitamente rotulado como referência exploratória, não estratégia operacional."
   },
   {
@@ -20,15 +20,15 @@
     "description": "Política dominante (menor CTI viável, NS>=0.70) por Perfil Operacional de Demanda, com indicação de n e evidência exploratória (n<20).",
     "source_data": "data/08_reporting/profiles/dominant_policy_by_profile.csv",
     "generator": "plot_profile_dominance",
-    "generated_at": "2026-06-26T14:11:17",
+    "generated_at": "2026-06-26T14:17:59",
     "notes": ""
   },
   {
     "filename": "profile_policy_heatmap_simplified.png/.pdf/.csv",
-    "description": "Heatmap de CTI e BE médios (perfil x política), restrito a um subconjunto legível de políticas + dominantes; cada célula mostra CTI e BE médios; hachura = inviável (NS<0.70); contorno = política viável de menor CTI do perfil.",
+    "description": "Heatmap de CTI, BE e NS médios (perfil x política), restrito a um subconjunto legível de políticas + dominantes; cada célula mostra CTI, BE e NS médios; hachura = inviável (NS<0.70); contorno = política viável de menor CTI do perfil.",
     "source_data": "data/08_reporting/profiles/profile_policy_metrics.csv, data/08_reporting/profiles/dominant_policy_by_profile.csv",
     "generator": "plot_policy_profile_heatmap_simplified",
-    "generated_at": "2026-06-26T14:11:18",
+    "generated_at": "2026-06-26T14:18:01",
     "notes": "Políticas exibidas: EOQ, sS, Newsvendor, SA, DQN, PPO, GA-DQN, GA-PPO."
   },
   {
@@ -36,7 +36,7 @@
     "description": "Diagrama ilustrativo (não orientado a dados) da cadeia Dados -> Características -> POD -> Simulação -> Rótulo -> PSE -> Recomendação.",
     "source_data": "N/A (diagrama conceitual)",
     "generator": "plot_aipe_evidence_pipeline",
-    "generated_at": "2026-06-26T14:11:19",
+    "generated_at": "2026-06-26T14:18:01",
     "notes": "POD classifica; simulação avalia; rótulo escolhe; PSE recomenda (não 'decide'). XGBoost não é citado no diagrama."
   },
   {
@@ -44,7 +44,7 @@
     "description": "3 séries Lumpy mais próximas da mediana conjunta normalizada de (ADI, CV²) — critério registrado, sem escolha manual.",
     "source_data": "data/03_primary/scenarios.parquet, data/04_feature/demand_profiles.parquet",
     "generator": "plot_lumpy_series_examples",
-    "generated_at": "2026-06-26T14:11:19",
+    "generated_at": "2026-06-26T14:18:02",
     "notes": ""
   }
 ]
