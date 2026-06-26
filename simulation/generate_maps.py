@@ -34,18 +34,18 @@ series_meta = meta[['warehouse', 'store_id', 'item_id', 'filial', 'segmento',
 series_meta = series_meta.copy()
 series_meta['filial_clean'] = series_meta['filial'].str.strip()
 
-# ── 1. Distribuição de lojas: filial x segmento ──────────────────────────────
+# ── 1. Distribuição de séries: filial x segmento ─────────────────────────────
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
-fil_store_counts = series_meta.groupby('filial_clean')['store_id'].nunique().sort_values(ascending=False)
+fil_series_counts = series_meta.groupby('filial_clean').size().sort_values(ascending=False)
 fil_colors_list = ['#1565C0', '#E65100', '#2E7D32']
 
-axes[0].pie(fil_store_counts.values,
-            labels=fil_store_counts.index,
-            colors=fil_colors_list[:len(fil_store_counts)],
+axes[0].pie(fil_series_counts.values,
+            labels=fil_series_counts.index,
+            colors=fil_colors_list[:len(fil_series_counts)],
             autopct='%1.0f%%', startangle=90, pctdistance=0.82,
             wedgeprops=dict(edgecolor='white', linewidth=1.5))
-axes[0].set_title('Lojas por Filial\n(Bahia — 145 séries)', fontsize=10)
+axes[0].set_title('Séries por Filial\n(Bahia — 145 séries)', fontsize=10)
 
 cross = pd.crosstab(series_meta['filial_clean'], series_meta['segmento'])
 cross = cross[[c for c in SEG_ORDER if c in cross.columns]]
@@ -58,7 +58,7 @@ axes[1].set_ylabel('Número de séries')
 axes[1].tick_params(axis='x', rotation=15)
 axes[1].legend(title='Segmento', fontsize=7, title_fontsize=8, loc='upper right')
 
-fig.suptitle('Distribuição de Lojas por Filial e Segmento (BA)', fontsize=11)
+fig.suptitle('Distribuição de Séries por Filial e Segmento (BA)', fontsize=11)
 fig.tight_layout()
 fig.savefig(out / 'distribuicao_lojas_segmento.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
