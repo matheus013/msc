@@ -1,42 +1,22 @@
-% Slide 18 — Resultado principal: política única vs seleção por perfil
+% Slide — Resultado principal: política única vs seleção por perfil (figura)
 \begin{frame}{Política única vs. seleção por perfil}
   \centering
-  \tabstyle
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{@{}lrrrr@{}}
-    \toprule
-    \textbf{Estratégia} & \textbf{CTI médio (R\$)} & \textbf{NS médio} & \textbf{Red.\ vs.\ A1 (\%)} \\
-    \midrule
-    A1/A2: política única (EOQ) & 628,42 & 0,942 & 0,0 \\
-    \rowcolor{accenteal!15} B: seleção por perfil & \textbf{589,62} & 0,883 & \textbf{+6,2} \\
-    C$^\dagger$: oráculo por série & 347,82 & 0,700 & +44,6 \\
-    \bottomrule
-  \end{tabular}}
-  \vspace{0.6em}
-
-  \scriptsize $^\dagger$Oráculo: conhecimento perfeito por série -- referência
-  exploratória, \textbf{não} é estratégia operacional.
-  \vspace{0.55em}
-
-  \begin{alertblock}{Leitura cautelosa}
-    \small A seleção por perfil reduz CTI médio em \highlight{6,2\%}, mas com
-    queda real de NS médio (0,942 $\to$ 0,883). É um \textbf{\textit{trade-off}
-    custo-serviço mensurável}, não um ganho puro.
-  \end{alertblock}
+  \includegraphics[width=0.96\linewidth,height=7.0cm,keepaspectratio]{figures/strategy_tradeoff_cti_ns.pdf}
   \note{
     Esta é a comparação central do Experimento 2. A estratégia A é a
     política única global -- neste experimento, o EOQ é simultaneamente a
     melhor opção viável e o baseline operacional comum no varejo, então A1
-    e A2 coincidem. A estratégia B seleciona a política por perfil
-    operacional: na prática, isso substitui o EOQ pelo SA apenas no perfil
-    Sparse High Impact, que concentra 80% das séries. O resultado é uma
-    redução de 6,2% no CTI médio, mas acompanhada de queda real do nível de
-    serviço, de 0,942 para 0,883 -- ainda acima do piso de viabilidade de
-    0,70. Esse achado não deve ser lido como ganho puro, mas como evidência
-    de que a seleção contextual produz diferença econômica mensurável, com
-    uma contrapartida de serviço que precisa ser gerenciada. A estratégia C,
-    o oráculo por série, é só uma referência exploratória: mostra o limite
-    teórico de 44,6% de redução, mas ao custo de operar exatamente no piso
-    de NS aceitável -- não é algo que se possa implementar diretamente.
+    e A2 coincidem (CTI médio R\$ 628,42; NS médio 0,942). A estratégia B
+    seleciona a política viável de menor CTI por perfil operacional: na
+    prática, isso substitui o EOQ pelo SA apenas no perfil Sparse High
+    Impact, que concentra 80\% das séries, levando o CTI médio a R\$ 589,62
+    (redução de 6,2\%) e o NS médio a 0,883. Esse achado não deve ser lido
+    como ganho puro, mas como evidência de que a seleção contextual produz
+    diferença econômica mensurável, com uma contrapartida de serviço que
+    precisa ser gerenciada. A estratégia C, o oráculo por série (CTI médio
+    R\$ 347,82, redução teórica de 44,6\%), é apenas uma referência
+    exploratória que assume conhecimento perfeito da política ótima de cada
+    série -- não é algo que se possa implementar diretamente, e está
+    marcada como tal na figura (hachurada, em vermelho).
   }
 \end{frame}

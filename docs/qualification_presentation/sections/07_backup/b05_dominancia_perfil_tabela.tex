@@ -1,0 +1,27 @@
+% Backup — Tabela original de dominância por perfil (slide original do Capítulo 6)
+\begin{frame}[noframenumbering]{[Backup] Política viável de menor CTI por perfil (tabela)}
+  \centering
+  \resizebox{0.85\linewidth}{!}{%
+  \begin{tabular}{@{}lcrr@{}}
+    \toprule
+    \textbf{Perfil} & $n$ & \textbf{Política viável de menor CTI} & \textbf{CTI médio (R\$)} \\
+    \midrule
+    Sparse High Impact & 116 & SA & 584,01 \\
+    Unstable Trend & 18* & EOQ & 607,95 \\
+    High Vol. Seasonal & 11* & EOQ & 618,79 \\
+    \bottomrule
+  \end{tabular}}\\[0.3em]
+  {\scriptsize *$n<20$: evidência exploratória.}
+  \vspace{0.8em}
+
+  \begin{alertblock}{Cuidado com o custo bruto}
+    \small O Jornaleiro tem o \highlight{menor CTI bruto} em Sparse High
+    Impact (R\$\,284), mas NS\,$=$\,0,55 -- abaixo do limiar de viabilidade
+    de 0,70. Não é viável.
+  \end{alertblock}
+  \note{
+    Versão tabular (numérica e exata) do slide de dominância por perfil do
+    corpo principal, que usa o gráfico profile\_dominance\_bars. Útil se a
+    banca pedir os valores exatos por perfil.
+  }
+\end{frame}

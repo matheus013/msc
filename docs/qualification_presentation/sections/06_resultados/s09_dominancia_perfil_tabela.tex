@@ -1,33 +1,23 @@
-% Capítulo 6 (Resultados) — Slide 9 — Dominância por perfil (tabela)
-\begin{frame}{Dominância depende do perfil}
+% Capítulo 6 (Resultados) — Slide 9 — Dominância por perfil (figura)
+\begin{frame}{A política viável de menor CTI muda por perfil}
   \centering
-  \resizebox{0.85\linewidth}{!}{%
-  \begin{tabular}{@{}lcrr@{}}
-    \toprule
-    \textbf{Perfil} & $n$ & \textbf{Dominante} & \textbf{CTI médio (R\$)} \\
-    \midrule
-    Sparse High Impact & 116 & SA & 584,01 \\
-    Unstable Trend & 18* & EOQ & 607,95 \\
-    High Vol. Seasonal & 11* & EOQ & 618,79 \\
-    \bottomrule
-  \end{tabular}}\\[0.3em]
-  {\scriptsize *$n<20$: evidência exploratória.}
-  \vspace{0.8em}
+  \includegraphics[width=0.9\linewidth,height=5.0cm,keepaspectratio]{figures/profile_dominance_bars.pdf}\\[0.2em]
 
   \begin{alertblock}{Cuidado com o custo bruto}
-    \small O Jornaleiro tem o \highlight{menor CTI bruto} em Sparse High
+    \footnotesize O Jornaleiro tem o \highlight{menor CTI bruto} em Sparse High
     Impact (R\$\,284), mas NS\,$=$\,0,55 -- abaixo do limiar de viabilidade
-    de 0,70. Não é dominante.
+    de 0,70. Não é política viável neste perfil.
   \end{alertblock}
   \note{
-    Esta tabela resume a política dominante por perfil, sempre sob a
-    restrição de NS mínimo de 0,70. O SA domina no perfil que concentra 80\%
-    das séries; o EOQ domina nos dois perfis menores, com evidência
-    exploratória por terem menos de 20 séries. A ressalva mais importante é
-    sobre o Jornaleiro: ele tem o menor custo bruto no perfil mais numeroso,
-    mas seu nível de serviço de 0,55 está muito abaixo do limiar mínimo --
-    por isso é excluído da dominância, mesmo sendo o mais barato. Essa
-    ressalva evita a leitura simplista de que custo baixo implica política
-    melhor.
+    A política viável de menor CTI muda por perfil, sempre sob a restrição
+    de NS médio $\geq$ 0,70. O SA é a de menor CTI no perfil que concentra
+    80\% das séries (Sparse High Impact); o EOQ é a de menor CTI nos dois
+    perfis menores, com evidência exploratória por terem menos de 20
+    séries (Unstable Trend, n=18; High Vol. Seasonal, n=11). A ressalva mais
+    importante é sobre o Jornaleiro: ele tem o menor custo bruto no perfil
+    mais numeroso, mas seu nível de serviço de 0,55 está muito abaixo do
+    limiar mínimo -- por isso não é considerado viável, mesmo sendo o mais
+    barato. Essa ressalva evita a leitura simplista de que custo baixo
+    implica política melhor.
   }
 \end{frame}

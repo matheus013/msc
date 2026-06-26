@@ -1,0 +1,31 @@
+% Backup — Tabela original política única vs seleção por perfil (slide original do Capítulo 6)
+\begin{frame}[noframenumbering]{[Backup] Política única vs. seleção por perfil (tabela)}
+  \centering
+  \tabstyle
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    \textbf{Estratégia} & \textbf{CTI médio (R\$)} & \textbf{NS médio} & \textbf{Red.\ vs.\ A1 (\%)} \\
+    \midrule
+    A1/A2: política única (EOQ) & 628,42 & 0,942 & 0,0 \\
+    \rowcolor{accenteal!15} B: seleção por perfil & \textbf{589,62} & 0,883 & \textbf{+6,2} \\
+    C$^\dagger$: oráculo por série & 347,82 & 0,700 & +44,6 \\
+    \bottomrule
+  \end{tabular}}
+  \vspace{0.6em}
+
+  \scriptsize $^\dagger$Oráculo: conhecimento perfeito por série -- referência
+  exploratória, \textbf{não} é estratégia operacional.
+  \vspace{0.55em}
+
+  \begin{alertblock}{Leitura cautelosa}
+    \small A seleção por perfil reduz CTI médio em \highlight{6,2\%}, mas com
+    queda real de NS médio (0,942 $\to$ 0,883). É um \textbf{\textit{trade-off}
+    custo-serviço mensurável}, não um ganho puro.
+  \end{alertblock}
+  \note{
+    Versão tabular (numérica e exata) do slide de trade-off do corpo
+    principal, que usa o gráfico strategy\_tradeoff\_cti\_ns. Útil se a
+    banca pedir os valores exatos por estratégia.
+  }
+\end{frame}

@@ -1,16 +1,15 @@
-% Capítulo 6 (Resultados) — Slide 8 — Heatmap CTI por política e POD (figura isolada)
+% Capítulo 6 (Resultados) — Slide 8 — Heatmap CTI por política e POD simplificado (figura isolada)
 \begin{frame}{CTI médio por política e perfil}
   \centering
-  \includegraphics[width=0.9\linewidth,height=6.8cm,keepaspectratio]{figures/profile_policy_heatmap_cti.pdf}\\[0.35em]
-  {\small CTI médio por política e Perfil Operacional de Demanda (Experimento 2, BA).}
+  \includegraphics[width=0.88\linewidth,height=7.0cm,keepaspectratio]{figures/profile_policy_heatmap_simplified.pdf}
   \note{
-    Este heatmap mostra como o custo médio de cada política varia conforme
-    o perfil operacional de demanda. Células mais escuras indicam maior
-    custo médio. O ponto central é que a variação horizontal -- entre
-    perfis -- é expressiva: a mesma política produz custos muito distintos
-    segundo o padrão de demanda da série. Nenhuma coluna é uniformemente a
-    mais clara em todas as linhas, ou seja, nenhuma política minimiza o
-    custo em todos os perfis simultaneamente. Essa é a evidência visual
-    direta da heterogeneidade que motiva a seleção contextual por perfil.
+    Esta versão simplificada do heatmap restringe a um subconjunto legível
+    de políticas, mantendo sempre a política viável de menor CTI de cada
+    perfil (contorno em destaque) e marcando com hachura as combinações
+    inviáveis, com NS médio abaixo de 0,70 -- caso do Jornaleiro e do DQN.
+    O ponto central é o mesmo do heatmap completo: a mesma política produz
+    custos muito distintos segundo o perfil, e nenhuma política minimiza o
+    custo em todos os perfis simultaneamente. Essa heterogeneidade é a
+    evidência visual direta que motiva a seleção contextual por perfil.
   }
 \end{frame}
