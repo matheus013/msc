@@ -4,11 +4,11 @@
   \begin{tikzpicture}[
       >=Stealth,
       every node/.style={font=\small\sffamily},
-      layer/.style={rectangle, rounded corners=4pt, draw=slategray, fill=lightgray,
-                    minimum width=3.6cm, minimum height=1.7cm, align=center, text width=3.3cm},
-      core/.style={rectangle, rounded corners=4pt, draw=darkblue, fill=darkblue!12,
-                   minimum width=3.6cm, minimum height=1.7cm, align=center, text width=3.3cm},
-      flow/.style={->, thick, darkblue}
+      layer/.style={rectangle, rounded corners=7pt, draw=slategray!55, fill=cardbg,
+                    minimum width=3.75cm, minimum height=1.85cm, align=center, text width=3.45cm},
+      core/.style={rectangle, rounded corners=7pt, draw=darkblue, fill=darkblue!9,
+                   minimum width=3.95cm, minimum height=1.95cm, align=center, text width=3.65cm},
+      flow/.style={->, very thick, darkblue}
     ]
     \node[layer] (entrada) {\textbf{Entrada}\\[2pt]\footnotesize dados, características, sinais de previsão};
     \node[core, right=1.1cm of entrada] (nucleo) {\textbf{Núcleo de seleção contextual}\\[2pt]\footnotesize simulação $\cdot$ rótulos $\cdot$ PSE};
@@ -17,8 +17,11 @@
     \draw[flow] (entrada) -- (nucleo);
     \draw[flow] (nucleo) -- (aplicacao);
   \end{tikzpicture}
+  \vspace{0.65em}
+  \keymessage{O \highlight{PSE} decide; o portfólio de 12 políticas fornece as alternativas avaliadas.}
+  \vspace{0.35em}
 
-  \small O \highlight{PSE} é o componente de seleção do AIPE; as 12 políticas
+  \small As 12 políticas
   formam o portfólio sobre o qual ele aprende a recomendar. A cada
   $\Delta t$ ciclos, a aplicação realimenta a entrada (reavaliação periódica).
   \note{

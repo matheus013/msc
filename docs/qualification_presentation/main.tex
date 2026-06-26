@@ -14,6 +14,7 @@
 \usepackage{booktabs}
 \usepackage{makecell}
 \usepackage{colortbl}
+\usepackage{array}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
@@ -21,26 +22,66 @@
 \usepackage{textcomp}
 
 % --- Paleta sóbria: azul escuro, cinza, branco, destaque discreto ---
-\definecolor{darkblue}{HTML}{1B3A5C}
+\definecolor{darkblue}{HTML}{17324D}
 \definecolor{slategray}{HTML}{5B6B79}
-\definecolor{lightgray}{HTML}{EDEFF1}
-\definecolor{accenteal}{HTML}{3E7C8C}
+\definecolor{lightgray}{HTML}{F2F4F7}
+\definecolor{accenteal}{HTML}{2E6F73}
 \definecolor{warnred}{HTML}{8C3E3E}
+\definecolor{softink}{HTML}{243746}
+\definecolor{cardbg}{HTML}{F7F9FB}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=softink,bg=white}
 
 \setbeamercolor{palette primary}{bg=darkblue,fg=white}
 \setbeamercolor{palette secondary}{bg=slategray,fg=white}
 \setbeamercolor{palette tertiary}{bg=darkblue,fg=white}
-\setbeamercolor{frametitle}{bg=darkblue,fg=white}
+\setbeamercolor{frametitle}{bg=white,fg=darkblue}
 \setbeamercolor{progress bar}{fg=accenteal,bg=lightgray}
 \setbeamercolor{alerted text}{fg=accenteal}
-\setbeamercolor{normal text}{fg=black!85}
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamerfont{normal text}{size=\normalsize}
 
 \setbeamertemplate{frame numbering}[fraction]
-\metroset{block=fill,sectionpage=progressbar,numbering=fraction,progressbar=frametitle}
+\metroset{block=fill,sectionpage=none,numbering=fraction,progressbar=frametitle}
+
+\setbeamercolor{block title}{fg=darkblue,bg=lightgray}
+\setbeamercolor{block body}{fg=softink,bg=cardbg}
+\setbeamercolor{alertblock title}{fg=white,bg=accenteal}
+\setbeamercolor{alertblock body}{fg=softink,bg=accenteal!10}
+
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.14em,dp=0ex]{progress bar}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{section page}{
+  \begin{centering}
+    \vspace*{0.17\paperheight}
+    {\color{darkblue}\rule{0.42\linewidth}{1.1pt}}\par
+    \vspace{0.9em}
+    {\usebeamerfont{section title}\color{darkblue}\insertsectionhead\par}
+    \vspace{0.9em}
+    {\color{accenteal}\rule{0.24\linewidth}{0.9pt}}\par
+    \vfill
+  \end{centering}
+}
+
+\AtBeginSection[]{\begin{frame}[plain,noframenumbering]\sectionpage\end{frame}}
 
 % --- Comandos auxiliares de estilo ---
 \newcommand{\highlight}[1]{\textcolor{accenteal}{\textbf{#1}}}
 \newcommand{\fonte}[1]{{\footnotesize\textcolor{slategray}{Fonte: #1}}}
+\newcommand{\keymessage}[1]{%
+  \begin{beamercolorbox}[wd=\linewidth,rounded=true,sep=0.8em,leftskip=0.8em,rightskip=0.8em]{block body}
+    \textbf{\textcolor{darkblue}{#1}}
+  \end{beamercolorbox}%
+}
+\newcommand{\tabstyle}{\renewcommand{\arraystretch}{1.22}}
 
 \title{Seleção Contextual de Políticas de Reposição em Redes Varejistas}
 \subtitle{O AIPE como \textit{framework} metodológico de apoio à decisão}
