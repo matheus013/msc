@@ -45,12 +45,14 @@ for path in paths:
     if uf == '__HIVE_DEFAULT_PARTITION__':
         continue
     try:
-        df = pd.read_parquet(path, columns=[c for c in COLS if c != 'status'] +
-                             (['status'] if 'status' in pd.read_parquet(path, columns=['status']).columns else []))
+        raw_df = pd.read_parquet(path)
     except Exception:
-        df = pd.read_parquet(path, columns=[c for c in COLS
-                                             if c in pd.read_parquet(path, columns=COLS[:2]).columns
-                                             or True])
+        continue
+
+    available_cols = [c for c in COLS if c in raw_df.columns]
+    if not available_cols:
+        continue
+    df = raw_df[available_cols].copy()
 
     # Filtra status ativo se disponivel
     if 'status' in df.columns:
@@ -95,8 +97,10 @@ state_df = pd.DataFrame(state_chunks)
 seg_df = pd.concat(seg_chunks, ignore_index=True) if seg_chunks else pd.DataFrame()
 fil_df = pd.concat(filial_chunks, ignore_index=True) if filial_chunks else pd.DataFrame()
 
-# TODO: Tratar explicitamente o caso sem arquivos/dados válidos para evitar KeyError
-# em agregações (ex.: state_df vazio sem coluna 'n_lojas').
+if state_df.empty:
+    print("WARN: Nenhum dado valido encontrado para gerar mapas nacionais.")
+    sys.exit(0)
+
 total_lojas = state_df['n_lojas'].sum()
 total_receita = state_df['receita_total'].sum()
 print(f"\nTotal: {total_lojas:,} lojas | R${total_receita/1e6:.1f}M receita")
