@@ -598,6 +598,20 @@ def generate_cti_adjusted_analysis(kpis: pd.DataFrame,
     run()
 
 
+def generate_presentation_visuals(kpis: pd.DataFrame,
+                                   demand_profiles: pd.DataFrame,
+                                   params: dict) -> None:
+    """
+    Wrapper Kedro para reporting/presentation_visuals.py (mesmo padrao de I/O).
+    Gera visualizacoes adicionais para a apresentacao de qualificacao a partir
+    dos artefatos JA existentes em data/08_reporting/profiles/ e strategy/
+    (nao reexecuta a simulacao nem recalcula KPIs). Deve ser executado depois
+    de generate_profile_policy_analysis e generate_strategy_cost_comparison.
+    """
+    from reporting.presentation_visuals import run
+    run()
+
+
 def _latex_effect_sizes_table(effect_sizes: pd.DataFrame, cfg: dict) -> str:
     """Tabela de Cohen's d."""
     sep = cfg.get("decimal_sep", "{,}")

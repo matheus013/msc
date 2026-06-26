@@ -8,6 +8,7 @@ from simulation.pipelines.reporting.nodes import (
     generate_profile_policy_analysis,
     generate_strategy_cost_comparison,
     generate_cti_adjusted_analysis,
+    generate_presentation_visuals,
 )
 
 
@@ -73,5 +74,11 @@ def create_pipeline(**kwargs) -> Pipeline:
             inputs=["kpis", "demand_profiles", "params:reporting"],
             outputs=None,
             name="generate_cti_adjusted_analysis",
+        ),
+        node(
+            func=generate_presentation_visuals,
+            inputs=["kpis", "demand_profiles", "params:reporting"],
+            outputs=None,
+            name="generate_presentation_visuals",
         ),
     ])
