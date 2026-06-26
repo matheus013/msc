@@ -45,20 +45,20 @@ axes[0].pie(fil_store_counts.values,
             colors=fil_colors_list[:len(fil_store_counts)],
             autopct='%1.0f%%', startangle=90, pctdistance=0.82,
             wedgeprops=dict(edgecolor='white', linewidth=1.5))
-axes[0].set_title('Lojas por Filial\n(Bahia — 145 series)', fontsize=10)
+axes[0].set_title('Lojas por Filial\n(Bahia — 145 séries)', fontsize=10)
 
 cross = pd.crosstab(series_meta['filial_clean'], series_meta['segmento'])
 cross = cross[[c for c in SEG_ORDER if c in cross.columns]]
 cross.plot(kind='bar', stacked=True, ax=axes[1],
            color=[SEG_COLORS.get(c, '#999') for c in cross.columns],
            edgecolor='white', linewidth=0.5)
-axes[1].set_title('Series por Filial e Segmento', fontsize=10)
+axes[1].set_title('Séries por Filial e Segmento', fontsize=10)
 axes[1].set_xlabel('Filial')
-axes[1].set_ylabel('Numero de series')
+axes[1].set_ylabel('Número de séries')
 axes[1].tick_params(axis='x', rotation=15)
 axes[1].legend(title='Segmento', fontsize=7, title_fontsize=8, loc='upper right')
 
-fig.suptitle('Distribuicao de Lojas por Filial e Segmento (BA)', fontsize=11)
+fig.suptitle('Distribuição de Lojas por Filial e Segmento (BA)', fontsize=11)
 fig.tight_layout()
 fig.savefig(out / 'distribuicao_lojas_segmento.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
@@ -74,7 +74,7 @@ for patch, color in zip(bp['boxes'], fil_colors_list[:len(filiais)]):
     patch.set_facecolor(color)
     patch.set_alpha(0.75)
 axes[0].set_title('Receita Esperada por Ciclo (R$)\npor Filial', fontsize=10)
-axes[0].set_ylabel('Receita media por ciclo (R$)')
+axes[0].set_ylabel('Receita média por ciclo (R$)')
 axes[0].tick_params(axis='x', rotation=10)
 
 seg_rev = (series_meta.groupby('segmento')['mu_revenue']
@@ -82,13 +82,13 @@ seg_rev = (series_meta.groupby('segmento')['mu_revenue']
 bars = axes[1].barh(seg_rev.index, seg_rev.values,
                     color=[SEG_COLORS.get(s, '#999') for s in seg_rev.index],
                     edgecolor='white', height=0.6)
-axes[1].set_xlabel('Receita media por ciclo (R$)')
-axes[1].set_title('Receita Media por Ciclo\npor Segmento de Loja', fontsize=10)
+axes[1].set_xlabel('Receita média por ciclo (R$)')
+axes[1].set_title('Receita Média por Ciclo\npor Segmento de Loja', fontsize=10)
 for bar, val in zip(bars, seg_rev.values):
     axes[1].text(val + 0.5, bar.get_y() + bar.get_height() / 2,
                  f'R${val:.0f}', va='center', fontsize=8)
 
-fig.suptitle('Distribuicao de Receita por Segmento e Filial (BA)', fontsize=11)
+fig.suptitle('Distribuição de Receita por Segmento e Filial (BA)', fontsize=11)
 fig.tight_layout()
 fig.savefig(out / 'distribuicao_receita_segmento.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
@@ -98,13 +98,13 @@ print('OK distribuicao_receita_segmento.pdf')
 fig, ax = plt.subplots(figsize=(8, 6))
 for fil, color in zip(filiais, fil_colors_list):
     sub = series_meta[series_meta['filial_clean'] == fil]
-    ax.scatter(sub['mu'], sub['cv'], label=f'{fil} ({len(sub)} series)',
+    ax.scatter(sub['mu'], sub['cv'], label=f'{fil} ({len(sub)} séries)',
                color=color, alpha=0.65, s=45, edgecolors='white', linewidths=0.4)
 
 ax.axhline(y=0.49**0.5, color='gray', ls='--', lw=0.8, label='CV = 0,70 (limiar SB)')
-ax.set_xlabel('Demanda Media por Ciclo (mu)', fontsize=9)
-ax.set_ylabel('Coeficiente de Variacao (CV)', fontsize=9)
-ax.set_title('Perfil de Demanda por Filial\n(mu x CV - todas as series BA)', fontsize=10)
+ax.set_xlabel('Demanda Média por Ciclo (mu)', fontsize=9)
+ax.set_ylabel('Coeficiente de Variação (CV)', fontsize=9)
+ax.set_title('Perfil de Demanda por Filial\n(mu x CV - todas as séries BA)', fontsize=10)
 ax.legend(fontsize=8)
 ax.set_xscale('log')
 fig.tight_layout()
@@ -119,7 +119,7 @@ kpi_seg = (kpis[kpis['policy'].isin(TOP_POLS)]
            .mean().reset_index())
 
 fig, axes = plt.subplots(1, 3, figsize=(14, 5))
-kpis_show = [('TIC', 'CTI (R$)'), ('NS', 'Nivel de Servico'), ('TR', 'Taxa de Ruptura')]
+kpis_show = [('TIC', 'CTI (R$)'), ('NS', 'Nível de Serviço'), ('TR', 'Taxa de Ruptura')]
 for ax, (col, label) in zip(axes, kpis_show):
     pivot = kpi_seg.pivot(index='segmento', columns='policy', values=col)
     pivot = pivot.reindex([s for s in SEG_ORDER if s in pivot.index])
@@ -128,10 +128,10 @@ for ax, (col, label) in zip(axes, kpis_show):
     ax.set_title(label, fontsize=9)
     ax.set_xlabel('')
     ax.tick_params(axis='x', rotation=30, labelsize=7)
-    ax.legend(fontsize=7, title='Politica', title_fontsize=7)
+    ax.legend(fontsize=7, title='Política', title_fontsize=7)
     ax.set_ylabel(label)
 
-fig.suptitle('KPIs por Segmento de Loja - 4 Politicas Selecionadas (BA)', fontsize=10)
+fig.suptitle('KPIs por Segmento de Loja - 4 Políticas Selecionadas (BA)', fontsize=10)
 fig.tight_layout()
 fig.savefig(out / 'kpi_por_segmento.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
@@ -147,8 +147,8 @@ ax.set_xticks(range(len(pivot_rev.columns)))
 ax.set_xticklabels(pivot_rev.columns, rotation=60, ha='right', fontsize=7)
 ax.set_yticks(range(len(pivot_rev.index)))
 ax.set_yticklabels(pivot_rev.index, fontsize=9)
-fig.colorbar(im, ax=ax, label='Receita media por ciclo (R$)', shrink=0.8)
-ax.set_title('Receita Media por Ciclo - Filial x SKU (BA)', fontsize=10)
+fig.colorbar(im, ax=ax, label='Receita média por ciclo (R$)', shrink=0.8)
+ax.set_title('Receita Média por Ciclo - Filial x SKU (BA)', fontsize=10)
 for i in range(len(pivot_rev.index)):
     for j in range(len(pivot_rev.columns)):
         val = pivot_rev.values[i, j]
@@ -171,8 +171,8 @@ for bar, val in zip(bars, seg_store.values):
     ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3,
             str(val), ha='center', va='bottom', fontsize=9, fontweight='bold')
 ax.set_xlabel('Segmento')
-ax.set_ylabel('Numero de lojas')
-ax.set_title('Numero de Lojas por Segmento de Loja (BA)\nPiramide de Fidelidade', fontsize=10)
+ax.set_ylabel('Número de lojas')
+ax.set_title('Número de Lojas por Segmento de Loja (BA)\nPirâmide de Fidelidade', fontsize=10)
 ax.tick_params(axis='x', rotation=15)
 fig.tight_layout()
 fig.savefig(out / 'lojas_por_segmento.pdf', dpi=dpi, bbox_inches='tight')

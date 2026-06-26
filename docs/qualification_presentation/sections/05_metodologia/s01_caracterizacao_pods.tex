@@ -2,31 +2,29 @@
 \begin{frame}{Perfis Operacionais de Demanda (POD)}
   \centering
   \resizebox{\linewidth}{!}{%
-  \begin{tabular}{@{}lll@{}}
+  \begin{tabular}{@{}ll@{}}
     \toprule
-    \textbf{POD} & \textbf{Critério} & \textbf{Referência inicial} \\
+    \textbf{POD} & \textbf{Critério ou grupo de características} \\
     \midrule
-    Sparse High Impact & ADI $\geq 1{,}32$, CV$^2 \geq 0{,}49$, $z_{\max}\geq 5$ & GA-DQN \\
-    High Vol. Seasonal & $\rho_S \geq 0{,}25$ ou $B \geq 0{,}30$ & PPO \\
-    Unstable Trend & $|\beta_t/\mu| \geq 0{,}05$ ou $H \geq 2{,}0$ & GA-PPO \\
-    Low Vol. Stable & $\mu \leq 2{,}0$, CV$^2 < 0{,}49$ & Jornaleiro \\
-    Fast Moving & ADI $< 1{,}32$ & $(s,S)$ \\
+    Sparse High Impact & Intermitência alta, variabilidade alta e picos relevantes \\
+    High Vol. Seasonal & Sinal sazonal e/ou concentração de demanda em janelas \\
+    Unstable Trend & Tendência relevante e/ou mudanças de regime \\
+    Low Vol. Stable & Baixa média com baixa variabilidade \\
+    Fast Moving & Baixa intermitência e giro recorrente \\
     \bottomrule
   \end{tabular}}
   \vspace{0.8em}
 
-  \small \fonte{capítulo de Metodologia, Tabela 4.1; demand\_profiling}\\[0.3em]
-  \small As regras são \highlight{heurísticas configuráveis} -- a política de
-  referência é um ponto de partida, não a dominância empírica final.
+  \small \fonte{capítulo de Metodologia, Tabela 4.2; demand\_profiling}\\[0.3em]
+  \small \highlight{POD classifica. Simulação avalia. Rótulo escolhe. PSE aprende.}
   \note{
     A partir do vetor de 17 características, cada série é classificada em
     um de cinco Perfis Operacionais de Demanda. Esses perfis vão além da
     taxonomia clássica de Syntetos-Boylan, que usa só ADI e CV²: eles
     incorporam burstiness, entropia, tendência e sazonalidade, e foram
     pensados para aproximar situações de decisão de estoque reconhecíveis
-    pela gestão. A coluna ``referência inicial'' não deve ser confundida com
-    o resultado empírico -- ela é apenas uma hipótese de trabalho usada para
-    organizar a análise; a dominância real, medida por simulação, aparece
-    mais adiante nos resultados.
+    pela gestão. Aqui o POD apenas organiza o contexto da série. A escolha de
+    política não acontece neste passo: ela vem depois, pela avaliação
+    comparativa em simulação e pela geração de rótulos para treinar o PSE.
   }
 \end{frame}

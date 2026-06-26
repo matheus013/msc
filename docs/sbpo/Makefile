@@ -1,7 +1,7 @@
 MAIN := main
 BUILD := build
 LATEXMK := latexmk
-LATEXMK_FLAGS := -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -outdir=$(BUILD)
+LATEXMK_FLAGS := -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=$(BUILD)
 
 PDF := $(MAIN).pdf
 BUILD_PDF := $(BUILD)/$(MAIN).pdf
@@ -10,7 +10,7 @@ BUILD_PDF := $(BUILD)/$(MAIN).pdf
 
 all: $(PDF)
 
-$(PDF): $(MAIN).tex
+$(PDF): $(MAIN).tex exemplo-latex.bib
 	@mkdir -p $(BUILD)
 	$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN).tex
 	@cp $(BUILD_PDF) $(PDF)

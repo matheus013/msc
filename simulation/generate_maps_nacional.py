@@ -1,4 +1,4 @@
-"""Mapas nacionais usando todos os estados — le e agrega estado por estado."""
+"""Mapas nacionais usando todos os estados — lê e agrega estado por estado."""
 import sys; sys.path.insert(0, 'src')
 import glob, os
 import pandas as pd
@@ -95,6 +95,8 @@ state_df = pd.DataFrame(state_chunks)
 seg_df = pd.concat(seg_chunks, ignore_index=True) if seg_chunks else pd.DataFrame()
 fil_df = pd.concat(filial_chunks, ignore_index=True) if filial_chunks else pd.DataFrame()
 
+# TODO: Tratar explicitamente o caso sem arquivos/dados válidos para evitar KeyError
+# em agregações (ex.: state_df vazio sem coluna 'n_lojas').
 total_lojas = state_df['n_lojas'].sum()
 total_receita = state_df['receita_total'].sum()
 print(f"\nTotal: {total_lojas:,} lojas | R${total_receita/1e6:.1f}M receita")
@@ -109,8 +111,8 @@ try:
     fig, axes = plt.subplots(1, 2, figsize=(18, 11))
 
     for ax, col, label, cmap in [
-        (axes[0], 'n_lojas', 'Numero de Lojas Ativas', 'Blues'),
-        (axes[1], 'receita_total', 'Receita Liquida Total (R$)', 'YlOrRd'),
+        (axes[0], 'n_lojas', 'Número de Lojas Ativas', 'Blues'),
+        (axes[1], 'receita_total', 'Receita Líquida Total (R$)', 'YlOrRd'),
     ]:
         ax.set_facecolor('#E8F4F8')
         states_gdf.plot(ax=ax, color='#ECECEC', edgecolor='white', linewidth=0.5)
@@ -164,7 +166,7 @@ bars = axes[0].barh(state_plot['uf'], state_plot['n_lojas'],
 for bar, val in zip(bars, state_plot['n_lojas']):
     axes[0].text(val + 20, bar.get_y() + bar.get_height() / 2,
                  f'{int(val):,}', va='center', fontsize=7.5)
-axes[0].set_xlabel('Numero de Lojas Ativas')
+axes[0].set_xlabel('Número de Lojas Ativas')
 axes[0].set_title('Lojas Ativas por Estado', fontsize=10)
 axes[0].xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(x):,}'))
 
@@ -175,7 +177,7 @@ bars2 = axes[1].barh(state_plot_rev['uf'], state_plot_rev['receita_total'] / 1e6
 for bar, val in zip(bars2, state_plot_rev['receita_total'] / 1e6):
     axes[1].text(val + 0.5, bar.get_y() + bar.get_height() / 2,
                  f'R${val:.0f}M', va='center', fontsize=7.5)
-axes[1].set_xlabel('Receita Liquida Total (R$ milhoes)')
+axes[1].set_xlabel('Receita Líquida Total (R$ milhões)')
 axes[1].set_title('Receita Total por Estado', fontsize=10)
 
 fig.suptitle('Ranking de Estados — Dataset Completo', fontsize=11)
@@ -203,7 +205,7 @@ if not seg_df.empty:
     axes[0].set_title(f'Lojas por Segmento\n({seg_nacional["n_lojas"].sum():,} lojas — Nacional)',
                       fontsize=10)
 
-    # Barras horizontais: receita + numero de lojas por segmento
+    # Barras horizontais: receita + número de lojas por segmento
     seg_plot = seg_nacional.sort_values('receita', ascending=True)
     bar_colors = [SEG_COLORS.get(s, '#999') for s in seg_plot.index]
     bars = axes[1].barh(seg_plot.index,
@@ -214,13 +216,13 @@ if not seg_df.empty:
                      bar.get_y() + bar.get_height() / 2,
                      f'R${rev:.0f}M  ({int(n_lj):,} lojas)',
                      va='center', fontsize=8.5, fontweight='bold')
-    axes[1].set_xlabel('Receita Liquida Total (R$ milhoes)')
+    axes[1].set_xlabel('Receita Líquida Total (R$ milhões)')
     axes[1].set_title('Receita Total por Segmento — Nacional', fontsize=10)
     # margem direita para os labels
     axes[1].set_xlim(right=seg_plot['receita'].max() / 1e6 * 1.45)
     axes[1].xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'R${x:.0f}M'))
 
-    fig.suptitle('Distribuicao Nacional por Segmento de Loja\n(excluindo categoria Revendedor)',
+    fig.suptitle('Distribuição Nacional por Segmento de Loja\n(excluindo categoria Revendedor)',
                  fontsize=11)
     fig.tight_layout()
     fig.savefig(OUT / 'nacional_distribuicao_segmento.pdf', dpi=dpi, bbox_inches='tight')
@@ -240,8 +242,8 @@ if not seg_df.empty:
                         color=[SEG_COLORS.get(c, '#999') for c in pivot.columns],
                         edgecolor='white', linewidth=0.4)
     ax.set_xlabel('Estado')
-    ax.set_ylabel('Receita (R$ milhoes)')
-    ax.set_title('Composicao de Receita por Segmento — Top 5 Estados', fontsize=10)
+    ax.set_ylabel('Receita (R$ milhões)')
+    ax.set_title('Composição de Receita por Segmento — Top 5 Estados', fontsize=10)
     ax.tick_params(axis='x', rotation=15)
     ax.legend(title='Segmento', fontsize=7, title_fontsize=8, loc='upper right')
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'R${x:.0f}M'))

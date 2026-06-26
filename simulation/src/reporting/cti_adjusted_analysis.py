@@ -468,7 +468,7 @@ def _sensitivity_figure(dominant_table: pd.DataFrame, out_path: Path) -> None:
     # Legend
     patches = [
         mpatches.Patch(facecolor="white", edgecolor="black", label="Barra sólida: pol. dominante por CTI puro"),
-        mpatches.Patch(facecolor="white", edgecolor="black", hatch="/", label="Barra hachured: pol. por CTI ajustado (se diferente)"),
+        mpatches.Patch(facecolor="white", edgecolor="black", hatch="/", label="Barra hachurada: pol. por CTI ajustado (se diferente)"),
     ]
     fig.legend(handles=patches, loc="lower center", ncol=2, fontsize=7, bbox_to_anchor=(0.5, -0.05))
     fig.suptitle("Política Dominante por Perfil: CTI Puro vs CTI Ajustado (λ_BE)", fontsize=10)

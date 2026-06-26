@@ -9,7 +9,7 @@
     \midrule
     Políticas clássicas & EOQ, $(s,S)$, Jornaleiro & Baixa adaptação a séries heterogêneas \\
     Previsão de demanda & Croston, ARIMA, LSTM, XGBoost & Não define a política a aplicar \\
-    Meta-heurísticas & GA, SA, PSO, DE, MILP & Calibra política já escolhida, não seleciona entre famílias \\
+    Parametrização por meta-heurísticas & GA, SA, PSO, DE, MILP & Calibra política já escolhida, não seleciona entre famílias \\
     Aprend.\ por reforço & DQN, PPO, SARSA & Exige históricos longos ($\sim 10^6$ passos) \\
     Seleção/meta-aprend. & ASP, hiper-heurísticas, AutoML & Pouco explorado em varejo real \\
     \bottomrule
@@ -21,9 +21,10 @@
     A literatura oferece blocos sólidos para cada parte do problema, mas
     isolados. As políticas clássicas são simples e interpretáveis, mas se
     adaptam mal a séries heterogêneas. A previsão de demanda intermitente
-    melhora estimativas, mas não decide qual política usar. Meta-heurísticas
-    calibram bem uma política já escolhida, mas não respondem qual família
-    adotar. Agentes de aprendizado por reforço aprendem decisões sequenciais,
+    melhora estimativas, mas não decide qual política usar. A parametrização
+    por meta-heurísticas calibra bem uma política já escolhida, mas não
+    responde qual família adotar. Agentes de aprendizado por reforço aprendem
+    decisões sequenciais,
     mas exigem históricos da ordem de um milhão de interações -- incompatível
     com séries de varejo de 38 ciclos. E a literatura de seleção de
     algoritmos e meta-aprendizado, embora madura em outras áreas, é pouco

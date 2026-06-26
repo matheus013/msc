@@ -13,20 +13,20 @@ $\lambda_{BE}$ &
 \makecell[l]{CTI ajustado} &
 \makecell[l]{Muda?} \\
 \midrule
-High Vol. Seasonal$^*$ & 11 & $0.00$ & EOQ & EOQ &  \\
-High Vol. Seasonal$^*$ & 11 & $0.25$ & EOQ & SA & \checkmark \\
-High Vol. Seasonal$^*$ & 11 & $0.50$ & EOQ & SA & \checkmark \\
-High Vol. Seasonal$^*$ & 11 & $1.00$ & EOQ & SA & \checkmark \\
+High Vol. Seasonal$^*$ & 11 & $0.00$ & SARSA & SARSA &  \\
+High Vol. Seasonal$^*$ & 11 & $0.25$ & SARSA & Jornaleiro & \checkmark \\
+High Vol. Seasonal$^*$ & 11 & $0.50$ & SARSA & Jornaleiro & \checkmark \\
+High Vol. Seasonal$^*$ & 11 & $1.00$ & SARSA & Jornaleiro & \checkmark \\
 \midrule
-Sparse High Impact & 116 & $0.00$ & SA & SA &  \\
-Sparse High Impact & 116 & $0.25$ & SA & SA &  \\
-Sparse High Impact & 116 & $0.50$ & SA & SA &  \\
-Sparse High Impact & 116 & $1.00$ & SA & SA &  \\
+Sparse High Impact & 116 & $0.00$ & Jornaleiro & Jornaleiro &  \\
+Sparse High Impact & 116 & $0.25$ & Jornaleiro & Jornaleiro &  \\
+Sparse High Impact & 116 & $0.50$ & Jornaleiro & Jornaleiro &  \\
+Sparse High Impact & 116 & $1.00$ & Jornaleiro & Jornaleiro &  \\
 \midrule
 Unstable Trend$^*$ & 18 & $0.00$ & EOQ & EOQ &  \\
 Unstable Trend$^*$ & 18 & $0.25$ & EOQ & EOQ &  \\
-Unstable Trend$^*$ & 18 & $0.50$ & EOQ & SA & \checkmark \\
-Unstable Trend$^*$ & 18 & $1.00$ & EOQ & SA & \checkmark \\
+Unstable Trend$^*$ & 18 & $0.50$ & EOQ & EOQ &  \\
+Unstable Trend$^*$ & 18 & $1.00$ & EOQ & PSO & \checkmark \\
 \bottomrule
 \multicolumn{6}{l}{\scriptsize $^*$ $n < 20$: evidência exploratória. Normalização de CTI e BE dentro de cada perfil para seleção.} \\
 \end{tabular}

@@ -1,26 +1,27 @@
-PDFLATEX := /Library/TeX/texbin/pdflatex
-BIBTEX   := /Library/TeX/texbin/bibtex
-BUILD    := build
-MAIN     := tcc
+MAIN := tcc
+BUILD := build
+LATEXMK := latexmk
+LATEXMK_FLAGS := -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=$(BUILD)
 
-FLAGS := -interaction=nonstopmode -output-directory=$(BUILD)
+PDF := $(MAIN).pdf
+BUILD_PDF := $(BUILD)/$(MAIN).pdf
 
 .PHONY: all clean
 
-all: $(BUILD)/$(MAIN).pdf
+all: $(PDF)
 
-$(BUILD)/$(MAIN).pdf: $(MAIN).tex referencias.bib
-	@mkdir -p $(BUILD)/capitulos
-	$(PDFLATEX) $(FLAGS) $(MAIN).tex
-	$(BIBTEX) $(BUILD)/$(MAIN)
-	$(PDFLATEX) $(FLAGS) $(MAIN).tex
-	$(PDFLATEX) $(FLAGS) $(MAIN).tex
-	$(PDFLATEX) $(FLAGS) $(MAIN).tex
+$(PDF): $(MAIN).tex referencias.bib
+	@mkdir -p $(BUILD)
+	$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN).tex
+	@cp $(BUILD_PDF) $(PDF)
 
 clean:
-	rm -f $(BUILD)/$(MAIN).pdf  $(BUILD)/$(MAIN).aux  $(BUILD)/$(MAIN).bbl \
-	      $(BUILD)/$(MAIN).blg  $(BUILD)/$(MAIN).hd   $(BUILD)/$(MAIN).lof \
-	      $(BUILD)/$(MAIN).log  $(BUILD)/$(MAIN).lot  $(BUILD)/$(MAIN).out \
-	      $(BUILD)/$(MAIN).toc  $(BUILD)/$(MAIN).upa  $(BUILD)/$(MAIN).fls \
-	      $(BUILD)/$(MAIN).fdb_latexmk $(BUILD)/$(MAIN).xdv \
-	      $(BUILD)/capitulos/*.aux IC-eps-converted-to.pdf
+	@mkdir -p $(BUILD)
+	-$(LATEXMK) -C -outdir=$(BUILD) $(MAIN).tex
+	rm -rf $(BUILD)
+	rm -f $(MAIN).aux $(MAIN).bbl $(MAIN).blg $(MAIN).fdb_latexmk $(MAIN).fls \
+	      $(MAIN).hd $(MAIN).lof $(MAIN).log $(MAIN).lot $(MAIN).out \
+	      $(MAIN).toc $(MAIN).upa $(MAIN).xdv $(MAIN).nav $(MAIN).snm \
+	      $(MAIN).vrb IC-eps-converted-to.pdf
+	find capitulos -name '*.aux' -delete
+	@echo "Limpeza concluida; PDF preservado: $(PDF)"

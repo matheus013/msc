@@ -1,4 +1,4 @@
-"""Regenera apenas nacional_distribuicao_segmento.pdf com dados ja agregados."""
+"""Regenera apenas nacional_distribuicao_segmento.pdf com dados já agregados."""
 import glob, pandas as pd, numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -57,7 +57,7 @@ axes[0].set_title(
     fontsize=10,
 )
 
-# Barras horizontais: receita + numero de lojas
+# Barras horizontais: receita + número de lojas
 seg_plot = seg_nacional.sort_values('receita', ascending=True)
 bars = axes[1].barh(
     seg_plot.index,
@@ -75,12 +75,12 @@ for bar, rev, n_lj in zip(bars,
         va='center', fontsize=8.5, fontweight='bold',
     )
 
-axes[1].set_xlabel('Receita Liquida Total (R$ milhoes)')
+axes[1].set_xlabel('Receita Líquida Total (R$ milhões)')
 axes[1].set_title('Receita Total por Segmento — Nacional', fontsize=10)
 axes[1].set_xlim(right=seg_plot['receita'].max() / 1e6 * 1.50)
 axes[1].xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'R${x:.0f}M'))
 
-fig.suptitle('Distribuicao Nacional por Segmento de Loja\n(excluindo categoria Revendedor)',
+fig.suptitle('Distribuição Nacional por Segmento de Loja\n(excluindo categoria Revendedor)',
              fontsize=11)
 fig.tight_layout()
 fig.savefig(OUT / 'nacional_distribuicao_segmento.pdf', dpi=dpi, bbox_inches='tight')

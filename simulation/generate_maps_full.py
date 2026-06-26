@@ -1,4 +1,4 @@
-"""Mapas e distribuicoes usando todos os dados filtrados (23.645 lojas, 87 SKUs)."""
+"""Mapas e distribuições usando todos os dados filtrados (23.645 lojas, 87 SKUs)."""
 import sys; sys.path.insert(0, 'src')
 import pandas as pd
 import numpy as np
@@ -15,7 +15,7 @@ plt.rcParams.update({"figure.facecolor": "white", "axes.facecolor": "white",
 
 df = pd.read_parquet('data/02_intermediate/sales_filtered.parquet')
 print(f"Dados: {df.shape[0]:,} registros | {df['store_id'].nunique():,} lojas | "
-      f"{df['item_id'].nunique()} SKUs | {df[['store_id','item_id']].drop_duplicates().shape[0]:,} series")
+    f"{df['item_id'].nunique()} SKUs | {df[['store_id','item_id']].drop_duplicates().shape[0]:,} séries")
 
 out = Path('data/08_reporting/maps')
 out.mkdir(parents=True, exist_ok=True)
@@ -76,7 +76,7 @@ for bar, val in zip(bars, seg_store.values):
     axes[1].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 15,
                  f'{val:,}', ha='center', va='bottom', fontsize=7, fontweight='bold')
 axes[1].set_title('Lojas por Segmento', fontsize=10)
-axes[1].set_ylabel('Numero de lojas')
+axes[1].set_ylabel('Número de lojas')
 axes[1].tick_params(axis='x', rotation=25, labelsize=7)
 axes[1].yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(x):,}'))
 
@@ -87,15 +87,15 @@ cross = cross[[c for c in SEG_ORDER if c in cross.columns]]
 cross.plot(kind='bar', stacked=True, ax=axes[2],
            color=[SEG_COLORS.get(c, '#999') for c in cross.columns],
            edgecolor='white', linewidth=0.4)
-axes[2].set_title('Composicao de Segmentos por Filial', fontsize=10)
+axes[2].set_title('Composição de Segmentos por Filial', fontsize=10)
 axes[2].set_xlabel('')
-axes[2].set_ylabel('Numero de lojas')
+axes[2].set_ylabel('Número de lojas')
 axes[2].tick_params(axis='x', rotation=15, labelsize=8)
 axes[2].legend(title='Segmento', fontsize=6, title_fontsize=7,
                loc='upper right', ncol=2)
 axes[2].yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f'{int(x):,}'))
 
-fig.suptitle('Distribuicao de Lojas — Dataset Completo (BA, 23.645 lojas)', fontsize=11)
+fig.suptitle('Distribuição de Lojas — Dataset Completo (BA, 23.645 lojas)', fontsize=11)
 fig.tight_layout()
 fig.savefig(out / 'full_distribuicao_lojas.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
@@ -112,10 +112,10 @@ bars = axes[0].barh(fil_rev.index, fil_rev.values,
 for bar, val in zip(bars, fil_rev.values):
     axes[0].text(val + 0.5, bar.get_y() + bar.get_height() / 2,
                  f'R${val:.1f}M', va='center', fontsize=9, fontweight='bold')
-axes[0].set_xlabel('Receita Liquida Total (R$ milhoes)')
+axes[0].set_xlabel('Receita Líquida Total (R$ milhões)')
 axes[0].set_title('Receita Total por Filial\n(Dataset Completo)', fontsize=10)
 
-# 2b. Receita media por ciclo por segmento (violin)
+# 2b. Receita média por ciclo por segmento (violin)
 segs_present = [s for s in SEG_ORDER if s in store_level['segmento'].values]
 data_violin = [store_level[store_level['segmento'] == s]['mean_revenue_cycle'].values
                for s in segs_present]
@@ -126,10 +126,10 @@ for pc, seg in zip(vp['bodies'], segs_present):
     pc.set_alpha(0.75)
 axes[1].set_xticks(range(len(segs_present)))
 axes[1].set_xticklabels(segs_present, rotation=25, ha='right', fontsize=7)
-axes[1].set_ylabel('Receita media por ciclo (R$)')
-axes[1].set_title('Distribuicao de Receita Media\npor Segmento', fontsize=10)
+axes[1].set_ylabel('Receita média por ciclo (R$)')
+axes[1].set_title('Distribuição de Receita Média\npor Segmento', fontsize=10)
 
-fig.suptitle('Distribuicao de Receita — Dataset Completo (BA)', fontsize=11)
+fig.suptitle('Distribuição de Receita — Dataset Completo (BA)', fontsize=11)
 fig.tight_layout()
 fig.savefig(out / 'full_distribuicao_receita.pdf', dpi=dpi, bbox_inches='tight')
 plt.close(fig)
@@ -141,15 +141,15 @@ seg_sku = store_level.groupby('segmento')['n_skus'].agg(['mean', 'median', 'max'
 seg_sku = seg_sku.reindex([s for s in SEG_ORDER if s in seg_sku.index])
 x = np.arange(len(seg_sku))
 w = 0.28
-ax.bar(x - w, seg_sku['mean'], width=w, label='Media',
+ax.bar(x - w, seg_sku['mean'], width=w, label='Média',
        color='#1565C0', alpha=0.85, edgecolor='white')
 ax.bar(x, seg_sku['median'], width=w, label='Mediana',
        color='#43A047', alpha=0.85, edgecolor='white')
-ax.bar(x + w, seg_sku['max'], width=w, label='Maximo',
+ax.bar(x + w, seg_sku['max'], width=w, label='Máximo',
        color='#E53935', alpha=0.85, edgecolor='white')
 ax.set_xticks(x)
 ax.set_xticklabels(seg_sku.index, rotation=20, ha='right', fontsize=8)
-ax.set_ylabel('Numero de SKUs por loja')
+ax.set_ylabel('Número de SKUs por loja')
 ax.set_title('SKUs por Loja por Segmento — Dataset Completo (23.645 lojas)', fontsize=10)
 ax.legend(fontsize=8)
 fig.tight_layout()
@@ -180,7 +180,7 @@ try:
     if not has_data.empty:
         has_data.plot(ax=ax, column='n_lojas', cmap='Blues',
                       legend=True,
-                      legend_kwds={'label': 'Numero de Lojas', 'shrink': 0.5,
+                      legend_kwds={'label': 'Número de Lojas', 'shrink': 0.5,
                                    'orientation': 'vertical'},
                       linewidth=0.5, edgecolor='white')
     for _, row in merged.iterrows():
@@ -200,7 +200,7 @@ try:
                             ha='center', va='center', fontsize=6, color='#888')
         except Exception:
             continue
-    ax.set_title('Distribuicao de Lojas por Estado\n'
+    ax.set_title('Distribuição de Lojas por Estado\n'
                  f'Dataset Completo: {store_stats["n_lojas"].sum():,.0f} lojas | '
                  f'R${store_stats["receita_total"].sum()/1e6:.1f}M receita',
                  fontsize=10)
@@ -212,7 +212,7 @@ try:
 except Exception as e:
     print(f'WARN brazil map: {e}')
 
-# ── 5. Evolucao mensal da receita por filial (serie temporal) ─────────────────
+# ── 5. Evolução mensal da receita por filial (série temporal) ─────────────────
 df['mes'] = df['venda_data'].dt.to_period('M')
 ts = (df.groupby(['filial', 'mes'])['revenue']
       .sum().reset_index())
@@ -225,9 +225,9 @@ for fil, color in zip(fil_order, fil_colors_list):
         continue
     ax.plot(sub['mes_dt'], sub['revenue'] / 1e3, label=fil, color=color, lw=1.8)
     ax.fill_between(sub['mes_dt'], sub['revenue'] / 1e3, alpha=0.08, color=color)
-ax.set_xlabel('Mes')
-ax.set_ylabel('Receita Liquida (R$ mil)')
-ax.set_title('Evolucao Mensal da Receita por Filial — Dataset Completo (BA)', fontsize=10)
+ax.set_xlabel('Mês')
+ax.set_ylabel('Receita Líquida (R$ mil)')
+ax.set_title('Evolução Mensal da Receita por Filial — Dataset Completo (BA)', fontsize=10)
 ax.legend(fontsize=8)
 ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%b/%y'))
 ax.tick_params(axis='x', rotation=30)
