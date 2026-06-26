@@ -1,38 +1,48 @@
-% Slide 14 — Geração de rótulos e PSE
-\begin{frame}{Geração de rótulos e o PSE}
+% Slide 14 — Geração de rótulos
+\begin{frame}{Do benchmark ao rótulo}
+  \keymessage{O rótulo não nasce do PSE: nasce dos resultados simulados.}
+  \vspace{0.45em}
+
+  \begin{enumerate}
+    \item \textbf{Benchmark das políticas:} para cada série loja-produto, todas as políticas candidatas são avaliadas no mesmo ambiente de simulação.
+    \item \textbf{Geração do rótulo:} escolhe-se a política viável de menor CTI, respeitando o nível mínimo de serviço.
+  \end{enumerate}
+
   \[
-    \hat{\pi}^*(i) = \arg\min_{\pi \in \mathcal{P}} \; \mathbb{E}[\mathrm{CTI}(\pi,i)]
-    \quad \text{sujeito a } \mathbb{E}[\mathrm{NS}(\pi,i)] \geq 0{,}70
+    \hat{\pi}^{*}(i) = \arg\min_{\pi \in \mathcal{P}} \mathrm{CTI}(\pi,i)
+    \quad \text{sujeito a} \quad \mathrm{NS}(\pi,i) \geq 0{,}70
   \]
-  \small Para cada série, o rótulo é a política viável de \highlight{menor
-  CTI} entre as que atingem o NS mínimo.
+  \note{
+    Este slide separa explicitamente a origem do rótulo. Primeiro, todas as
+    políticas são avaliadas no mesmo simulador. Depois, para cada série,
+    escolhe-se a política de menor CTI entre as que respeitam NS mínimo de
+    0,70. Esse resultado vira o rótulo supervisionado da série.
+  }
+\end{frame}
+
+% Slide 15 — PSE: entrada, saída e estágio atual
+\begin{frame}{Do rótulo ao PSE}
+  \keymessage{O PSE aprende os rótulos gerados no benchmark e recomenda para novas séries.}
   \vspace{0.45em}
 
   \begin{columns}[T,onlytextwidth]
-    \column{0.56\textwidth}
-      \textbf{PSE (estágio atual)}
-      \small
+    \column{0.52\textwidth}
+      \textbf{Treinamento do PSE}
       \begin{itemize}
-        \item Classificador XGBoost multiclasse
-        \item Entrada: vetor de 17 características
-        \item Saída: política recomendada + confiança + \textit{ranking}
+        \item Entrada: características operacionais da série
+        \item Alvo supervisionado: rótulo de política dominante
+        \item Saída: política recomendada, confiança e \textit{ranking}
       \end{itemize}
-    \column{0.44\textwidth}
-      \begin{alertblock}{Ainda não finalizado}
-        \footnotesize O PSE foi formulado e testado nos rótulos disponíveis; o
-        treinamento em escala e a validação de generalização são etapa da
-        expansão nacional.
+      {\footnotesize Meta-modelo supervisionado de seleção (algoritmo agnóstico nesta etapa).}
+    \column{0.48\textwidth}
+      \begin{alertblock}{Estágio atual}
+        \footnotesize A regra de rotulagem e o pipeline estão definidos e testados preliminarmente. A validação em escala nacional do PSE é etapa de continuidade.
       \end{alertblock}
   \end{columns}
   \note{
-    O rótulo de cada série vem diretamente do benchmark simulado: entre as
-    políticas que atingem o nível de serviço mínimo de 0,70, escolhe-se a
-    de menor custo total de inventário. Esses pares -- características e
-    rótulo -- formam o dataset supervisionado do PSE, que no estágio atual
-    é um classificador XGBoost. É importante deixar claro que o PSE não
-    está finalizado: ele foi formulado e testado sobre os rótulos
-    disponíveis dos dois experimentos, mas o treinamento em escala nacional
-    e a validação de generalização para novas séries e regimes ainda são
-    etapas futuras.
+    O PSE entra depois da rotulagem. Ele aprende a relação entre
+    características operacionais e o rótulo dominante. Na qualificação, a
+    formulação está pronta e com testes preliminares. A validação em escala
+    nacional permanece como etapa de continuidade.
   }
 \end{frame}
