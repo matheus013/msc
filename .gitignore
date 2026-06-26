@@ -242,3 +242,16 @@ docs/master_proposal/tcc.pdf
 docs/master_proposal/build/
 docs/master_proposal/_agent_context/
 docs/master_proposal/*.upa
+
+# Excecao: versiona os artefatos de apresentacao gerados pelo pipeline
+# (simulation/data/ permanece ignorado para os demais dados/figuras)
+!simulation/data/
+simulation/data/*
+!simulation/data/08_reporting/
+simulation/data/08_reporting/*
+!simulation/data/08_reporting/presentation/
+!simulation/data/08_reporting/presentation/*.csv
+!simulation/data/08_reporting/presentation/*.png
+!simulation/data/08_reporting/presentation/*.pdf
+!simulation/data/08_reporting/presentation/*.json
+!simulation/data/08_reporting/presentation/*.md
