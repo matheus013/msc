@@ -362,7 +362,7 @@ def plot_strategy_tradeoff(strategy_comparison: pd.DataFrame, out_dir: Path) -> 
     )
     fig.text(
         0.5, 0.965,
-        f"Seleção por perfil (B): CTI {red_pct_b:+.1f}% vs. política única "
+        f"Redução de CTI na seleção por perfil (B): {red_pct_b:.1f}% "
         f"(R$ {cti_a1:.2f} → R$ {cti_b:.2f})  ·  NS {ns_a1:.3f} → {ns_b:.3f}",
         ha="center", fontsize=12.5, color=COLOR_TEAL, fontweight="bold",
     )
