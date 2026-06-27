@@ -86,6 +86,7 @@
   \end{beamercolorbox}%
 }
 \newcommand{\tabstyle}{\renewcommand{\arraystretch}{1.22}}
+\newcommand{\spark}[1]{\tikz[baseline=-0.4ex]{\foreach \i/\h in {#1} \draw[fill=accenteal,draw=none] (\i*0.13,0) rectangle ++(0.095,\h*0.42);}}
 
 \title{Seleção Contextual de Políticas de Reposição em Redes Varejistas}
 \subtitle{O AIPE como \textit{framework} metodológico de apoio à decisão}
@@ -121,7 +122,7 @@
 \input{sections/02_introducao/s03_contribuicao}
 
 \section{Principais Trabalhos Relacionados}
-\input{sections/03_trabalhos_relacionados/s01_panorama_literatura}
+\input{sections/03_trabalhos_relacionados/s01_literatura_lacuna}
 \input{sections/03_trabalhos_relacionados/s02_tres_lacunas}
 \input{sections/03_trabalhos_relacionados/s03_posicionamento}
 
@@ -139,6 +140,7 @@
 \section{Resultados}
 \input{sections/06_resultados/s01_experimento1_pb}
 \input{sections/06_resultados/s02_experimento2_escopo}
+\input{sections/06_resultados/s02b_regimes_sb_taxonomia}
 \input{sections/06_resultados/s03_experimento2_mapa_fig}
 \input{sections/06_resultados/s04_pareto_fig}
 \input{sections/06_resultados/s06_leitura_heterogeneidade}
@@ -151,6 +153,7 @@
 \input{sections/06_resultados/s14_fechamento}
 
 % \section{Backup}
+% \input{sections/07_backup/b07_panorama_literatura}
 % \input{sections/07_backup/b01_distribuicao_filial_segmento}
 % \input{sections/07_backup/b02_boxplot_cti}
 % \input{sections/07_backup/b03_heatmap_completo}

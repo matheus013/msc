@@ -1,0 +1,60 @@
+% Capítulo 6 (Resultados) — Slide 2b — Regimes de demanda na taxonomia de Syntetos-Boylan
+\begin{frame}{Regimes de demanda na taxonomia de Syntetos-Boylan}
+  \centering
+  \resizebox{0.6\linewidth}{!}{%
+  \begin{tikzpicture}[
+      every node/.style={font=\tiny\sffamily},
+      regime/.style={rectangle, rounded corners=5pt, draw=slategray!55, fill=cardbg,
+                     minimum width=4.3cm, minimum height=1.95cm, align=center, text width=3.95cm},
+      axis/.style={->, thick, slategray}
+    ]
+    \node[regime] (erratic) {%
+      \textbf{\scriptsize Erratic}\\[1pt]
+      Baixa intermitência + alta variabilidade\\
+      Frequente, tamanhos irregulares. Desafio: variabilidade.\\[2pt]
+      \spark{0/0.3,1/0.9,2/0.5,3/0.95,4/0.25,5/0.8,6/0.4,7/0.85}};
+    \node[regime, right=0.9cm of erratic] (lumpy) {%
+      \textbf{\scriptsize Lumpy}\\[1pt]
+      Alta intermitência + alta variabilidade\\
+      Muitos ciclos sem demanda e picos irregulares. O mais desafiador.\\[2pt]
+      \spark{0/0,1/0,2/0.9,3/0,4/0.3,5/0,6/0,7/0.95}};
+    \node[regime, below=0.6cm of erratic] (smooth) {%
+      \textbf{\scriptsize Smooth}\\[1pt]
+      Baixa intermitência + baixa variabilidade\\
+      Frequente e estável. Mais fácil de prever e repor.\\[2pt]
+      \spark{0/0.7,1/0.65,2/0.75,3/0.7,4/0.68,5/0.72,6/0.7,7/0.69}};
+    \node[regime, below=0.6cm of lumpy] (intermittent) {%
+      \textbf{\scriptsize Intermittent}\\[1pt]
+      Alta intermitência + baixa variabilidade\\
+      Muitos ciclos sem demanda; tamanho relativamente estável quando ocorre.\\[2pt]
+      \spark{0/0,1/0,2/0.6,3/0,4/0,5/0.6,6/0,7/0.6}};
+
+    \draw[axis] ($(smooth.south west)+(-0.15,-0.4)$) -- ($(intermittent.south east)+(0.15,-0.4)$)
+      node[pos=0, below]{\tiny baixa}
+      node[pos=1, below]{\tiny alta}
+      node[midway, below=9pt]{\tiny Intermitência (ADI)};
+    \draw[axis] ($(smooth.south west)+(-0.4,-0.15)$) -- ($(erratic.north west)+(-0.4,0.15)$)
+      node[pos=0, left]{\tiny baixa}
+      node[pos=1, left]{\tiny alta}
+      node[midway, left=9pt, rotate=90]{\tiny Variabilidade (CV$^2$)};
+  \end{tikzpicture}}
+  \vspace{0.25em}
+
+  \small\keymessage{Lumpy combina muitos ciclos sem demanda com alta variabilidade nos tamanhos dos pedidos, tornando políticas baseadas em médias globais menos robustas.}
+  \note{
+    Antes de ver a distribuição real das séries, vale fixar a leitura do
+    plano ADI por CV$^2$. O eixo horizontal mede intermitência pelo ADI --
+    intervalo médio entre demandas positivas; o eixo vertical mede
+    variabilidade pelo CV$^2$ -- a variância normalizada do tamanho da
+    demanda. Combinando os dois, a taxonomia de Syntetos-Boylan define
+    quatro regimes. Smooth é demanda frequente e estável, mais fácil de
+    prever e repor. Erratic é frequente, mas com tamanhos irregulares --
+    aqui o desafio é a variabilidade, não a ocorrência. Intermittent tem
+    muitos ciclos sem venda, mas quando a demanda ocorre o tamanho é
+    relativamente estável -- o desafio é a ocorrência esporádica. Lumpy
+    combina os dois problemas: muitos ciclos sem demanda e, quando ocorre,
+    picos irregulares de magnitude -- é o regime mais desafiador para
+    previsão e reposição. Esse enquadramento é o que usamos no próximo
+    slide para ler a posição real das 145 séries do Experimento 2.
+  }
+\end{frame}

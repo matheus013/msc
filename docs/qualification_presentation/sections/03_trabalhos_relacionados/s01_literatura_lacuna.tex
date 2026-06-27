@@ -1,0 +1,74 @@
+% Capítulo 3 (Principais Trabalhos Relacionados) — Slide 1 — Da literatura à lacuna
+\begin{frame}{Da literatura à lacuna}
+  \tiny
+  \setlength{\leftmargini}{1.0em}
+  \begin{columns}[t,onlytextwidth]
+    \begin{column}{0.32\linewidth}
+      \tabstyle
+      \begin{beamercolorbox}[wd=\linewidth,sep=0.35em,rounded=true]{block title}
+        \scriptsize\textbf{Políticas clássicas}
+      \end{beamercolorbox}
+      \vspace{0.3em}
+      \textbf{Resolve:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item regras conhecidas de reposição
+        \item interpretação simples
+        \item baixo custo computacional
+      \end{itemize}
+      \textbf{Falta:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item adaptação a séries heterogêneas
+        \item escolha contextual entre políticas
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.32\linewidth}
+      \tabstyle
+      \begin{beamercolorbox}[wd=\linewidth,sep=0.35em,rounded=true]{block title}
+        \scriptsize\textbf{Previsão e otimização}
+      \end{beamercolorbox}
+      \vspace{0.3em}
+      \textbf{Resolve:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item melhora estimativas de demanda
+        \item calibra parâmetros de uma política já escolhida
+      \end{itemize}
+      \textbf{Falta:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item escolher qual família de política aplicar
+        \item integrar custo, serviço e estabilidade em um processo de seleção
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.32\linewidth}
+      \tabstyle
+      \begin{beamercolorbox}[wd=\linewidth,sep=0.35em,rounded=true]{block title}
+        \scriptsize\textbf{RL e métodos aprendidos}
+      \end{beamercolorbox}
+      \vspace{0.3em}
+      \textbf{Resolve:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item aprende decisões sequenciais em ambientes simulados
+        \item pode capturar dinâmicas complexas
+      \end{itemize}
+      \textbf{Falta:}
+      \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+        \item exige histórico/interações longas
+        \item pouco validado em varejo real intermitente
+        \item não resolve sozinho a seleção entre famílias
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \keymessage{A lacuna não é a ausência de políticas; é a ausência de um mecanismo contextual para escolher qual política aplicar em cada série loja-produto.}
+  \note{
+    A literatura oferece blocos sólidos para cada parte do problema, mas
+    isolados. As políticas clássicas são simples e interpretáveis, mas se
+    adaptam mal a séries heterogêneas. A previsão de demanda e a
+    parametrização por meta-heurísticas melhoram estimativas e calibram uma
+    política já escolhida, mas nenhuma das duas decide qual família de
+    política aplicar. O aprendizado por reforço aprende decisões
+    sequenciais, mas exige históricos longos e ainda é pouco validado em
+    varejo real intermitente. Nenhum desses blocos resolve, isoladamente, a
+    escolha contextual entre famílias heterogêneas de política -- e é
+    exatamente nesse espaço que as três lacunas a seguir se tornam visíveis.
+  }
+\end{frame}

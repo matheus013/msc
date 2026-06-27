@@ -47,19 +47,24 @@ make clean  # remove artefatos de compilação
 
 ## Conteúdo e narrativa
 
-37 frames físicos (31 slides numerados + 6 divisores de capítulo), ~30
+38 frames físicos (32 slides numerados + 6 divisores de capítulo), ~30-31
 minutos, organizados em 6 capítulos:
 
 1. **Problema** — heterogeneidade da demanda, consequências operacionais
 2. **Introdução** — pergunta de pesquisa, hipótese, contribuição
-3. **Principais Trabalhos Relacionados** — panorama da literatura, três
+3. **Principais Trabalhos Relacionados** — da literatura à lacuna, três
    lacunas convergentes, posicionamento da dissertação
 4. **Proposta** — visão geral do AIPE, entradas
 5. **Metodologia** — caracterização/PODs, ambiente de simulação,
    portfólio de políticas, geração de rótulos e PSE
-6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), evidência de
-   heterogeneidade, política única vs. seleção por perfil, CTI ajustado,
-   limitações, plano de continuidade, fechamento
+6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), regimes de
+   demanda na taxonomia de Syntetos-Boylan, evidência de heterogeneidade,
+   política única vs. seleção por perfil, CTI ajustado, limitações, plano
+   de continuidade, fechamento
+
+O antigo slide "Panorama da literatura" (tabela densa por família de
+método) foi movido para a seção de backup (`b07_panorama_literatura.tex`),
+disponível para perguntas da banca sem ocupar o corpo principal.
 
 Cada slide contém notas de fala em `\note{...}` (visíveis em modo
 apresentador/instrutor, ex.: `pympress`, ou compilando com
