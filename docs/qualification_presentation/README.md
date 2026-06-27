@@ -47,20 +47,25 @@ make clean  # remove artefatos de compilação
 
 ## Conteúdo e narrativa
 
-38 frames físicos (32 slides numerados + 6 divisores de capítulo), ~30-31
+39 frames físicos (33 slides numerados + 6 divisores de capítulo), ~31
 minutos, organizados em 6 capítulos:
 
 1. **Problema** — heterogeneidade da demanda, consequências operacionais
-2. **Introdução** — pergunta de pesquisa, hipótese, contribuição
+2. **Introdução** — pergunta de pesquisa, objetivo da pesquisa, regimes de
+   demanda na taxonomia de Syntetos-Boylan, hipótese, contribuição
 3. **Principais Trabalhos Relacionados** — da literatura à lacuna, três
    lacunas convergentes, posicionamento da dissertação
 4. **Proposta** — visão geral do AIPE, entradas
 5. **Metodologia** — caracterização/PODs, ambiente de simulação,
    portfólio de políticas, geração de rótulos e PSE
-6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), regimes de
-   demanda na taxonomia de Syntetos-Boylan, evidência de heterogeneidade,
-   política única vs. seleção por perfil, CTI ajustado, limitações, plano
-   de continuidade, fechamento
+6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), evidência de
+   heterogeneidade, política única vs. seleção por perfil, CTI ajustado,
+   limitações, plano de continuidade, fechamento
+
+A unidade de análise (série = par loja-produto) é explicitada na
+Metodologia (slide "Síntese do pipeline metodológico") e no slide
+"Perfis Operacionais de Demanda (POD)", que distingue série (unidade)
+de POD (perfil operacional atribuído à série).
 
 O antigo slide "Panorama da literatura" (tabela densa por família de
 método) foi movido para a seção de backup (`b07_panorama_literatura.tex`),
