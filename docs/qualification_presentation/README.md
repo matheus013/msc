@@ -47,29 +47,52 @@ make clean  # remove artefatos de compilação
 
 ## Conteúdo e narrativa
 
-39 frames físicos (33 slides numerados + 6 divisores de capítulo), ~31
+36 frames físicos (30 slides numerados + 6 divisores de capítulo), ~28-29
 minutos, organizados em 6 capítulos:
 
-1. **Problema** — heterogeneidade da demanda, consequências operacionais
-2. **Introdução** — pergunta de pesquisa, objetivo da pesquisa, regimes de
-   demanda na taxonomia de Syntetos-Boylan, hipótese, contribuição
+1. **Problema** — problema em uma frase, heterogeneidade da demanda,
+   consequências de uma política única
+2. **Introdução** — pergunta de pesquisa, objetivo da pesquisa, hipótese
+   central, contribuição
 3. **Principais Trabalhos Relacionados** — da literatura à lacuna, três
    lacunas convergentes, posicionamento da dissertação
-4. **Proposta** — visão geral do AIPE, entradas
-5. **Metodologia** — caracterização/PODs, ambiente de simulação,
-   portfólio de políticas, geração de rótulos e PSE
-6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), evidência de
-   heterogeneidade, política única vs. seleção por perfil, CTI ajustado,
-   limitações, plano de continuidade, fechamento
+4. **Proposta** — visão geral do AIPE, entradas do AIPE, formulação
+   matemática do AIPE (variável de decisão, restrições, rótulo $y_i$)
+5. **Metodologia** — síntese do pipeline, regimes de demanda na taxonomia
+   de Syntetos-Boylan, PODs, ambiente de simulação, portfólio de
+   políticas, do rótulo ao PSE
+6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), distribuição
+   ADI×CV², fronteira de Pareto, política única vs. seleção por perfil,
+   dominância por perfil, limitações, plano de continuidade, fechamento
+
+A narrativa segue: problema → pergunta → objetivo → lacuna → proposta
+(com formulação matemática explícita) → metodologia → resultados →
+limites. A formulação matemática do AIPE substitui o antigo slide "Do
+benchmark ao rótulo" (a mesma equação não é repetida em dois slides
+principais); o slide "Do rótulo ao PSE" foi mantido e ajustado para usar
+a mesma notação ($\mathbf{x}_i$, $y_i$, $\hat{\pi}_i$).
+
+O slide "Regimes de demanda na taxonomia de Syntetos-Boylan" foi movido
+da Introdução para a Metodologia, imediatamente antes de "Perfis
+Operacionais de Demanda (POD)", para ficar mais próximo dos gráficos
+ADI×CV² que aplica.
 
 A unidade de análise (série = par loja-produto) é explicitada na
 Metodologia (slide "Síntese do pipeline metodológico") e no slide
 "Perfis Operacionais de Demanda (POD)", que distingue série (unidade)
 de POD (perfil operacional atribuído à série).
 
-O antigo slide "Panorama da literatura" (tabela densa por família de
-método) foi movido para a seção de backup (`b07_panorama_literatura.tex`),
-disponível para perguntas da banca sem ocupar o corpo principal.
+Quatro slides foram movidos para a seção de backup, comentada em
+`main.tex` (disponíveis para perguntas da banca, sem ocupar o corpo
+principal nem a contagem de slides):
+
+- `b07_panorama_literatura.tex` — tabela densa de famílias de método;
+- `b08_leitura_heterogeneidade.tex` — leitura detalhada da Fronteira de
+  Pareto (mensagem-chave já incorporada ao slide principal);
+- `b09_heatmap_cti_pod_fig.tex` — heatmap CTI/BE/NS por política e perfil;
+- `b10_cti_ajustado_fig.tex` e `b11_cti_ajustado_texto.tex` — análise
+  complementar de CTI ajustado por estabilidade (sensibilidade a
+  $\lambda_{BE}$), preliminar e não substitui o critério principal.
 
 Cada slide contém notas de fala em `\note{...}` (visíveis em modo
 apresentador/instrutor, ex.: `pympress`, ou compilando com

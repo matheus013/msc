@@ -1,0 +1,49 @@
+% Capítulo 4 (Proposta) — Slide — Formulação matemática do AIPE
+\begin{frame}{Formulação matemática do AIPE}
+  \footnotesize
+  \textbf{\textcolor{darkblue}{O AIPE formula a reposição como um problema de seleção contextual de política por série loja-produto.}}
+  \vspace{0.15em}
+
+  \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
+    \item $i \in \mathcal{I}$: série loja-produto;\quad $\pi \in \mathcal{P}$: política candidata
+    \item $\mathbf{x}_i$: características operacionais;\quad $g_i$: perfil (POD) de $i$
+    \item $\overline{\mathrm{CTI}}_{i,\pi}$, $\overline{\mathrm{NS}}_{i,\pi}$: médias simuladas;\quad $\alpha_{\min}=0{,}70$: nível mínimo de serviço
+    \item $z_{i,\pi}\in\{0,1\}$: variável de decisão -- $1$ se $\pi$ é escolhida para $i$; $0$, caso contrário
+  \end{itemize}
+  \vspace{0.15em}
+
+  \textbf{Formulação por série $i$:}
+  \[
+    \min_{z_{i,\pi}} \sum_{\pi \in \mathcal{P}} z_{i,\pi}\,\overline{\mathrm{CTI}}_{i,\pi}
+  \]
+  \vspace{-0.7em}
+  sujeito a\;\;
+  $\sum_{\pi} z_{i,\pi}=1$,\;\;
+  $\sum_{\pi} z_{i,\pi}\,\overline{\mathrm{NS}}_{i,\pi}\geq\alpha_{\min}$,\;\;
+  $z_{i,\pi}\in\{0,1\}$
+  \vspace{0.18em}
+
+  \textbf{Forma equivalente (gera o rótulo):}\\[1pt]
+  $y_i = \arg\min_{\pi \in \mathcal{P}:\,\overline{\mathrm{NS}}_{i,\pi} \geq \alpha_{\min}} \overline{\mathrm{CTI}}_{i,\pi}$
+  \qquad $f_{\theta}(\mathbf{x}_i) \rightarrow \hat{\pi}_i \approx y_i$
+  \vspace{0.18em}
+
+  \textcolor{warnred}{\textbf{Cuidado conceitual:}} O AIPE não substitui a
+  política de reposição: ele escolhe qual política aplicar em cada série
+  loja-produto.
+  \note{
+    Esta é a formulação formal do problema que o AIPE resolve. Para cada
+    série loja-produto $i$, queremos escolher uma política $\pi$ -- a
+    variável binária $z_{i,\pi}$ -- que minimize o CTI médio, respeitando
+    duas restrições: exatamente uma política deve ser escolhida, e essa
+    política deve atingir o nível de serviço mínimo de 0,70. Como o
+    problema é separável por série e o portfólio é pequeno (12 políticas),
+    essa formulação tem solução direta por enumeração: a forma equivalente
+    com $\arg\min$ é exatamente isso, e é o que usamos para gerar o rótulo
+    $y_i$ no benchmark simulado. O PSE, $f_\theta$, aprende uma função das
+    características $\mathbf{x}_i$ que aproxima esse rótulo para séries
+    novas, produzindo a recomendação $\hat{\pi}_i$. É importante reforçar:
+    o AIPE escolhe qual política usar -- as decisões de quando e quanto
+    pedir são geradas pela política escolhida, não pelo AIPE.
+  }
+\end{frame}

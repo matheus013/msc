@@ -1,28 +1,6 @@
-% Slide 14 — Geração de rótulos
-\begin{frame}{Do benchmark ao rótulo}
-  \keymessage{O rótulo não nasce do PSE: nasce dos resultados simulados.}
-  \vspace{0.45em}
-
-  \begin{enumerate}
-    \item \textbf{Benchmark das políticas:} para cada série loja-produto, todas as políticas candidatas são avaliadas no mesmo ambiente de simulação.
-    \item \textbf{Geração do rótulo:} escolhe-se a política viável de menor CTI, respeitando o nível mínimo de serviço.
-  \end{enumerate}
-
-  \[
-    \hat{\pi}^{*}(i) = \arg\min_{\pi \in \mathcal{P}} \mathrm{CTI}(\pi,i)
-    \quad \text{sujeito a} \quad \mathrm{NS}(\pi,i) \geq 0{,}70
-  \]
-  \note{
-    Este slide separa explicitamente a origem do rótulo. Primeiro, todas as
-    políticas são avaliadas no mesmo simulador. Depois, para cada série,
-    escolhe-se a política de menor CTI entre as que respeitam NS mínimo de
-    0,70. Esse resultado vira o rótulo supervisionado da série.
-  }
-\end{frame}
-
-% Slide 15 — PSE: entrada, saída e estágio atual
+% Slide — PSE: entrada, saída e estágio atual
 \begin{frame}{Do rótulo ao PSE}
-  \keymessage{O PSE aprende os rótulos gerados no benchmark e recomenda para novas séries.}
+  \keymessage{O PSE aprende os rótulos gerados pelo benchmark e recomenda uma política para novas séries loja-produto.}
   \vspace{0.3em}
 
   \begin{columns}[T,onlytextwidth]
@@ -30,9 +8,9 @@
       \textbf{Treinamento do PSE}
       \begin{itemize}
         \footnotesize
-        \item Entrada: características operacionais da série
-        \item Alvo supervisionado: política viável de menor CTI (rótulo gerado pelo benchmark)
-        \item Saída: política recomendada, confiança e \textit{ranking}
+        \item Entrada: $\mathbf{x}_i$, características operacionais da série
+        \item Alvo supervisionado: $y_i$, política viável de menor CTI sob $\mathrm{NS} \geq 0{,}70$ (rótulo gerado pelo benchmark)
+        \item Saída: $\hat{\pi}_i$, política recomendada, confiança e \textit{ranking}
       \end{itemize}
       {\footnotesize Meta-modelo supervisionado de seleção (algoritmo agnóstico nesta etapa).}
     \column{0.48\textwidth}
@@ -41,8 +19,9 @@
       \end{alertblock}
   \end{columns}
   \note{
-    O PSE entra depois da rotulagem. Ele aprende a relação entre
-    características operacionais e o rótulo dominante. Na qualificação, a
+    O PSE entra depois da rotulagem, já apresentada na formulação
+    matemática do AIPE. Ele aprende a relação entre características
+    operacionais $\mathbf{x}_i$ e o rótulo $y_i$. Na qualificação, a
     formulação está pronta e com testes preliminares. A validação em escala
     nacional permanece como etapa de continuidade.
   }
