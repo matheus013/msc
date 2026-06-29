@@ -90,7 +90,7 @@ A variante GA-PPO, que substitui o DQN por uma política contínua baseada em PP
 
 \section{Posicionamento da Dissertação}
 
-A Tabela~\ref{tab:relwork_intro} posiciona esta dissertação em relação aos trabalhos mais próximos segundo seis dimensões. A coluna ``Trabalho'' identifica o estudo analisado; ``Dados reais'' indica se a avaliação utilizou dados transacionais reais ou ambiente sintético; ``CV ou regime'' resume o nível de variabilidade ou o regime de demanda considerado; ``Políticas avaliadas'' informa quantas alternativas de reposição ou controle foram comparadas; ``Multinível'' indica se o estudo considera mais de um escalão da cadeia de suprimentos; e ``Indicadores avaliados'' informa o número de métricas operacionais utilizadas. Essa comparação permite situar a dissertação quanto à escala experimental, ao tipo de dado e à abrangência metodológica.
+A Tabela~\ref{tab:relwork_intro} posiciona esta dissertação em relação aos trabalhos mais próximos segundo seis dimensões. A coluna ``Trabalho'' identifica o estudo analisado; ``Base usada'' diferencia avaliações conduzidas em ambientes sintéticos, conjuntos de teste e dados transacionais reais; ``CV ou regime'' resume o nível de variabilidade ou o regime de demanda considerado; ``Políticas avaliadas'' informa quantas alternativas de reposição ou controle foram comparadas; ``Multinível'' indica se o estudo considera mais de um escalão da cadeia de suprimentos; e ``Indicadores avaliados'' informa o número de métricas operacionais utilizadas. Essa comparação permite situar a dissertação quanto à escala experimental, ao tipo de dado e à abrangência metodológica.
 
 \begin{table}[htb]
 \centering
@@ -98,30 +98,30 @@ A Tabela~\ref{tab:relwork_intro} posiciona esta dissertação em relação aos t
 \setlength{\tabcolsep}{4pt}
 \caption{Posicionamento desta dissertação em relação aos trabalhos relacionados.}
 \label{tab:relwork_intro}
-\begin{tabular}{@{}p{3.2cm}ccccc@{}}
+\begin{tabular}{@{}p{3.1cm}p{2.1cm}cccc@{}}
 \toprule
 Trabalho &
-\makecell[c]{Dados\\reais} &
+\makecell[c]{Base\\usada} &
 \makecell[c]{CV ou\\regime} &
 \makecell[c]{Políticas\\avaliadas} &
 \makecell[c]{Multi-\\nível} &
 \makecell[c]{Indicadores\\avaliados} \\
 \midrule
-\footnotesize\citealt{Oroojlooyjadid2022BeerGameDQN} & Não & $<1$ & 3 & Sim & 2 \\
-\citealt{Vanvuchelen2020PPOJointReplenishment} & Não & $<1$ & 4 & Não & 1 \\
-\citealt{Gijsbrechts2022DRLInventoryMSOM} & Não & $<1$ & 6 & Sim & 2 \\
-\citealt{Yuna2023IntermittentMetaheuristics} & Não & $>1.5$ & 2 & Não & 2 \\
-\citealt{Erkayman2025MarkovInventory} & Não & $>1.5$ & 2 & Não & 1 \\
-\citealt{Liu2024HAPPO} & Não & $<1$ & 4 & Sim & 2 \\
-\citealt{Zabraoui2025GaDQN} & Não & $<1$ & 7 & Sim & 3 \\
+\footnotesize\citealt{Oroojlooyjadid2022BeerGameDQN} & Sintética & $<1$ & 3 & Sim & 2 \\
+\citealt{Vanvuchelen2020PPOJointReplenishment} & Sintética & $<1$ & 4 & Não & 1 \\
+\citealt{Gijsbrechts2022DRLInventoryMSOM} & Sintética & $<1$ & 6 & Sim & 2 \\
+\citealt{Yuna2023IntermittentMetaheuristics} & Testes intermitentes & $>1.5$ & 2 & Não & 2 \\
+\citealt{Erkayman2025MarkovInventory} & Sint. Markov & $>1.5$ & 2 & Não & 1 \\
+\citealt{Liu2024HAPPO} & Sintética & $<1$ & 4 & Sim & 2 \\
+\citealt{Zabraoui2025GaDQN} & Real (Walmart M5) & $<1$ & 7 & Sim & 3 \\
 \midrule
-Esta dissertação (Experimento 1) & Sim & $\mathbf{2.5{-}5.4}$ & 12 & Sim & 5 \\
-Esta dissertação (Experimento 2) & Sim & Lumpy; etapa nacional futura & 12 & Sim & 5 + testes \\
+Esta dissertação (Experimento 1) & Real (PB) & $\mathbf{2.5{-}5.4}$ & 12 & Sim & 5 \\
+Esta dissertação (Experimento 2) & Real (BA) & Lumpy; etapa nacional futura & 12 & Sim & 5 + testes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A revisão da literatura aponta três lacunas convergentes. A primeira é empírica: há poucos estudos que avaliam políticas de reposição em dados reais de varejo brasileiro com demanda altamente intermitente e séries loja-produto heterogêneas. A segunda é metodológica: trabalhos existentes tendem a otimizar ou aprender políticas específicas, mas não formulam a escolha da política como um problema de seleção contextual por perfil operacional da série. A terceira é operacional: ainda é pouco explorada a integração, em um mesmo \textit{pipeline} reprodutível, entre caracterização das séries, simulação comparável de políticas, validação estatística, geração de rótulos de política dominante e treinamento de um seletor supervisionado. Essas lacunas motivam a formulação do AIPE como abordagem integrada de avaliação e recomendação de políticas.
+A revisão da literatura aponta três lacunas convergentes. A primeira é empírica: embora trabalhos recentes já incluam bases reais de varejo, como o Walmart M5 em \citet{Zabraoui2025GaDQN}, ainda há poucos estudos que avaliam políticas de reposição em dados reais de varejo brasileiro com demanda altamente intermitente e séries loja-produto heterogêneas. A segunda é metodológica: trabalhos existentes tendem a otimizar ou aprender políticas específicas, mas não formulam a escolha da política como um problema de seleção contextual por perfil operacional da série. A terceira é operacional: ainda é pouco explorada a integração, em um mesmo \textit{pipeline} reprodutível, entre caracterização das séries, simulação comparável de políticas, validação estatística, geração de rótulos de política dominante e treinamento de um seletor supervisionado. Essas lacunas motivam a formulação do AIPE como abordagem integrada de avaliação e recomendação de políticas.
 
 As seções anteriores indicam que decisões de reposição em redes varejistas heterogêneas dependem do comportamento operacional de cada série loja-produto. Políticas clássicas, políticas parametrizadas por meta-heurísticas e políticas aprendidas por reforço oferecem alternativas relevantes, mas seu desempenho tende a variar conforme frequência, variabilidade e volume da demanda. Do mesmo modo, a previsão de demanda contribui como sinal auxiliar, mas não resolve, isoladamente, a escolha da política de reposição mais adequada.
 

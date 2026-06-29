@@ -4,15 +4,15 @@
   \resizebox{\linewidth}{!}{%
   \begin{tabular}{@{}lccccc@{}}
     \toprule
-    \textbf{Trabalho} & \textbf{Dados reais} & \textbf{CV/regime} & \textbf{Políticas} & \textbf{Multinível} & \textbf{Indicadores} \\
+    \textbf{Trabalho} & \textbf{Base usada} & \textbf{CV/regime} & \textbf{Políticas} & \textbf{Multinível} & \textbf{Indicadores} \\
     \midrule
-    Oroojlooyjadid et al.\ (2022) & Não & $<1$ & 3 & Sim & 2 \\
-    Yuna et al.\ (2023) & Não & $>1{,}5$ & 2 & Não & 2 \\
-    Liu et al.\ (2024) -- HAPPO & Não & $<1$ & 4 & Sim & 2 \\
-    Zabraoui et al.\ (2025) -- GA-DQN & Não & $<1$ & 7 & Sim & 3 \\
+    Oroojlooyjadid et al.\ (2022) & Sintética & $<1$ & 3 & Sim & 2 \\
+    Yuna et al.\ (2023) & Testes intermitentes & $>1{,}5$ & 2 & Não & 2 \\
+    Liu et al.\ (2024) -- HAPPO & Sintética & $<1$ & 4 & Sim & 2 \\
+    Zabraoui et al.\ (2025) -- GA-DQN & Real (Walmart M5) & $<1$ & 7 & Sim & 3 \\
     \midrule
-    \rowcolor{accenteal!12}Esta dissertação (Exp.\ 1, PB) & \textbf{Sim} & $2{,}5$--$5{,}4$ & \textbf{12} & Sim & \textbf{5} \\
-    \rowcolor{accenteal!12}Esta dissertação (Exp.\ 2, BA) & \textbf{Sim} & \textit{Lumpy} & \textbf{12} & Sim & \textbf{5 + testes} \\
+    \rowcolor{accenteal!12}Esta dissertação (Exp.\ 1, PB) & \textbf{Real (PB)} & $2{,}5$--$5{,}4$ & \textbf{12} & Sim & \textbf{5} \\
+    \rowcolor{accenteal!12}Esta dissertação (Exp.\ 2, BA) & \textbf{Real (BA)} & \textit{Lumpy} & \textbf{12} & Sim & \textbf{5 + testes} \\
     \bottomrule
   \end{tabular}}
   \vspace{0.6em}
@@ -20,9 +20,11 @@
   \small \fonte{Capítulo 3, Tabela 3.2 (subconjunto)}
   \note{
     Esta tabela posiciona quantitativamente a dissertação frente aos
-    trabalhos mais próximos. A maior parte da literatura de RL e híbridos
-    GA-RL para inventário avalia poucas políticas em ambientes sintéticos de
-    baixa variabilidade, CV menor que 1, e poucos indicadores operacionais.
+    trabalhos mais próximos. A maior parte da literatura de RL para inventário
+    ainda avalia poucas políticas em ambientes sintéticos de baixa variabilidade,
+    CV menor que 1. A exceção relevante é Zabraoui et al. (2025), que usa a base
+    real Walmart M5, mas ainda permanece em baixa variabilidade e com escopo menor
+    de políticas e indicadores.
     Esta dissertação se diferencia em três eixos simultaneamente: usa dados
     reais de uma rede varejista brasileira, opera em regime de alta
     intermitência, e avalia doze políticas com cinco indicadores -- CTI, NS,
