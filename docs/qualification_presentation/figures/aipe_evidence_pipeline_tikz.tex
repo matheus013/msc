@@ -22,7 +22,14 @@
       text width=2.0cm
     },
     flow/.style={->, very thick, darkblue},
-    tag/.style={circle, fill=accenteal!90!darkblue, text=white, inner sep=1.4pt, font=\tiny\bfseries\sffamily}
+    tag/.style={
+      circle,
+      fill=accenteal!90!darkblue,
+      text=white,
+      minimum size=0.34cm,
+      inner sep=0pt,
+      font=\tiny\bfseries\sffamily
+    }
   ]
 
   \node[pipelineStep] (dados) at (0,0) {\textbf{Dados\\preparados}};
@@ -32,12 +39,12 @@
   \node[emphasis, right=0.2cm of pod] (rotulo) {\textbf{Rótulo\\e PSE}};
   \node[emphasis, right=0.2cm of rotulo] (rec) {\textbf{Recomendação}};
 
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]dados.center) {1};
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]carac.center) {2};
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]sim.center) {3};
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]pod.center) {4};
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]rotulo.center) {5};
-  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]rec.center) {6};
+  \node[tag, above=0.12cm of dados.north] {1};
+  \node[tag, above=0.12cm of carac.north] {2};
+  \node[tag, above=0.12cm of sim.north] {3};
+  \node[tag, above=0.12cm of pod.north] {4};
+  \node[tag, above=0.12cm of rotulo.north] {5};
+  \node[tag, above=0.12cm of rec.north] {6};
 
   \draw[flow] (dados) -- (carac);
   \draw[flow] (carac) -- (sim);
