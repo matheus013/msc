@@ -1,35 +1,40 @@
 % Metodologia -- Módulo 4 -- PODs
 \begin{frame}{PODs: refinamento operacional dentro dos regimes}
   \AipePipelineContext{4}
-  \scriptsize\textbf{\textcolor{darkblue}{A taxonomia Syntetos-Boylan classifica o regime macro da demanda. Os PODs refinam esse regime usando características adicionais da série loja-produto.}}
+  \scriptsize\textbf{\textcolor{darkblue}{Syntetos-Boylan define 4 regimes macro com ADI e CV$^2$; os 5 PODs são regras adicionais, aplicadas em ordem de prioridade, para refinar o perfil operacional da série.}}
   \vspace{0.25em}
 
   \centering
   \tabstyle
   \scriptsize
-  \begin{tabular}{@{}p{0.32\linewidth}p{0.58\linewidth}@{}}
+  \begin{tabular}{@{}p{0.28\linewidth}p{0.62\linewidth}@{}}
     \toprule
-    \textbf{POD} & \textbf{Critério ou grupo de características} \\
+    \textbf{POD} & \textbf{Como é definido} \\
     \midrule
-    Sparse High Impact & Longos silêncios + picos \\
-    High Vol. Seasonal & Concentração/sazonalidade \\
-    Unstable Trend & Tendência ou mudança de regime \\
-    Low Vol. Stable & Baixo volume e baixa variabilidade \\
-    Fast Moving & Demanda frequente \\
+    Sparse High Impact & ADI $\geq 1.32$, CV$^2 \geq 0.49$ e sequência de zeros $\geq 5$ \\
+    High Vol. Seasonal & autocorrelação sazonal $\rho_S \geq 0.25$ ou \textit{burstiness} $B \geq 0.30$ \\
+    Unstable Trend & tendência relativa $|\beta_t/\mu| \geq 0.05$ ou entropia $H \geq 2.0$ \\
+    Low Vol. Stable & média $\mu \leq 2.0$ e CV$^2 < 0.49$ \\
+    Fast Moving & demanda frequente, com ADI $< 1.32$ \\
     \bottomrule
   \end{tabular}
-  \vspace{0.25em}
+  \vspace{0.15em}
 
   \scriptsize \fonte{capítulo de Metodologia, Tabela 4.1; demand\_profiling}\\[-0.05em]
-  \scriptsize\textcolor{slategray}{Regime $\neq$ POD. No recorte BA, todas as séries são Lumpy, mas são separadas em PODs distintos para apoiar a seleção contextual.}
+  \scriptsize\textcolor{slategray}{Regime $\neq$ POD: no recorte BA, todas as séries são Lumpy, mas os PODs separam subperfis como silêncios longos, sazonalidade, tendência e volume.}
   \note{
     Cada série loja-produto é caracterizada e classificada em um POD; o
     POD não é a série, mas o perfil operacional atribuído a ela. A taxonomia
     de Syntetos-Boylan usa ADI e CV$^2$ para definir o regime macro. Os PODs
-    refinam esse regime com características adicionais, como burstiness,
-    tendência, sazonalidade e volume. No Experimento 2, todas as séries são
-    Lumpy, mas os PODs separam subperfis operacionais dentro desse regime.
-    O POD organiza o contexto; a recomendação de política vem depois, com a
-    avaliação comparativa em simulação, a geração de rótulos e o PSE.
+    refinam esse regime com regras adicionais aplicadas em ordem de
+    prioridade. Sparse High Impact captura séries intermitentes e variáveis
+    com longos silêncios. High Vol. Seasonal captura sazonalidade ou
+    concentração em picos. Unstable Trend captura tendência acentuada ou
+    distribuição muito difusa. Low Vol. Stable captura baixo volume com baixa
+    variação. Fast Moving captura demanda frequente. No Experimento 2, todas
+    as séries são Lumpy, mas os PODs separam subperfis operacionais dentro
+    desse regime. O POD organiza o contexto; a recomendação de política vem
+    depois, com a avaliação comparativa em simulação, a geração de rótulos e
+    o PSE.
   }
 \end{frame}
