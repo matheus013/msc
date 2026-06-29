@@ -1,8 +1,7 @@
-% Capítulo 5 (Metodologia) — Slide — Regimes de demanda na taxonomia de Syntetos-Boylan
-\begin{frame}{Módulo 4 -- Regimes de demanda}
-  \AipePipelineContext{4}
+% Capítulo 2 (Introdução) — Taxonomia de Syntetos-Boylan
+\begin{frame}{Taxonomia de Syntetos-Boylan}
   \centering
-  \resizebox{0.52\linewidth}{!}{%
+  \resizebox{0.62\linewidth}{!}{%
   \begin{tikzpicture}[
       every node/.style={font=\tiny\sffamily},
       regime/.style={rectangle, rounded corners=5pt, draw=slategray!55, fill=cardbg,
@@ -39,25 +38,18 @@
       node[pos=1, left]{\tiny alta}
       node[midway, left=9pt, rotate=90]{\tiny Variabilidade (CV$^2$)};
   \end{tikzpicture}}
-  \vspace{0.15em}
+  \vspace{0.3em}
 
-  \small\keymessage{Syntetos-Boylan define o regime macro da demanda; no recorte BA, todas as séries avaliadas são Lumpy.}
+  \small\keymessage{Syntetos-Boylan é a leitura conceitual do regime macro: ADI mede intermitência e CV$^2$ mede variabilidade.}
   \note{
-    Depois de definir o ambiente de simulação, vale fixar a
-    leitura do plano ADI por CV$^2$ que fundamenta a taxonomia clássica
-    usada como ponto de partida da caracterização. O eixo horizontal mede
-    intermitência pelo ADI -- intervalo médio entre demandas positivas; o
-    eixo vertical mede variabilidade pelo CV$^2$ -- a variância normalizada
-    do tamanho da demanda. Combinando os dois, a taxonomia de
-    Syntetos-Boylan define quatro regimes. Smooth é demanda frequente e
-    estável, mais fácil de prever e repor. Erratic é frequente, mas com
-    tamanhos irregulares -- aqui o desafio é a variabilidade, não a
-    ocorrência. Intermittent tem muitos ciclos sem venda, mas quando a
-    demanda ocorre o tamanho é relativamente estável -- o desafio é a
-    ocorrência esporádica. Lumpy combina os dois problemas: muitos ciclos
-    sem demanda e, quando ocorre, picos irregulares de magnitude -- é o
-    regime mais desafiador para previsão e reposição. Este é o regime macro.
-    No Experimento 2, todas as séries são Lumpy, mas os PODs separam
-    subperfis operacionais dentro desse regime.
+    Antes de entrar na metodologia, é importante fixar a taxonomia usada
+    como referência conceitual para regimes de demanda. O eixo horizontal
+    mede intermitência pelo ADI, ou seja, o intervalo médio entre demandas
+    positivas. O eixo vertical mede variabilidade pelo CV ao quadrado. A
+    combinação dos dois gera quatro regimes macro: Smooth, Erratic,
+    Intermittent e Lumpy. Essa taxonomia não é o pipeline da dissertação;
+    ela é a base conceitual que ajuda a interpretar a heterogeneidade. Na
+    metodologia, os PODs refinam essa leitura usando características
+    adicionais da série loja-produto.
   }
 \end{frame}
