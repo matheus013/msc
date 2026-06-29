@@ -3,7 +3,7 @@
   \centering
   {\scriptsize
   \renewcommand{\arraystretch}{0.92}
-  \begin{tabular}{@{}p{7.4cm}cccc@{}}
+  \begin{tabular}{@{}p{7.5cm}cccc@{}}
     \toprule
     \textbf{Atividade} & \textbf{24 S2} & \textbf{25 S1} & \textbf{25 S2} & \textbf{26} \\
     \midrule
@@ -12,8 +12,18 @@
     Pipeline Kedro e previsão de demanda & & \checkmark & \checkmark & \\
     Simulação Exp.\ 2 (BA) e validação estatística & & & \checkmark & \\
     Módulo \texttt{demand\_profiling} e PODs & & & \checkmark & \\
-    \rowcolor{accenteal!12}Expansão nacional multiestado/multi-SKU & & & & $\bullet$ \\
-    \rowcolor{accenteal!12}Treinamento e avaliação do PSE & & & & $\bullet$ \\
+
+    \rowcolor{accenteal!12}
+    Reimplementação das políticas alinhada ao estado da arte & & & & $\bullet$ \\
+
+    \rowcolor{accenteal!12}
+    Benchmark externo em base clássica Walmart/M5 & & & & $\bullet$ \\
+
+    \rowcolor{accenteal!12}
+    Validação do AIPE frente a baselines da literatura & & & & $\bullet$ \\
+
+    Treinamento e avaliação do PSE & & & & $\bullet$ \\
+    Expansão nacional multiestado/multi-SKU & & & & $\circ$ \\
     Análise de sensibilidade e janela móvel & & & & $\circ$ \\
     Escrita e defesa da dissertação & & & & $\bullet$ \\
     \bottomrule
@@ -23,16 +33,20 @@
   \scriptsize \checkmark\ concluído \quad $\bullet$\ em andamento \quad $\circ$\ planejado
   \vspace{0.4em}
 
-  \small Expansão nacional: $\approx$10,4 milhões de séries, 26 estados + DF.
+  \small Próxima etapa central: validar o AIPE em uma base clássica e comparável ao estado da arte.
   \note{
-    O cronograma resume o que já foi feito e o que falta. Os dois
-    experimentos executados, a validação estatística e o módulo de
-    caracterização estão concluídos. As atividades em andamento, destacadas
-    em verde, são a expansão nacional -- que vai aplicar o pipeline a
-    aproximadamente 10,4 milhões de séries em 26 estados e o Distrito
-    Federal -- e o treinamento efetivo do PSE em escala. A análise de
-    sensibilidade, o mapa de recomendação e a otimização em janela móvel
-    são etapas planejadas, que dependem dos resultados da expansão
-    nacional. A escrita e defesa da dissertação acompanham esse processo.
+    A continuidade da dissertação muda o foco de apenas expandir a base
+    interna para validar o AIPE frente ao estado da arte. A próxima etapa
+    central é reimplementar as políticas candidatas de forma mais próxima
+    das formulações usadas na literatura, incluindo políticas clássicas,
+    parametrizadas por meta-heurísticas, aprendizado por reforço e híbridas.
+    Em seguida, o pipeline será avaliado em uma base clássica de referência,
+    como Walmart/M5, permitindo comparar o AIPE em um cenário reconhecido
+    pela comunidade. Essa etapa fortalece a validade externa da proposta:
+    não basta mostrar que o AIPE funciona nos dados PB e BA; é importante
+    mostrar que ele também se posiciona de forma competitiva diante de
+    baselines e bases usadas pelo estado da arte. A expansão nacional
+    continua planejada, mas passa a ser complementada por essa validação
+    externa.
   }
 \end{frame}
