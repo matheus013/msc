@@ -1,16 +1,14 @@
 % Capítulo 5 (Metodologia) — Slide 0 — Pipeline de evidência do AIPE (síntese, figura isolada)
 \begin{frame}{Síntese do pipeline metodológico}
   \centering
-  \includegraphics[width=\linewidth,height=6.0cm,keepaspectratio]{figures/aipe_evidence_pipeline.pdf}\\[0.3em]
-  {\footnotesize\textcolor{slategray}{Mapa da metodologia: dados $\rightarrow$ características $\rightarrow$ simulação $\rightarrow$ perfis $\rightarrow$ rótulos $\rightarrow$ PSE.}}
+  \vspace{0.4em}
+  \resizebox{0.96\linewidth}{!}{\input{figures/aipe_evidence_pipeline_tikz}}\\[0.6em]
+  {\footnotesize\textcolor{slategray}{Mapa da metodologia: dados preparados $\rightarrow$ características da série $\rightarrow$ simulação $\rightarrow$ POD $\rightarrow$ rótulo e PSE $\rightarrow$ recomendação.}}
   \note{
     Esta figura sintetiza a metodologia que será detalhada nos próximos
-    slides. A leitura é top-down: primeiro a unidade de análise é preparada;
-    depois a série loja-produto é descrita por características e sinais
-    auxiliares; em seguida o simulador avalia todas as políticas candidatas
-    nas mesmas condições; os regimes e PODs organizam o contexto
-    operacional; o rótulo identifica a política viável de menor CTI; e o PSE
-    aprende esse padrão para recomendar uma política e um ranking a novas
-    séries. Cada etapa tem uma responsabilidade distinta.
+    slides. A leitura segue a sequência: dados preparados, características
+    da série, simulação das políticas candidatas, atribuição do POD, geração
+    do rótulo e treinamento do PSE, e recomendação final de política. Cada
+    etapa tem uma responsabilidade distinta dentro do AIPE.
   }
 \end{frame}

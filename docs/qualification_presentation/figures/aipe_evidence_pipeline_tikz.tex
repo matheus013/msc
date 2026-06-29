@@ -1,0 +1,54 @@
+\begin{tikzpicture}[
+    >=Stealth,
+    every node/.style={font=\scriptsize\sffamily},
+    pipelineStep/.style={
+      rectangle,
+      rounded corners=5pt,
+      draw=slategray!60,
+      fill=cardbg,
+      minimum width=2.08cm,
+      minimum height=1.25cm,
+      align=center,
+      text width=2.0cm
+    },
+    emphasis/.style={
+      rectangle,
+      rounded corners=5pt,
+      draw=darkblue,
+      fill=darkblue!8,
+      minimum width=2.08cm,
+      minimum height=1.25cm,
+      align=center,
+      text width=2.0cm
+    },
+    flow/.style={->, very thick, darkblue},
+    tag/.style={circle, fill=accenteal!90!darkblue, text=white, inner sep=1.4pt, font=\tiny\bfseries\sffamily}
+  ]
+
+  \node[pipelineStep] (dados) at (0,0) {\textbf{Dados\\preparados}};
+  \node[pipelineStep, right=0.2cm of dados] (carac) {\textbf{Características\\da série}};
+  \node[pipelineStep, right=0.2cm of carac] (sim) {\textbf{Simulação}};
+  \node[pipelineStep, right=0.2cm of sim] (pod) {\textbf{POD}};
+  \node[emphasis, right=0.2cm of pod] (rotulo) {\textbf{Rótulo\\e PSE}};
+  \node[emphasis, right=0.2cm of rotulo] (rec) {\textbf{Recomendação}};
+
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]dados.center) {1};
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]carac.center) {2};
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]sim.center) {3};
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]pod.center) {4};
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]rotulo.center) {5};
+  \node[tag] at ([xshift=-0.72cm,yshift=0.38cm]rec.center) {6};
+
+  \draw[flow] (dados) -- (carac);
+  \draw[flow] (carac) -- (sim);
+  \draw[flow] (sim) -- (pod);
+  \draw[flow] (pod) -- (rotulo);
+  \draw[flow] (rotulo) -- (rec);
+
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of dados] {histórico\\loja-produto};
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of carac] {vetor\\contextual};
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of sim] {políticas\\candidatas};
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of pod] {perfil\\operacional};
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rotulo] {aprendizado\\supervisionado};
+  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rec] {política\\indicada};
+\end{tikzpicture}
