@@ -1,0 +1,30 @@
+% Metodologia -- Módulo 1 -- Dados preparados
+\begin{frame}{Módulo 1 -- Dados preparados}
+  \keymessage{A unidade de análise do AIPE é a série loja-produto: uma sequência de demanda observada para um par específico.}
+  \vspace{0.45em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+      \textbf{Como a série é construída}
+      \begin{itemize}
+        \small
+        \item Unidade: série loja-produto
+        \item Exemplo: loja A + produto X = uma série
+        \item Horizonte em ciclos comerciais comparáveis
+        \item Filtragem e limpeza antes da caracterização
+      \end{itemize}
+    \column{0.48\textwidth}
+      \begin{alertblock}{Por que isso importa}
+        \small A política é recomendada para uma série específica, não para
+        uma loja inteira nem para uma categoria agregada.
+      \end{alertblock}
+  \end{columns}
+  \note{
+    O primeiro módulo transforma o histórico transacional em unidades
+    comparáveis de análise. A unidade usada ao longo da dissertação é a
+    série loja-produto: por exemplo, a demanda do produto X na loja A ao
+    longo dos ciclos comerciais. Antes de qualquer classificação ou
+    simulação, essas séries passam por filtragem e limpeza para que todas
+    as etapas seguintes trabalhem com a mesma unidade decisória.
+  }
+\end{frame}

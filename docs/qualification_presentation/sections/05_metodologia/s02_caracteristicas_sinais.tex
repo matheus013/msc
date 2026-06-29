@@ -1,0 +1,37 @@
+% Metodologia -- Módulo 2 -- Características e sinais auxiliares
+\begin{frame}{Módulo 2 -- Características e sinais auxiliares}
+  \keymessage{As características descrevem a série; a previsão entra como sinal auxiliar, não como critério final de escolha.}
+  \vspace{0.4em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.53\textwidth}
+      \textbf{Características da demanda}
+      \begin{itemize}
+        \small
+        \item ADI e CV$^2$
+        \item \textit{Burstiness} e variabilidade
+        \item Tendência e sazonalidade
+        \item Volume e concentração temporal
+      \end{itemize}
+    \column{0.47\textwidth}
+      \textbf{Sinais auxiliares}
+      \begin{itemize}
+        \small
+        \item Erros de previsão ajudam a medir previsibilidade
+        \item O PSE usa sinais para recomendar melhor
+        \item A previsão não escolhe a política
+      \end{itemize}
+  \end{columns}
+
+  \vfill
+  \small \textcolor{darkblue}{\textbf{Esses atributos formam $\mathbf{x}_i$, o vetor contextual da série loja-produto.}}
+  \note{
+    O segundo módulo resume cada série loja-produto em características
+    operacionais. ADI e CV ao quadrado capturam intermitência e
+    variabilidade, enquanto burstiness, tendência, sazonalidade e volume
+    refinam a leitura operacional. Os sinais de previsão entram apenas como
+    informação auxiliar sobre previsibilidade. Eles não escolhem a política:
+    a escolha continua vindo da avaliação comparativa no simulador e, depois,
+    da recomendação aprendida pelo PSE.
+  }
+\end{frame}

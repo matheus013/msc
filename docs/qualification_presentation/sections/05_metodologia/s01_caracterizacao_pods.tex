@@ -1,35 +1,34 @@
-% Slide 11 — Caracterização e PODs
-\begin{frame}{Perfis Operacionais de Demanda (POD)}
+% Metodologia -- Módulo 4 -- PODs
+\begin{frame}{PODs: refinamento operacional dentro dos regimes}
+  \scriptsize\textbf{\textcolor{darkblue}{A taxonomia Syntetos-Boylan classifica o regime macro da demanda. Os PODs refinam esse regime usando características adicionais da série loja-produto.}}
+  \vspace{0.25em}
+
   \centering
   \tabstyle
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{@{}ll@{}}
+  \scriptsize
+  \begin{tabular}{@{}p{0.32\linewidth}p{0.58\linewidth}@{}}
     \toprule
     \textbf{POD} & \textbf{Critério ou grupo de características} \\
     \midrule
-    Sparse High Impact & Intermitência alta, variabilidade alta e picos relevantes \\
-    High Vol. Seasonal & Sinal sazonal e/ou concentração de demanda em janelas \\
-    Unstable Trend & Tendência relevante e/ou mudanças de regime \\
-    Low Vol. Stable & Baixa média com baixa variabilidade \\
-    Fast Moving & Baixa intermitência e giro recorrente \\
+    Sparse High Impact & Longos silêncios + picos \\
+    High Vol. Seasonal & Concentração/sazonalidade \\
+    Unstable Trend & Tendência ou mudança de regime \\
+    Low Vol. Stable & Baixo volume e baixa variabilidade \\
+    Fast Moving & Demanda frequente \\
     \bottomrule
-  \end{tabular}}
-  \vspace{0.5em}
+  \end{tabular}
+  \vspace{0.25em}
 
-  \small \fonte{capítulo de Metodologia, Tabela 4.1; demand\_profiling}\\[0.2em]
-  \small \textcolor{darkblue}{\textbf{POD classifica. Simulação avalia. Rótulo escolhe. PSE aprende.}}\\[0.2em]
-  \footnotesize\textcolor{slategray}{Série = par loja-produto. POD = perfil operacional da série.}
+  \scriptsize \fonte{capítulo de Metodologia, Tabela 4.1; demand\_profiling}\\[-0.05em]
+  \scriptsize\textcolor{slategray}{Regime $\neq$ POD. No recorte BA, todas as séries são Lumpy, mas são separadas em PODs distintos para apoiar a seleção contextual.}
   \note{
     Cada série loja-produto é caracterizada e classificada em um POD; o
-    POD não é a série, mas o perfil operacional atribuído a ela -- várias
-    séries diferentes podem compartilhar o mesmo POD. A partir do vetor de
-    17 características, cada série é classificada em um de cinco Perfis
-    Operacionais de Demanda. Esses perfis vão além da taxonomia clássica
-    de Syntetos-Boylan, que usa só ADI e CV$^2$: eles incorporam
-    burstiness, entropia, tendência e sazonalidade, e foram pensados para
-    aproximar situações de decisão de estoque reconhecíveis pela gestão.
-    Aqui o POD apenas organiza o contexto da série. A escolha de política
-    não acontece neste passo: ela vem depois, pela avaliação comparativa
-    em simulação e pela geração de rótulos para treinar o PSE.
+    POD não é a série, mas o perfil operacional atribuído a ela. A taxonomia
+    de Syntetos-Boylan usa ADI e CV$^2$ para definir o regime macro. Os PODs
+    refinam esse regime com características adicionais, como burstiness,
+    tendência, sazonalidade e volume. No Experimento 2, todas as séries são
+    Lumpy, mas os PODs separam subperfis operacionais dentro desse regime.
+    O POD organiza o contexto; a recomendação de política vem depois, com a
+    avaliação comparativa em simulação, a geração de rótulos e o PSE.
   }
 \end{frame}

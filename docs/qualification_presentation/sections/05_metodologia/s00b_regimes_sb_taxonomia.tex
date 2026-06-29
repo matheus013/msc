@@ -1,5 +1,5 @@
 % Capítulo 5 (Metodologia) — Slide — Regimes de demanda na taxonomia de Syntetos-Boylan
-\begin{frame}{Regimes de demanda na taxonomia de Syntetos-Boylan}
+\begin{frame}{Módulo 4 -- Regimes de demanda}
   \centering
   \resizebox{0.6\linewidth}{!}{%
   \begin{tikzpicture}[
@@ -40,9 +40,9 @@
   \end{tikzpicture}}
   \vspace{0.25em}
 
-  \small\keymessage{Lumpy combina muitos ciclos sem demanda com alta variabilidade nos tamanhos dos pedidos, tornando políticas baseadas em médias globais menos robustas.}
+  \small\keymessage{Syntetos-Boylan define o regime macro da demanda; no recorte BA, todas as séries avaliadas são Lumpy.}
   \note{
-    Antes de detalhar os Perfis Operacionais de Demanda, vale fixar a
+    Depois de definir o ambiente de simulação, vale fixar a
     leitura do plano ADI por CV$^2$ que fundamenta a taxonomia clássica
     usada como ponto de partida da caracterização. O eixo horizontal mede
     intermitência pelo ADI -- intervalo médio entre demandas positivas; o
@@ -55,9 +55,8 @@
     demanda ocorre o tamanho é relativamente estável -- o desafio é a
     ocorrência esporádica. Lumpy combina os dois problemas: muitos ciclos
     sem demanda e, quando ocorre, picos irregulares de magnitude -- é o
-    regime mais desafiador para previsão e reposição. Primeiro eu defino
-    como a literatura classifica regimes de demanda; o POD, no próximo
-    slide, vai além dessas duas variáveis; e mais adiante, no Capítulo de
-    Resultados, mostro onde o recorte avaliado cai nesse mesmo plano.
+    regime mais desafiador para previsão e reposição. Este é o regime macro.
+    No Experimento 2, todas as séries são Lumpy, mas os PODs separam
+    subperfis operacionais dentro desse regime.
   }
 \end{frame}

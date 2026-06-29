@@ -1,36 +1,41 @@
 % Capítulo 4 (Proposta) — Slide — Formulação matemática do AIPE
 \begin{frame}{Formulação matemática do AIPE}
   \footnotesize
-  \textbf{\textcolor{darkblue}{O AIPE formula a reposição como um problema de seleção contextual de política por série loja-produto.}}
-  \vspace{0.15em}
+  \textbf{\textcolor{darkblue}{A decisão do AIPE é selecionar uma política para cada série loja-produto.}}
+  \vspace{0.2em}
 
-  \begin{itemize}\setlength\itemsep{0pt}\setlength\parskip{0pt}
-    \item $i \in \mathcal{I}$: série loja-produto;\quad $\pi \in \mathcal{P}$: política candidata
-    \item $\mathbf{x}_i$: características operacionais;\quad $g_i$: perfil (POD) de $i$
-    \item $\overline{\mathrm{CTI}}_{i,\pi}$, $\overline{\mathrm{NS}}_{i,\pi}$: médias simuladas;\quad $\alpha_{\min}=0{,}70$: nível mínimo de serviço
-    \item $z_{i,\pi}\in\{0,1\}$: variável de decisão -- $1$ se $\pi$ é escolhida para $i$; $0$, caso contrário
-  \end{itemize}
-  \vspace{0.15em}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.43\textwidth}
+      \textbf{Elementos}
+      \begin{itemize}\setlength\itemsep{1pt}\setlength\parskip{0pt}
+        \item $i$: série loja-produto
+        \item $\pi$: política candidata
+        \item $\mathbf{x}_i$: características
+        \item $z_{i,\pi}\in\{0,1\}$: variável de decisão
+        \item CTI: custo total de inventário
+        \item NS: nível de serviço
+        \item $\alpha_{\min}=0{,}70$
+      \end{itemize}
+    \column{0.57\textwidth}
+      \textbf{Formulação por série $i$:}
+      \[
+        \min_{z_{i,\pi}} \sum_{\pi \in \mathcal{P}}
+        z_{i,\pi}\,\overline{\mathrm{CTI}}_{i,\pi}
+      \]
+      \vspace{-0.8em}
+      \[
+        \sum_{\pi} z_{i,\pi}=1
+      \]
+      \vspace{-0.9em}
+      \[
+        \sum_{\pi} z_{i,\pi}\,\overline{\mathrm{NS}}_{i,\pi}\geq\alpha_{\min}
+        \qquad
+        z_{i,\pi}\in\{0,1\}
+      \]
+  \end{columns}
+  \vspace{0.2em}
 
-  \textbf{Formulação por série $i$:}
-  \[
-    \min_{z_{i,\pi}} \sum_{\pi \in \mathcal{P}} z_{i,\pi}\,\overline{\mathrm{CTI}}_{i,\pi}
-  \]
-  \vspace{-0.7em}
-  sujeito a\;\;
-  $\sum_{\pi} z_{i,\pi}=1$,\;\;
-  $\sum_{\pi} z_{i,\pi}\,\overline{\mathrm{NS}}_{i,\pi}\geq\alpha_{\min}$,\;\;
-  $z_{i,\pi}\in\{0,1\}$
-  \vspace{0.18em}
-
-  \textbf{Forma equivalente (gera o rótulo):}\\[1pt]
-  $y_i = \arg\min_{\pi \in \mathcal{P}:\,\overline{\mathrm{NS}}_{i,\pi} \geq \alpha_{\min}} \overline{\mathrm{CTI}}_{i,\pi}$
-  \qquad $f_{\theta}(\mathbf{x}_i) \rightarrow \hat{\pi}_i \approx y_i$
-  \vspace{0.18em}
-
-  \textcolor{warnred}{\textbf{Cuidado conceitual:}} O AIPE não substitui a
-  política de reposição: ele escolhe qual política aplicar em cada série
-  loja-produto.
+  \footnotesize\textcolor{warnred}{\textbf{Rodapé:}} AIPE escolhe a política; a política gera os pedidos.
   \note{
     Esta é a formulação formal do problema que o AIPE resolve. Para cada
     série loja-produto $i$, queremos escolher uma política $\pi$ -- a

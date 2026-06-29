@@ -2,17 +2,15 @@
 \begin{frame}{Síntese do pipeline metodológico}
   \centering
   \includegraphics[width=\linewidth,height=6.0cm,keepaspectratio]{figures/aipe_evidence_pipeline.pdf}\\[0.3em]
-  {\footnotesize\textcolor{slategray}{Unidade de análise: cada série corresponde a um par loja-produto.}}
+  {\footnotesize\textcolor{slategray}{Mapa da metodologia: dados $\rightarrow$ características $\rightarrow$ simulação $\rightarrow$ perfis $\rightarrow$ rótulos $\rightarrow$ PSE.}}
   \note{
     Esta figura sintetiza a metodologia que será detalhada nos próximos
-    slides. A leitura é sempre a mesma, da esquerda para a direita: o POD
-    classifica a série em um perfil operacional; o ambiente de simulação
-    avalia as 12 políticas candidatas sob as mesmas condições; o rótulo
-    escolhe, entre as políticas viáveis (NS $\geq$ 0,70), a de menor CTI; e o
-    PSE aprende essa relação entre características e rótulo, para depois
-    recomendar uma política a novas séries. Note que cada etapa tem um verbo
-    diferente -- classifica, avalia, escolhe, aprende/recomenda -- porque
-    cada uma tem uma responsabilidade distinta: o POD não escolhe a
-    política, e o PSE não gera o rótulo, ele aprende a partir dele.
+    slides. A leitura é top-down: primeiro a unidade de análise é preparada;
+    depois a série loja-produto é descrita por características e sinais
+    auxiliares; em seguida o simulador avalia todas as políticas candidatas
+    nas mesmas condições; os regimes e PODs organizam o contexto
+    operacional; o rótulo identifica a política viável de menor CTI; e o PSE
+    aprende esse padrão para recomendar uma política e um ranking a novas
+    séries. Cada etapa tem uma responsabilidade distinta.
   }
 \end{frame}

@@ -1,28 +1,39 @@
-% Slide — PSE: entrada, saída e estágio atual
-\begin{frame}{Do rótulo ao PSE}
-  \keymessage{O PSE aprende os rótulos gerados pelo benchmark e recomenda uma política para novas séries loja-produto.}
-  \vspace{0.3em}
+% Metodologia -- Módulo 5 -- Rótulo e PSE
+\begin{frame}{Do benchmark à recomendação}
+  \keymessage{O rótulo nasce da simulação; o PSE aprende o padrão.}
+  \vspace{0.25em}
 
   \begin{columns}[T,onlytextwidth]
-    \column{0.52\textwidth}
-      \textbf{Treinamento do PSE}
-      \begin{itemize}
+    \column{0.49\textwidth}
+      \begin{enumerate}
         \footnotesize
-        \item Entrada: $\mathbf{x}_i$, características operacionais da série
-        \item Alvo supervisionado: $y_i$, política viável de menor CTI sob $\mathrm{NS} \geq 0{,}70$ (rótulo gerado pelo benchmark)
-        \item Saída: $\hat{\pi}_i$, política recomendada, confiança e \textit{ranking}
-      \end{itemize}
-      {\footnotesize Meta-modelo supervisionado de seleção (algoritmo agnóstico nesta etapa).}
-    \column{0.48\textwidth}
+        \item Simulação avalia cada política candidata.
+        \item O rótulo é a política viável de menor CTI.
+        \item O PSE aprende a mapear características da série para esse rótulo.
+        \item Para uma nova série, o PSE recomenda uma política e um ranking.
+      \end{enumerate}
+    \column{0.51\textwidth}
+      \footnotesize
+      \[
+        y_i =
+        \arg\min_{\pi \in \mathcal{P}:\overline{\mathrm{NS}}_{i,\pi}\geq 0{,}70}
+        \overline{\mathrm{CTI}}_{i,\pi}
+      \]
+      \vspace{-0.4em}
+      \[
+        f_\theta(\mathbf{x}_i) \rightarrow \hat{\pi}_i
+      \]
       \begin{alertblock}{Estágio atual}
-        \footnotesize A regra de rotulagem e o pipeline estão definidos e testados preliminarmente. A validação em escala nacional do PSE é etapa de continuidade.
+        \footnotesize Regra de rotulagem e pipeline definidos; validação nacional do PSE é continuidade.
       \end{alertblock}
   \end{columns}
   \note{
-    O PSE entra depois da rotulagem, já apresentada na formulação
-    matemática do AIPE. Ele aprende a relação entre características
-    operacionais $\mathbf{x}_i$ e o rótulo $y_i$. Na qualificação, a
-    formulação está pronta e com testes preliminares. A validação em escala
-    nacional permanece como etapa de continuidade.
+    Este slide unifica benchmark, rótulo e PSE. Primeiro, a simulação avalia
+    cada política candidata para a mesma série loja-produto. Depois, o
+    rótulo é definido como a política viável de menor CTI sob NS maior ou
+    igual a 0,70. O PSE aprende a relação entre características
+    $\mathbf{x}_i$ e rótulo $y_i$. Para uma nova série, ele recomenda uma
+    política e um ranking; ele não gera o rótulo nem substitui a simulação
+    usada para construir a base supervisionada.
   }
 \end{frame}

@@ -47,40 +47,45 @@ make clean  # remove artefatos de compilação
 
 ## Conteúdo e narrativa
 
-36 frames físicos (30 slides numerados + 6 divisores de capítulo), ~28-29
-minutos, organizados em 6 capítulos:
+37 frames físicos (31 slides numerados + 6 divisores de capítulo), ~30
+minutos, organizados em narrativa top-down:
 
-1. **Problema** — problema em uma frase, heterogeneidade da demanda,
-   consequências de uma política única
-2. **Introdução** — pergunta de pesquisa, objetivo da pesquisa, hipótese
-   central, contribuição
-3. **Principais Trabalhos Relacionados** — da literatura à lacuna, três
-   lacunas convergentes, posicionamento da dissertação
-4. **Proposta** — visão geral do AIPE, entradas do AIPE, formulação
-   matemática do AIPE (variável de decisão, restrições, rótulo $y_i$)
-5. **Metodologia** — síntese do pipeline, regimes de demanda na taxonomia
-   de Syntetos-Boylan, PODs, ambiente de simulação, portfólio de
-   políticas, do rótulo ao PSE
-6. **Resultados** — Experimento 1 (PB), Experimento 2 (BA), distribuição
-   ADI×CV², fronteira de Pareto, política única vs. seleção por perfil,
-   dominância por perfil, limitações, plano de continuidade, fechamento
+1. **Por que o problema importa?** — problema em uma frase,
+   heterogeneidade da demanda, consequências de uma política única,
+   pergunta, objetivo, hipótese e contribuição.
+2. **Onde está a lacuna?** — da literatura à lacuna, três lacunas
+   convergentes e posicionamento da dissertação.
+3. **Qual é a proposta?** — visão geral do AIPE e formulação matemática
+   como seleção de política por série loja-produto.
+4. **Como o AIPE funciona?** — pipeline metodológico e zoom por módulo:
+   dados preparados; características e sinais auxiliares; simulação;
+   regimes de demanda; PODs; rótulo e PSE; portfólio de políticas.
+5. **O que foi avaliado?** — Experimento 1 (PB), Experimento 2 (BA) e
+   distribuição ADI×CV².
+6. **O que os resultados mostram?** — fronteira de Pareto, política única
+   vs. seleção por perfil e política viável de menor CTI por perfil.
+7. **O que falta?** — limitações, plano de continuidade e fechamento.
 
-A narrativa segue: problema → pergunta → objetivo → lacuna → proposta
-(com formulação matemática explícita) → metodologia → resultados →
-limites. A formulação matemática do AIPE substitui o antigo slide "Do
-benchmark ao rótulo" (a mesma equação não é repetida em dois slides
-principais); o slide "Do rótulo ao PSE" foi mantido e ajustado para usar
-a mesma notação ($\mathbf{x}_i$, $y_i$, $\hat{\pi}_i$).
+A narrativa segue: problema real → decisão difícil → proposta AIPE →
+formulação → pipeline → módulos → resultados → próximos passos.
 
-O slide "Regimes de demanda na taxonomia de Syntetos-Boylan" foi movido
-da Introdução para a Metodologia, imediatamente antes de "Perfis
-Operacionais de Demanda (POD)", para ficar mais próximo dos gráficos
-ADI×CV² que aplica.
+O antigo slide "Entradas do AIPE" saiu do corpo principal e foi desdobrado
+em dois módulos da metodologia: "Módulo 1 -- Dados preparados" e "Módulo 2
+-- Características e sinais auxiliares". Assim, a previsão aparece apenas
+como sinal auxiliar, não como mecanismo de escolha de política.
 
-A unidade de análise (série = par loja-produto) é explicitada na
-Metodologia (slide "Síntese do pipeline metodológico") e no slide
-"Perfis Operacionais de Demanda (POD)", que distingue série (unidade)
-de POD (perfil operacional atribuído à série).
+A simulação agora aparece antes dos PODs. Primeiro o deck explica o ambiente
+controlado que avalia todas as políticas sob a mesma demanda, custos,
+sementes e KPIs; depois apresenta Syntetos-Boylan como regime macro e os
+PODs como refinamento operacional dentro desse regime.
+
+O slide de POD foi reescrito como "PODs: refinamento operacional dentro dos
+regimes" e explicita que, no recorte BA, todas as séries são Lumpy, mas são
+separadas em perfis operacionais distintos para apoiar a seleção contextual.
+
+O slide de rótulo e PSE foi unificado como "Do benchmark à recomendação":
+a simulação gera o rótulo, o rótulo é a política viável de menor CTI sob
+NS ≥ 0,70 e o PSE recomenda uma política e um ranking para novas séries.
 
 Quatro slides foram movidos para a seção de backup, comentada em
 `main.tex` (disponíveis para perguntas da banca, sem ocupar o corpo
