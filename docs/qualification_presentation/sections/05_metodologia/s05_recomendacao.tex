@@ -1,0 +1,30 @@
+% Metodologia -- Módulo 6 -- Recomendação
+\begin{frame}{Módulo 6 -- Recomendação}
+  \AipePipelineContext{6}
+  \keymessage{A saída do AIPE é uma política recomendada para a série loja-produto, acompanhada de um ranking de alternativas.}
+  \vspace{0.25em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Como funciona}
+      \begin{itemize}
+        \footnotesize
+        \item Nova série entra com seu vetor contextual $\mathbf{x}_i$.
+        \item O PSE estima a política indicada: $f_\theta(\mathbf{x}_i)$.
+        \item A saída combina política principal, ranking e reavaliação periódica.
+      \end{itemize}
+    \column{0.5\textwidth}
+      \begin{alertblock}{Exemplo de leitura}
+        \footnotesize
+        Série com muitos zeros e picos altos pode receber recomendação diferente de uma série estável, mesmo dentro do mesmo produto.
+      \end{alertblock}
+  \end{columns}
+  \note{
+    O último módulo transforma a evidência aprendida em recomendação. Para
+    uma nova série loja-produto, o pipeline calcula as mesmas características
+    usadas no treinamento, o PSE estima a política mais adequada e retorna
+    uma recomendação, idealmente acompanhada de um ranking. Essa saída não é
+    uma decisão estática para sempre: conforme novos ciclos de venda chegam,
+    a série pode ser reavaliada e receber nova recomendação.
+  }
+\end{frame}

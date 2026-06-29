@@ -1,61 +1,278 @@
-\begin{tikzpicture}[
-    >=Stealth,
-    every node/.style={font=\scriptsize\sffamily},
-    pipelineStep/.style={
-      rectangle,
-      rounded corners=5pt,
-      draw=slategray!60,
-      fill=cardbg,
-      minimum width=2.08cm,
-      minimum height=1.25cm,
-      align=center,
-      text width=2.0cm
-    },
-    emphasis/.style={
-      rectangle,
-      rounded corners=5pt,
-      draw=darkblue,
-      fill=darkblue!8,
-      minimum width=2.08cm,
-      minimum height=1.25cm,
-      align=center,
-      text width=2.0cm
-    },
-    flow/.style={->, very thick, darkblue},
-    tag/.style={
-      circle,
-      fill=accenteal!90!darkblue,
-      text=white,
-      minimum size=0.34cm,
-      inner sep=0pt,
-      font=\tiny\bfseries\sffamily
-    }
-  ]
+\providecommand{\AipePipelineNode}[5]{%
+  \ifnum#1=0
+    \node[pipelineStep,#4] (#3) {#5};
+  \else
+    \ifnum#2=#1
+      \node[activeStep,#4] (#3) {#5};
+    \else
+      \ifnum#2<#1
+        \node[doneStep,#4] (#3) {#5};
+      \else
+        \node[futureStep,#4] (#3) {#5};
+      \fi
+    \fi
+  \fi
+}
 
-  \node[pipelineStep] (dados) at (0,0) {\textbf{Dados\\preparados}};
-  \node[pipelineStep, right=0.2cm of dados] (carac) {\textbf{Características\\da série}};
-  \node[pipelineStep, right=0.2cm of carac] (sim) {\textbf{Simulação}};
-  \node[pipelineStep, right=0.2cm of sim] (pod) {\textbf{POD}};
-  \node[emphasis, right=0.2cm of pod] (rotulo) {\textbf{Rótulo\\e PSE}};
-  \node[emphasis, right=0.2cm of rotulo] (rec) {\textbf{Recomendação}};
+\providecommand{\AipePipelineTag}[3]{%
+  \ifnum#1=0
+    \node[tag,#3] {#2};
+  \else
+    \ifnum#2=#1
+      \node[tagActive,#3] {#2};
+    \else
+      \ifnum#2<#1
+        \node[tagDone,#3] {#2};
+      \else
+        \node[tagFuture,#3] {#2};
+      \fi
+    \fi
+  \fi
+}
 
-  \node[tag, above=0.12cm of dados.north] {1};
-  \node[tag, above=0.12cm of carac.north] {2};
-  \node[tag, above=0.12cm of sim.north] {3};
-  \node[tag, above=0.12cm of pod.north] {4};
-  \node[tag, above=0.12cm of rotulo.north] {5};
-  \node[tag, above=0.12cm of rec.north] {6};
+\providecommand{\AipePipelineFlow}[4]{%
+  \ifnum#1=0
+    \draw[flow] (#3) -- (#4);
+  \else
+    \ifnum#2<#1
+      \draw[flowDone] (#3) -- (#4);
+    \else
+      \ifnum#2=#1
+        \draw[flowActive] (#3) -- (#4);
+      \else
+        \draw[flowFuture] (#3) -- (#4);
+      \fi
+    \fi
+  \fi
+}
 
-  \draw[flow] (dados) -- (carac);
-  \draw[flow] (carac) -- (sim);
-  \draw[flow] (sim) -- (pod);
-  \draw[flow] (pod) -- (rotulo);
-  \draw[flow] (rotulo) -- (rec);
+\providecommand{\AipePipelineDiagram}[1]{%
+  \begin{tikzpicture}[
+      >=Stealth,
+      every node/.style={font=\scriptsize\sffamily},
+      pipelineStep/.style={
+        rectangle,
+        rounded corners=5pt,
+        draw=slategray!60,
+        fill=cardbg,
+        minimum width=2.08cm,
+        minimum height=1.25cm,
+        align=center,
+        text width=2.0cm
+      },
+      doneStep/.style={
+        rectangle,
+        rounded corners=5pt,
+        draw=slategray!55,
+        fill=cardbg,
+        minimum width=2.08cm,
+        minimum height=1.25cm,
+        align=center,
+        text width=2.0cm
+      },
+      activeStep/.style={
+        rectangle,
+        rounded corners=5pt,
+        draw=accenteal!90!darkblue,
+        line width=0.9pt,
+        fill=accenteal!12,
+        minimum width=2.08cm,
+        minimum height=1.25cm,
+        align=center,
+        text width=2.0cm
+      },
+      futureStep/.style={
+        rectangle,
+        rounded corners=5pt,
+        draw=slategray!32,
+        fill=cardbg,
+        minimum width=2.08cm,
+        minimum height=1.25cm,
+        align=center,
+        text width=2.0cm,
+        opacity=0.28,
+        text opacity=0.48
+      },
+      flow/.style={->, very thick, darkblue},
+      flowDone/.style={->, very thick, darkblue!75},
+      flowActive/.style={->, very thick, accenteal!90!darkblue},
+      flowFuture/.style={->, very thick, darkblue, opacity=0.25},
+      tag/.style={
+        circle,
+        fill=accenteal!90!darkblue,
+        text=white,
+        minimum size=0.34cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagDone/.style={
+        circle,
+        fill=slategray!75,
+        text=white,
+        minimum size=0.34cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagActive/.style={
+        circle,
+        fill=accenteal!90!darkblue,
+        text=white,
+        minimum size=0.38cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagFuture/.style={
+        circle,
+        fill=slategray!45,
+        text=white,
+        minimum size=0.34cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily,
+        opacity=0.32,
+        text opacity=0.55
+      }
+    ]
 
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of dados] {histórico\\loja-produto};
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of carac] {vetor\\contextual};
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of sim] {políticas\\candidatas};
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of pod] {perfil\\operacional};
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rotulo] {aprendizado\\supervisionado};
-  \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rec] {política\\indicada};
-\end{tikzpicture}
+    \AipePipelineNode{#1}{1}{dados}{at={(0,0)}}{\textbf{Dados\\preparados}}
+    \AipePipelineNode{#1}{2}{carac}{right=0.2cm of dados}{\textbf{Características\\da série}}
+    \AipePipelineNode{#1}{3}{sim}{right=0.2cm of carac}{\textbf{Simulação}}
+    \AipePipelineNode{#1}{4}{pod}{right=0.2cm of sim}{\textbf{POD}}
+    \AipePipelineNode{#1}{5}{rotulo}{right=0.2cm of pod}{\textbf{Rótulo\\e PSE}}
+    \AipePipelineNode{#1}{6}{rec}{right=0.2cm of rotulo}{\textbf{Recomendação}}
+
+    \AipePipelineTag{#1}{1}{above=0.12cm of dados.north}
+    \AipePipelineTag{#1}{2}{above=0.12cm of carac.north}
+    \AipePipelineTag{#1}{3}{above=0.12cm of sim.north}
+    \AipePipelineTag{#1}{4}{above=0.12cm of pod.north}
+    \AipePipelineTag{#1}{5}{above=0.12cm of rotulo.north}
+    \AipePipelineTag{#1}{6}{above=0.12cm of rec.north}
+
+    \AipePipelineFlow{#1}{1}{dados}{carac}
+    \AipePipelineFlow{#1}{2}{carac}{sim}
+    \AipePipelineFlow{#1}{3}{sim}{pod}
+    \AipePipelineFlow{#1}{4}{pod}{rotulo}
+    \AipePipelineFlow{#1}{5}{rotulo}{rec}
+
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of dados] {histórico\\loja-produto};
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of carac] {vetor\\contextual};
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of sim] {políticas\\candidatas};
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of pod] {perfil\\operacional};
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rotulo] {aprendizado\\supervisionado};
+    \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of rec] {política\\indicada};
+  \end{tikzpicture}%
+}
+
+\providecommand{\AipePipelineCompactDiagram}[1]{%
+  \begin{tikzpicture}[
+      >=Stealth,
+      every node/.style={font=\tiny\sffamily},
+      pipelineStep/.style={
+        rectangle,
+        rounded corners=4pt,
+        draw=slategray!60,
+        fill=cardbg,
+        minimum width=1.86cm,
+        minimum height=0.78cm,
+        align=center,
+        text width=1.74cm
+      },
+      doneStep/.style={
+        rectangle,
+        rounded corners=4pt,
+        draw=slategray!55,
+        fill=cardbg,
+        minimum width=1.86cm,
+        minimum height=0.78cm,
+        align=center,
+        text width=1.74cm
+      },
+      activeStep/.style={
+        rectangle,
+        rounded corners=4pt,
+        draw=accenteal!90!darkblue,
+        line width=0.8pt,
+        fill=accenteal!12,
+        minimum width=1.86cm,
+        minimum height=0.78cm,
+        align=center,
+        text width=1.74cm
+      },
+      futureStep/.style={
+        rectangle,
+        rounded corners=4pt,
+        draw=slategray!32,
+        fill=cardbg,
+        minimum width=1.86cm,
+        minimum height=0.78cm,
+        align=center,
+        text width=1.74cm,
+        opacity=0.25,
+        text opacity=0.45
+      },
+      flow/.style={->, thick, darkblue},
+      flowDone/.style={->, thick, darkblue!75},
+      flowActive/.style={->, thick, accenteal!90!darkblue},
+      flowFuture/.style={->, thick, darkblue, opacity=0.22},
+      tag/.style={
+        circle,
+        fill=accenteal!90!darkblue,
+        text=white,
+        minimum size=0.28cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagDone/.style={
+        circle,
+        fill=slategray!75,
+        text=white,
+        minimum size=0.28cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagActive/.style={
+        circle,
+        fill=accenteal!90!darkblue,
+        text=white,
+        minimum size=0.32cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily
+      },
+      tagFuture/.style={
+        circle,
+        fill=slategray!45,
+        text=white,
+        minimum size=0.28cm,
+        inner sep=0pt,
+        font=\tiny\bfseries\sffamily,
+        opacity=0.28,
+        text opacity=0.5
+      }
+    ]
+
+    \AipePipelineNode{#1}{1}{dados}{at={(0,0)}}{\textbf{Dados\\preparados}}
+    \AipePipelineNode{#1}{2}{carac}{right=0.16cm of dados}{\textbf{Caract.\\da série}}
+    \AipePipelineNode{#1}{3}{sim}{right=0.16cm of carac}{\textbf{Simulação}}
+    \AipePipelineNode{#1}{4}{pod}{right=0.16cm of sim}{\textbf{POD}}
+    \AipePipelineNode{#1}{5}{rotulo}{right=0.16cm of pod}{\textbf{Rótulo\\e PSE}}
+    \AipePipelineNode{#1}{6}{rec}{right=0.16cm of rotulo}{\textbf{Recomendação}}
+
+    \AipePipelineTag{#1}{1}{above=0.05cm of dados.north}
+    \AipePipelineTag{#1}{2}{above=0.05cm of carac.north}
+    \AipePipelineTag{#1}{3}{above=0.05cm of sim.north}
+    \AipePipelineTag{#1}{4}{above=0.05cm of pod.north}
+    \AipePipelineTag{#1}{5}{above=0.05cm of rotulo.north}
+    \AipePipelineTag{#1}{6}{above=0.05cm of rec.north}
+
+    \AipePipelineFlow{#1}{1}{dados}{carac}
+    \AipePipelineFlow{#1}{2}{carac}{sim}
+    \AipePipelineFlow{#1}{3}{sim}{pod}
+    \AipePipelineFlow{#1}{4}{pod}{rotulo}
+    \AipePipelineFlow{#1}{5}{rotulo}{rec}
+  \end{tikzpicture}%
+}
+
+\providecommand{\AipePipelineContext}[1]{%
+  \centering
+  \resizebox{0.86\linewidth}{!}{\AipePipelineCompactDiagram{#1}}\par
+  \vspace{0.18em}
+}
