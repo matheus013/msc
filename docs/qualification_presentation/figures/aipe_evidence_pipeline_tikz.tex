@@ -97,6 +97,7 @@
       flowDone/.style={->, very thick, darkblue!75},
       flowActive/.style={->, very thick, accenteal!90!darkblue},
       flowFuture/.style={->, very thick, darkblue, opacity=0.25},
+      loopFlow/.style={->, very thick, dashed, accenteal!90!darkblue},
       tag/.style={
         circle,
         fill=accenteal!90!darkblue,
@@ -152,6 +153,11 @@
     \AipePipelineFlow{#1}{3}{sim}{pod}
     \AipePipelineFlow{#1}{4}{pod}{rotulo}
     \AipePipelineFlow{#1}{5}{rotulo}{rec}
+    \draw[loopFlow]
+      ([xshift=0.46cm,yshift=0.08cm]rec.north) -- ++(0,1.05cm)
+      -| ([xshift=-0.46cm,yshift=0.08cm]sim.north);
+    \node[font=\tiny\sffamily, text=accentpetrol!85!darkblue, align=center]
+      at ($(pod.north)+(0,0.98cm)$) {novo ciclo de avaliação};
 
     \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of dados] {histórico\\loja-produto};
     \node[font=\tiny\sffamily, text=slategray, align=center, below=0.42cm of carac] {vetor\\contextual};

@@ -1,33 +1,27 @@
 % Slide 8 — Contribuição da dissertação
 \begin{frame}{Contribuição da dissertação}
   \small
-  \textcolor{darkblue}{\textbf{Contribuição central:}} formulação e avaliação do AIPE como framework de seleção contextual.
+  \textcolor{darkblue}{\textbf{Contribuição central:}} o AIPE como \textit{framework} para recomendar políticas de reposição por série loja-produto.
   \vspace{0.35em}
+
   \begin{enumerate}
-    \item \textbf{Formulação do AIPE} como \textit{framework} de seleção
-      contextual de políticas de reposição.
-    \item \textbf{Estudo empírico} com dados reais de varejo brasileiro
-      intermitente.
-    \item \textbf{Pipeline reprodutível} para caracterização, simulação,
-      geração de rótulos e recomendação.
-    \item \textbf{Benchmark com 12 políticas} como meio experimental para
-      gerar evidência e rótulos.
+    \item \textbf{Problema formulado:} seleção contextual de política como
+      decisão por série loja-produto.
+    \item \textbf{Evidência empírica:} comparação controlada de políticas em
+      dados reais de varejo intermitente.
+    \item \textbf{Base reprodutível:} pipeline para caracterizar séries,
+      simular políticas e gerar rótulos para o PSE.
   \end{enumerate}
+
   \vspace{0.35em}
-  \begin{alertblock}{O que esta dissertação \textit{não} é}
-    \small Não cria novos algoritmos de otimização ou de aprendizado por
-    reforço. A contribuição está na \highlight{formulação e avaliação} do
-    AIPE como \textit{framework} de seleção contextual.
-  \end{alertblock}
+  \small\textcolor{slategray}{Não propõe uma nova política isolada nem um novo algoritmo de RL; organiza e avalia a seleção entre políticas existentes.}
   \note{
     É importante deixar claro o que é e o que não é a contribuição. A
     dissertação não propõe um novo algoritmo de GA, de RL ou de
     meta-heurística -- esses métodos já existem na literatura e são usados
-    aqui como parte do portfólio avaliado. A contribuição central é a
-    formulação do AIPE como framework de seleção contextual. O estudo empírico
-    com dados reais, junto do pipeline reprodutível, sustenta a evidência
-    necessária para validar essa proposta. O benchmark com 12 políticas entra
-    como instrumento experimental para gerar rótulos e evidência -- não como
-    fim em si mesmo.
+    aqui como parte do portfólio avaliado. A contribuição central é formular
+    e avaliar o AIPE como framework de seleção contextual: um mecanismo para
+    recomendar qual política aplicar a cada série loja-produto, com base em
+    evidência simulada, rótulos e um pipeline reprodutível.
   }
 \end{frame}
