@@ -1,0 +1,260 @@
+# =============================================================================
+# ARQUIVO DE CONFIGURAÇÃO - Reprodução do Artigo:
+# "A comparative study of multi-algorithm optimization for inventory analytics
+#  in supply chains" (Zabraoui et al., 2025)
+# =============================================================================
+# INSTRUÇÕES:
+#   1. Preencha o caminho dos seus dados em DATA.file_path
+#   2. Ajuste os nomes das colunas em DATA.columns para bater com sua base
+#   3. Ajuste os parâmetros de custo e simulação conforme sua realidade
+#   4. Execute:  python main.py
+# =============================================================================
+
+DATA:
+  # Caminho para o arquivo de dados (CSV, Excel ou Parquet)
+  file_path: "data/vendas_preparadas.csv"
+
+  # Formato: "csv", "excel" ou "parquet"
+  file_format: "csv"
+
+  # Separador (apenas para CSV)
+  csv_sep: ","
+
+  # ---- Mapeamento de colunas do SEU arquivo ----
+  columns:
+    # Coluna de data (deixe null se não houver)
+    date: "date"
+
+    # Coluna de demanda/vendas (obrigatória)
+    demand: "sales"
+
+    # Coluna de identificação do produto (deixe null para tratar tudo como um item)
+    item_id: "item_id"
+
+    # Coluna de WAREHOUSE/ESTOQUE (novo: para rede multi-nível)
+    # Cada valor representa um estoque diferente (ex: estado, armazém, região)
+    warehouse: "warehouse"
+
+    # Coluna de identificação da loja/local (deixe null se não houver)
+    store_id: "store_id"
+
+    # Coluna de preço (deixe null se não houver)
+    price: "avg_price"
+
+    # Colunas categóricas extras (ex: categoria, evento) — lista ou null
+    extra_features: null
+    # extra_features: ["cat_id", "event_name_1"]
+
+  # Se true, filtra um único item+warehouse para análise (recomendado para começar)
+  filter_single_item: true
+  # Qual item_id usar (null = pega o com mais períodos de dados)
+  selected_item: null
+  # Qual warehouse usar (null = pega o com maior demanda total)
+  selected_warehouse: null
+  # Qual store_id usar (null = pega o com mais dados)
+  selected_store: null
+
+  # Coluna de data de início do conjunto de teste (formato YYYY-MM-DD ou null)
+  # Se null, usa train_ratio abaixo
+  test_start_date: null
+  # Fração dos dados para treino (usado apenas se test_start_date for null)
+  train_ratio: 0.7
+
+
+# =============================================================================
+# PARÂMETROS DE CUSTO DE INVENTÁRIO
+# =============================================================================
+COST:
+  # Custo de manutenção de estoque por unidade por período
+  holding_cost_per_unit: 1.0
+
+  # Custo de stockout (falta) por unidade não atendida
+  stockout_cost_per_unit: 5.0
+
+  # Custo fixo por pedido realizado
+  ordering_cost_per_order: 50.0
+
+  # Custo variável por unidade pedida
+  ordering_cost_per_unit: 0.5
+
+
+# =============================================================================
+# PARÂMETROS DA SIMULAÇÃO
+# =============================================================================
+SIMULATION:
+  # Nível de serviço alvo (0 a 1)
+  target_service_level: 0.95
+
+  # Lead time (períodos de antecedência para chegada do pedido)
+  lead_time: 2
+
+  # Estoque inicial (deve ser ~1-2x a demanda média por período do item selecionado)
+  initial_inventory: 500
+
+  # Número de replicações independentes para intervalo de confiança
+  n_replications: 5
+
+  # Seed para reprodutibilidade (null para aleatório)
+  random_seed: 42
+
+
+# =============================================================================
+# PARÂMETROS DE FORECASTING (Módulo 1)
+# =============================================================================
+FORECASTING:
+  # Janela de lookback para LSTM/ANN (número de períodos passados como features)
+  lookback: 6
+
+  # Horizonte de previsão (períodos à frente)
+  forecast_horizon: 1
+
+  # LSTM (implementação numpy — mais leve)
+  LSTM:
+    hidden_size: 64
+    epochs: 50
+    learning_rate: 0.01
+    batch_size: 32
+
+  # ANN / MLP (via sklearn)
+  ANN:
+    hidden_layer_sizes: [64, 32]
+    max_iter: 200
+    learning_rate_init: 0.001
+
+  # XGBoost
+  XGBOOST:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+
+
+# =============================================================================
+# ALGORITMO GENÉTICO (Módulo 2 — otimização de parâmetros estáticos)
+# =============================================================================
+GENETIC_ALGORITHM:
+  # Tamanho da população
+  population_size: 100
+
+  # Número de gerações
+  n_generations: 50
+
+  # Taxa de mutação
+  mutation_rate: 0.05
+
+  # Probabilidade de crossover
+  crossover_prob: 0.8
+
+  # Pesos da fitness: [peso_service_level, peso_custo_total]
+  fitness_weights: [1.0, 0.0001]
+
+  # Espaço de busca para ROP, Q, SS — calibrado para demanda real (mediana ~22, média ~130 un/ciclo)
+  search_space:
+    ROP: [0, 2000]     # Ponto de reposição
+    Q:   [1, 2000]     # Quantidade de pedido
+    SS:  [0, 1000]     # Estoque de segurança
+
+
+# =============================================================================
+# APRENDIZADO POR REFORÇO — DQN (Módulo 3)
+# =============================================================================
+DQN:
+  # Tamanho do estado (features do ambiente)
+  # Calculado automaticamente, mas pode forçar aqui
+  state_size: null
+
+  # Número de ações discretas possíveis (quantidades de pedido)
+  n_actions: 20
+
+  # Quantidade máxima por pedido (distribuída entre as n_actions)
+  max_order_qty: 2000
+
+  # Parâmetros de treinamento
+  episodes: 500
+  gamma: 0.95          # Fator de desconto
+  epsilon_start: 1.0   # Exploração inicial
+  epsilon_end: 0.01    # Exploração mínima
+  epsilon_decay: 0.995
+  learning_rate: 0.001
+  batch_size: 64
+  memory_size: 10000
+  target_update_freq: 10  # Atualizar rede alvo a cada N episódios
+
+  # Camadas da rede Q
+  hidden_layers: [128, 64]
+
+
+# =============================================================================
+# PPO (alternativa ao DQN)
+# =============================================================================
+PPO:
+  episodes: 300
+  gamma: 0.99
+  clip_epsilon: 0.2
+  learning_rate: 0.0003
+  update_epochs: 4
+  n_actions: 20
+  max_order_qty: 2000
+
+
+# =============================================================================
+# HEURÍSTICA BASELINE (Ponto de Reposição fixo)
+# =============================================================================
+HEURISTIC:
+  # Se null, calculado automaticamente como média * lead_time + z * std
+  ROP: null
+  # Quantidade fixa de pedido (null = calculado como EOQ)
+  Q: null
+  # Estoque de segurança (null = z * std * sqrt(lead_time))
+  SS: null
+  # z-score para nível de serviço (1.645 = 95%, 1.28 = 90%)
+  z_score: 1.645
+
+
+# =============================================================================
+# SAÍDAS
+# =============================================================================
+OUTPUT:
+  output_dir: "outputs"
+  save_plots: true
+  save_metrics_csv: true
+  plot_format: "png"   # "png" ou "pdf"
+  dpi: 150
+
+# =============================================================================
+# SIMULATED ANNEALING
+# =============================================================================
+SA:
+  maxiter: 500
+
+# =============================================================================
+# PARTICLE SWARM OPTIMIZATION
+# =============================================================================
+PSO:
+  n_particles: 40
+  n_iterations: 80
+  inertia: 0.7
+  cognitive: 1.5
+  social: 1.5
+
+# =============================================================================
+# DIFFERENTIAL EVOLUTION
+# =============================================================================
+DE:
+  maxiter: 100
+  popsize: 15
+  mutation: [0.5, 1.0]
+  recombination: 0.7
+
+# =============================================================================
+# SARSA
+# =============================================================================
+SARSA:
+  n_actions: 20
+  max_order_qty: 2000
+  episodes: 500
+  gamma: 0.95
+  epsilon_start: 1.0
+  epsilon_end: 0.01
+  epsilon_decay: 0.995
+  learning_rate: 0.001

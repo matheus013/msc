@@ -1,0 +1,1035 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{sbpo-template}
+\usepackage[brazil]{babel}    % português do Brasil
+\usepackage[utf8]{inputenc}   % acentos em UTF-8
+\usepackage[T1]{fontenc}      % para hifenização correta
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage[square]{natbib}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{makecell}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\includegraphics[scale=0.5]{figuras/sbpo2026-header-logo.png}}
+%\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headruleskip}{-1mm}
+%\setlength\headheight{101.0pt}
+%\addtolength{\textheight}{-101.0pt}
+\setlength\headheight{86pt}
+\addtolength{\textheight}{-86pt}
+\setlength{\headsep}{5mm}
+\setlength{\footskip}{4.08003pt}
+
+\title{Otimização de Inventário Multi-Echelon sob Demanda Intermitente: Comparação de Doze Políticas em Dados Reais de Varejo Brasileiro}
+
+\author{
+\name{}
+\institute{Filiação}
+\iaddress{Endereço da Instituição}
+\email{e-mail}
+}
+
+\author{
+\name{Segundo Autor}
+\institute{Filiação}
+\iaddress{Endereço da Instituição}
+\email{e-mail}
+}
+
+\begin{document}
+
+\maketitle
+
+\vspace{8mm}
+\begin{resumo}
+Modelos clássicos de inventário, como o \textit{Economic Order Quantity}
+(EOQ) e a política de dois limiares~$(s,S)$, pressupõem
+estacionariedade que falha sistematicamente em cenários com demanda
+intermitente, gerando excesso de estoque e rupturas frequentes no
+varejo regional brasileiro. Estudos comparativos recentes baseados em
+conjuntos como o Walmart~M5 não cobrem o regime de alta variabilidade
+caracterizado por coeficiente de variação (CV) entre $2.5$ e $5.4$,
+típico de produtos de baixo giro. Este trabalho apresenta uma
+comparação de doze políticas de controle de inventário em dados reais
+de varejo brasileiro, avaliadas em cinco indicadores: custo total,
+nível de serviço, taxa de ruptura, efeito de amplificação da demanda
+(\textit{bullwhip}) e frequência de pedidos.
+A arquitetura híbrida GA-DQN (\textit{Genetic Algorithm with Deep Q-Network}) obtém o melhor equilíbrio prático: custo
+substancialmente inferior às heurísticas clássicas, efeito
+\textit{bullwhip} significativamente menor que a política~$(s,S)$ e
+taxa de ruptura equivalente à melhor política prática isolada,
+confirmando a robustez da abordagem em regime de extrema intermitência.
+\end{resumo}
+
+
+\bigskip
+\begin{palchaves}
+Gestão de inventário; Demanda intermitente; Cadeia de suprimentos
+multi-nível; Meta-heurísticas; Aprendizado por reforço.
+
+\bigskip
+\noindent{Tópicos (em ordem de PRIORIDADE): }
+Logística e \textit{Supply Chain}; Otimização de Processos;
+Inteligência Artificial e Aprendizado de Máquina.
+\end{palchaves}
+
+\vspace{8mm}
+\begin{abstract}
+Classical inventory models, such as the Economic Order Quantity (EOQ)
+and the two-threshold policy~$(s,S)$, rely on stationarity assumptions
+that systematically fail for intermittent-demand items, producing
+excess stock and frequent stockouts in Brazilian regional retail.
+Recent comparative studies based on datasets such as Walmart~M5 do
+not cover this high-variability regime, characterized by a coefficient
+of variation (CV) between $2.5$ and $5.4$, typical of slow-moving
+products. This work presents a comparison of twelve inventory
+control policies on real Brazilian retail data, evaluated on five
+indicators: total cost, service level, stockout rate, demand
+amplification along the supply chain (bullwhip effect), and order
+frequency. The hybrid GA-DQN (Genetic Algorithm with Deep Q-Network)
+architecture achieves the best practical trade-off: substantially
+lower cost than classical heuristics, a bullwhip effect significantly
+lower than $(s,S)$, and a stockout rate on par with the best practical
+standalone policy, confirming the robustness of the hybrid approach
+under extreme intermittent demand.
+\end{abstract}
+
+\bigskip
+\begin{keywords}
+Inventory management; Intermittent demand; Multi-level supply chain;
+Metaheuristics; Reinforcement learning.
+
+\bigskip
+\noindent{Paper topics (in order of PRIORITY): }
+Logistics and Supply Chain; Process Optimisation;
+Artificial Intelligence and Machine Learning.
+\end{keywords}
+
+% =========================================================
+\section{Introdução}
+% =========================================================
+
+A gestão ineficiente de inventário representa, segundo estimativas,
+entre \(3.5\%\) e \(8\%\) do faturamento anual do varejo brasileiro em
+capital imobilizado e perdas de venda por ruptura~\citep{silver:2017}.
+Em redes com demanda intermitente, esse custo é ainda maior: itens
+de baixo giro com coeficiente de variação (CV) elevado são
+gerenciados, na maioria das redes regionais brasileiras, com as
+mesmas heurísticas formuladas há mais de cem anos: o Lote Econômico
+de Compra (EOQ)~\citep{harris:1913} e a política de dois
+limites~$(s,S)$~\citep{hadley:1963}. Essas abordagens pressupõem
+estacionariedade que raramente se verifica em dados reais de
+varejo~\citep{silver:2017}, gerando excesso de estoque imobilizado,
+rupturas frequentes e amplificação da demanda ao longo da cadeia.
+
+O desafio acentua-se quando o padrão de consumo é
+\emph{intermitente}: longos períodos de demanda nula alternados com
+ocorrências esporádicas de alta magnitude~\citep{croston:1972}.
+Esse comportamento é quantificado pelo coeficiente de variação
+$CV = \hat{\sigma}_D / \hat{\mu}_D$, onde $\hat{\sigma}_D$ é o
+desvio padrão e $\hat{\mu}_D$ é a média da demanda; valores acima de \(0.5\)
+indicam demanda errática e acima de \(1.5\), demanda extremamente
+intermitente~\citep{syntetos:2001}. Todos os 15 cenários deste
+estudo possuem $CV$ entre \(2.5\) e \(5.4\), regime em que as hipóteses
+clássicas falham de forma sistemática.
+
+% Do ponto de vista gerencial, a escolha da política de inventário
+% impacta diretamente três grupos de stakeholders: (i)~gestores de
+% \emph{supply chain} e compradores de redes de varejo, que
+% necessitam de critério objetivo para decidir quando abandonar
+% heurísticas clássicas em favor de métodos adaptativos; (ii)~pequenas
+% e médias empresas sem equipe dedicada de \emph{data science}, para
+% quem o custo de implementação de uma solução complexa deve ser
+% justificado por ganho mensurável; e (iii)~pesquisadores em Pesquisa
+% Operacional e aprendizado de máquina, que demandam uma base de
+% comparação reproduzível em regime de alta intermitência, complementar
+% ao amplamente utilizado Walmart~M5.
+
+Diante desse cenário, este trabalho ataca o problema \textit{Multi Echelon Inventory Optimization} (MEIO) com demanda intermitente: dado
+um armazém regional que abastece 15 lojas varejistas ao longo de 38
+ciclos bimestrais, determinar, para cada loja, a política de reposição
+que minimiza o custo total acumulado (manutenção, ruptura e ordenação)
+sob $CV$ entre $2.5$ e $5.4$. Para isso, apresenta-se a primeira
+comparação sistemática de doze políticas em dados reais de varejo
+brasileiro, regime não coberto por estudos baseados no Walmart~M5.
+O estudo estende a referência mais próxima em cinco direções concretas,
+descritas a seguir.
+
+\citet{zabraoui:2025} constituem a referência mais próxima deste
+estudo: os autores propuseram a arquitetura híbrida GA-DQN
+(\textit{Genetic Algorithm-Deep Q-Network}) no
+Walmart~M5, elevando o nível de serviço de $61\%$ para $94\%$ frente ao
+DQN isolado. O presente artigo parte desse resultado e o estende
+em cinco direções concretas:
+
+\begin{itemize}
+  \item Regime de maior intermitência: $CV$ entre $2.5$ e $5.4$,
+    versus CV típico $< 1$ no Walmart~M5; os modelos de
+    \citet{zabraoui:2025} não foram validados nesse regime.
+  \item Escopo comparativo ampliado: incorporação de $(s,S)$,
+    Jornaleiro, PSO (\textit{Particle Swarm Optimization}),
+    Evolução Diferencial,
+    SARSA (\textit{State-Action-Reward-State-Action})
+    e a variante híbrida GA-PPO, ausentes em \citet{zabraoui:2025}.
+  \item Avaliação primária em cinco indicadores: efeito
+    \textit{bullwhip} e frequência de pedidos aparecem em
+    \citet{zabraoui:2025} apenas para políticas selecionadas; aqui
+    são elevados a critérios primários integrados na comparação
+    sistemática de todas as doze políticas, incluindo taxa de ruptura.
+  \item Estratificação por regime de demanda: três grupos de
+    volume revelam como a política ótima depende do regime.
+  \item Calibração adaptativa por loja: parâmetros
+    escalonados individualmente para lojas com volume entre
+    $11.7$ e $1455$ unidades por ciclo.
+\end{itemize}
+
+O restante do artigo está organizado como se segue: a Seção~2
+revisa a literatura; a Seção~3 descreve os dados; a Seção~4 detalha
+as doze políticas e seus hiperparâmetros; a Seção~5 apresenta a
+metodologia experimental; a Seção~6 discute os resultados; e a
+Seção~7 conclui com recomendações práticas.
+
+% =========================================================
+\section{Revisão da Literatura}
+% =========================================================
+
+Esta seção revisa os trabalhos mais relacionados, organizados em
+duas frentes: (i)~aplicação de aprendizado por reforço (RL) ao controle
+de inventário e (ii)~uso de meta-heurísticas sob demanda intermitente.
+A revisão culmina na análise de \citet{zabraoui:2025}, referência
+central deste trabalho; a fundamentação teórica de cada política é
+detalhada na Seção~4.
+
+\citet{oroojlooyjadid:2022} foram os primeiros a demonstrar, no
+\textit{Beer Game} \textit{multi-echelon}, que a DQN aprende políticas de reposição
+sem modelar explicitamente a distribuição de demanda, superando
+políticas de \textit{base-stock} em cenários com informação assimétrica.
+\citet{gijsbrechts:2022} ampliaram o escopo, comparando o
+A3C (\textit{Asynchronous Advantage Actor-Critic}) contra
+heurísticas de referência em três problemas canônicos (perdas de
+venda, duplo abastecimento e \textit{multi-echelon}), concluindo que o RL
+profundo pode igualar, mas não domina universalmente, as melhores
+heurísticas. Para o problema de reposição conjunta,
+\citet{vanvuchelen:2020} aplicaram o PPO (\textit{Proximal Policy Optimization})
+com sucesso, superando políticas clássicas em custo total. Mais recentemente,
+\citet{liu:2024} estenderam o paradigma ao ambiente descentralizado
+com HAPPO (\textit{Heterogeneous-Agent Proximal Policy Optimization})
+multi-agente, reduzindo simultaneamente custo e efeito
+\textit{bullwhip} em cadeias \textit{multi-echelon}. Uma limitação
+transversal a todos esses estudos é a exigência de horizontes longos
+para convergência (da ordem de $10^6$ interações), tornando-os
+inadequados para séries históricas curtas como as deste trabalho.
+
+Em paralelo, uma segunda frente investiga meta-heurísticas
+especificamente sob demanda intermitente. \citet{yuna:2023}
+compararam \textit{Simulated Annealing} e Busca Tabu na otimização
+de parâmetros $(s,S)$ em sete conjuntos de dados intermitentes,
+verificando superioridade do SA em cinco dos sete cenários.
+\citet{erkayman:2025} modelaram a chegada de demanda como cadeia de
+Markov e otimizaram os parâmetros de reposição com GA e PSO,
+mostrando que o PSO converge mais rapidamente em espaços de baixa
+dimensão. Ambos os estudos, porém, restringem-se a um único escalão
+e não incorporam agentes de RL, deixando em aberto a comparação
+integrada em ambiente \textit{multi-echelon} de alta intermitência.
+
+\citet{zabraoui:2025} realizaram o estudo comparativo mais próximo do
+presente trabalho. Sobre o conjunto Walmart~M5, os autores compararam
+cinco famílias de abordagens: heurísticas clássicas, modelos de
+aprendizado de máquina convencional, redes neurais profundas,
+algoritmos evolutivos e agentes de aprendizado por reforço. A
+principal contribuição foi a arquitetura híbrida GA-DQN: o
+Algoritmo Genético otimiza globalmente os parâmetros estáticos de
+inventário (ponto de reposição e estoque de segurança), enquanto a
+Rede Q Profunda aprende políticas adaptativas de pedido dependentes
+do estado, refinando localmente as decisões a cada ciclo. Essa
+combinação elevou o nível de serviço de $61\%$ (DQN isolado) para $94\%$,
+com redução simultânea do custo total. As técnicas empregadas derivam
+de quatro vertentes canônicas: teoria clássica de controle de
+estoques~\citep{harris:1913,hadley:1963,cachon:2009}, computação
+evolutiva~\citep{holland:1975}, aprendizado por reforço
+profundo~\citep{mnih:2015} e controle de inventário por
+RL~\citep{oroojlooyjadid:2022}. O presente trabalho parte dessas
+mesmas bases, porém supera três limitações: (i) o Walmart~M5
+apresenta CV típico $< 1$, regime não representativo do varejo
+regional brasileiro ($CV$ entre $2.5$ e $5.4$ neste estudo);
+(ii) o portfólio de \citet{zabraoui:2025} exclui PSO, Evolução
+Diferencial, SARSA e a variante GA-PPO; e (iii) o efeito \textit{bullwhip} e a frequência de pedidos, embora
+presentes em \citet{zabraoui:2025} para políticas selecionadas, não
+constituem critérios primários: \citet{zabraoui:2025} concentra-se
+em custo e nível de serviço. Este trabalho eleva esses indicadores a
+critérios primários e acrescenta a taxa de ruptura, inédita nesse
+escopo comparativo.
+
+A Tabela~\ref{tab:relwork} sintetiza as dimensões em que este estudo
+avança o estado da arte.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Comparação de trabalhos relacionados em gestão de inventário.
+\textbf{Negrito}: dimensões em que este trabalho avança o estado da arte.
+``Dados Reais'': dados proprietários coletados no domínio-alvo
+(varejo com alta intermitência); Walmart~M5, embora real, não
+representa esse regime (CV típico $<1$).}
+\label{tab:relwork}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Trabalho &
+\makecell[c]{Dados\\Reais} &
+\makecell[c]{CV\\(regime)} &
+\makecell[c]{Políticas\\(\#)} &
+\makecell[c]{Multi-\\nível} &
+\makecell[c]{Indicadores\\(\#)} \\
+\midrule
+\citealt{oroojlooyjadid:2022} & Não & $<1$         &  3 & Sim & 2 \\
+\citealt{vanvuchelen:2020}    & Não & $<1$         &  4 & Não & 1 \\
+\citealt{gijsbrechts:2022}    & Não & $<1$         &  6 & Sim & 2 \\
+\citealt{yuna:2023}           & Não & $>1.5$     &  2 & Não & 2 \\
+\citealt{erkayman:2025}       & Não & $>1.5$     &  2 & Não & 1 \\
+\citealt{liu:2024}            & Não & $<1$         &  4 & Sim & 2 \\
+\citealt{zabraoui:2025}       & Não & $<1$         &  7 & Sim & 3 \\
+\midrule
+\textbf{Este trabalho}
+  & \textbf{Sim}
+  & $\mathbf{2.5}$--$\mathbf{5.4}$
+  & \textbf{12}
+  & \textbf{Sim}
+  & \textbf{5} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+% =========================================================
+\section{Arquitetura Multi-Nível e Caracterização dos Dados}
+% =========================================================
+
+Esta seção descreve a cadeia de suprimentos modelada, o contexto e
+a escala do conjunto de dados original, os critérios de seleção de
+lojas e produto, o \textit{pipeline} de pré-processamento e a caracterização
+estatística do regime de demanda das quinze unidades experimentais.
+A formulação formal do problema é apresentada a seguir.
+
+O problema \textit{Multi Echelon Inventory Optimization} (MEIO)
+considera uma cadeia de suprimentos real com $N = 15$ lojas
+varejistas abastecidas por um único armazém regional. O horizonte é
+discretizado em ciclos bimestrais $t \in \{1, \ldots, T\}$, com
+$T = 38$. As variáveis e parâmetros centrais são:
+
+\begin{itemize}
+  \item $D_{t,i} \geq 0$: demanda observada na loja $i$ no ciclo $t$;
+  \item $I_{t,i}$: nível de estoque da loja $i$ no início de $t$;
+  \item $Q_{t,i} \geq 0$: quantidade pedida em $t$, recebida após
+    prazo $L = 2$ ciclos;
+  \item $S_{t,i} = \max(0, D_{t,i} - I_{t,i})$: ruptura no ciclo $t$;
+  \item $s_i$: ponto de reposição, acionado quando $I_{t,i} \leq s_i$;
+  \item $h$, $c_s$, $c_o^{fix}$, $c_o^{var}$: custos unitários de
+    manutenção, ruptura, ordenação fixa e variável.
+\end{itemize}
+
+A dinâmica de estoque é $I_{t+1,i} = \max(0, I_{t,i} - D_{t,i}) +
+Q_{t-L,i}$. Uma \emph{política} $\pi$ mapeia o estado observado
+$(I_{t,i},\, D_{t-1,i},\, Q_{t-L,i})$ em uma decisão de pedido
+$Q_{t,i} = \pi(\cdot)$. O objetivo é determinar $\pi^*$ que minimize
+o custo total acumulado:
+\begin{equation}
+  \min_\pi \sum_{t=1}^{T} \bigl[
+    h\, I_{t,i} + c_s\, S_{t,i}
+    + c_o^{fix}\,\mathbf{1}(Q_{t,i}>0)
+    + c_o^{var}\, Q_{t,i}
+  \bigr].
+  \label{eq:obj}
+\end{equation}
+
+\subsection{Hierarquia de Três Níveis e Lógica de Decisão}
+
+A cadeia de suprimentos modela um sistema de inventário multi-nível
+com três escalões hierárquicos, estrutura referenciada na literatura
+como \textit{Multi-Echelon Inventory Optimization}
+(MEIO)~\citep{axsater:2006,clark:1960}. Os três escalões são:
+
+\begin{itemize}
+  \item Escalão 1 (Armazém Regional): único centro distribuidor da
+    Paraíba; repõe junto ao fornecedor com prazo $L = 2$ ciclos.
+  \item Escalão 2 (Lojas Revendedoras): 15 unidades varejistas com
+    séries de demanda independentes; cada loja decide individualmente
+    quando e quanto pedir ao armazém.
+  \item Escalão 3 (Produto/SKU): produto 48130, único SKU estudado;
+    foco em um item isola o comportamento intermitente de efeitos de
+    portfólio e torna os 38 ciclos suficientes para calibração e avaliação.
+\end{itemize}
+
+As decisões de reposição de cada loja são tomadas de forma
+descentralizada: cada política $\pi_i$ observa o estado local
+$(I_{t,i}, D_{t-1,i}, Q_{t-L,i})$ e emite o pedido $Q_{t,i}$ sem
+coordenação explícita com as demais lojas. Essa arquitetura de
+decisão descentralizada é representativa da realidade operacional
+da maioria das redes de varejo regional brasileiras, onde sistemas
+integrados de planejamento de inventário multi-loja raramente
+estão disponíveis.
+
+\subsection{Contexto e Escala do Conjunto de Dados Original}
+
+Os dados provêm de um sistema transacional de gestão de vendas de
+uma rede de varejo do Nordeste brasileiro. O conjunto completo
+contém aproximadamente 48 milhões de registros de transações de
+venda, distribuídos entre cerca de 12 mil produtos únicos (SKUs) e
+mais de 3 milhões de entidades de demanda (lojas revendedoras) em
+múltiplos estados. Esses números evidenciam o regime de grande
+escala em que o problema real se insere: o espaço de decisões cresce
+combinatorialmente com o número de produtos, lojas e
+ciclos~\citep{shapiro:2001,boute:2022}.
+
+Para viabilizar o estudo experimental com rigor metodológico,
+adotou-se um recorte operacional com três critérios de foco:
+(i)~restrição geográfica ao estado da Paraíba (PB), que possui o
+maior volume de lojas da rede nessa região; (ii)~restrição de
+produto a um único SKU de comportamento representativo da demanda
+intermitente; e (iii)~restrição temporal ao período disponível com
+séries suficientemente longas. O recorte resulta em instâncias de
+tamanho gerenciável que preservam a complexidade qualitativa do
+problema de interesse.
+
+\subsection{Estrutura Temporal e Ciclos de Venda}
+
+O sistema registra vendas por \emph{ciclo bimestral} no formato
+\texttt{AAAA-NC}, onde \texttt{AAAA} é o ano e \texttt{NC} é o
+número do ciclo dentro do ano, de 1 a 17 (dezessete ciclos por
+ano). Cada ciclo tem duração média de 21 dias corridos. A escolha da
+granularidade bimestral reflete a política de reposição da rede:
+pedidos ao armazém regional são consolidados por ciclo, o que
+justifica o prazo de entrega $L = 2$ ciclos ($\approx 42$ dias)
+adotado no modelo.
+
+O horizonte temporal do experimento compreende os ciclos de
+janeiro de 2023 a abril de 2025, totalizando $T = 38$ ciclos
+consecutivos. Esse horizonte cobre dois anos completos mais quatro
+meses, período suficiente para capturar a sazonalidade anual e os
+padrões estruturais de intermitência de cada loja.
+
+\subsection{Seleção do Produto e Critérios de Filtragem}
+
+O produto 48130 foi selecionado a partir do conjunto completo de
+12 mil SKUs com base em dois critérios ordenados: (i) maior
+cobertura de lojas com demanda ativa, definida como o número de
+lojas no estado com ao menos 17 ciclos de demanda positiva no
+horizonte estudado; e (ii) regime de demanda extremamente
+intermitente, caracterizado por CV $> 1.5$ em todas as lojas
+ativas. O produto 48130 atende simultaneamente aos dois critérios,
+com 33 lojas ativas no estado da Paraíba. Ele é representativo de
+uma categoria de produto de baixo giro com padrão errático de
+consumo, típico de artigos sazonais ou de reposição periódica em
+pequenas quantidades.
+
+\subsection{Pipeline de Pré-processamento}
+
+O pré-processamento dos dados seguiu cinco etapas sequenciais:
+
+\begin{itemize}
+  \item Extração e filtragem geográfica: seleção de todos
+    os registros com estado = PB e produto = 48130;
+  \item Limpeza de anomalias: remoção de transações com
+    quantidade negativa (devoluções registradas no mesmo campo de
+    vendas) ou superior a 50.000 unidades (provável erro de entrada);
+  \item Agregação por ciclo: soma das quantidades vendidas por
+    (loja, ciclo), consolidando as transações diárias no
+    nível de granularidade do modelo;
+  \item Reconstituição de séries completas: para cada loja,
+    criação de um vetor de comprimento $T = 38$ com imputação de zero
+    nos ciclos sem registro, representando demanda nula nesses períodos;
+  \item Seleção de lojas experimentais: ordenação das lojas
+    pelo número de ciclos com demanda positiva (descendente) e
+    seleção das quinze com ao menos 17 ciclos positivos.
+\end{itemize}
+
+O limiar mínimo de 17 ciclos positivos equivale a ao menos $45\%$
+dos ciclos com demanda observada, condição necessária para que as
+políticas baseadas em estatísticas históricas ($\hat{\mu}$,
+$\hat{\sigma}$) tenham amostras suficientes para calibração.
+
+\subsection{Caracterização Estatística da Demanda por Loja}
+
+A Tabela~\ref{tab:demanda} apresenta o perfil completo das quinze
+lojas selecionadas. Quatro estatísticas são reportadas: demanda média
+apenas nos ciclos com demanda positiva $\hat{\mu}^+$ (excluindo
+os zeros estruturais, para capturar a magnitude dos picos); desvio
+padrão calculado sobre todos os 38 ciclos $\hat{\sigma}$ (incluindo
+os zeros, capturando a variabilidade total); coeficiente de variação
+$\text{CV} = \hat{\sigma}/\hat{\mu}$ (onde $\hat{\mu}$ é a média
+sobre todos os 38 ciclos); e número de ciclos com demanda positiva.
+
+Nenhuma loja apresenta $CV$ inferior a $2.5$, situando todos os
+cenários bem acima do limiar de demanda extremamente intermitente
+(CV $> 1.5$) de \citet{syntetos:2001}. Isso invalida as hipóteses
+de normalidade subjacentes a EOQ e $(s,S)$: a distribuição empírica
+de demanda é bimodal (zero com alta probabilidade; pico raro de
+grande magnitude), e não gaussiana.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Perfil de demanda das quinze lojas selecionadas, produto
+48130, Paraíba, 2023--2025. Lojas ordenadas por $\hat{\mu}^+$
+decrescente. $\hat{\mu}^+$: média apenas nos ciclos com demanda
+positiva; critérios de grupo baseados na média incondicional
+$\hat{\mu}$ (sobre todos os 38 ciclos):
+I ($\hat{\mu}>500$), II (50--500), III ($\leq 50$).}
+\label{tab:demanda}
+\begin{tabular}{@{}lrrrrc@{}}
+\toprule
+\makecell[l]{Loja} &
+\makecell[r]{$\hat{\mu}^+$\\(unid./ciclo)} &
+\makecell[r]{Desv. Pad.} &
+\makecell[r]{CV} &
+\makecell[r]{Ciclos\\Positivos} &
+\makecell[c]{Grupo} \\
+\midrule
+1 & 1.455{,}2 & 5.037{,}5 & 5{,}14 & 18 & I \\
+2  & 1.375{,}7 & 4.464{,}6 & 4{,}35 & 22 & I \\
+3 &   703{,}6 & 2.561{,}1 & 5{,}39 & 18 & I \\
+4 &   553{,}4 & 1.380{,}2 & 3{,}67 & 19 & I \\
+5 &   518{,}2 & 1.150{,}1 & 2{,}83 & 25 & I \\
+6  &   300{,}9 &   590{,}3 & 2{,}95 & 19 & II \\
+7 &   246{,}0 &   546{,}4 & 3{,}04 & 22 & II \\
+8 &   181{,}6 &   393{,}0 & 2{,}90 & 23 & II \\
+9  &   169{,}7 &   489{,}5 & 3{,}79 & 23 & II \\
+10 &    88{,}3 &   274{,}8 & 4{,}51 & 19 & II \\
+11 &    85{,}4 &   253{,}3 & 4{,}31 & 19 & II \\
+12 &    44{,}8 &    85{,}9 & 2{,}53 & 24 & III \\
+13  &    43{,}1 &    88{,}4 & 2{,}83 & 22 & III \\
+14 &    34{,}7 &    97{,}1 & 3{,}97 & 20 & III \\
+15 &    11{,}7 &    25{,}5 & 3{,}24 & 19 & III \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A heterogeneidade entre lojas é expressiva: a demanda média varia
+de $11.7$ (Loja~15) a $1455.2$ unidades por ciclo (Loja~1),
+razão de 124 vezes. Esse gradiente inviabiliza
+comparações com parâmetros absolutos uniformes e motivou a
+calibração adaptativa descrita na Seção~5. A estratificação em três
+grupos captura três regimes operacionalmente distintos:
+
+\begin{itemize}
+  \item Grupo I (5 lojas, $\hat{\mu} > 500$ unid./ciclo):
+    lojas de alto volume com picos esparsos de magnitude muito
+    elevada ($CV$ entre $2.83$ e $5.39$). O estoque inicial $I_0$
+    calculado pela Equação~\eqref{eq:I0} cobre os primeiros ciclos,
+    o que garante que o diferenciador entre políticas seja
+    exclusivamente o custo de manutenção e a frequência de pedidos,
+    não o nível de serviço.
+  \item Grupo II (6 lojas, $50 < \hat{\mu} \leq 500$):
+    estrato de maior relevância prática, com variabilidade entre
+    $2.83$ e $4.51$ e volume suficiente para que as políticas se
+    diferenciem em todas as cinco métricas avaliadas. É o grupo
+    mais representativo das pequenas redes de varejo regional
+    do Nordeste brasileiro.
+  \item Grupo III (4 lojas, $\hat{\mu} \leq 50$):
+    lojas de baixíssimo volume, com até 24 ciclos positivos mas
+    demanda acumulada muito baixa. O CV próximo de 3 cria uma barreira
+    estrutural: qualquer pedido compatível com a média histórica
+    pode ser maior do que a demanda real de vários ciclos futuros,
+    tornando a otimização de inventário essencialmente um problema
+    de previsão de picos raros.
+\end{itemize}
+
+Com o regime de demanda caracterizado, a próxima seção descreve as
+doze políticas avaliadas e seus respectivos hiperparâmetros.
+
+% =========================================================
+\section{Políticas de Controle de Inventário}
+% =========================================================
+
+Esta seção apresenta as doze políticas organizadas em quatro
+categorias de crescente sofisticação computacional. A
+Tabela~\ref{tab:params} consolida os hiperparâmetros de todas as
+abordagens, facilitando reprodutibilidade.
+% \subsection{Modelos Clássicos de Inventário}
+
+\subsection{Políticas Clássicas}
+
+O Lote Econômico de Compra (EOQ), introduzido por \citet{harris:1913},
+é o modelo analítico fundador do controle de estoques: minimiza a
+soma dos custos de ordenação e manutenção sob demanda contínua e
+constante, derivando $Q^* = \sqrt{2Dc_o/h}$. Apesar de sua
+elegância matemática, a hipótese de estacionariedade o torna
+inadequado para séries intermitentes~\citep{silver:2017}.
+\citet{hadley:1963} estenderam o modelo para demanda estocástica,
+derivando a política $(s,S)$, na qual um pedido de magnitude $S-I_t$
+é emitido quando $I_t \leq s$; essa política continua dominante no
+varejo regional brasileiro, apesar de igualmente dependente de
+estacionariedade. 
+
+A política do Jornaleiro (\textit{Newsvendor}),
+formalizada por \citet{cachon:2009}, resolve o problema de período
+único como um quantil da distribuição de demanda, equilibrando custo
+de excesso e ruptura; sua extensão a horizontes multi-período exige
+estimação distribucional que também falha sob intermitência.
+
+\emph{EOQ.} $Q^* = \sqrt{2 D c_o^{fix} / h}$, com ponto de
+reposição $s = \hat{\mu} L$~\citep{harris:1913}.
+
+\emph{$(s,S)$.} Pedido de magnitude $S - I_t$ sempre que
+$I_t \leq s$, com $s = s_\text{EOQ}$ e
+$S = s + Q_\text{EOQ}$~\citep{hadley:1963}.
+
+\emph{Jornaleiro.} $Q^* = \hat{\mu} + z\hat{\sigma}$,
+$z = 1.28$ (nível de serviço alvo de $90\%$)~\citep{cachon:2009}.
+
+\subsection{Meta-heurísticas de Otimização}
+
+% \subsection{Algoritmo Genético}
+
+O Algoritmo Genético (GA), proposto por \citet{holland:1975}, é uma
+metaheurística evolutiva inspirada na seleção natural: mantém uma
+população de soluções candidatas e itera por seleção, cruzamento e
+mutação, convergindo para regiões de maior aptidão sem exigir
+continuidade nem gradientes. No contexto de inventário, o GA é
+empregado para otimização conjunta dos parâmetros $(s, Q)$, tratando
+o custo total simulado como função objetivo implícita~\citep{anna:2006}.
+\citet{zabraoui:2025} utilizaram o GA precisamente nesse papel:
+busca global eficiente de parâmetros estáticos, gerando um ponto de
+partida de alta qualidade para o agente de RL subsequente.
+
+% \subsection{Simulated Annealing}
+
+O \textit{Simulated Annealing} (SA), introduzido por
+\citet{kirkpatrick:1983}, inspira-se no resfriamento lento de metais
+para escapar de ótimos locais: a cada iteração, uma solução vizinha é
+aceita deterministicamente se melhor, ou com probabilidade
+$\exp(-\Delta C / T_k)$ se pior, onde $T_k$ decresce geometricamente.
+A capacidade de escapar de ótimos locais torna o SA atraente para
+otimização de parâmetros de inventário em séries de alta variabilidade,
+onde a superfície de custo tende a ser multimodal.
+
+% \subsection{Otimização por Enxame de Partículas}
+
+A Otimização por Enxame de Partículas (PSO), proposta por
+\citet{kennedy:1995}, coordena um enxame de agentes que exploram
+coletivamente o espaço de busca. Cada partícula combina sua melhor
+posição histórica (componente cognitivo) com a melhor posição global
+(componente social) para atualizar velocidade e posição. O PSO foi
+aplicado com sucesso ao controle de estoques por sua convergência
+rápida em espaços de parâmetros contínuos~\citep{anna:2006},
+apresentando bom desempenho no regime de dimensão moderada, como os
+parâmetros $(s, Q)$ individuais por loja deste estudo.
+
+% \subsection{Evolução Diferencial}
+
+A Evolução Diferencial (ED), proposta por \citet{storn:1997}, gera
+candidatos por perturbação diferencial de vetores da população. Na
+estratégia \textit{rand/1/bin}, um vetor mutante é formado somando ao
+vetor base a diferença ponderada de dois outros vetores aleatórios;
+o cruzamento binomial combina o mutante com o vetor atual, e o
+candidato substitui o pai apenas se melhor. Em comparação com GA e
+PSO, a ED tende a convergir mais eficientemente em espaços de baixa
+dimensão com função objetivo custosa de avaliar.
+
+Todas as quatro meta-heurísticas buscam $(s^*, Q^*)$ minimizando o custo total acumulado
+da Equação~\eqref{eq:obj} ao longo do horizonte de simulação.
+
+\subsection{Agentes de Aprendizado por Reforço}
+
+% \subsection{Rede Q Profunda (DQN)}
+
+A Rede Q Profunda (DQN), proposta por \citet{mnih:2015}, foi o
+primeiro método a combinar \textit{Q-learning} com redes neurais em escala,
+introduzindo o \textit{experience replay} e a \textit{target network} para
+estabilizar o treinamento. \citet{oroojlooyjadid:2022} demonstraram
+que a DQN aprende políticas de reposição sem modelar explicitamente
+a distribuição de demanda, mas identificaram uma limitação crítica:
+o agente exige da ordem de $10^6$ interações para convergência típica,
+tornando-o inadequado para horizontes curtos com dados históricos
+limitados (como os 38 ciclos deste estudo). Essa limitação é o
+principal mecanismo que motiva as arquiteturas híbridas.
+
+% \subsection{Otimização de Política Proximal (PPO)}
+
+A Otimização de Política Proximal (PPO), proposta por
+\citet{schulman:2017}, treina uma política estocástica parametrizada
+por descida de gradiente com \textit{clipping}: a razão entre a nova e
+a antiga probabilidade de ação é truncada no intervalo
+$[1-\epsilon_\text{clip}, 1+\epsilon_\text{clip}]$, impedindo
+atualizações excessivamente grandes que desestabilizam o aprendizado.
+Nativo de ações contínuas e com convergência mais estável que a DQN,
+o PPO é, contudo, mais sensível ao ponto de partida do treinamento,
+o que o torna particularmente adequado para a fase de refino em
+arquiteturas híbridas com inicialização por GA.
+
+% \subsection{SARSA}
+
+O SARSA (\textit{State-Action-Reward-State-Action}), formalizado por
+\citet{sutton:2018}, é um algoritmo de RL \textit{on-policy} tabular que
+atualiza $Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha[r_t +
+\gamma Q(s_{t+1}, a_{t+1}) - Q(s_t, a_t)]$. Por ser \textit{on-policy},
+incorpora o custo da própria política de exploração nos valores
+aprendidos, tornando-o mais conservador e potencialmente mais
+estável que o \textit{Q-learning} em ambientes ruidosos. Sua representação
+tabular é computacionalmente leve, mas limita a expressividade em
+espaços de estado de alta dimensão; em horizontes curtos com
+exploração insuficiente, pode convergir para políticas degeneradas.
+
+Os três agentes aprendem a política diretamente da interação com
+o ambiente, sem especificação de $(s, Q)$. O vetor de estado
+contém seis componentes normalizados: nível de estoque atual,
+demanda esperada no próximo ciclo, pedidos em trânsito, média
+móvel e desvio padrão dos últimos seis ciclos, e progresso
+relativo do horizonte.
+
+\subsection{Abordagens Híbridas}
+
+A motivação para arquiteturas híbridas decorre da complementaridade
+entre meta-heurísticas e agentes de RL: as primeiras realizam busca
+global eficiente em parâmetros estáticos; os segundos aprendem
+políticas adaptativas estado-dependentes, mas requerem muitas
+interações para convergir. \citet{zabraoui:2025} formalizaram esse
+princípio na arquitetura GA-DQN, que este trabalho replica e estende
+com a variante GA-PPO. A avaliação dessas arquiteturas em regime de
+demanda extremamente intermitente é a principal contribuição empírica
+do presente estudo: \citet{croston:1972} e \citet{syntetos:2001}
+estabeleceram que padrões com CV $> 1.5$ exigem tratamento
+metodológico específico, não endereçado por \citet{zabraoui:2025}.
+
+Em ambas as arquiteturas, o \textit{pipeline} opera em três fases
+sequenciais: (i)~o GA executa 50 gerações de busca global e identifica
+parâmetros estáticos de alta qualidade; (ii)~as soluções de maior
+aptidão são usadas para pré-popular um \textit{replay buffer} com
+1.000 transições representativas; (iii)~o agente de RL (DQN ou PPO)
+treina por 200 episódios a partir desse ponto de partida qualificado,
+refinando localmente as decisões a cada ciclo sem precisar explorar
+o espaço de estados do zero.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Hiperparâmetros das doze políticas de controle de
+inventário.}
+\label{tab:params}
+\begin{tabular}{@{}llp{5.5cm}@{}}
+\toprule
+Política & Categoria & Hiperparâmetros Principais \\
+\midrule
+EOQ
+  & Clássica
+  & $Q^* = \sqrt{2Dc_o^{fix}/h}$;\; $s = \hat{\mu}L$ \\
+$(s,S)$
+  & Clássica
+  & $s = s_\text{EOQ}$;\; $S = s + Q_\text{EOQ}$ \\
+Jornaleiro
+  & Clássica
+  & $Q^* = \hat{\mu} + 1.28\hat{\sigma}$;\; SL alvo = $90\%$ \\
+\midrule
+GA
+  & Metaheurística
+  & Pop.\ = 100;\; Ger.\ = 50;\; $p_c = 0.7$;\; torneio $k=3$;\; mut.\ gaussiana \\
+SA
+  & Metaheurística
+  & $T_0 = 1000$;\; $\alpha = 0.95$;\; aceitação: $\exp(-\Delta C/T_k)$ \\
+PSO
+  & Metaheurística
+  & $N = 40$ part.;\; 80 iter.;\; $w = 0.7$;\; $c_1 = c_2 = 1.5$ \\
+ED
+  & Metaheurística
+  & \textit{rand/1/bin};\; $F = 0.8$;\; $C_R = 0.9$ \\
+\midrule
+DQN
+  & Reforço
+  & 2 camadas $\times$ 64 ReLU;\; 500 ep.;\; $\epsilon$-greedy decrescente;\; \textit{replay} 10.000 \\
+PPO
+  & Reforço
+  & 500 ep.;\; $\epsilon_\text{clip} = 0.2$;\; ações contínuas \\
+SARSA
+  & Reforço
+  & Tabela-$Q$ 5$\times$10;\; $\alpha = 0.1$;\; $\gamma = 0.99$;\; $\epsilon = 0.1$ \\
+\midrule
+GA-DQN
+  & Híbrida
+  & GA (50 ger.) $\to$ \textit{buffer} 1.000 trans.\ $\to$ DQN 200 ep. \\
+GA-PPO
+  & Híbrida
+  & GA (50 ger.) $\to$ \textit{buffer} 1.000 trans.\ $\to$ PPO 200 ep. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Com as doze políticas e seus hiperparâmetros definidos, a próxima
+seção descreve o protocolo de simulação e os critérios de avaliação
+comparativa.
+
+% =========================================================
+\section{Ambiente de Simulação e Metodologia Experimental}
+% =========================================================
+
+Esta seção descreve o ambiente de simulação, a estratégia de
+calibração adaptativa que garante comparação justa entre lojas de
+volumes muito distintos e os indicadores de desempenho adotados.
+
+\subsection{Ambiente de Simulação}
+
+O ambiente \textit{InventoryEnv}, implementado em Python, simula um
+sistema de inventário $(s, Q)$ com prazo de entrega fixo $L = 2$
+ciclos. A série de demanda real de cada loja é mantida idêntica para
+todas as políticas, de modo que as diferenças de desempenho
+reflitam exclusivamente as características de cada política.
+
+\subsection{Calibração Adaptativa de Parâmetros por Loja}
+
+A heterogeneidade entre as lojas ($11.7$ a $1455$ unid./ciclo)
+inviabiliza o uso de parâmetros absolutos uniformes. Os parâmetros
+de referência são escalonados pelas estatísticas $\hat{\mu}$ e
+$\hat{\sigma}$ de cada loja:
+\begin{align}
+  I_0 &= \max\!\bigl(100,\; 2\hat{\mu} L\bigr), \label{eq:I0}\\
+  Q_\text{ref} &= \sqrt{2\hat{\mu} T\, c_o^{fix} / h}, \label{eq:qref}\\
+  s_\text{ref} &= \hat{\mu} L + z\hat{\sigma}\sqrt{L}, \label{eq:sref}
+\end{align}
+com $z = 1.28$ (nível de serviço alvo de $90\%$). Os espaços de
+busca das meta-heurísticas e os limites de ação dos agentes de RL
+são dimensionados proporcionalmente a $Q_\text{ref}$ e $s_\text{ref}$.
+
+\subsection{Parâmetros de Custo e Indicadores de Desempenho}
+
+Os parâmetros de custo são uniformes para todas as lojas e políticas:
+$h = 1.0$, $c_s = 5.0$, $c_o^{fix} = 50.0$ e
+$c_o^{var} = 0.5$. Cinco indicadores são computados ao fim dos
+38 ciclos:
+
+\begin{itemize}
+  \item \emph{CTI} (Custo Total de Inventário):
+    $\sum_{t}[h I_t + c_s S_t + c_o^{fix}\mathbf{1}(Q_t>0) + c_o^{var}Q_t]$;
+  \item \emph{NS} (Nível de Serviço):
+    $\sum_t \min(I_t, D_t) / \sum_t D_t$;
+  \item \emph{TR} (Taxa de Ruptura): fração de ciclos com \textit{stockout};
+  \item \emph{BE} (\textit{Bullwhip Effect}):
+    $\mathrm{Var}(Q_1,\ldots,Q_T)/\mathrm{Var}(D_1,\ldots,D_T)$,
+    razão entre a variância dos pedidos e a variância da demanda,
+    mede a amplificação da variabilidade ao longo da cadeia;
+  \item \emph{FP} (Frequência de Pedidos): fração de ciclos com
+    ao menos um pedido emitido.
+\end{itemize}
+
+Com o protocolo experimental definido, a próxima seção apresenta
+e discute os resultados comparativos das doze políticas.
+
+% =========================================================
+\section{Resultados e Análise}
+% =========================================================
+
+Esta seção apresenta a comparação global das doze políticas, a
+análise estratificada por grupo de demanda, o comportamento do efeito
+\textit{bullwhip} e a identificação da política de melhor equilíbrio,
+com discussão dos mecanismos subjacentes e comparação direta com
+\citet{zabraoui:2025}.
+
+\subsection{Comparação Global entre Políticas}
+
+A Tabela~\ref{tab:global} apresenta as médias dos cinco indicadores
+sobre as quinze lojas, ordenadas por CTI crescente. Os melhores
+valores em cada coluna estão destacados em negrito.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Médias dos indicadores de desempenho por política (15 lojas).
+Melhores valores por coluna em \textbf{negrito}. $^\dagger$SARSA e PPO
+apresentam degeneração ($FP = 0$ e $FP = 0.98$, respectivamente).}
+\label{tab:global}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Política &
+\makecell[r]{CTI\\(R\$)} &
+\makecell[r]{NS} &
+\makecell[r]{TR} &
+\makecell[r]{BE} &
+\makecell[r]{FP} \\
+\midrule
+SARSA$^\dagger$            & \textbf{16.139} & 0{,}785 & 0{,}200 & \textbf{0{,}00}  & \textbf{0{,}00} \\
+Jornaleiro (\textit{Newsvendor})    & 16.402 & 0{,}794 & 0{,}111 & 0{,}003 & 0{,}27 \\
+Rede Q Profunda (DQN)      & 17.974 & 0{,}806 & 0{,}078 & 4{,}1   & 0{,}37 \\
+GA-DQN (Híbrido)           & 18.502 & 0{,}821 & 0{,}050 & 5{,}0   & 0{,}31 \\
+Enxame de Partículas (PSO) & 19.100 & 0{,}819 & 0{,}056 & 6{,}2   & 0{,}31 \\
+GA-PPO (Híbrido)           & 19.801 & 0{,}833 & 0{,}050 & 6{,}6   & 0{,}35 \\
+Algoritmo Genético (GA)    & 20.015 & 0{,}825 & 0{,}061 & 19{,}7  & 0{,}30 \\
+Evolução Diferencial (ED)  & 20.252 & 0{,}813 & 0{,}056 & 31{,}0  & 0{,}27 \\
+\textit{Sim. Annealing} (SA) & 20.967 & 0{,}820 & 0{,}056 & 36{,}4  & 0{,}27 \\
+Lote Econômico (EOQ)       & 31.034 & 0{,}840 & 0{,}050 & 23{,}0  & 0{,}20 \\
+Política PPO$^\dagger$     & 34.637 & \textbf{0{,}848} & \textbf{0{,}039} & 15{,}9 & 0{,}98 \\
+Política $(s,S)$           & 35.589 & 0{,}843 & 0{,}050 & 119{,}4 & 0{,}15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os dois extremos revelam os riscos da otimização por única métrica:
+o SARSA converge à estratégia de não emitir pedidos (FP\,=\,0),
+obtendo o menor CTI ao preço da maior taxa de ruptura ($0.200$); o
+PPO emite pedidos em $98\%$ dos ciclos, atingindo o maior NS mas
+incorrendo em CTI inviável de R\$\,34.637. Entre as políticas
+práticas (sem degeneração), o GA-DQN apresenta o melhor equilíbrio
+global, com CTI apenas $13\%$ acima do Jornaleiro e TR $55\%$ menor.
+A política $(s,S)$, ainda amplamente adotada no varejo regional,
+tem CTI $92\%$ superior ao GA-DQN e efeito \textit{bullwhip} de 119
+vezes, configurando uma escolha indefensável nesse regime.
+
+\subsection{Análise Estratificada por Grupo de Demanda}
+
+A estratificação por grupo evidencia que não existe política
+universalmente dominante, resultado de maior relevância prática
+para gestores de \textit{supply chain}.
+
+Grupo I ($\hat{\mu} > 500$, cinco lojas): estoque inicial
+adequado garante NS\,=\,$1.00$ para quase todas as políticas; o
+diferenciador é o custo. O EOQ gasta em média R\$\,85.956 por loja
+contra R\$\,45.739 das políticas de menor frequência de pedidos,
+redução de $47\%$ apenas pela troca de heurística.
+
+Grupo II ($50 < \hat{\mu} \leq 500$, seis lojas): estrato
+mais discriminante e de maior relevância prática. Nas médias do
+Grupo~II, SA, PSO e ED atingem NS entre $0.89$ e $0.93$ com CTI
+entre R\$\,15.465 e R\$\,20.252. O GA-DQN destaca-se com
+NS\,=\,$0.933$ e CTI\,=\,R\$\,10.854, a melhor combinação
+custo-serviço do estudo, atribuível ao \textit{replay buffer} de
+alta qualidade gerado pelo GA~\citep{oroojlooyjadid:2022}.
+
+Grupo III ($\hat{\mu} \leq 50$, quatro lojas): três lojas
+não superam NS de $0.42$ com nenhuma política. O CV próximo de 3
+cria uma barreira estrutural em que pedidos compatíveis com a média
+não cobrem picos e pedidos elevados aumentam o custo sem ganho de
+serviço. Nesse estrato, o Jornaleiro é a política mais econômica.
+
+\subsection{Efeito de Amplificação da Demanda (\textit{Bullwhip})}
+
+O efeito \textit{bullwhip}~\citep{lee:1997} mede quanto a
+variabilidade dos pedidos supera a da demanda; valores elevados
+implicam oscilações desnecessárias e custos logísticos crescentes a
+montante. Os resultados revelam amplitude expressiva: excluindo o SARSA
+(degenerado, BE\,=\,0), as políticas práticas variam de $0.003$
+(Jornaleiro) a $119.4$ em $(s,S)$, razão superior a 40.000 vezes
+e equivalente a quase cinco ordens de grandeza. Entre as políticas
+práticas, DQN ($4.1$) e GA-DQN ($5.0$) apresentam menor
+amplificação por aprenderem a antecipar picos de demanda; PSO ($6.2$)
+é a melhor metaheurística nessa dimensão, enquanto SA ($36.4$) e ED
+($31.0$) ficam elevados por otimizarem $(s,Q)$ pela média histórica.
+Este indicador, presente em \citet{zabraoui:2025}
+apenas para políticas selecionadas, é aqui sistematizado como critério
+primário para todas as doze políticas, tornando explícito o impacto
+de cada abordagem sobre a estabilidade de toda a cadeia.
+
+A Figura~\ref{fig:barras} sintetiza as três métricas primárias.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{figuras/pb_barras.png}
+  \caption{Desempenho comparativo das doze políticas segundo CTI
+  médio, NS médio e BE médio (barras ordenadas do melhor para o pior
+  em cada indicador).}
+  \label{fig:barras}
+\end{figure}
+
+\subsection{Política Recomendada e Comparação com Zabraoui (2025)}
+
+Considerando os cinco indicadores conjuntamente, o GA-DQN emerge
+como a política de melhor equilíbrio: CTI de R\$\,18.502 (apenas
+$13\%$ acima do Jornaleiro, que tem TR mais que o dobro), NS de $0.821$
+equiparável ao das meta-heurísticas isoladas ($0.813$--$0.825$) com CTI
+significativamente menor,
+BE de $5.0$ e TR de $0.050$ equivalente à $(s,S)$ porém com custo
+$92\%$ menor. O mecanismo subjacente é a complementaridade entre as
+abordagens: o GA identifica $(s,Q)$ de qualidade com apenas
+$100 \times 50 = 5.000$ avaliações, suprindo a insuficiência do
+DQN em horizontes curtos (da ordem de $10^6$ passos para
+convergência típica~\citep{mnih:2015}).
+
+Esses resultados confirmam, em contexto de $CV$ entre $2.5$ e $5.4$,
+a vantagem do GA-DQN reportada por \citet{zabraoui:2025} para o
+Walmart~M5 (CV típico $< 1$), demonstrando que a arquitetura é
+robusta entre regimes de demanda e ampliando significativamente
+seu escopo de validade.
+
+% =========================================================
+\section{Conclusão}
+% =========================================================
+
+Esta seção sintetiza as recomendações práticas, discute o impacto
+econômico e de mercado e aponta as limitações e direções futuras
+deste trabalho.
+
+A comparação sistemática de doze políticas em dados reais de varejo
+brasileiro com $CV$ entre $2.5$ e $5.4$ demonstrou que a arquitetura
+híbrida GA-DQN oferece o melhor equilíbrio entre custo total,
+nível de serviço e estabilidade logística nesse regime, superando
+tanto as heurísticas clássicas quanto os agentes de aprendizado por
+reforço isolados. A política $(s,S)$, amplamente adotada no varejo
+regional brasileiro, mostrou-se indefensável: é dominada em custo e
+estabilidade por todas as alternativas práticas avaliadas, com efeito
+\textit{bullwhip} 24 vezes maior que o GA-DQN e CTI $92\%$ superior.
+
+\subsection{Recomendações Operacionais}
+
+Com base na análise estratificada, três recomendações práticas
+emergem diretamente dos resultados:
+
+\begin{itemize}
+  \item Adotar GA-DQN como política padrão para o Grupo II
+    (lojas de volume médio): NS\,=\,$0.933$ e
+    CTI\,=\,R\$\,10.854 justificam o custo computacional adicional
+    frente às heurísticas clássicas. O treinamento é realizado uma
+    única vez por loja e produto.
+  \item Substituir imediatamente a política $(s,S)$: os resultados
+    da Seção~6 demonstram que ela é dominada em custo e estabilidade
+    logística por todas as alternativas práticas, sendo indefensável
+    em qualquer estrato de demanda extremamente intermitente. A
+    migração direta para o Jornaleiro, sem custo computacional
+    adicional, já elimina o principal problema de amplificação da
+    cadeia.
+  \item Utilizar o Jornaleiro no Grupo~III (baixo volume):
+    sua simplicidade e baixo CTI superam abordagens sofisticadas
+    nesse estrato, onde a barreira estrutural de NS limita qualquer
+    política independentemente de sua complexidade.
+\end{itemize}
+
+\subsection{Contribuição para o Mercado e Importância da Pesquisa}
+
+Esta pesquisa tem relevância direta para três segmentos de mercado.
+Primeiro, para redes de varejo regional com produtos de baixo
+giro: a substituição da política $(s,S)$ pelo GA-DQN pode representar
+redução de custo de inventário da ordem de $48\%$ sem perda de nível
+de serviço, permitindo realocar capital antes imobilizado em estoque
+para outras prioridades operacionais. Em termos absolutos, a diferença
+de CTI entre $(s,S)$ e GA-DQN é de R\$\,17.087 por loja por período;
+extrapolada a uma rede de 100 lojas com 50 produtos de comportamento
+similar, representa uma economia potencial da ordem de
+R\$\,85 milhões por período de 38 ciclos. Segundo, para
+distribuidores e operadores logísticos: o controle do efeito
+\textit{bullwhip} (reduzido de $119$ para $5$) estabiliza a cadeia a
+montante, diminuindo custos de transporte e de capacidade de
+armazenagem nos centros de distribuição. Terceiro, para
+pequenas e médias empresas sem equipe de \textit{data science}:
+a arquitetura GA-DQN requer apenas dados históricos de venda (já
+disponíveis em qualquer sistema ERP, \textit{Enterprise Resource Planning})
+e pode ser operacionalizada
+como rotina periódica automatizada.
+
+Do ponto de vista científico, o estudo oferece à comunidade de
+Pesquisa Operacional uma base de comparação reproduzível em regime
+de extrema intermitência, preenchendo a lacuna deixada pelos
+estudos baseados em Walmart~M5. A metodologia é replicável para
+qualquer produto com CV $> 1.5$ em qualquer segmento de varejo.
+
+\subsection{Limitações e Direções Futuras}
+
+O estudo adota simulação determinística com série de demanda estática,
+sem réplicas independentes. Como direções futuras, propõe-se:
+avaliação \textit{out-of-sample} com janela deslizante para validar a
+generalização; extensão a múltiplos produtos com restrições de
+capacidade de armazenagem; incorporação de prazo de entrega
+estocástico; e integração com modelos de previsão de demanda (Croston,
+\textit{Long Short-Term Memory} (LSTM)) para alimentar as decisões com estimativas prospectivas.
+
+\bibliographystyle{sbpo}
+\bibliography{exemplo-latex}
+
+\end{document}

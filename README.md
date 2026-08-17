@@ -1,133 +1,172 @@
-# AIPE - Adaptive Inventory Policy Engine
+# Inventory Analytics — Reprodução de Zabraoui et al. (2025)
 
-Repositório da dissertação de mestrado e do artigo SBPO 2026 sobre seleção contextual de políticas de reposição em redes varejistas com demanda intermitente.
+> **"A comparative study of multi-algorithm optimization for inventory analytics in supply chains"**
+> Supply Chain Analytics, 12 (2025) 100154
 
-O projeto combina uma proposta em LaTeX, um artigo científico e um pipeline Kedro para simulação, validação estatística e geração de artefatos experimentais.
+Este projeto reimplementa o pipeline completo do artigo usando **sua própria base de dados**.
 
-## Visão geral
+---
 
-O AIPE, Adaptive Inventory Policy Engine, é um framework metodológico para recomendar políticas de reposição de estoque de acordo com o perfil operacional de cada série loja-produto.
+## Estrutura do Projeto
 
-A dissertação avalia políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e arquiteturas híbridas GA-RL em dados reais de uma rede varejista brasileira.
-
-## Estrutura do repositório
-
-```text
-sbpo/
-|-- docs/
-|   |-- master_proposal/       Proposta de dissertação em LaTeX
-|   |   |-- tcc.tex            Documento raiz
-|   |   |-- capitulos/         Capítulos da proposta
-|   |   |-- figures/           Figuras em LaTeX/TikZ
-|   |   |-- img/               Figuras em PDF
-|   |   |-- build/             PDF e artefatos de compilação
-|   |   `-- README.md
-|   |
-|   |-- sbpo/                  Artigo SBPO 2026
-|   `-- references/            PDFs e materiais de referência
-|
-`-- simulation/                Projeto Kedro
-    |-- conf/base/parameters/  Parâmetros em YAML
-    |-- src/simulation/        Código-fonte
-    |-- data/                  Dados e artefatos experimentais
-    `-- README.md
+```
+inventory_project/
+├── config.yaml                  ← ✅ EDITE AQUI (seus dados e parâmetros)
+├── main.py                      ← Script principal
+├── generate_sample_data.py      ← Gera dados sintéticos para teste
+├── data/
+│   └── seus_dados.csv           ← Coloque sua base aqui
+├── outputs/                     ← Gráficos e CSVs gerados automaticamente
+└── modules/
+    ├── data_loader.py           ← Carregamento e pré-processamento
+    ├── forecasting.py           ← LSTM (numpy), ANN, XGBoost
+    ├── inventory_env.py         ← Ambiente de simulação de estoque
+    ├── policies.py              ← Heurística + Algoritmo Genético
+    ├── rl_agents.py             ← DQN + PPO + Híbridos GA-DQN / GA-PPO
+    └── visualizations.py        ← Todos os gráficos (Figs. 3–10 do artigo)
 ```
 
-## Proposta de dissertação
+---
 
-Título:
-
-**Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos**
-
-Capítulos atuais:
-
-| Capítulo | Título |
-|---|---|
-| 1 | Introdução |
-| 2 | Referencial Teórico |
-| 3 | Trabalhos Relacionados |
-| 4 | Metodologia |
-| 5 | Resultados Preliminares |
-| 6 | Considerações Finais e Próximas Etapas |
-
-Compilação:
+## Instalação
 
 ```bash
-cd docs/master_proposal
-latexmk tcc.tex
+# Instalar dependências
+pip install pandas numpy scikit-learn xgboost deap matplotlib seaborn pyyaml
 ```
 
-O PDF final é gerado em:
+---
 
-```text
-docs/master_proposal/build/tcc.pdf
-```
+## Como Usar
 
-A configuração de compilação fica em `docs/master_proposal/.latexmkrc` e direciona os artefatos para `build/`.
-
-## Resultados consolidados na proposta
-
-| Fase | Escopo | Leitura principal |
-|---|---|---|
-| Fase 1 | 15 lojas da Paraíba, produto 48130 | GA-DQN apresentou redução de CTI de até 48% em relação a políticas de referência no recorte preliminar. |
-| Fase 2 | 145 séries da Bahia | A seleção por perfil reduziu o CTI médio em 6,2% frente à política única global, mantendo NS acima do limiar mínimo adotado. |
-
-Os resultados são interpretados como evidência de contextualidade na escolha de políticas, não como dominância universal de uma única política.
-
-## Pipeline de simulação
-
-Instalação:
+### 1. Teste rápido com dados sintéticos
 
 ```bash
-cd simulation
-pip install -e . -r requirements.txt
+cd inventory_project
+python generate_sample_data.py    # Gera data/sample_data.csv
+python main.py                    # Executa o pipeline completo
 ```
 
-Execução:
+### 2. Com sua própria base de dados
+
+**Passo 1** — Coloque seu arquivo em `data/` (CSV, Excel ou Parquet).
+
+**Passo 2** — Edite `config.yaml`:
+
+```yaml
+DATA:
+  file_path: "data/NOME_DO_SEU_ARQUIVO.csv"
+  file_format: "csv"       # "csv", "excel" ou "parquet"
+  columns:
+    date: "sua_coluna_data"       # nome da coluna de data
+    demand: "sua_coluna_vendas"   # nome da coluna de demanda ← OBRIGATÓRIO
+    item_id: "sua_coluna_item"    # null se não houver
+    store_id: "sua_coluna_loja"   # null se não houver
+    price: "sua_coluna_preco"     # null se não houver
+```
+
+**Passo 3** — Execute:
 
 ```bash
-kedro run
-kedro run --params "data_ingestion.states=['PB']"
-kedro run --params "data_ingestion.states=['BA']"
-kedro run --pipeline statistical_validation
-kedro run --pipeline reporting
-kedro viz
+python main.py
+# ou com config alternativa:
+python main.py --config config_meu_produto.yaml
 ```
 
-Pipelines principais:
+---
 
-| Pipeline | Função |
-|---|---|
-| `data_ingestion` | Carrega, filtra e prepara séries por estado, produto e loja. |
-| `demand_profiling` | Calcula características operacionais e classifica perfis de demanda. |
-| `demand_forecasting` | Treina modelos auxiliares de previsão. |
-| `inventory_simulation` | Simula políticas de reposição sob um ambiente comum. |
-| `policy_selection` | Gera rótulos de política dominante para o PSE. |
-| `statistical_validation` | Aplica testes estatísticos e tamanhos de efeito. |
-| `reporting` | Gera tabelas LaTeX, figuras e relatórios auxiliares. |
+## O que o Pipeline Faz
 
-## Políticas avaliadas
+| Etapa | Módulo | O que faz |
+|-------|--------|-----------|
+| 1 | `data_loader.py` | Carrega dados, filtra item/loja, divide treino/teste |
+| 2 | `forecasting.py` | Treina LSTM, ANN e XGBoost; calcula MAE, RMSE, MAPE, Accuracy |
+| 3 | `policies.py` | Política heurística (ROP fixo) como baseline |
+| 4 | `policies.py` | GA otimiza (ROP, Q, SS) via DEAP |
+| 5 | `rl_agents.py` | DQN e PPO aprendem políticas dinâmicas |
+| 5b | `rl_agents.py` | Híbridos GA-DQN e GA-PPO |
+| 6 | `visualizations.py` | Gera Figs. 3–10 do artigo + tabela CSV |
 
-| Categoria | Políticas |
-|---|---|
-| Clássicas | EOQ, `(s,S)`, Jornaleiro |
-| Meta-heurísticas | GA, SA, PSO, DE |
-| Aprendizado por reforço | DQN, PPO, SARSA |
-| Híbridas | GA-DQN, GA-PPO |
+---
 
-## Métricas
+## Saídas Geradas
 
-| Sigla | Descrição |
-|---|---|
-| CTI | Custo Total de Inventário |
-| NS | Nível de Serviço |
-| TR | Taxa de Ruptura |
-| BE | Efeito Bullwhip |
-| FP | Frequência de Pedidos |
+Em `outputs/`:
 
-## Observações
+| Arquivo | Descrição |
+|---------|-----------|
+| `fig3_forecast_comparison.png` | LSTM vs ANN vs XGBoost (Fig. 3) |
+| `fig4_ppo_policy.png` | Execução da política PPO (Fig. 4) |
+| `fig5_dqn_policy.png` | Simulação da política DQN (Fig. 5) |
+| `fig6_heuristic_policy.png` | Gestão heurística (Fig. 6) |
+| `fig7_ga_policy.png` | Convergência GA + política (Fig. 7) |
+| `fig9_hybrid_overview.png` | GA-PPO e GA-DQN (Fig. 9) |
+| `fig10_comparison_boxplots.png` | Boxplots comparativos (Fig. 10) |
+| `table_kpi_summary.png` | Tabela resumo de KPIs |
+| `kpi_inventory.csv` | KPIs de todas as políticas (CSV) |
+| `kpi_forecasting.csv` | Métricas de previsão (CSV) |
+| `ga_parameters.csv` | Parâmetros otimizados pelo GA |
 
-- Os dados transacionais são proprietários e não devem ser versionados.
-- Artefatos de build da dissertação devem permanecer em `docs/master_proposal/build/`.
-- O PDF de entrega principal fica em `docs/master_proposal/build/tcc.pdf`.
-- Use `git status` antes de alterar resultados, tabelas ou artefatos experimentais.
+---
+
+## KPIs Calculados (igual ao artigo)
+
+| KPI | Descrição |
+|-----|-----------|
+| **TIC** | Total Inventory Cost = holding + stockout + ordering |
+| **Service Level** | % da demanda atendida (meta: 0.95) |
+| **Stockout Rate** | % de períodos com falta de estoque |
+| **Bullwhip Effect** | Var(pedidos) / Var(demanda) — volatilidade na cadeia |
+| **Order Frequency** | Pedidos / Períodos |
+| **MAE / RMSE / MAPE** | Acurácia de previsão |
+
+---
+
+## Ajustes Finos
+
+### Melhorar acurácia do LSTM
+
+```yaml
+FORECASTING:
+  lookback: 28        # mais janela histórica
+  LSTM:
+    hidden_size: 128
+    epochs: 100
+    learning_rate: 0.005
+```
+
+### GA mais rigoroso
+
+```yaml
+GENETIC_ALGORITHM:
+  population_size: 200
+  n_generations: 100
+```
+
+### DQN mais treinado
+
+```yaml
+DQN:
+  episodes: 1000
+  hidden_layers: [256, 128, 64]
+```
+
+### Múltiplos produtos
+
+Defina `filter_single_item: false` no config e adapte `data_loader.py`
+para agregar demanda por data antes de passá-la ao pipeline.
+
+---
+
+## Dependências
+
+```
+pandas >= 1.5
+numpy >= 1.24
+scikit-learn >= 1.2
+xgboost >= 1.7
+deap >= 1.3
+matplotlib >= 3.6
+seaborn >= 0.12
+pyyaml >= 6.0
+```
