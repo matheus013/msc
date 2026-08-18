@@ -1,6 +1,6 @@
 \mychapter{Metodologia}{cap:metod}\lhead{METODOLOGIA}
 
-Este capítulo apresenta a estrutura metodológica do AIPE, fundamentada na hipótese central de que o desempenho de políticas de reposição depende do regime operacional da demanda e que essa relação pode ser aprendida por um meta-modelo supervisionado. A metodologia organiza a camada de entrada (dados preparados, características operacionais e sinais auxiliares de previsão), o \textit{benchmark} das 12 políticas candidatas, a validação estatística, a geração de rótulos de política dominante e o treinamento do PSE. O primeiro experimento, conduzido como estudo piloto na Paraíba, testou o protocolo em escala controlada; o segundo experimento, conduzido com 145 séries da Bahia, ampliou o escopo empírico e incluiu validação estatística formal. A expansão nacional permanece como etapa futura de generalização.
+Este capítulo apresenta a estrutura metodológica do AIPE, fundamentada na hipótese central de que o desempenho de políticas de reposição depende do regime operacional da demanda e que essa relação pode ser aprendida por um meta-modelo supervisionado. A metodologia organiza a camada de entrada (dados preparados, características operacionais e sinais auxiliares de previsão), o \textit{benchmark} de políticas candidatas, a validação estatística, a geração de rótulos de política dominante e o treinamento do PSE. O primeiro experimento, conduzido como estudo piloto na Paraíba, testou o protocolo em escala controlada; o segundo experimento, conduzido com 145 séries da Bahia, ampliou o escopo empírico e incluiu validação estatística formal. A expansão nacional permanece como etapa futura de generalização.
 \section{Visão Geral do AIPE}
 \label{sec:visao_geral_aipe}
 
@@ -33,7 +33,7 @@ A definição formal de política de reposição foi apresentada no Capítulo~\r
 \]
 em que $I_{t,i}$ representa o estoque disponível, $D_{t-1,i}$ resume a demanda recente, $Q_{t-L,i}$ indica pedidos em trânsito recebidos após o prazo de entrega e $\boldsymbol{\theta}$ é o vetor de parâmetros da política. Esse vetor assume naturezas distintas conforme a família candidata, como pares $(s,Q)$ em políticas parametrizadas ou pesos de rede neural em agentes de aprendizado por reforço.
 
-Esta distinção é essencial: as 12 políticas avaliadas são instâncias de famílias distintas; o AIPE é a estratégia adaptativa que aprende qual família e parâmetros usar por série. Assim, o foco metodológico está na seleção contextual, e não na defesa de uma política isolada como solução universal.
+Esta distinção é essencial: as políticas avaliadas são instâncias de famílias distintas; o AIPE é a estratégia adaptativa que aprende qual família e parâmetros usar por série. Assim, o foco metodológico está na seleção contextual, e não na defesa de uma política isolada como solução universal.
 
 \begin{defi}[Seleção Adaptativa de Política (AIPE)]
 Dado o espaço de séries $\mathcal{X}$, o mapeamento de características $\phi: \mathcal{X} \rightarrow \mathbb{R}^p$ e o conjunto de políticas candidatas $\Pi = \{\pi_1, \ldots, \pi_k\}$, o \textit{Policy Selection Engine} aprende a função:
@@ -236,7 +236,7 @@ A generalização para séries não vistas é avaliada por validação cruzada e
 \node[box, right=of hist]        (feat)   {Features\\$\phi(x_i) \in \mathbb{R}^{17}$};
 \node[box, right=of feat]        (pod)    {POD\\$p \in \{1,\ldots,5\}$};
 \node[box, right=of pod]         (pse)    {Policy\\Selection\\$f(\phi) \to \hat\pi^*$};
-\node[box, right=of pse]         (sim)    {Simulação\\12 políticas};
+\node[box, right=of pse]         (sim)    {Simulação\\portfólio};
 \node[box, right=of sim]         (kpi)    {KPI\\(CTI, NS, BE)};
 \node[box, below=0.9cm of pse, xshift=1.2cm]
                                   (reav)   {Reavaliação\\$\Delta t = 6$ ciclos};
@@ -282,7 +282,9 @@ Esses valores de referência não substituem a avaliação por simulação. Eles
 \section{Portfólio de Políticas Candidatas}
 \label{sec:benchmark_massivo}
 
-Esta seção descreve o portfólio de doze políticas candidatas organizadas em quatro famílias: políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas GA-RL. Nesta dissertação, ``política'' designa a regra que transforma um estado de inventário em uma decisão de reposição; GA, SA, PSO e DE são métodos de busca usados para parametrizar essa regra, não políticas autônomas no sentido decisório. Todas as alternativas são avaliadas no mesmo ambiente de simulação com as mesmas séries de demanda real, garantindo comparação controlada.
+Esta seção descreve o portfólio de políticas candidatas, organizado em cinco famílias: políticas clássicas de referência, políticas clássicas em versão estado da arte, políticas de referência do artigo-base, políticas parametrizadas por meta-heurísticas e políticas aprendidas por reforço, incluindo as arquiteturas híbridas GA-RL.
+
+O portfólio evoluiu ao longo do trabalho. A etapa de proposta avaliou um conjunto inicial de \textbf{doze} políticas: EOQ, $(s,S)$, Jornaleiro, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN e GA-PPO. Uma revisão sistemática do estado da arte por família (Seção~\ref{sec:portfolio_ampliado}) motivou a inclusão de seis políticas adicionais, adotadas no portfólio desta versão final: PIL, \textit{capped base-stock}, Jornaleiro orientado a características, \textit{Min-Max}, \textit{Fixed Interval Replenishment} e \textit{Vendor-Responsive}. Nesta dissertação, ``política'' designa a regra que transforma um estado de inventário em uma decisão de reposição; GA, SA, PSO e DE são métodos de busca usados para parametrizar essa regra, não políticas autônomas no sentido decisório. Todas as alternativas são avaliadas no mesmo ambiente de simulação com as mesmas séries de demanda real, garantindo comparação controlada.
 
 \subsection{Políticas Clássicas}
 
@@ -345,6 +347,24 @@ Os demais agentes avaliados, como SARSA e PPO, compartilham a mesma abstração 
 A arquitetura GA-RL, formalizada na Seção~\ref{sec:ga_rl_arch}, resolve a tensão entre convergência do RL e horizontes históricos curtos via inicialização em três etapas. Os parâmetros fixados nesta dissertação são: GA com 50 gerações $\times$ 100 indivíduos (5.000 avaliações simuladas), \textit{replay buffer} pré-populado com 1.000 transições de alta qualidade, e 200 episódios de refinamento RL. A variante GA-PPO aplica a mesma sequência ao agente PPO contínuo.
 
 As políticas GA-DQN e GA-PPO são tratadas como especialistas do portfólio avaliado, e não como a contribuição central do trabalho, que permanece concentrada na seleção contextual realizada pelo AIPE. Representações visuais complementares dessas políticas híbridas são apresentadas no Apêndice~\ref{ap:representacoes_politicas}.
+
+\subsection{Portfólio Ampliado e Critério de Seleção das Políticas}
+\label{sec:portfolio_ampliado}
+
+A composição do portfólio seguiu o critério de adotar, para cada família, a referência publicada mais recente em veículo relevante de Pesquisa Operacional ou Gestão de Operações. O levantamento identificou que esse critério é aplicável a apenas parte das famílias.
+
+Para o \textit{slot} da política $(s,S)$, a referência mais recente é a política \textit{Projected Inventory Level} (PIL) de \citet{VanJaarsveldArts2024PIL}, que emite pedidos de modo que o estoque esperado no instante da chegada atinja um alvo fixo, com otimalidade assintótica demonstrada em dois regimes sob venda perdida. Incorpora-se também a política \textit{capped base-stock} de \citet{Xin2021CappedBaseStock}, não por ser a mais recente, mas porque a literatura de aprendizado por reforço a utiliza como referência que agentes profundos não superam de forma consistente em ambientes de venda perdida~\citep{Temizoz2025DeepControlledLearning}. Sua ausência tornaria a comparação com os agentes de RL favorável por construção. Para o \textit{slot} do Jornaleiro, adota-se o estimador orientado a características de \citet{BanRudin2019BigDataNewsvendor}, que substitui a estimação da distribuição de demanda pela otimização direta da decisão.
+
+Para as famílias sem estado da arte identificável em veículo relevante, adota-se a formulação do artigo-base \citep{Zabraoui2025GaDQN}. Isso acrescenta ao portfólio as heurísticas de referência definidas naquele trabalho: \textit{Min-Max}, \textit{Fixed Interval Replenishment} e \textit{Vendor-Responsive}. Registra-se que o artigo-base não avalia Jornaleiro, SA, PSO, DE nem SARSA, e que EOQ nele figura apenas na revisão de literatura; para essas políticas, mantêm-se as formulações canônicas já descritas.
+
+Nos agentes de aprendizado por reforço, as implementações foram atualizadas para as versões consolidadas na literatura: \textit{Double DQN}~\citep{VanHasselt2016DoubleDQN} com arquitetura \textit{dueling}~\citep{Wang2016DuelingDQN}, PPO com estimação generalizada de vantagem~\citep{Schulman2016GAE} e \textit{Expected SARSA}~\citep{VanSeijen2009ExpectedSARSA}. No PSO, adota-se o fator de constrição de \citet{ClercKennedy2002Constriction}.
+
+\subsection{Redundância entre Políticas e Implicação para os Rótulos}
+\label{sec:redundancia_portfolio}
+
+A ampliação do portfólio exige verificar se as políticas adicionais acrescentam informação discriminativa ou apenas replicam alternativas existentes. Essa verificação não é estética: o PSE aprende a partir de rótulos de política dominante, e quando duas políticas produzem CTI praticamente idêntico, o rótulo atribuído à série passa a refletir ruído numérico em vez de vantagem operacional, degradando a aprendibilidade postulada pela Hipótese~2.
+
+A análise de redundância adotada compara, para cada par de políticas, a correlação de Spearman entre os CTI obtidos nas mesmas séries e a diferença mediana relativa de custo. Pares com correlação superior a $0{,}98$ e diferença mediana inferior a $5\%$ são tratados como redundantes para efeito de rotulagem, sendo agrupados em uma única classe no conjunto de rótulos do PSE, ainda que permaneçam reportados individualmente nas tabelas comparativas do \textit{benchmark}. Os resultados dessa verificação são apresentados no Capítulo~\ref{cap:results}.
 
 \section{Ambiente de Simulação e Benchmark de Políticas}
 \label{sec:simulacao_benchmark}
@@ -460,7 +480,7 @@ A saída do PSE é uma recomendação de política acompanhada de medidas de con
 \paragraph{Fundamentos teóricos.} A formulação adota três referências principais:
 
 \begin{enumerate}[(a)]
-  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, escolher a alternativa com melhor desempenho. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ são as 12 políticas e o desempenho é medido por CTI, respeitando NS $\geq \alpha_{\min}$.
+  \item Problema de Seleção de Algoritmos, formalizado por \citet{Rice1976AlgorithmSelection}: dado $x$ e um portfólio $\mathcal{A}$, escolher a alternativa com melhor desempenho. Aqui, $x$ é o vetor $\phi(\mathbf{x}_i)$, $\mathcal{A}$ é o portfólio de políticas candidatas e o desempenho é medido por CTI, respeitando NS $\geq \alpha_{\min}$.
   \item Teorema \textit{No Free Lunch}, proposto por \citet{Wolpert1997NoFreeLunch}: nenhum método domina todos os tipos de instância. Na dissertação, isso justifica usar características operacionais para distinguir quando uma política tende a ser mais adequada que outra.
   \item Portfólios de algoritmos, discutidos por \citet{Huberman1997AlgorithmPortfolios}: alternativas diferentes podem funcionar melhor em regiões distintas do espaço de instâncias. O PSE usa o portfólio avaliado no \textit{benchmark} em vez de assumir uma política única para todas as séries.
 \end{enumerate}
@@ -492,7 +512,7 @@ A Figura~\ref{fig:asp_rice} mostra essa estrutura no AIPE: as séries loja-produ
 
 \subsection{Problema de Seleção}
 
-O problema supervisionado tem entrada, saída e rótulo bem definidos. A entrada é o vetor de características $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$. A saída é uma política do conjunto $\mathcal{P} = \{$EOQ, $(s,S)$, Newsvendor, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$. O rótulo é obtido do \textit{benchmark}: a política com menor CTI entre aquelas que atingem o NS mínimo.
+O problema supervisionado tem entrada, saída e rótulo bem definidos. A entrada é o vetor de características $\mathbf{x}_i \in \mathbb{R}^{17}$ de uma série $i$. A saída é uma política do conjunto $\mathcal{P}$, composto pelas políticas do portfólio após o agrupamento de classes redundantes descrito na Seção~\ref{sec:redundancia_portfolio}. Nos Experimentos~1 e~2, $\mathcal{P} = \{$EOQ, $(s,S)$, Jornaleiro, GA, SA, PSO, DE, DQN, PPO, SARSA, GA-DQN, GA-PPO$\}$. O rótulo é obtido do \textit{benchmark}: a política com menor CTI entre aquelas que atingem o NS mínimo.
 
 Formalmente, o \textit{Policy Selection Engine} estima:
 \begin{equation}
@@ -542,7 +562,7 @@ A aplicação da política gera novos dados de venda, pedidos e estoque, que pod
 \section{Artefatos Experimentais e Rastreabilidade}
 \label{sec:reporting}
 
-O \textit{pipeline} experimental de apoio ao AIPE produz artefatos com múltiplas funções. O primeiro grupo reúne figuras comparativas dos cinco KPIs entre as 12 políticas, mostrando heterogeneidade por quadrante Syntetos-Boylan e fronteira de Pareto CTI-NS. O segundo grupo reúne validação estatística visual, incluindo \textit{heatmaps} Wilcoxon, Cohen's $d$ e diagrama de diferença crítica.
+O \textit{pipeline} experimental de apoio ao AIPE produz artefatos com múltiplas funções. O primeiro grupo reúne figuras comparativas dos cinco KPIs entre as políticas do portfólio, mostrando heterogeneidade por quadrante Syntetos-Boylan e fronteira de Pareto CTI-NS. O segundo grupo reúne validação estatística visual, incluindo \textit{heatmaps} Wilcoxon, Cohen's $d$ e diagrama de diferença crítica.
 
 O terceiro grupo reúne três \textit{datasets} analíticos: \textit{demand\_features.parquet} (17 características por série), \textit{demand\_profiles.parquet} (classificação POD) e \textit{policy\_recommendations.parquet} (política recomendada pelo PSE com confiança), que alimentam diretamente a análise da dissertação. Em conjunto, esses artefatos permitem reconstruir figuras, tabelas e conclusões a partir dos mesmos insumos.
 
@@ -571,7 +591,7 @@ A avaliação do segundo experimento segue um protocolo de validação temporal 
 \begin{enumerate}[(i)]
   \item Ingestão de dados: consolidação do histórico $[t-w, t]$ a cada ciclo com atualização das estatísticas locais $\hat{\mu}$ e $\hat{\sigma}$, em que $w$ é o tamanho da janela histórica;
   \item Engenharia de características: recálculo do vetor $\phi(\mathbf{x}_i) \in \mathbb{R}^{17}$ sobre a janela mais recente;
-  \item Simulação: execução das 12 políticas candidatas na mesma janela, usando os sinais disponíveis no ciclo de avaliação;
+  \item Simulação: execução das políticas candidatas na mesma janela, usando os sinais disponíveis no ciclo de avaliação;
   \item Etiquetagem: aplicação do critério de seleção (Equação~\ref{eq:policy_selector}) para gerar rótulos de treinamento.
 \end{enumerate}
 

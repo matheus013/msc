@@ -255,3 +255,11 @@ simulation/data/08_reporting/*
 !simulation/data/08_reporting/presentation/*.pdf
 !simulation/data/08_reporting/presentation/*.json
 !simulation/data/08_reporting/presentation/*.md
+
+# Ambientes virtuais adicionais
+.venv312/
+.venv*/
+
+# Artefatos do macOS
+.DS_Store
+**/.DS_Store
