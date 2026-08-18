@@ -36,6 +36,20 @@ simulation:
     fitness_mode: "zabraoui"
     fitness_weights: [1.0, 0.0001]   # [lambda1, lambda2]
     penalty_weight: 10.0
+    # 2026-08-18: extensao desta dissertacao sobre a Eq.(3)/Eq.(4.2) —
+    # somados a QUALQUER fitness_mode (ver _risk_terms em
+    # core/inventory_env_torch.py). TIC so registra o custo de ruptura
+    # REALIZADO na trajetoria simulada; estes dois termos penalizam
+    # fragilidade que TIC sozinho nao capta:
+    #   tr_weight * TR * (1-NS) * TIC  -- TR = probabilidade de ruptura
+    #     (fracao de ciclos sem produto pro cliente), modulada por NS: o
+    #     risco composto cresce quando servico ja ruim E ruptura frequente
+    #     coincidem.
+    #   be_weight * max(BE-1, 0) * TIC -- BE = var(pedido)/var(demanda).
+    #     So pune o EXCESSO acima de 1 (pedido mais erratico que a propria
+    #     demanda justificaria = "compra excessiva"); BE<=1 nao e punido.
+    tr_weight: 1.0
+    be_weight: 1.0
     population: 100         # Zabraoui Tab.5 (faixa 50-200)
     generations: 50
     crossover_prob: 0.8     # Zabraoui Tab.5 (faixa 0.6-0.9)

@@ -221,8 +221,41 @@ class BatchInventoryEnv:
 # Função objetivo compartilhada
 # ═══════════════════════════════════════════════════════════════════════════
 
+def _risk_terms(kpis: dict, tr_weight: float, be_weight: float,
+                tic_ref: torch.Tensor) -> torch.Tensor:
+    """
+    Termos de risco somados a QUALQUER modo de fitness (2026-08-18, pedido
+    explicito do usuario): TIC so registra o custo de ruptura REALIZADO na
+    trajetoria de demanda simulada; TR (StockoutRate) e BE (BullwhipEffect)
+    capturam duas formas de fragilidade que TIC sozinho nao penaliza.
+
+    TR * (1-NS): TR e a PROBABILIDADE de ruptura (fracao de ciclos em que
+    falta produto pro cliente -- independente da magnitude da falta, que e
+    o que NS/ServiceLevel mede). Modulado por (1-NS): o risco composto
+    cresce quando a politica ja tem servico ruim E rompe com frequencia --
+    as duas coisas juntas sao pior sinal de fragilidade do que qualquer
+    uma isolada. Escalado por tic_ref (o proprio TIC da trajetoria,
+    piso 1.0) para ficar comparavel entre series de volumes muito
+    diferentes -- mesmo truque ja usado na penalidade de deficit de NS.
+
+    max(BE-1, 0): BE = var(pedidos)/var(demanda). BE<=1 significa que a
+    politica pede de forma tao ou mais suave que a propria demanda --
+    comportamento normal, sem punicao. BE>1 e amplificacao: a politica
+    pede de forma mais erratica/excessiva do que a demanda justificaria
+    ("compra excessiva") -- so esse excesso acima de 1 e punido.
+    """
+    tr = kpis.get("StockoutRate", 0.0)
+    ns = kpis.get("ServiceLevel", 1.0)
+    be = kpis.get("BullwhipEffect", 0.0)
+    risk = tr_weight * tr * (1.0 - ns) * tic_ref
+    excess = be_weight * torch.clamp(be - 1.0, min=0.0) * tic_ref \
+        if torch.is_tensor(be) else be_weight * max(be - 1.0, 0.0) * tic_ref
+    return risk + excess
+
+
 def constrained_cost(kpis: dict, alpha_min: float = 0.70,
-                     penalty_weight: float = 10.0) -> torch.Tensor:
+                     penalty_weight: float = 10.0,
+                     tr_weight: float = 1.0, be_weight: float = 1.0) -> torch.Tensor:
     """
     Custo a MINIMIZAR, implementando a Equação (4.2):
 
@@ -231,14 +264,18 @@ def constrained_cost(kpis: dict, alpha_min: float = 0.70,
     Idêntica à formulação escalar de `policies._eval_static`, aqui vetorizada:
     penalidade proporcional ao déficit de serviço e relativa ao próprio custo,
     o que mantém a grandeza comparável entre séries de volumes muito distintos.
+
+    Acrescenta os termos de risco de `_risk_terms` (TR, BE) — ver docstring.
     """
     tic = kpis["TIC"]
+    tic_ref = torch.clamp(tic, min=1.0)
     deficit = torch.clamp(alpha_min - kpis["ServiceLevel"], min=0.0)
-    return tic + deficit * penalty_weight * torch.clamp(tic, min=1.0)
+    return tic + deficit * penalty_weight * tic_ref + _risk_terms(kpis, tr_weight, be_weight, tic_ref)
 
 
 def zabraoui_fitness_cost(kpis: dict, lambda1: float = 1.0,
-                          lambda2: float = 1e-4) -> torch.Tensor:
+                          lambda2: float = 1e-4,
+                          tr_weight: float = 1.0, be_weight: float = 1.0) -> torch.Tensor:
     """
     Custo a MINIMIZAR correspondente à aptidão do Zabraoui et al. (2025),
     Equação (3):
@@ -255,18 +292,27 @@ def zabraoui_fitness_cost(kpis: dict, lambda1: float = 1.0,
     e escala homogênea, o efeito é pequeno; no recorte brasileiro, não é.
     A alternativa `constrained_cost` implementa a Eq. (4.2) da proposta e
     permanece disponível.
+
+    Acrescenta os termos de risco de `_risk_terms` (TR, BE) — ver docstring.
+    Nota: aqui a aptidao original do artigo NAO tem esses termos; a soma
+    abaixo e uma extensao do portfolio desta dissertacao sobre o artigo-base,
+    nao uma reproducao literal da Eq. (3).
     """
-    return -(lambda1 * kpis["ServiceLevel"] - lambda2 * kpis["TIC"])
+    tic_ref = torch.clamp(kpis["TIC"], min=1.0)
+    return -(lambda1 * kpis["ServiceLevel"] - lambda2 * kpis["TIC"]) \
+        + _risk_terms(kpis, tr_weight, be_weight, tic_ref)
 
 
 def fitness_cost(kpis: dict, mode: str = "zabraoui", **kw) -> torch.Tensor:
     """Despacha a função objetivo conforme o modo configurado."""
+    tr_weight = kw.get("tr_weight", 1.0)
+    be_weight = kw.get("be_weight", 1.0)
     if mode in ("zabraoui", "weighted"):
         return zabraoui_fitness_cost(
-            kpis, kw.get("lambda1", 1.0), kw.get("lambda2", 1e-4))
+            kpis, kw.get("lambda1", 1.0), kw.get("lambda2", 1e-4), tr_weight, be_weight)
     if mode == "constrained":
         return constrained_cost(
-            kpis, kw.get("alpha_min", 0.70), kw.get("penalty_weight", 10.0))
+            kpis, kw.get("alpha_min", 0.70), kw.get("penalty_weight", 10.0), tr_weight, be_weight)
     raise ValueError(f"fitness_mode invalido: {mode!r}")
 
 

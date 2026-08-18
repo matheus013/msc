@@ -408,12 +408,19 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
     # persistentes do que o observado aqui.
     if max_stores is not None:
         if "segmento" in df.columns:
-            store_segmento = (
-                df[["warehouse", "store_id", "segmento"]]
+            # Por (warehouse,store_id,item_id), nao so por loja -- no M5
+            # "segmento" e a categoria do PRODUTO (cat_id), nao da loja; uma
+            # mesma loja vende FOODS/HOUSEHOLD/HOBBIES ao mesmo tempo. Dedup
+            # por loja so perderia a granularidade certa (mesmo problema do
+            # merge de store_profile mais abaixo, corrigido na mesma data).
+            item_segmento_early = (
+                df[["warehouse", "store_id", "item_id", "segmento"]]
                 .dropna(subset=["segmento"])
-                .drop_duplicates(subset=["warehouse", "store_id"])
+                .drop_duplicates(subset=["warehouse", "store_id", "item_id"])
             )
-            valid_early = valid_early.merge(store_segmento, on=["warehouse", "store_id"], how="left")
+            valid_early = valid_early.merge(
+                item_segmento_early, on=["warehouse", "store_id", "item_id"], how="left"
+            )
             valid_early["segmento"] = valid_early["segmento"].fillna("(sem segmento)")
         else:
             valid_early = valid_early.assign(segmento="(sem segmento)")
@@ -445,15 +452,29 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
     # Roda sobre `df` ja filtrado por max_stores (quando setado) -- e o que
     # torna essa etapa rapida em "bot" (poucas centenas de lojas por estado
     # em vez de 271 mil).
-    present_profile = [c for c in STORE_PROFILE_COLS if c in df.columns]
+    #
+    # "segmento" tratado separadamente dos demais (genero/idade/estrutura/
+    # filial/praca/gerente_regional/ciclos_inativos): na base interna e
+    # constante por revendedor_cod (tier do cliente), mas no M5
+    # (m5_loader.py) "segmento" vem de cat_id -- um atributo POR PRODUTO,
+    # nao por loja (uma loja M5 vende FOODS/HOUSEHOLD/HOBBIES ao mesmo
+    # tempo). Agregar a moda por (warehouse,store_id) faz TODAS as series
+    # de uma loja herdarem so a categoria mais frequente -- bug encontrado
+    # em 2026-08-18 (a run irrestrita do M5 saiu com as 30.490 series
+    # rotuladas "FOODS", categoria dominante, mesmo tendo HOBBIES e
+    # HOUSEHOLD nos dados). Corrigido: "segmento" extraido por
+    # (warehouse,store_id,item_id) -- mesmo resultado da base interna,
+    # onde e constante por loja de qualquer forma, e correto para o M5.
+    other_profile_cols = [c for c in STORE_PROFILE_COLS if c != "segmento" and c in df.columns]
     store_profile = pd.DataFrame()
-    if present_profile:
-        def _mode_safe(x):
-            m = x.dropna().mode()
-            return m.iloc[0] if len(m) > 0 else None
 
+    def _mode_safe(x):
+        m = x.dropna().mode()
+        return m.iloc[0] if len(m) > 0 else None
+
+    if other_profile_cols:
         store_profile = (
-            df.groupby(["warehouse", "store_id"])[present_profile]
+            df.groupby(["warehouse", "store_id"])[other_profile_cols]
             .agg(_mode_safe)
             .reset_index()
         )
@@ -464,7 +485,15 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
             store_profile["ci_ciclos"] = pd.to_numeric(
                 ci.str[1:], errors="coerce")                  # número de ciclos
         log.info("Perfil extraído para %d revendedoras | colunas: %s",
-                 len(store_profile), present_profile)
+                 len(store_profile), other_profile_cols)
+
+    item_segmento = pd.DataFrame()
+    if "segmento" in df.columns:
+        item_segmento = (
+            df.groupby(["warehouse", "store_id", "item_id"])["segmento"]
+            .agg(_mode_safe)
+            .reset_index()
+        )
 
     all_cycles = sorted(df_agg["venda_ciclo"].unique())
 
@@ -544,6 +573,12 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
     if not store_profile.empty:
         scenarios_meta = scenarios_meta.merge(
             store_profile, on=["warehouse", "store_id"], how="left"
+        )
+    # "segmento" em separado, por (warehouse,store_id,item_id) -- ver nota
+    # acima de por que nao pode vir do merge por loja no M5.
+    if not item_segmento.empty:
+        scenarios_meta = scenarios_meta.merge(
+            item_segmento, on=["warehouse", "store_id", "item_id"], how="left"
         )
 
     # Limita número de lojas por estado (opcional)

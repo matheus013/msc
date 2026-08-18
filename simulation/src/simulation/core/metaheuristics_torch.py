@@ -62,6 +62,11 @@ class _ThresholdOptimizer:
         self.lambda1, self.lambda2 = float(w[0]), float(w[1])
         self.alpha_min = float(gcfg.get("alpha_min", cfg.get("alpha_min", 0.70)))
         self.penalty_w = float(gcfg.get("penalty_weight", 10.0))
+        # 2026-08-18: TR (StockoutRate, probabilidade de ruptura) e BE
+        # (BullwhipEffect, amplificacao do pedido sobre a demanda) somados
+        # a fitness_cost -- ver _risk_terms em inventory_env_torch.py.
+        self.tr_weight = float(gcfg.get("tr_weight", 1.0))
+        self.be_weight = float(gcfg.get("be_weight", 1.0))
         # O lote é o tamanho da população: é ele que decide se GPU compensa.
         self.device = device if device is not None else get_device_for_batch(
             self._population_hint(cfg),
@@ -119,7 +124,8 @@ class _ThresholdOptimizer:
         k = env.run_threshold(pop[:, 0], torch.clamp(pop[:, 1], min=1.0), pop[:, 2])
         return fitness_cost(k, self.fitness_mode,
                             lambda1=self.lambda1, lambda2=self.lambda2,
-                            alpha_min=self.alpha_min, penalty_weight=self.penalty_w)
+                            alpha_min=self.alpha_min, penalty_weight=self.penalty_w,
+                            tr_weight=self.tr_weight, be_weight=self.be_weight)
 
     def _rand(self, n: int, gen: torch.Generator) -> torch.Tensor:
         u = torch.rand((n, 3), dtype=self.dtype, device=self.device, generator=gen)

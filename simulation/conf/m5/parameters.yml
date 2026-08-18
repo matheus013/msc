@@ -8,10 +8,31 @@
 # contribuicao empirica da dissertacao.
 data_ingestion:
   source: "m5"
-  min_positive_cycles: 17
+  # 2026-08-18: pedido explicito do usuario — M5 sem nenhum corte. Zera os
+  # tres filtros de qualidade herdados do conf/base (que existem para
+  # tornar M5 comparavel ao regime de demanda do recorte interno, ver
+  # REIMPLEMENTACAO_SOTA.md secao 4-5): cv_threshold, min_positive_cycles,
+  # active_product_window. RESSALVA METODOLOGICA: sem cv_threshold>=1.5 o
+  # M5 (diario, CV^2 tipicamente <1) deixa de estar no mesmo regime Lumpy
+  # do recorte interno (CV^2 3,8-4,1) -- os dois deixam de ser comparaveis
+  # regime a regime. Decisao consciente do usuario, nao um default.
+  min_positive_cycles: 0
+  cv_threshold: 0
+  active_product_window: 0
   m5:
-    max_cycles: 38          # mesmo horizonte dos Experimentos 1 e 2
-    max_series: 6000
+    # 2026-08-18: null (era 38, "mesmo horizonte dos Experimentos 1 e 2") —
+    # pedido explicito do usuario, usa todo o horizonte disponivel do M5
+    # (~92 ciclos de 21 dias, ~1941 dias) em vez de truncar pra bater com
+    # o horizonte interno. Cobertura maxima tambem no eixo temporal, nao
+    # so no numero de series.
+    max_cycles: null
+    # null = todas as 30.490 series (cobertura maxima), mesma
+    # filosofia aplicada em "bot" -- a agregacao do M5 e feita via DuckDB
+    # (sem o padrao de zero-fill que estourou memoria na base interna
+    # completa), entao nao ha risco de crash equivalente aqui; os filtros
+    # de qualidade (cv_threshold, min_positive_cycles) que ja rodam depois
+    # decidem o volume final util.
+    max_series: null
     states: null
     categories: null
     seed: 42
@@ -20,3 +41,33 @@ simulation:
   n_replications: 5
   evaluation_mode: "walkforward"
   train_split_cycles: 19
+  # 2026-08-18: paralelizacao entre series -- ver mesma nota em
+  # conf/bot/parameters.yml. 7 workers (nao 14) porque bot e M5 rodam ao
+  # mesmo tempo nesta maquina de 16 nucleos, com a Bahia (sequencial,
+  # ainda sem paralelizacao) tambem ativa: 7+7+1=15, sobra 1 pro SO.
+  n_workers: 7
+  # 2026-08-18: 30.490 series sem nenhum corte de dados (#16) em orcamento
+  # de producao (500 episodios) extrapolava para ~13 dias corridos so pro
+  # M5, a partir do tempo real medido na Bahia (145 series, 88,7 min).
+  # Decisao do usuario: manter as 30.490 series intactas, reduzir o
+  # orcamento de treino em vez disso. RL/hibridas ja cortados abaixo (10x
+  # e ~6,7x). Depois de medir que meta-heuristicas (GA/SA/PSO/DE, sem
+  # corte) passaram a dominar o tempo do M5 (28,5h das 65,5h estimadas --
+  # nao sao vetorizadas o bastante pra serem irrelevantes numa base deste
+  # tamanho), reduzido tambem o orcamento delas em ~5x, mesma logica.
+  ga:
+    generations: 10
+  sa:
+    max_iter: 100
+  pso:
+    iterations: 16
+  de:
+    max_iter: 20
+  dqn:
+    episodes: 50
+  ppo:
+    episodes: 50
+  sarsa:
+    episodes: 50
+  hybrid:
+    rl_episodes: 30

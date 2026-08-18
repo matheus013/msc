@@ -42,3 +42,10 @@ simulation:
   n_replications: 5
   evaluation_mode: "walkforward"
   train_split_cycles: 19
+  # 2026-08-18: paralelizacao entre series (ProcessPoolExecutor, ver
+  # inventory_simulation/nodes.py) para caber no teto de 12h combinado com
+  # o usuario -- 4.869 series em orcamento completo, sequencial, dava
+  # ~48h. 7 workers (nao os 14 disponiveis) porque a Bahia (base, sem
+  # paralelizacao ainda) esta rodando ao mesmo tempo nesta maquina de 16
+  # nucleos -- 7(bot)+7(m5)+1(bahia)=15, deixa 1 nucleo pro SO.
+  n_workers: 7

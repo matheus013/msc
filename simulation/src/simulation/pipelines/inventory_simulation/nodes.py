@@ -8,13 +8,202 @@ Fluxo:
   scenarios + scaled_params + params -> run_rl_policies            -> kpis_rl
   scenarios + scaled_params + params -> run_proposed_architecture  -> kpis_proposed
   kpis_classical + kpis_metaheuristic + kpis_rl + kpis_proposed -> aggregate_kpis -> kpis
+
+Paralelizacao (2026-08-18)
+---------------------------
+Cada serie (warehouse,store_id,item_id) e 100% independente das demais --
+nao ha estado compartilhado entre elas em nenhum dos 6 nos de politica
+(cada uma le seu proprio cfg escalado e sua propria demanda). Ate aqui,
+porem, o loop era sequencial num unico processo (1 nucleo de 16 usados).
+`_run_parallel_policies` despacha as series para um `ProcessPoolExecutor`
+(processos, nao threads -- evita o conflito de libomp entre torch e
+xgboost/sklearn documentado em REIMPLEMENTACAO_SOTA.md, que e especifico
+de MULTIPLAS THREADS num MESMO processo; processos separados nao
+compartilham essa instancia). Cada serie usa sementes (`cfg[...]["seed"]`,
+`params["random_seed"]`) fixas e locais -- nao ha RNG global acumulado
+entre series mesmo no codigo sequencial original, entao o resultado
+numerico e IDENTICO independente de paralelizar ou nao (validado
+empiricamente, ver AJUSTES_INFRA_2026-08-18.md item 19).
 """
+import concurrent.futures
 import logging
+import os
 import numpy as np
 import pandas as pd
 from typing import Dict, Any
 
 log = logging.getLogger(__name__)
+
+
+def _n_workers(params: dict) -> int:
+    configured = params.get("n_workers")
+    if configured is not None:
+        return max(1, int(configured))
+    return max(1, (os.cpu_count() or 4) - 2)
+
+
+def _run_parallel_policies(scenarios: pd.DataFrame, scenarios_meta: pd.DataFrame,
+                            scaled_params: dict, params: dict,
+                            worker_fn, worker_extra_args: tuple, log_tag: str) -> pd.DataFrame:
+    """
+    Executa `worker_fn(key, cfg, demand, meta_row, params, *worker_extra_args)
+    -> (rows, logs)` para cada serie, em paralelo quando n_workers > 1.
+
+    `worker_fn` precisa ser uma funcao de MODULO (nao aninhada/lambda) para
+    ser picklable pelo ProcessPoolExecutor no Windows (metodo spawn).
+    Extrai demand/meta_row no processo principal (barato, vetorizado) para
+    nao repetir esse trabalho -- e nao precisar pickled `scenarios`
+    inteiro -- em cada tarefa.
+    """
+    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
+    tasks = []
+    for key, cfg in scaled_params.items():
+        demand = _get_series(scenarios, key)
+        if len(demand) < 5:
+            continue
+        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
+        tasks.append((key, cfg, demand, meta_row))
+
+    if not tasks:
+        return pd.DataFrame()
+
+    n_workers = min(_n_workers(params), len(tasks))
+    rows_all: list = []
+
+    def _emit(logs):
+        for m in logs:
+            if "failed" in m:
+                log.warning(m)
+            else:
+                log.info(m)
+
+    if n_workers <= 1:
+        for key, cfg, demand, meta_row in tasks:
+            rows, logs = worker_fn(key, cfg, demand, meta_row, params, *worker_extra_args)
+            _emit(logs)
+            rows_all.extend(rows)
+        return pd.DataFrame(rows_all)
+
+    log.info("[%s] paralelizando %d series em %d processos", log_tag, len(tasks), n_workers)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:
+        futures = {
+            executor.submit(worker_fn, key, cfg, demand, meta_row, params, *worker_extra_args): key
+            for key, cfg, demand, meta_row in tasks
+        }
+        done = 0
+        for fut in concurrent.futures.as_completed(futures):
+            key = futures[fut]
+            done += 1
+            try:
+                rows, logs = fut.result()
+                _emit(logs)
+                rows_all.extend(rows)
+            except Exception as e:
+                log.warning("[%s] série %s falhou no worker: %s", log_tag, key, e)
+            if done % 200 == 0 or done == len(tasks):
+                log.info("[%s] %d/%d séries concluídas", log_tag, done, len(tasks))
+
+    return pd.DataFrame(rows_all)
+
+
+def _worker_generic(key, cfg, demand, meta_row, params, policy_specs, log_tag):
+    """
+    Worker de processo para politicas "construct" (classicas/SOTA/Zabraoui),
+    "optimize" (meta-heuristicas) e "rl_train" (RL). Mesma logica dos loops
+    sequenciais originais, isolada por serie -- roda dentro de UM worker do
+    ProcessPoolExecutor (ou inline, se n_workers=1).
+    """
+    from simulation.core.inventory_env import InventoryEnv
+    w, s, i = key
+    rows = []
+    logs = [f"[{log_tag}] ({w}, {s}, {i})"]
+    n_reps = params.get("n_replications", 5)
+    seed = params.get("random_seed", 42)
+    demand_train, demand_eval = _split_demand(demand, params)
+
+    for spec in policy_specs:
+        name = spec["name"]
+        try:
+            if spec["kind"] == "construct":
+                policy_fn = spec["cls"](demand_train, cfg, **spec.get("kw", {}))
+            elif spec["kind"] == "optimize":
+                opt = spec["cls"](demand_train, cfg)
+                opt.optimize(verbose=False)
+                policy_fn = opt.make_policy()
+            elif spec["kind"] == "rl_train":
+                agent = spec["cls"](InventoryEnv.STATE_DIM, cfg)
+                agent.train(demand_train, cfg, verbose=False)
+                policy_fn = agent.make_policy()
+            else:
+                raise ValueError(f"kind desconhecido: {spec['kind']}")
+            kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
+            rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
+        except Exception as e:
+            logs.append(f"[{log_tag}] {name} failed for {key}: {e}")
+
+    return rows, logs
+
+
+def _worker_proposed(key, cfg, demand, meta_row, params):
+    """Worker de processo para GA-DQN/GA-PPO — mesma logica de 2 fases do
+    loop sequencial original (GA gera limiares, RL parte deles)."""
+    from simulation.core.policies import (
+        GAPolicyOptimizer, DQNPolicy, PPOPolicy, HybridGADQN, HybridGAPPO,
+    )
+    from simulation.core.inventory_env import InventoryEnv
+
+    w, s, i = key
+    rows = []
+    logs = [f"[Proposed] ({w}, {s}, {i})"]
+    n_reps = params.get("n_replications", 5)
+    seed = params.get("random_seed", 42)
+    state_dim = InventoryEnv.STATE_DIM
+    hybrid_params = params.get("hybrid", {})
+    demand_train, demand_eval = _split_demand(demand, params)
+
+    try:
+        ga_cfg = dict(cfg)
+        ga_cfg["GENETIC_ALGORITHM"] = dict(cfg["GENETIC_ALGORITHM"])
+        ga_cfg["GENETIC_ALGORITHM"]["n_generations"] = hybrid_params.get(
+            "ga_generations", cfg["GENETIC_ALGORITHM"]["n_generations"])
+        ga = GAPolicyOptimizer(demand_train, ga_cfg)
+        ga.optimize(verbose=False)
+        ga_params = ga.best
+    except Exception as e:
+        logs.append(f"[Proposed] GA phase failed for {key}: {e}")
+        return rows, logs
+
+    buffer_size = hybrid_params.get("buffer_size", 1000)
+
+    try:
+        rl_cfg = dict(cfg)
+        rl_cfg["DQN"] = dict(cfg["DQN"])
+        rl_cfg["DQN"]["episodes"] = hybrid_params.get("rl_episodes", cfg["DQN"]["episodes"])
+        dqn = DQNPolicy(state_dim, rl_cfg)
+        dqn.prepopulate_from_ga(demand_train, cfg, ga_params, n_transitions=buffer_size)
+        dqn.train(demand_train, rl_cfg, verbose=False)
+        hybrid_dqn = HybridGADQN(ga_params, dqn)
+        policy_fn = hybrid_dqn.make_policy()
+        kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
+        rows.append(_kpi_row(w, s, i, "GA-DQN", kpis, meta_row, 0))
+    except Exception as e:
+        logs.append(f"[Proposed] GA-DQN failed for {key}: {e}")
+
+    try:
+        rl_cfg = dict(cfg)
+        rl_cfg["PPO"] = dict(cfg["PPO"])
+        rl_cfg["PPO"]["episodes"] = hybrid_params.get("rl_episodes", cfg["PPO"]["episodes"])
+        ppo = PPOPolicy(state_dim, rl_cfg)
+        ppo.warmstart_from_ga(demand_train, cfg, ga_params, n_episodes=20)
+        ppo.train(demand_train, rl_cfg, verbose=False)
+        hybrid_ppo = HybridGAPPO(ga_params, ppo)
+        policy_fn = hybrid_ppo.make_policy()
+        kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
+        rows.append(_kpi_row(w, s, i, "GA-PPO", kpis, meta_row, 0))
+    except Exception as e:
+        logs.append(f"[Proposed] GA-PPO failed for {key}: {e}")
+
+    return rows, logs
 
 POLICY_NAMES = {
     "classical":      ["EOQ", "sS", "Newsvendor"],
@@ -69,6 +258,11 @@ def _build_cfg(params: dict) -> dict:
             "fitness_weights":  params.get("ga", {}).get("fitness_weights", [1.0, 0.0001]),
             "alpha_min":        params.get("alpha_min", 0.70),
             "penalty_weight":   params.get("ga", {}).get("penalty_weight", 10.0),
+            # 2026-08-18: TR (risco de ruptura, ponderado por 1-NS) e BE
+            # (punicao por compra excessiva, BE>1) somados a fitness_cost
+            # -- ver _risk_terms em core/inventory_env_torch.py.
+            "tr_weight":        params.get("ga", {}).get("tr_weight", 1.0),
+            "be_weight":        params.get("ga", {}).get("be_weight", 1.0),
             "seed":             params.get("random_seed", 42),
             "search_space":     {"ROP": [0, 2000], "Q": [1, 2000], "SS": [0, 1000]},
         },
@@ -265,34 +459,13 @@ def run_classical_policies(scenarios: pd.DataFrame,
         log.info("Políticas clássicas desativadas — pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[Classical] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        for PolicyClass, name in [
-            (EOQPolicy, "EOQ"), (SsPolicyClass, "sS"), (NewsvendorPolicy, "Newsvendor")
-        ]:
-            try:
-                # Parâmetros estimados só com dados de treino
-                pol = PolicyClass(demand_train, cfg)
-                # KPIs avaliados no período de teste
-                kpis = _run_episode(demand_eval, cfg, pol, n_reps, seed)
-                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
-            except Exception as e:
-                log.warning("[Classical] %s failed for %s: %s", name, key, e)
-
-    return pd.DataFrame(rows)
+    policy_specs = [
+        {"kind": "construct", "cls": EOQPolicy, "name": "EOQ"},
+        {"kind": "construct", "cls": SsPolicyClass, "name": "sS"},
+        {"kind": "construct", "cls": NewsvendorPolicy, "name": "Newsvendor"},
+    ]
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_generic, (policy_specs, "Classical"), "Classical")
 
 
 def run_sota_classical_policies(scenarios: pd.DataFrame,
@@ -320,36 +493,15 @@ def run_sota_classical_policies(scenarios: pd.DataFrame,
         log.info("Políticas clássicas SOTA desativadas — pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
     alpha_min = params.get("alpha_min", 0.70)
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[SOTA-Classical] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        for PolicyClass, name, kw in [
-            (PILPolicy,               "PIL",               {"alpha_min": alpha_min}),
-            (CappedBaseStockPolicy,   "CappedBaseStock",   {"alpha_min": alpha_min}),
-            (BigDataNewsvendorPolicy, "BigDataNewsvendor", {}),
-        ]:
-            try:
-                # Calibração só na janela de treino; avaliação no período de teste
-                pol = PolicyClass(demand_train, cfg, **kw)
-                kpis = _run_episode(demand_eval, cfg, pol, n_reps, seed)
-                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
-            except Exception as e:
-                log.warning("[SOTA-Classical] %s failed for %s: %s", name, key, e)
-
-    return pd.DataFrame(rows)
+    policy_specs = [
+        {"kind": "construct", "cls": PILPolicy, "name": "PIL", "kw": {"alpha_min": alpha_min}},
+        {"kind": "construct", "cls": CappedBaseStockPolicy, "name": "CappedBaseStock",
+         "kw": {"alpha_min": alpha_min}},
+        {"kind": "construct", "cls": BigDataNewsvendorPolicy, "name": "BigDataNewsvendor"},
+    ]
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_generic, (policy_specs, "SOTA-Classical"), "SOTA-Classical")
 
 
 def run_zabraoui_policies(scenarios: pd.DataFrame,
@@ -375,34 +527,13 @@ def run_zabraoui_policies(scenarios: pd.DataFrame,
         log.info("Politicas Zabraoui desativadas - pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[Zabraoui] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        for PolicyClass, name in [
-            (MinMaxPolicy, "MinMax"),
-            (FixedIntervalPolicy, "FixedInterval"),
-            (VendorResponsivePolicy, "VendorResponsive"),
-        ]:
-            try:
-                pol = PolicyClass(demand_train, cfg)
-                kpis = _run_episode(demand_eval, cfg, pol, n_reps, seed)
-                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
-            except Exception as e:
-                log.warning("[Zabraoui] %s failed for %s: %s", name, key, e)
-
-    return pd.DataFrame(rows)
+    policy_specs = [
+        {"kind": "construct", "cls": MinMaxPolicy, "name": "MinMax"},
+        {"kind": "construct", "cls": FixedIntervalPolicy, "name": "FixedInterval"},
+        {"kind": "construct", "cls": VendorResponsivePolicy, "name": "VendorResponsive"},
+    ]
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_generic, (policy_specs, "Zabraoui"), "Zabraoui")
 
 
 def run_metaheuristic_policies(scenarios: pd.DataFrame,
@@ -418,39 +549,14 @@ def run_metaheuristic_policies(scenarios: pd.DataFrame,
         log.info("Metaheurísticas desativadas — pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[Metaheuristic] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        for OptimizerClass, name in [
-            (GAPolicyOptimizer, "GA"),
-            (SimulatedAnnealingPolicy, "SA"),
-            (PSOPolicy, "PSO"),
-            (DEPolicy, "DE"),
-        ]:
-            try:
-                # Otimiza parâmetros (ROP, Q, SS) usando apenas dados históricos
-                opt = OptimizerClass(demand_train, cfg)
-                opt.optimize(verbose=False)
-                policy_fn = opt.make_policy()
-                # Avalia a política resultante no período de teste
-                kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
-            except Exception as e:
-                log.warning("[Metaheuristic] %s failed for %s: %s", name, key, e)
-
-    return pd.DataFrame(rows)
+    policy_specs = [
+        {"kind": "optimize", "cls": GAPolicyOptimizer, "name": "GA"},
+        {"kind": "optimize", "cls": SimulatedAnnealingPolicy, "name": "SA"},
+        {"kind": "optimize", "cls": PSOPolicy, "name": "PSO"},
+        {"kind": "optimize", "cls": DEPolicy, "name": "DE"},
+    ]
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_generic, (policy_specs, "Metaheuristic"), "Metaheuristic")
 
 
 def run_rl_policies(scenarios: pd.DataFrame,
@@ -459,43 +565,18 @@ def run_rl_policies(scenarios: pd.DataFrame,
                     params: dict) -> pd.DataFrame:
     """DQN, PPO, SARSA × todas as séries × n_replications."""
     from simulation.core.policies import DQNPolicy, PPOPolicy, SARSAPolicy
-    from simulation.core.inventory_env import InventoryEnv
 
     if not params.get("policies", {}).get("reinforcement_learning", True):
         log.info("Políticas RL desativadas — pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
-    state_dim = InventoryEnv.STATE_DIM
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[RL] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        for AgentClass, name in [
-            (DQNPolicy, "DQN"), (PPOPolicy, "PPO"), (SARSAPolicy, "SARSA")
-        ]:
-            try:
-                agent = AgentClass(state_dim, cfg)
-                # Treina o agente apenas com dados históricos (sem ver o período de teste)
-                agent.train(demand_train, cfg, verbose=False)
-                policy_fn = agent.make_policy()
-                # Avalia no período de teste
-                kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
-            except Exception as e:
-                log.warning("[RL] %s failed for %s: %s", name, key, e)
-
-    return pd.DataFrame(rows)
+    policy_specs = [
+        {"kind": "rl_train", "cls": DQNPolicy, "name": "DQN"},
+        {"kind": "rl_train", "cls": PPOPolicy, "name": "PPO"},
+        {"kind": "rl_train", "cls": SARSAPolicy, "name": "SARSA"},
+    ]
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_generic, (policy_specs, "RL"), "RL")
 
 
 def run_proposed_architecture(scenarios: pd.DataFrame,
@@ -506,84 +587,12 @@ def run_proposed_architecture(scenarios: pd.DataFrame,
     GA-DQN e GA-PPO: arquitetura proposta da dissertação.
     GA inicializa os limiares (ROP, Q, SS); RL ajusta a quantidade pedida.
     """
-    from simulation.core.policies import (
-        GAPolicyOptimizer, DQNPolicy, PPOPolicy,
-        HybridGADQN, HybridGAPPO,
-    )
-    from simulation.core.inventory_env import InventoryEnv
-
     if not params.get("policies", {}).get("proposed_architecture", True):
         log.info("Arquitetura proposta desativada — pulando")
         return pd.DataFrame()
 
-    n_reps = params.get("n_replications", 5)
-    seed = params.get("random_seed", 42)
-    state_dim = InventoryEnv.STATE_DIM
-    hybrid_params = params.get("hybrid", {})
-    rows = []
-    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
-
-    for key, cfg in scaled_params.items():
-        demand = _get_series(scenarios, key)
-        if len(demand) < 5:
-            continue
-        w, s, i = key
-        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
-        log.info("[Proposed] (%s, %s, %s)", w, s, i)
-
-        demand_train, demand_eval = _split_demand(demand, params)
-
-        # Fase 1: GA otimiza os limiares de reposição (apenas dados de treino)
-        try:
-            ga_cfg = dict(cfg)
-            ga_cfg["GENETIC_ALGORITHM"] = dict(cfg["GENETIC_ALGORITHM"])
-            ga_cfg["GENETIC_ALGORITHM"]["n_generations"] = hybrid_params.get(
-                "ga_generations", cfg["GENETIC_ALGORITHM"]["n_generations"])
-            ga = GAPolicyOptimizer(demand_train, ga_cfg)
-            ga.optimize(verbose=False)
-            ga_params = ga.best
-        except Exception as e:
-            log.warning("[Proposed] GA phase failed for %s: %s", key, e)
-            continue
-
-        buffer_size = hybrid_params.get("buffer_size", 1000)
-
-        # Fase 2a: GA-DQN
-        # (i) GA já executou; (ii) pré-popula buffer; (iii) DQN 200 ep — proposta seção 4.4
-        try:
-            rl_cfg = dict(cfg)
-            rl_cfg["DQN"] = dict(cfg["DQN"])
-            rl_cfg["DQN"]["episodes"] = hybrid_params.get(
-                "rl_episodes", cfg["DQN"]["episodes"])
-            dqn = DQNPolicy(state_dim, rl_cfg)
-            dqn.prepopulate_from_ga(demand_train, cfg, ga_params,
-                                    n_transitions=buffer_size)
-            dqn.train(demand_train, rl_cfg, verbose=False)
-            hybrid_dqn = HybridGADQN(ga_params, dqn)
-            policy_fn = hybrid_dqn.make_policy()
-            kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-            rows.append(_kpi_row(w, s, i, "GA-DQN", kpis, meta_row, 0))
-        except Exception as e:
-            log.warning("[Proposed] GA-DQN failed for %s: %s", key, e)
-
-        # Fase 2b: GA-PPO
-        # (i) GA já executou; (ii) warm-start PPO; (iii) PPO 200 ep — proposta seção 4.4
-        try:
-            rl_cfg = dict(cfg)
-            rl_cfg["PPO"] = dict(cfg["PPO"])
-            rl_cfg["PPO"]["episodes"] = hybrid_params.get(
-                "rl_episodes", cfg["PPO"]["episodes"])
-            ppo = PPOPolicy(state_dim, rl_cfg)
-            ppo.warmstart_from_ga(demand_train, cfg, ga_params, n_episodes=20)
-            ppo.train(demand_train, rl_cfg, verbose=False)
-            hybrid_ppo = HybridGAPPO(ga_params, ppo)
-            policy_fn = hybrid_ppo.make_policy()
-            kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-            rows.append(_kpi_row(w, s, i, "GA-PPO", kpis, meta_row, 0))
-        except Exception as e:
-            log.warning("[Proposed] GA-PPO failed for %s: %s", key, e)
-
-    return pd.DataFrame(rows)
+    return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
+                                   _worker_proposed, (), "Proposed")
 
 
 def aggregate_kpis(kpis_classical: pd.DataFrame,
