@@ -94,6 +94,32 @@ proposal_comparison:
   type: pandas.CSVDataset
   filepath: data/08_reporting/bot/proposal_comparison.csv
 
+# 2026-08-18: isolamento do PSE (policy_selection) -- pedido do usuario pra
+# rodar o classificador supervisionado real (nao so o POD heuristico) apos
+# a producao terminar. Sem isso, `policy_labels`/`policy_selector_model`/
+# `policy_selector_metrics`/`policy_recommendations` cairiam no caminho
+# base (so definido em conf/base/catalog.yml), reproduzindo exatamente o
+# padrao do incidente #2.
+policy_labels:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/policy_labels.parquet
+
+policy_selector_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/bot/policy_selector_model.pkl
+
+policy_selector_metrics:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/policy_selector_metrics.parquet
+
+policy_selector_profile_gain:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/policy_selector_profile_gain.parquet
+
+policy_recommendations:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/policy_recommendations.parquet
+
 final_latex_tables:
   type: partitions.PartitionedDataset
   path: data/08_reporting/bot/tex

@@ -110,6 +110,9 @@ class BatchInventoryEnv:
         self.stockout_events = torch.zeros(B, dtype=dt, device=dev)
         self._order_sum = torch.zeros(B, dtype=dt, device=dev)
         self._order_sqsum = torch.zeros(B, dtype=dt, device=dev)
+        self.holding_cost = torch.zeros(B, dtype=dt, device=dev)
+        self.stockout_cost = torch.zeros(B, dtype=dt, device=dev)
+        self.order_cost = torch.zeros(B, dtype=dt, device=dev)
         return self.state()
 
     def state(self) -> torch.Tensor:
@@ -150,10 +153,14 @@ class BatchInventoryEnv:
         self.inventory = torch.clamp(self.inventory - d, min=0.0)
 
         # 3. custos
-        cost = (self.h * self.inventory
-                + self.cs * shortage
-                + placed * (self.of + self.ou * order))
+        h_cost = self.h * self.inventory
+        s_cost = self.cs * shortage
+        o_cost = placed * (self.of + self.ou * order)
+        cost = h_cost + s_cost + o_cost
         self.total_cost = self.total_cost + cost
+        self.holding_cost = self.holding_cost + h_cost
+        self.stockout_cost = self.stockout_cost + s_cost
+        self.order_cost = self.order_cost + o_cost
         self.served = self.served + served
         self.demand_total = self.demand_total + d
         self.stockout_events = self.stockout_events + (shortage > 0).to(self.dtype)
@@ -214,6 +221,10 @@ class BatchInventoryEnv:
             "N_Orders": self.n_orders,
             "OrderFrequency": of,
             "BullwhipEffect": bw,
+            "HoldingCost": self.holding_cost,
+            "StockoutCost": self.stockout_cost,
+            "OrderCost": self.order_cost,
+            "AvgInventory": self.holding_cost / max(self.h, 1e-9) / T,
         }
 
 

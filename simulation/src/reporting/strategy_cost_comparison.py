@@ -78,13 +78,22 @@ STRATEGY_LABELS = {
 # Carregamento e junção
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _load() -> pd.DataFrame:
-    log.info("Lendo kpis.parquet …")
-    kpis = pd.read_parquet(KPI_PATH)
-    log.info("Lendo demand_profiles.parquet …")
-    prof = pd.read_parquet(PROF_PATH)[
-        ["warehouse", "store_id", "item_id", "operational_profile"]
-    ]
+def _load(kpis: pd.DataFrame | None = None, profiles: pd.DataFrame | None = None,
+          kpi_path: Path = KPI_PATH, prof_path: Path = PROF_PATH) -> pd.DataFrame:
+    """
+    2026-08-18: aceita `kpis`/`profiles` (DataFrames já carregados pelo
+    catálogo Kedro) -- o script era hardcoded em
+    data/07_model_output/kpis.parquet, sem isolamento por ambiente (mesmo
+    problema corrigido em profile_policy_analysis.py). Sem argumentos,
+    mantém o comportamento antigo (retrocompat CLI, base/Bahia).
+    """
+    if kpis is None:
+        log.info("Lendo %s …", kpi_path)
+        kpis = pd.read_parquet(kpi_path)
+    if profiles is None:
+        log.info("Lendo %s …", prof_path)
+        profiles = pd.read_parquet(prof_path)
+    prof = profiles[["warehouse", "store_id", "item_id", "operational_profile"]]
     df = kpis.merge(prof, on=["warehouse", "store_id", "item_id"], how="left")
     n_series = df[["warehouse", "store_id", "item_id"]].drop_duplicates().shape[0]
     n_profiles = df["operational_profile"].nunique()
@@ -514,26 +523,38 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
 
 def _validation_report(df_raw: pd.DataFrame, global_agg: pd.DataFrame,
                         dominant: pd.DataFrame, strategy: pd.DataFrame,
-                        best_global: str, out_path: Path) -> None:
+                        best_global: str, out_path: Path,
+                        n_series_expected: int | None = None,
+                        policies_expected: list[str] | None = None) -> None:
+    """
+    2026-08-18: "Checagem 1/2" eram hardcoded pra Bahia (145 séries, lista
+    fixa das 12 políticas antigas) -- sempre reportavam "DIVERGE" contra
+    "bot"/M5 (contagens diferentes por design) e contra o portfólio atual
+    de 18 políticas. Agora comparam contra `n_series_expected`/
+    `policies_expected`, passados por `run()` a partir dos próprios dados
+    carregados (checagem de auto-consistência, não mais um número fixo de
+    uma única base).
+    """
+    n = df_raw[['warehouse','store_id','item_id']].drop_duplicates().shape[0]
+    n_series_expected = n_series_expected if n_series_expected is not None else n
+    policies = sorted(df_raw.policy.unique())
+    expected = sorted(policies_expected) if policies_expected is not None else policies
+
     lines = [
         "# Validação — Comparação de Estratégias de Política de Inventário",
         f"\nGerado em: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         "\n## Fonte dos dados",
-        "- KPIs: `data/07_model_output/kpis.parquet`",
-        "- Perfis: `data/04_feature/demand_profiles.parquet`",
+        "- KPIs: `kpis.parquet` (caminho isolado por ambiente, ver conf/*/catalog.yml)",
+        "- Perfis: `demand_profiles.parquet` (idem)",
         "\n## Cobertura",
-        f"- Séries (loja, produto): **{df_raw[['warehouse','store_id','item_id']].drop_duplicates().shape[0]}** (Experimento 2, BA)",
+        f"- Séries (loja, produto): **{n}**",
         f"- Políticas avaliadas: **{df_raw.policy.nunique()}**",
         f"- Perfis operacionais: **{df_raw.operational_profile.nunique()}** de 5 definidos",
         "\n## Checagem 1 — Quantidade de séries",
     ]
-    n = df_raw[['warehouse','store_id','item_id']].drop_duplicates().shape[0]
-    lines.append(f"  Esperado: 145 | Encontrado: {n} | {'OK' if n == 145 else 'DIVERGE'}")
+    lines.append(f"  Esperado: {n_series_expected} | Encontrado: {n} | {'OK' if n == n_series_expected else 'DIVERGE'}")
 
     lines.append("\n## Checagem 2 — Políticas")
-    policies = sorted(df_raw.policy.unique())
-    expected = sorted(["EOQ", "sS", "Newsvendor", "GA", "SA", "PSO", "DE",
-                        "DQN", "PPO", "SARSA", "GA-DQN", "GA-PPO"])
     lines.append(f"  Encontradas: {policies}")
     lines.append(f"  Esperadas:   {expected}")
     lines.append(f"  Match: {'OK' if policies == expected else 'DIVERGE'}")
@@ -752,54 +773,67 @@ def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
 # Entrada principal
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run() -> None:
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+def run(kpis: pd.DataFrame | None = None, profiles: pd.DataFrame | None = None,
+        out_dir: Path | str | None = None) -> pd.DataFrame:
+    """
+    2026-08-18: aceita `kpis`/`profiles`/`out_dir` explícitos (mesmo padrão
+    de correção de `profile_policy_analysis.run()`). Retorna a tabela
+    `strategy` (A1/A2/B/C) -- essa é a resposta direta à pergunta "a
+    seleção por perfil (B) é melhor que a única global (A1)?": ver colunas
+    `red_pct_vs_A1`/`red_pct_vs_A2` e o teste de hipótese pareado salvo em
+    `strategy_hypothesis_tests.csv` (Wilcoxon, H1: CTI_B < CTI_A1).
+    """
+    out_dir = Path(out_dir) if out_dir is not None else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-    df = _load()
+    df = _load(kpis, profiles)
+    n_series = df[["warehouse", "store_id", "item_id"]].drop_duplicates().shape[0]
+    n_policies = df["policy"].nunique()
 
     # 1. Métricas globais
     global_agg = _global_metrics(df)
-    global_agg.to_csv(OUT_DIR / "policy_global_metrics.csv", index=False)
-    log.info(f"Métricas globais: {OUT_DIR / 'policy_global_metrics.csv'}")
+    global_agg.to_csv(out_dir / "policy_global_metrics.csv", index=False)
+    log.info(f"Métricas globais: {out_dir / 'policy_global_metrics.csv'}")
 
     best_global = _pick_global_best(global_agg)
     log.info(f"Política única global (A1): {POLICY_DISPLAY.get(best_global, best_global)}")
 
     # 2. Métricas por perfil
     profile_agg = _profile_metrics(df)
-    profile_agg.to_csv(OUT_DIR / "profile_policy_metrics.csv", index=False)
-    log.info(f"Métricas por perfil: {OUT_DIR / 'profile_policy_metrics.csv'}")
+    profile_agg.to_csv(out_dir / "profile_policy_metrics.csv", index=False)
+    log.info(f"Métricas por perfil: {out_dir / 'profile_policy_metrics.csv'}")
 
     # 3. Dominância por perfil
     dominant = _dominant_by_profile(profile_agg)
-    dominant.to_csv(OUT_DIR / "dominant_policy_by_profile.csv", index=False)
-    log.info(f"Dominância por perfil: {OUT_DIR / 'dominant_policy_by_profile.csv'}")
+    dominant.to_csv(out_dir / "dominant_policy_by_profile.csv", index=False)
+    log.info(f"Dominância por perfil: {out_dir / 'dominant_policy_by_profile.csv'}")
 
     # 4. CTI por estratégia, por série
     series_df = _strategy_per_series(df, best_global, dominant)
     paired_df = _paired_strategy_observations(df, best_global, dominant)
-    paired_df.to_csv(OUT_DIR / "strategy_paired_observations.csv", index=False)
-    log.info(f"Observacoes pareadas: {OUT_DIR / 'strategy_paired_observations.csv'}")
+    paired_df.to_csv(out_dir / "strategy_paired_observations.csv", index=False)
+    log.info(f"Observacoes pareadas: {out_dir / 'strategy_paired_observations.csv'}")
 
     # 5. Tabela de comparação de estratégias
     strategy = _strategy_table(series_df, global_agg, best_global, dominant)
-    strategy.to_csv(OUT_DIR / "strategy_cost_comparison.csv", index=False)
+    strategy.to_csv(out_dir / "strategy_cost_comparison.csv", index=False)
     hypothesis_tests = _strategy_hypothesis_tests(paired_df)
-    hypothesis_tests.to_csv(OUT_DIR / "strategy_hypothesis_tests.csv", index=False)
-    log.info(f"Testes pareados: {OUT_DIR / 'strategy_hypothesis_tests.csv'}")
-    log.info(f"Comparação de estratégias: {OUT_DIR / 'strategy_cost_comparison.csv'}")
+    hypothesis_tests.to_csv(out_dir / "strategy_hypothesis_tests.csv", index=False)
+    log.info(f"Testes pareados: {out_dir / 'strategy_hypothesis_tests.csv'}")
+    log.info(f"Comparação de estratégias: {out_dir / 'strategy_cost_comparison.csv'}")
 
     # 6. Relatório de validação
     _validation_report(df, global_agg, dominant, strategy, best_global,
-                       OUT_DIR / "strategy_cost_validation.md")
+                       out_dir / "strategy_cost_validation.md",
+                       n_series_expected=n_series, policies_expected=sorted(df["policy"].unique()))
 
     # 7. Tabela LaTeX
-    _latex_table(strategy, best_global, dominant, OUT_DIR / "table_strategy_comparison.tex")
-    _latex_hypothesis_table(hypothesis_tests, OUT_DIR / "table_strategy_hypothesis_tests.tex")
+    _latex_table(strategy, best_global, dominant, out_dir / "table_strategy_comparison.tex")
+    _latex_hypothesis_table(hypothesis_tests, out_dir / "table_strategy_hypothesis_tests.tex")
 
     # Sumário no console
     log.info("=" * 60)
-    log.info("SUMÁRIO DA COMPARAÇÃO DE ESTRATÉGIAS")
+    log.info("SUMÁRIO DA COMPARAÇÃO DE ESTRATÉGIAS (%d séries, %d políticas)", n_series, n_policies)
     log.info("=" * 60)
     for _, row in strategy.iterrows():
         log.info(
@@ -807,7 +841,8 @@ def run() -> None:
             f" | NS={row.get('NS_medio','N/A')}"
             f" | red_vs_A1={row.get('red_pct_vs_A1','—')}%"
         )
-    log.info(f"Artefatos em: {OUT_DIR}")
+    log.info(f"Artefatos em: {out_dir}")
+    return strategy
 
 
 if __name__ == "__main__":

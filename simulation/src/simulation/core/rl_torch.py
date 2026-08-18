@@ -284,11 +284,19 @@ class DoubleDQNAgent:
             ep += 1
         return added
 
-    def train(self, demand, cfg, verbose: bool = True) -> None:
+    def train(self, demand, cfg, verbose: bool = True, demand_pool=None) -> None:
+        """
+        `demand_pool`: 2026-08-18, pedido do usuário -- treino "com perfil"
+        (pooling). Quando dado, cada episódio sorteia (round-robin) uma
+        série do pool em vez de sempre usar `demand` -- o agente aprende
+        uma política que generaliza sobre as séries do perfil, não uma
+        rede por série. `demand_pool=None` preserva o comportamento antigo.
+        """
         from simulation.core.inventory_env import InventoryEnv
         n_ep = int(cfg.get("DQN", {}).get("episodes", 500))
         for ep in range(n_ep):
-            env = InventoryEnv(demand, cfg, seed=ep)
+            demand_ep = demand_pool[ep % len(demand_pool)] if demand_pool else demand
+            env = InventoryEnv(demand_ep, cfg, seed=ep)
             s = env.reset()
             done, tot = False, 0.0
             while not done:
@@ -478,10 +486,12 @@ class PPOAgent:
             self._update(S, A, LP, adv, ret, V)
             self.reward_hist.append(float(R.sum()))
 
-    def train(self, demand, cfg, verbose: bool = True) -> None:
+    def train(self, demand, cfg, verbose: bool = True, demand_pool=None) -> None:
+        """`demand_pool`: mesma semântica de pooling do DoubleDQNAgent.train."""
         n_ep = int(cfg.get("PPO", {}).get("episodes", 500))
         for ep in range(n_ep):
-            S, A, R, LP, V, D = self._rollout(demand, cfg, seed=ep)
+            demand_ep = demand_pool[ep % len(demand_pool)] if demand_pool else demand
+            S, A, R, LP, V, D = self._rollout(demand_ep, cfg, seed=ep)
             adv, ret = self._gae(R, V, D, last_value=0.0)
             self._update(S, A, LP, adv, ret, V)
             self.reward_hist.append(float(R.sum()))
@@ -556,11 +566,13 @@ class ExpectedSARSAAgent:
         pi[best] += 1.0 - self.eps
         return float(np.dot(pi, q))
 
-    def train(self, demand, cfg, verbose: bool = True) -> None:
+    def train(self, demand, cfg, verbose: bool = True, demand_pool=None) -> None:
+        """`demand_pool`: mesma semântica de pooling do DoubleDQNAgent.train."""
         from simulation.core.inventory_env import InventoryEnv
         n_ep = int(cfg.get("SARSA", {}).get("episodes", 500))
         for ep in range(n_ep):
-            env = InventoryEnv(demand, cfg, seed=ep)
+            demand_ep = demand_pool[ep % len(demand_pool)] if demand_pool else demand
+            env = InventoryEnv(demand_ep, cfg, seed=ep)
             s = env.reset()
             done, tot = False, 0.0
             si = self._discretize(s)

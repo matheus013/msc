@@ -37,6 +37,22 @@ def register_pipelines() -> dict[str, Pipeline]:
     ps  = policy_selection.create_pipeline()
     fr  = final_report.create_pipeline()
     dir_ = data_ingestion.create_resume_pipeline()
+    # 2026-08-18: saida do AIPE pedida pelo usuario -- tabela com o score de
+    # cada uma das 18 politicas por perfil operacional. Inclui `dp`
+    # (classify_operational_profiles) de proposito: a criacao dos perfis
+    # faz parte do processo, nao so o consumo de um demand_profiles.parquet
+    # que ja exista. So depende de `kpis`/`scenarios`/`scenarios_meta`, que
+    # benchmark_final/benchmark_bot/benchmark_m5 ja produzem -- roda DEPOIS,
+    # sem reexecutar a simulacao (~18 politicas x N series e a parte cara).
+    #
+    # `ps` (policy_selection) incluido a pedido do usuario: o POD de `dp`
+    # rotula a "politica dominante" por uma heuristica FIXA no codigo (nao
+    # aprendida); `ps` e o classificador supervisionado de verdade --
+    # aprende de kpis (serie x politica, o mesmo dado que gera o score da
+    # tabela acima) qual politica recomendar por serie, via XGBoost treinado
+    # em demand_features. Datasets isolados por ambiente em
+    # conf/{bot,m5}/catalog.yml (senao reproduziria o incidente #2).
+    prof_analysis = dp + reporting.create_profile_analysis_pipeline() + ps
 
     return {
         # Pipeline completo AIPE: ingestão → perfil → simulação → seleção → validação → relatório
@@ -76,4 +92,12 @@ def register_pipelines() -> dict[str, Pipeline]:
         # isolado em data/*/bot/, pré-passo DuckDB para caber na RAM):
         #     kedro run --pipeline benchmark_bot --env bot
         "benchmark_bot":    di + dp + inv + fr,
+        # Saida do AIPE: score de cada uma das 18 politicas por perfil
+        # operacional (nao so a vencedora), recalculando os perfis como
+        # parte do processo, MAIS o treino do PSE (classificador
+        # supervisionado real, nao a heuristica fixa do POD). Roda depois de
+        # benchmark_final/_bot/_m5 (usa os `kpis`/`scenarios` ja produzidos,
+        # nao reexecuta a simulacao):
+        #     kedro run --pipeline profile_analysis [--env bot|m5]
+        "profile_analysis": prof_analysis,
     }

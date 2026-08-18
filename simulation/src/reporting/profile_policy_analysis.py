@@ -49,13 +49,27 @@ PROF_PATH   = DATA_DIR / "04_feature" / "demand_profiles.parquet"
 OUT_DIR     = DATA_DIR / "08_reporting" / "profiles"
 
 NS_THRESHOLD = 0.70
+PENALTY_WEIGHT = 10.0  # mesmo peso da restrição de NS usado em constrained_cost (Eq. 4.2)
 
-POLICY_ORDER = ["EOQ", "sS", "Newsvendor", "GA", "SA", "PSO", "DE",
+# 2026-08-18: portfolio ampliado de 12 para 18 politicas (reimplementacao
+# 66d5ad8 + adocao Zabraoui). Faltavam as 6 novas aqui -- sem elas, o
+# heatmap (`_heatmap`, que filtra por `p in POLICY_ORDER`) as descartava
+# silenciosamente das figuras, mesmo que a tabela de dominancia (que nao
+# usa POLICY_ORDER) ja as considerasse corretamente.
+POLICY_ORDER = ["EOQ", "sS", "Newsvendor",
+                "PIL", "CappedBaseStock", "BigDataNewsvendor",
+                "MinMax", "FixedInterval", "VendorResponsive",
+                "GA", "SA", "PSO", "DE",
                 "DQN", "PPO", "SARSA", "GA-DQN", "GA-PPO"]
 
 POLICY_DISPLAY = {
     "sS": "(s,S)",
     "Newsvendor": "Jornaleiro",
+    "CappedBaseStock": "Capped Base-Stock",
+    "BigDataNewsvendor": "Big Data Newsvendor",
+    "MinMax": "Min-Max",
+    "FixedInterval": "Fixed Interval",
+    "VendorResponsive": "Vendor-Responsive",
 }
 
 PROFILE_DISPLAY = {
@@ -81,11 +95,19 @@ plt.rcParams.update({
 # I/O
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
-    log.info("Lendo kpis.parquet …")
-    kpis = pd.read_parquet(KPI_PATH)
-    log.info("Lendo demand_profiles.parquet …")
-    profiles = pd.read_parquet(PROF_PATH)
+def _load_data(kpi_path: Path = KPI_PATH, prof_path: Path = PROF_PATH
+               ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    2026-08-18: aceita `kpi_path`/`prof_path` explícitos -- o script era
+    hardcoded em `data/07_model_output/kpis.parquet`, sem noção de ambiente
+    (`m5`/`bot` isolam esses datasets em `data/*/m5/` e `data/*/bot/`, ver
+    AJUSTES_INFRA item #8). Chamado sem argumentos, mantém o comportamento
+    antigo (base/Bahia) por retrocompatibilidade com o uso via CLI.
+    """
+    log.info("Lendo %s …", kpi_path)
+    kpis = pd.read_parquet(kpi_path)
+    log.info("Lendo %s …", prof_path)
+    profiles = pd.read_parquet(prof_path)
     return kpis, profiles
 
 
@@ -107,11 +129,27 @@ def _merge(kpis: pd.DataFrame, profiles: pd.DataFrame) -> pd.DataFrame:
 # Aggregation
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _aggregate_by_profile(merged: pd.DataFrame) -> pd.DataFrame:
-    """Agrega KPIs por (operational_profile, policy)."""
+def _aggregate_by_profile(merged: pd.DataFrame, ns_threshold: float = NS_THRESHOLD,
+                          penalty_weight: float = PENALTY_WEIGHT) -> pd.DataFrame:
+    """
+    Agrega KPIs por (operational_profile, policy) -- esta é a saída principal
+    do AIPE pedida pelo usuário: uma tabela com o SCORE de cada uma das 18
+    políticas para cada perfil operacional (não só a política vencedora).
+
+    `score`: mesma formulação restrita da Eq. 4.2 já usada em
+    `constrained_cost`/`_eval_static` em todo o resto do projeto (GA/SA/
+    PSO/DE) -- reaproveitada aqui, não uma métrica nova:
+
+        score = -(TIC_mean + max(0, ns_threshold - NS_mean) * penalty_weight
+                            * max(TIC_mean, 1))
+
+    Quanto maior o score, melhor a política para aquele perfil. Políticas
+    que não atingem `ns_threshold` de NS médio são penalizadas
+    proporcionalmente ao próprio TIC (mesmo truque de escala do resto do
+    projeto), não descartadas -- o score continua comparável entre todas
+    as 18 políticas em qualquer perfil.
+    """
     kpi_cols = [c for c in ["TIC", "NS", "TR", "BE", "FP"] if c in merged.columns]
-    agg_fns  = {c: ["mean", "std"] for c in kpi_cols}
-    agg_fns["store_id"] = "count"  # para contar n_series (sem duplicata por política)
 
     grp = merged.groupby(["operational_profile", "policy"])
     agg = grp[kpi_cols].agg(["mean", "std"])
@@ -131,20 +169,32 @@ def _aggregate_by_profile(merged: pd.DataFrame) -> pd.DataFrame:
     agg["policy_display"] = agg["policy"].map(
         lambda x: POLICY_DISPLAY.get(x, x)
     )
+
+    tic_ref = agg["TIC_mean"].clip(lower=1.0)
+    deficit = (ns_threshold - agg["NS_mean"]).clip(lower=0.0)
+    agg["score"] = -(agg["TIC_mean"] + deficit * penalty_weight * tic_ref)
+    agg["viable"] = agg["NS_mean"] >= ns_threshold
     return agg
 
 
-def _dominant_policy_per_profile(agg: pd.DataFrame) -> pd.DataFrame:
-    """Identifica política dominante por perfil: min CTI entre NS_mean >= NS_THRESHOLD."""
+def _dominant_policy_per_profile(agg: pd.DataFrame,
+                                 ns_threshold: float = NS_THRESHOLD) -> pd.DataFrame:
+    """Identifica política dominante por perfil: min CTI entre NS_mean >= ns_threshold.
+
+    Resumo de 1 linha por perfil sobre a tabela completa de `score` (que
+    tem as 18 políticas x todos os perfis) -- útil pra leitura rápida, mas
+    a tabela completa (`agg`/`profile_policy_metrics.csv`) é a saída
+    principal: tem o score de TODAS as políticas, não só a vencedora.
+    """
     records = []
     for profile, grp in agg.groupby("operational_profile"):
         n_series = grp["n_series"].iloc[0]
-        viable = grp[grp["NS_mean"] >= NS_THRESHOLD].copy()
+        viable = grp[grp["NS_mean"] >= ns_threshold].copy()
         fallback = False
         if viable.empty:
             viable = grp.copy()
             fallback = True
-            log.warning(f"Perfil '{profile}': nenhuma política atinge NS>={NS_THRESHOLD}. Usando fallback (maior NS).")
+            log.warning(f"Perfil '{profile}': nenhuma política atinge NS>={ns_threshold}. Usando fallback (maior NS).")
             dominant_row = viable.loc[viable["NS_mean"].idxmax()]
         else:
             dominant_row = viable.loc[viable["TIC_mean"].idxmin()]
@@ -249,12 +299,20 @@ def _dominance_barplot(dominant: pd.DataFrame, out_path: Path) -> None:
 
 def _validation_report(kpis: pd.DataFrame, merged: pd.DataFrame,
                         agg: pd.DataFrame, dominant: pd.DataFrame,
-                        out_path: Path) -> None:
+                        out_path: Path, kpi_path: Path = KPI_PATH,
+                        prof_path: Path = PROF_PATH,
+                        ns_threshold: float = NS_THRESHOLD) -> None:
     n_series  = merged[["store_id", "item_id"]].drop_duplicates().shape[0]
     n_policies = merged["policy"].nunique()
     profiles  = merged["operational_profile"].dropna().unique()
 
     global_means = kpis.groupby("policy")["TIC"].mean().to_dict()
+
+    def _rel(p: Path) -> str:
+        try:
+            return str(Path(p).relative_to(REPO_ROOT))
+        except ValueError:
+            return str(p)
 
     lines = [
         f"# Validação — Avaliação por Perfil Operacional",
@@ -262,8 +320,8 @@ def _validation_report(kpis: pd.DataFrame, merged: pd.DataFrame,
         f"Gerado em: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         f"",
         f"## Fonte dos dados",
-        f"- KPIs: `{KPI_PATH.relative_to(REPO_ROOT)}`",
-        f"- Perfis: `{PROF_PATH.relative_to(REPO_ROOT)}`",
+        f"- KPIs: `{_rel(kpi_path)}`",
+        f"- Perfis: `{_rel(prof_path)}`",
         f"",
         f"## Granularidade",
         f"- Uma linha por (série loja-produto, política) em kpis.parquet",
@@ -287,7 +345,7 @@ def _validation_report(kpis: pd.DataFrame, merged: pd.DataFrame,
     lines += [
         f"",
         f"## Regra de dominância",
-        f"- Políticas viáveis: NS médio >= {NS_THRESHOLD}",
+        f"- Políticas viáveis: NS médio >= {ns_threshold}",
         f"- Política dominante: menor CTI médio entre viáveis",
         f"- Fallback: maior NS médio quando nenhuma política é viável",
         f"",
@@ -358,46 +416,70 @@ def _latex_dominance_table(dominant: pd.DataFrame, out_path: Path) -> None:
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run() -> None:
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+def run(kpis: pd.DataFrame | None = None,
+        profiles: pd.DataFrame | None = None,
+        out_dir: Path | str | None = None,
+        ns_threshold: float = NS_THRESHOLD,
+        penalty_weight: float = PENALTY_WEIGHT,
+        kpi_path: Path = KPI_PATH,
+        prof_path: Path = PROF_PATH) -> pd.DataFrame:
+    """
+    2026-08-18: `run()` passou a aceitar `kpis`/`profiles`/`out_dir`
+    explícitos. Antes, sempre relia no `KPI_PATH`/`PROF_PATH`/`OUT_DIR`
+    hardcoded (só a base/Bahia) -- rodar contra "bot"/M5 exigia isso.
+    Chamado sem argumentos, mantém o comportamento antigo (retrocompat
+    para uso via CLI: `python profile_policy_analysis.py`).
 
-    kpis, profiles = _load_data()
+    Retorna a tabela completa `agg` (perfil x política x score), a mesma
+    salva em `profile_policy_metrics.csv/.parquet` -- é essa a saída
+    principal do AIPE: o score de cada uma das 18 políticas em cada
+    perfil, não só a política vencedora.
+    """
+    out_dir = Path(out_dir) if out_dir is not None else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if kpis is None or profiles is None:
+        kpis, profiles = _load_data(kpi_path, prof_path)
     merged = _merge(kpis, profiles)
 
     log.info(f"Dados unidos: {len(merged)} linhas, "
              f"{merged[['store_id','item_id']].drop_duplicates().shape[0]} séries, "
              f"{merged['operational_profile'].nunique()} perfis.")
 
-    agg = _aggregate_by_profile(merged)
-    dominant = _dominant_policy_per_profile(agg)
+    agg = _aggregate_by_profile(merged, ns_threshold, penalty_weight)
+    dominant = _dominant_policy_per_profile(agg, ns_threshold)
 
     # Export CSVs and parquets
-    agg_out = OUT_DIR / "profile_policy_metrics"
+    agg_out = out_dir / "profile_policy_metrics"
     agg.to_csv(str(agg_out) + ".csv", index=False)
     agg.to_parquet(str(agg_out) + ".parquet", index=False)
-    log.info(f"Métricas por perfil: {agg_out}.csv / .parquet")
+    log.info(f"Métricas por perfil (score de cada política x perfil): {agg_out}.csv / .parquet")
 
-    dom_out = OUT_DIR / "dominant_policy_by_profile"
+    dom_out = out_dir / "dominant_policy_by_profile"
     dominant.to_csv(str(dom_out) + ".csv", index=False)
     dominant.to_parquet(str(dom_out) + ".parquet", index=False)
     log.info(f"Dominância por perfil: {dom_out}.csv / .parquet")
 
     # Figures
     _heatmap(agg, "TIC_mean", "CTI médio por Perfil e Política (R$)",
-             OUT_DIR / "profile_policy_heatmap_cti.pdf", cmap="RdYlGn_r", fmt=".0f")
+             out_dir / "profile_policy_heatmap_cti.pdf", cmap="RdYlGn_r", fmt=".0f")
     _heatmap(agg, "NS_mean", "NS médio por Perfil e Política",
-             OUT_DIR / "profile_policy_heatmap_ns.pdf", cmap="RdYlGn", fmt=".2f")
-    _dominance_barplot(dominant, OUT_DIR / "profile_policy_dominance_barplot.pdf")
+             out_dir / "profile_policy_heatmap_ns.pdf", cmap="RdYlGn", fmt=".2f")
+    _heatmap(agg, "score", "Score por Perfil e Política (maior = melhor)",
+             out_dir / "profile_policy_heatmap_score.pdf", cmap="RdYlGn", fmt=".0f")
+    _dominance_barplot(dominant, out_dir / "profile_policy_dominance_barplot.pdf")
 
     # LaTeX snippet
-    _latex_dominance_table(dominant, OUT_DIR / "table_dominancia_por_perfil.tex")
+    _latex_dominance_table(dominant, out_dir / "table_dominancia_por_perfil.tex")
 
     # Validation report
     _validation_report(kpis, merged, agg, dominant,
-                       OUT_DIR / "profile_policy_validation.md")
+                       out_dir / "profile_policy_validation.md",
+                       kpi_path=kpi_path, prof_path=prof_path, ns_threshold=ns_threshold)
 
     log.info("Análise por perfil concluída.")
-    log.info(f"Artefatos em: {OUT_DIR}")
+    log.info(f"Artefatos em: {out_dir}")
+    return agg
 
 
 if __name__ == "__main__":

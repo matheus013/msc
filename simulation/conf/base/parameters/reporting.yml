@@ -1,4 +1,9 @@
 reporting:
+  # 2026-08-18: null = usa o padrao hardcoded do script
+  # (data/08_reporting/profiles, historico da Bahia). "bot"/m5 sobrescrevem
+  # para isolar a saida por ambiente (mesma logica do item #8 do
+  # AJUSTES_INFRA -- nao misturar artefatos entre bases).
+  out_dir: null
   figure_format: "pdf"
   figure_dpi: 150
   colormap: "tab20"

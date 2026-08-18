@@ -48,7 +48,7 @@ from simulation.core.inventory_env_torch import BatchInventoryEnv, constrained_c
 
 def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
                      alpha_min: float = 0.70, penalty_weight: float = 10.0,
-                     device=None) -> tuple:
+                     device=None, demand_pool=None) -> tuple:
     """
     Avalia toda a grade de parâmetros em UMA simulação vetorizada.
 
@@ -58,20 +58,33 @@ def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
     candidatos (que era o trecho mais lento das políticas clássicas) e passa a
     ser um único avanço de B trajetórias paralelas.
 
+    `demand_pool`: 2026-08-18, pedido do usuário -- treino "com perfil"
+    (pooling). Quando dado (lista de séries do mesmo perfil), a MESMA
+    grade é avaliada contra CADA série do pool e o custo usado pra
+    escolher o candidato vencedor é a MÉDIA sobre o pool -- mesmo padrão
+    usado em `TorchGA.evaluate` (metaheuristics_torch.py).
+
     Retorna (melhor_theta como tuple, melhor_custo).
     """
     B = int(grid.shape[0])
     dev = device if device is not None else get_device_for_batch(
         B, cfg.get("SIMULATION", {}).get("device", "auto"))
-    env = BatchInventoryEnv(demand, cfg, batch_size=B, device=dev)
-    theta = grid.to(device=env.device, dtype=env.dtype)
 
-    env.reset()
-    done = False
-    while not done:
-        _, _, done, _ = env.step(order_fn(env, theta))
-    cost = constrained_cost(env.kpis(), alpha_min, penalty_weight)
+    def _run_one(d) -> torch.Tensor:
+        env = BatchInventoryEnv(d, cfg, batch_size=B, device=dev)
+        theta = grid.to(device=env.device, dtype=env.dtype)
+        env.reset()
+        done = False
+        while not done:
+            _, _, done, _ = env.step(order_fn(env, theta))
+        return constrained_cost(env.kpis(), alpha_min, penalty_weight)
 
+    if demand_pool is None:
+        cost = _run_one(demand)
+    else:
+        cost = torch.stack([_run_one(d) for d in demand_pool], dim=0).mean(dim=0)
+
+    theta = grid.to(device=dev)
     i = int(torch.argmin(cost).item())
     return tuple(float(v) for v in theta[i].tolist()), float(cost[i].item())
 
@@ -153,15 +166,24 @@ class PILPolicy:
     """
 
     def __init__(self, demand: np.ndarray, cfg: dict, alpha_min: float = 0.70,
-                 n_scenarios: int = 48, n_grid: int = 40):
+                 n_scenarios: int = 48, n_grid: int = 40, demand_pool=None):
+        """
+        `demand_pool`: 2026-08-18, pedido do usuário -- treino "com perfil"
+        (pooling). Quando dado, a reamostragem empírica usa a demanda
+        CONCATENADA do pool inteiro (distribuição do perfil, não de uma
+        série só), e a calibração de S é feita contra a MÉDIA do custo
+        simulado em cada série do pool (ver `_calibrate_batch`).
+        """
         self.cfg = cfg
         self.L = int(cfg["SIMULATION"].get("lead_time", 2))
         self.n_scenarios = int(n_scenarios)
         demand = np.asarray(demand, dtype=float)
-        self._samples = _empirical_samples(demand, self.L + 1, self.n_scenarios)
+        resample_source = (np.concatenate([np.asarray(d, dtype=float) for d in demand_pool])
+                           if demand_pool is not None else demand)
+        self._samples = _empirical_samples(resample_source, self.L + 1, self.n_scenarios)
 
-        mu = float(np.mean(demand)) if demand.size else 0.0
-        sigma = float(np.std(demand)) if demand.size else 0.0
+        mu = float(np.mean(resample_source)) if resample_source.size else 0.0
+        sigma = float(np.std(resample_source)) if resample_source.size else 0.0
         hi = max(1.0, (mu * (self.L + 1)) + 3.0 * sigma * np.sqrt(self.L + 1))
         grid = torch.linspace(0.0, hi, int(n_grid)).unsqueeze(1)   # (B, 1)
 
@@ -180,7 +202,7 @@ class PILPolicy:
             return torch.clamp(S - pil, min=0.0)
 
         best, cost = _calibrate_batch(demand, cfg, order_fn, grid,
-                                      alpha_min=alpha_min)
+                                      alpha_min=alpha_min, demand_pool=demand_pool)
         self.S = float(best[0])
         self.calibration_cost = float(cost)
 
@@ -219,11 +241,18 @@ class CappedBaseStockPolicy:
     """
 
     def __init__(self, demand: np.ndarray, cfg: dict, alpha_min: float = 0.70,
-                 n_grid_s: int = 20, n_grid_cap: int = 12):
+                 n_grid_s: int = 20, n_grid_cap: int = 12, demand_pool=None):
+        """
+        `demand_pool`: mesma semântica de pooling de `PILPolicy` -- grade
+        dimensionada pela média/desvio do pool inteiro, calibrada contra o
+        custo médio simulado em cada série do pool.
+        """
         demand = np.asarray(demand, dtype=float)
+        pool_concat = (np.concatenate([np.asarray(d, dtype=float) for d in demand_pool])
+                      if demand_pool is not None else demand)
         L = int(cfg["SIMULATION"].get("lead_time", 2))
-        mu = float(np.mean(demand)) if demand.size else 0.0
-        sigma = float(np.std(demand)) if demand.size else 0.0
+        mu = float(np.mean(pool_concat)) if pool_concat.size else 0.0
+        sigma = float(np.std(pool_concat)) if pool_concat.size else 0.0
 
         s_hi = max(1.0, mu * (L + 1) + 3.0 * sigma * np.sqrt(L + 1))
         cap_hi = max(1.0, mu * (L + 1) + 3.0 * sigma)
@@ -238,7 +267,7 @@ class CappedBaseStockPolicy:
             return torch.minimum(cap, torch.clamp(S - ip, min=0.0))
 
         best, cost = _calibrate_batch(demand, cfg, order_fn, grid,
-                                      alpha_min=alpha_min)
+                                      alpha_min=alpha_min, demand_pool=demand_pool)
         self.S, self.cap = float(best[0]), float(best[1])
         self.calibration_cost = float(cost)
 
@@ -281,7 +310,17 @@ class BigDataNewsvendorPolicy:
 
     N_FEATURES = 8
 
-    def __init__(self, demand: np.ndarray, cfg: dict, l1_penalty: float = 0.01):
+    def __init__(self, demand: np.ndarray, cfg: dict, l1_penalty: float = 0.01,
+                 demand_pool=None):
+        """
+        `demand_pool`: 2026-08-18, pedido do usuário -- treino "com perfil"
+        (pooling). Quando dado, o dataset (X, y) da regressão quantílica é
+        CONCATENADO a partir de TODAS as séries do pool (mais linhas de
+        treino, um único β compartilhado), e μ/σ/quantil de fallback usam
+        a demanda concatenada do pool. Na avaliação, `_target()` continua
+        usando o histórico REAL da série sendo simulada (`env.demand_history`)
+        -- é o mesmo β aplicado a cada série, não um modelo por série.
+        """
         demand = np.asarray(demand, dtype=float)
         self.L = int(cfg["SIMULATION"].get("lead_time", 2))
         ccfg = cfg["COST"]
@@ -289,13 +328,25 @@ class BigDataNewsvendorPolicy:
         h = float(ccfg.get("holding_cost_per_unit", 1.0))
         self.tau = c_s / max(c_s + h, 1e-9)
 
-        self._mu = float(np.mean(demand)) if demand.size else 0.0
-        self._sigma = float(np.std(demand)) if demand.size else 0.0
-        self._hist = list(demand)
+        pool = ([np.asarray(d, dtype=float) for d in demand_pool]
+               if demand_pool is not None else [demand])
+        pool_concat = np.concatenate(pool)
 
-        X, y = self._build_dataset(demand)
+        self._mu = float(np.mean(pool_concat)) if pool_concat.size else 0.0
+        self._sigma = float(np.std(pool_concat)) if pool_concat.size else 0.0
+        self._hist = list(pool_concat)
+
+        Xs, ys = [], []
+        for d in pool:
+            Xd, yd = self._build_dataset(d)
+            if Xd is not None:
+                Xs.append(Xd)
+                ys.append(yd)
+        X = np.concatenate(Xs, axis=0) if Xs else None
+        y = np.concatenate(ys, axis=0) if ys else np.array([])
+
         self.beta = None
-        self._fallback_q = self._empirical_quantile(demand)
+        self._fallback_q = self._empirical_quantile(pool_concat)
 
         if X is not None and len(y) >= self.N_FEATURES:
             self.beta = self._fit_quantile_lp(X, y, self.tau, l1_penalty)

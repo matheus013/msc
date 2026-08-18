@@ -1,0 +1,5 @@
+# 2026-08-18: isola a saida da analise por perfil (score de cada politica
+# x perfil operacional, item pedido pelo usuario) do que a Bahia produz --
+# mesma logica de isolamento de catalogo do item #8 do AJUSTES_INFRA.
+reporting:
+  out_dir: "data/08_reporting/m5/profiles"

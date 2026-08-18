@@ -761,6 +761,349 @@ aplica.
 
 ---
 
+## 26. Saída do AIPE: tabela de score por perfil, novo pipeline `profile_analysis`
+
+**Descrição:** O usuário perguntou como o AIPE seleciona política por
+perfil de loja e apontou que o dashboard só mostra política × score
+geral. Investigação confirmou: **nenhuma das três pipelines em produção
+(`benchmark_final`/`benchmark_bot`/`benchmark_m5`) roda a análise por
+perfil nem o PSE real** — `pipeline_registry.py` só as compõe como
+`di/dir_ + dp + inv (+ sv) + fr`, sem `rep` (onde vive
+`profile_policy_analysis.py`) nem `ps` (`policy_selection`, o
+classificador XGBoost). O usuário pediu a saída como "tabela com score de
+cada política para cada perfil" e que "criação dos perfis deve fazer
+parte do processo também".
+
+**Motivo:** Fechar a lacuna entre o que o dashboard mostra (agregado
+único) e o que a proposta (AIPE) precisa demonstrar (comportamento por
+perfil operacional).
+
+**Objetivo:** Preparar (não rodar ainda — as 3 simulações de produção
+seguem intocadas) um pipeline que gera essa tabela assim que Bahia/bot/M5
+terminarem, sem reexecutar a simulação de 18 políticas (a parte cara).
+
+**Impacto:**
+- `reporting/profile_policy_analysis.py`: `POLICY_ORDER` tinha só as 12
+  políticas antigas — as 6 novas (PIL, CappedBaseStock, BigDataNewsvendor,
+  MinMax, FixedInterval, VendorResponsive) ficavam **de fora do heatmap**
+  (`_heatmap` filtra por `p in POLICY_ORDER`), embora já entrassem
+  corretamente na tabela de dominância (que não depende dessa lista).
+  Corrigido: as 18 agora aparecem em ambos.
+  Nova coluna `score` na tabela `profile_policy_metrics.csv/.parquet`
+  (perfil × política, todas as 18): reaproveita a MESMA formulação restrita
+  da Eq. 4.2 já usada em `constrained_cost` (`score = -(TIC_mean + déficit
+  de NS × peso × TIC_mean)`, maior = melhor) — não uma métrica nova,
+  consistente com o resto do projeto. Testado com dados sintéticos: 18
+  políticas × 2 perfis, `score` calculado corretamente, todos os artefatos
+  gerados (incluindo novo `profile_policy_heatmap_score.pdf`).
+  `run()` passou a aceitar `kpis`/`profiles`/`out_dir` explícitos (antes só
+  lia caminhos hardcoded — não tinha noção de ambiente `m5`/`bot`).
+- `reporting/nodes.py` (`generate_profile_policy_analysis`): agora passa os
+  DataFrames já carregados pelo catálogo Kedro (respeitando isolamento por
+  ambiente) e um `out_dir` isolado (`params:reporting.out_dir`), em vez de
+  reler do disco em caminho fixo.
+- Novos `conf/m5/parameters_reporting.yml` e `conf/bot/parameters_reporting.yml`:
+  `reporting.out_dir` apontando pra `data/08_reporting/{m5,bot}/profiles`
+  (mesmo padrão de isolamento do item #8).
+- `reporting/pipeline.py`: novo `create_profile_analysis_pipeline()` —
+  só o nó de análise por perfil, sem os nós de `demand_forecasting`/
+  `statistical_validation` (não disponíveis em `benchmark_bot`/
+  `benchmark_m5`, que quebrariam o resto do pipeline `reporting` completo).
+- `pipeline_registry.py`: novo pipeline `"profile_analysis"` =
+  `demand_profiling` (recalcula os perfis — "criação dos perfis faz parte
+  do processo", pedido do usuário) + o nó de análise. Roda com
+  `kedro run --pipeline profile_analysis [--env bot|m5]` depois que a
+  simulação de cada base terminar. Validado via dry-run (`kedro registry
+  list` + inspeção do catálogo resolvido): DAG monta corretamente, todos
+  os inputs (`kpis`, `scenarios`, `scenarios_meta`) já existem no catálogo
+  de cada ambiente. **Não executado ainda** — só preparado, a pedido
+  explícito do usuário ("preparar agora, rodar depois").
+
+---
+
+## 27. Comparação "seleção por perfil vs. política única" + visibilidade no dash
+
+**Descrição:** Dois pedidos do usuário nesta continuação: (1) "a ideia é
+que a seleção por perfil seja melhor do que a geral" — precisa de uma
+comparação explícita, não só a tabela de score; (2) "no dash deve ser
+possível vê os perfis de cada experimento e quais variáveis de decisão
+ele tem".
+
+**Motivo:** (1) A tabela de score por perfil (item #26) mostra o score de
+cada política em cada perfil, mas não responde diretamente "a seleção
+contextual vale a pena?" — precisa comparar contra a alternativa de usar
+uma única política pra tudo. Achado: `reporting/strategy_cost_comparison.py`
+**já implementa exatamente essa comparação** (estratégias A1=política única
+global, A2=baseline EOQ, B=seleção por perfil, C=oráculo por série, com
+teste de Wilcoxon pareado H1: CTI_B < CTI_A1) — só tinha o mesmo problema
+de I/O hardcoded (não isolado por ambiente) do item #26, e não estava
+sendo chamado por nenhuma pipeline em produção.
+(2) Perfis e variáveis de decisão eram invisíveis no dash — só política e
+score geral apareciam.
+
+**Objetivo:** Fechar a resposta metodológica completa (não só o score por
+política×perfil, mas se a seleção por perfil de fato reduz custo vs.
+política única) e dar visibilidade real-time no dash.
+
+**Impacto:**
+- `reporting/strategy_cost_comparison.py`: mesmo padrão de correção do
+  item #26 — `run()`/`_load()` aceitam `kpis`/`profiles`/`out_dir`
+  explícitos. Corrigidas também as "Checagem 1/2" do relatório de
+  validação, que comparavam contra valores HARDCODED da Bahia (145
+  séries, lista fixa de 12 políticas antigas) — sempre reportariam
+  "DIVERGE" pra bot/M5/portfólio de 18. Agora comparam contra os valores
+  reais dos próprios dados carregados. Testado com dados sintéticos (60
+  séries × 18 políticas × 3 perfis): estratégia B mostrou 9,65% de
+  redução de CTI vs. A1, todos os 9 artefatos gerados sem erro.
+- `reporting/nodes.py` (`generate_strategy_cost_comparison`): mesmo padrão
+  de correção — passa DataFrames do catálogo + `out_dir` isolado
+  (subpasta `strategy/`, irmã de `profiles/`).
+- `reporting/pipeline.py` (`create_profile_analysis_pipeline`): adicionado
+  o nó `generate_strategy_cost_comparison`. Pipeline `profile_analysis`
+  (item #26) agora tem 7 nós: `compute_demand_features`,
+  `classify_operational_profiles`, `generate_policy_labels`,
+  `generate_profile_policy_analysis`, `generate_strategy_cost_comparison`,
+  `train_policy_selector`, `apply_policy_selector`. Validado via dry-run
+  (`kedro registry list` + inspeção de catálogo): DAG resolve sem inputs/
+  outputs faltando.
+- `conf/bot/catalog.yml` e `conf/m5/catalog.yml`: novas entradas isoladas
+  para `policy_labels`, `policy_selector_model`, `policy_selector_metrics`,
+  `policy_recommendations` (datasets do PSE/`policy_selection`) — sem
+  isso, rodar `profile_analysis --env bot|m5` reproduziria o padrão do
+  incidente #2 (escrita no caminho base compartilhado com a Bahia).
+- `dashboard.py`: nova seção "perfis operacionais (POD)" por execução —
+  lê `demand_profiles.parquet` (já produzido cedo no pipeline, antes da
+  simulação de 18 políticas) e mostra a distribuição real de séries por
+  perfil. Confirmado funcionando: Bahia 80% Sparse_High_Impact/12,4%
+  Unstable_Trend/7,6% High_Vol_Seasonal (145 séries); bot com 5 perfis
+  representados (4.869 séries); M5 97,6% Sparse_High_Impact (2.408
+  séries). Nova seção estática "variáveis de decisão por família de
+  política" (referência fixa, 7 famílias: clássicas/SOTA/Zabraoui,
+  Jornaleiro, PIL/Capped, Vendor-Responsive, meta-heurísticas, RL puro,
+  híbridas — com as variáveis reais de cada uma, ex. RL: espaço de estado
+  de 6 componentes + grade de ações discretas).
+- Treino continua **por série** (decisão já confirmada pelo usuário nesta
+  sessão) — nada disso muda a arquitetura de `inventory_simulation`; é
+  visibilidade/relatório organizado por perfil, não retreino por perfil.
+- **Não executado ainda** — só preparado. Roda com
+  `kedro run --pipeline profile_analysis [--env bot|m5]` depois que
+  Bahia/bot/M5 terminarem.
+
+---
+
+## 28. Mecanismo de pooling por perfil ("com perfil" vs. "sem perfil")
+
+**Descrição:** Pedido do usuário: nova arquitetura de comparação -- pra
+cada uma das 18 políticas, treinar UMA instância POR PERFIL (5 no total,
+pooling: fitness/treino usa a demanda de TODAS as séries daquele perfil
+agregada), versus UMA instância GLOBAL única (pooling sobre todas as
+séries, ignorando perfil). Cada instância é depois avaliada
+individualmente em cada série (KPI por série, mas a política por trás é
+compartilhada dentro do pool). Confirmado explicitamente: mantém o
+experimento atual (per-série independente, Bahia v4/bot/M5) como
+referência à parte -- este é um experimento NOVO de 2 braços, não uma
+substituição.
+
+**Motivo:** Validar quantitativamente se conhecer o perfil operacional
+antes do treino melhora o resultado, não só a seleção pós-hoc entre
+políticas já treinadas (que é o que os itens #26/#27 já respondem).
+
+**Objetivo:** Mecanismo reutilizável de "pool de séries" que qualquer uma
+das 18 políticas aceita, sem duplicar código de treino.
+
+**Impacto -- todas as 18 políticas agora aceitam `demand_pool`:**
+- `core/metaheuristics_torch.py` (`_ThresholdOptimizer`, base de
+  `TorchGA/SA/PSO/DE`): `evaluate()` avalia a mesma população contra CADA
+  série do pool e usa o custo MÉDIO -- um único θ bom em média pro pool,
+  em vez de um θ por série. Testado (4 séries sintéticas, sem erro,
+  resultado difere do modo single-série como esperado).
+- `core/rl_torch.py` (`DoubleDQNAgent`/`PPOAgent`/`ExpectedSARSAAgent`.
+  `train()`): cada episódio sorteia (round-robin) uma série do pool em vez
+  de sempre usar a mesma -- agente generaliza sobre o perfil. Testado
+  sintaticamente (compila); teste funcional fica pro pipeline de
+  orquestração (treino de RL é mais caro pra smoke-test isolado).
+- `core/policies_sota.py` (`PILPolicy`, `CappedBaseStockPolicy`,
+  `BigDataNewsvendorPolicy`): `_calibrate_batch` ganhou `demand_pool`
+  (mesmo padrão de média sobre o pool do GA); BigDataNewsvendor concatena
+  os pares (X,y) de TODAS as séries do pool antes de ajustar a regressão
+  quantílica (um β compartilhado, mais linhas de treino). Testado, sem
+  erro, `beta` ajustado com sucesso nos dois modos.
+- `core/policies.py` (EOQ, (s,S), Newsvendor) e `core/policies_zabraoui.py`
+  (MinMax, FixedInterval, VendorResponsive): **nenhuma mudança de código
+  necessária** -- já calculam μ/σ a partir do array `demand` recebido;
+  passar a demanda CONCATENADA do pool no lugar da série única já produz a
+  versão pooled "de graça". Confirmado com teste de instanciação (6/6 OK).
+- Híbridas (GA-DQN, GA-PPO): não têm código próprio de pooling -- reusam
+  GA pooled + RL pooled por composição (herdam automaticamente).
+
+**Pendente (próximo passo, não feito ainda):** a ORQUESTRAÇÃO -- um
+pipeline novo que monta os 5 pools por perfil + 1 pool global a partir de
+`scenarios`/`demand_profiles`, chama cada política com `demand_pool=...`,
+avalia contra cada série, e produz a tabela de comparação com-perfil vs.
+sem-perfil. Ainda não decidido em qual base rodar primeiro (Bahia é a
+candidata natural: menor, já concluída, não interfere com bot/M5 em
+andamento).
+
+---
+
+## 29. Bug: `cv_folds` do PSE quebrava com classes raras (NaN silencioso)
+
+**Descrição:** Rodando `profile_analysis` de verdade na Bahia (145 séries),
+`train_policy_selector` devolveu `CV accuracy=nan±nan`. Causa: com 11
+políticas candidatas como rótulo (`best_policy`) e só 145 séries, algumas
+políticas vencem em pouquíssimas séries (`policy_labels.parquet`:
+`CappedBaseStock`: 1, `DE`/`DQN`: 2, `sS`/`Newsvendor`: 3).
+`StratifiedKFold(n_splits=5)` exige >= 5 exemplos na classe menos
+frequente; com só 1-2, `cross_validate` devolvia NaN por fold em vez de
+erro -- falha silenciosa, sem aviso.
+
+**Motivo:** Sem isso, tanto o modelo de produção (`train_policy_selector`)
+quanto a comparação com/sem perfil (`evaluate_profile_feature_gain`, item
+#28) ficam com métricas inúteis (NaN), sem nenhum sinal de que algo deu
+errado.
+
+**Objetivo:** `cv_folds` deve se adaptar ao tamanho da menor classe, com
+aviso explícito quando isso acontece.
+
+**Impacto:**
+- `policy_selection/nodes.py`: nova `_safe_cv_folds(y, requested)` --
+  `cv_folds` efetivo = `max(2, min(requested, tamanho_da_menor_classe))`,
+  com log de aviso quando reduz. Usado em `train_policy_selector` e
+  `evaluate_profile_feature_gain`.
+- Testado contra os dados REAIS da Bahia (`policy_labels.parquet`, 145
+  séries): reduziu corretamente de 5 para 2 (classe `CappedBaseStock` tem
+  1 exemplo só), sem mais NaN.
+- **Achado real da Bahia** (via `strategy_cost_comparison`, item #27, rodado
+  com os dados de produção): seleção por perfil (B) reduz CTI só **0,2%**
+  vs. política única global (A1) -- mas o oráculo por série (C, limite
+  teórico) mostra **16,52%** de espaço. A maior parte do ganho possível
+  NÃO é capturada pelos 3 perfis atuais (Sparse_High_Impact/
+  Unstable_Trend/High_Vol_Seasonal presentes na Bahia) -- sinal de que os
+  5 PODs (categorias fixas) são grossos demais pra explicar a
+  heterogeneidade real entre séries; a informação mais fina que o PSE usa
+  (features contínuas por série) tem mais chance de capturar esse gap do
+  que agrupamento por perfil.
+
+---
+
+## 30. bot/M5 derrubados (evento de sessão, não bug de código) — foco realocado pra Bahia
+
+**Descrição:** Ao retomar a sessão, `dashboard.py` (porta 8767) não
+respondia e nenhum processo `python.exe` estava rodando. Os logs de "bot"
+(`prod_bot_v3.log`) e M5 (`prod_m5_v7.log`) pararam de ser escritos às
+14:25 e 14:28 respectivamente — a sessão foi retomada por volta das
+18:54, ou seja, ~4h30min de silêncio. Não há erro nos logs (sem
+traceback, sem "EXIT="): os processos simplesmente pararam de existir,
+consistente com o aviso de tarefas "órfãs" (sessão anterior encerrada
+derrubou os processos em background junto). Não é um bug de código desta
+sessão.
+
+**Estado salvo até a queda:**
+- "bot": `kpis_classical`/`kpis_metaheuristic`/`kpis_proposed` completos;
+  `kpis_rl` (RL puro) não chegou a ser salvo (Kedro só grava um dataset
+  quando o nó inteiro termina) -- estava no meio dessa etapa.
+- M5: mesma situação.
+
+**Motivo/decisão:** O usuário pediu explicitamente pra focar na Bahia
+(mais simples e rápida) até fechar a modelagem (pooling por perfil, PSE
+com perfil como feature, etc. -- itens #26-#28) antes de reinvestir horas
+de computação em bot/M5, que ficariam desatualizados de qualquer forma
+com cada mudança de metodologia.
+
+**Impacto:** bot e M5 **não foram relançados**. Próximos experimentos
+desta sessão usam a Bahia (145 séries, já concluída e íntegra -- v4,
+item #23) ou subconjuntos menores dela (como o `pooling_quick_experiment`
+do item #28) como bancada de iteração rápida. Relançar bot/M5 fica para
+depois que a modelagem estiver fechada.
+
+---
+
+## 31. `cv_folds` do PSE: correção real (LOO, a pedido do usuário) + resultado
+
+**Descrição:** O item #29 (redução de `cv_folds`) não bastou -- ainda dava
+NaN. Causa raiz real: o XGBoost rejeita qualquer fold de treino que não
+contenha TODAS as classes vistas globalmente (`ValueError: Invalid
+classes inferred`), não só por causa de estratificação -- isso quebra
+até com `LeaveOneOut` (que o usuário pediu como alternativa ao k-fold),
+sempre que a classe raríssima é a amostra deixada de fora.
+
+**Motivo:** Pedido do usuário: "não tem uma outra estratégia sem ser
+kfold?" -- trocado o padrão pra Leave-One-Out (`cv_strategy: "loo"`,
+configurável, `"stratified_kfold"` disponível como alternativa). E:
+classes com < 2 exemplos são excluídas da CV em QUALQUER estratégia
+(inevitável matematicamente com o XGBoost) -- o modelo final continua
+treinando com todos os dados, só a avaliação quantitativa exclui essas
+classes.
+
+**Objetivo:** Métrica de CV utilizável (não mais NaN), com o método mais
+adequado ao tamanho pequeno da base (LOO usa o máximo de dado possível
+pra treino em cada fold, importante com só 145 séries).
+
+**Impacto:**
+- `policy_selection/nodes.py`: `_build_cv(y, params)` substitui a função
+  anterior -- mascara classes raras (sempre) e escolhe `LeaveOneOut` ou
+  `StratifiedKFold` conforme `params["cv_strategy"]` (padrão `"loo"`).
+- **Resultado real, agora sem NaN** (Bahia, 145 séries, LOO, 144 folds
+  válidos após excluir `CappedBaseStock`):
+
+  | | sem perfil | com perfil (feature) |
+  |---|---|---|
+  | Acurácia CV | 45,14% | 44,44% |
+  | Ganho | -- | **-1,5%** (dentro do ruído, std±49,7%) |
+
+  **Confirma e reforça o achado do item #27**: adicionar o perfil
+  operacional como feature explícita ao PSE **não ajuda** -- o
+  classificador já extrai das features contínuas (ADI, CV²...) tudo que
+  a categoria de perfil ofereceria. Duas análises independentes (seleção
+  por perfil vs. única global: +0,2%; perfil como feature do PSE: -1,5%)
+  convergem pra mesma conclusão: os 5 PODs atuais carregam pouco sinal
+  incremental sobre as features contínuas já disponíveis.
+
+---
+
+## 32. GPU real (RTX 4070 Ti): benchmark confirma o roteamento automático
+
+**Descrição:** Pedido do usuário: testar GPU nesta máquina (desktop com
+RTX 4070 Ti), já que a medição anterior (item 2c do
+REIMPLEMENTACAO_SOTA.md, "35× mais lento na GPU") foi feita num notebook
+(MPS da Apple). `torch` instalado era build **CPU-only**
+(`2.13.0+cpu`) -- `cuda.is_available()` dava False mesmo com GPU real
+presente (confirmado via `nvidia-smi`).
+
+**Motivo/Objetivo:** Confirmar se a conclusão "CPU vence" se sustenta
+numa GPU discreta de verdade, não só num notebook.
+
+**Impacto:**
+- Reinstalado `torch` com suporte CUDA:
+  `pip install --index-url https://download.pytorch.org/whl/cu124 torch
+  --force-reinstall --no-deps` -- trocou `2.13.0+cpu` por `2.6.0+cu124`
+  (só versão com wheel CUDA disponível nesse índice). `cuda.is_available()`
+  agora `True`, detecta "NVIDIA GeForce RTX 4070 Ti".
+- Benchmark real (GA completo e simulação em lote bruto):
+
+  | Lote | CPU | CUDA | Vencedor |
+  |---|---|---|---|
+  | GA pop=100 ger=50 (config de produção) | 0,441s | 2,045s | CPU, 4,6× |
+  | 1.000 trajetórias | 0,0105s | 0,0361s | CPU, 3,4× |
+  | 10.000 | 0,0319s | 0,0382s | CPU, levemente |
+  | 100.000 | 0,2528s | 0,0372s | **CUDA, 6,8×** |
+
+  Ponto de virada entre 10k-100k trajetórias -- mais baixo que os ~150k do
+  notebook, mas ainda muito acima do lote real usado (população=100).
+- `core/device.py`: `GPU_MIN_BATCH = {"cuda": 20_000, "mps": 150_000}` já
+  existia com esse valor pra CUDA (calibrado sem medição real numa GPU
+  CUDA de verdade) -- a medição confirma que já estava correto. **Nenhuma
+  mudança de código necessária**: com `device: "auto"`, o roteamento já
+  escolhe CPU pro GA/SA/PSO/DE de produção (lote pequeno) e só usaria GPU
+  se o lote crescesse além de ~20k (cenário não usado hoje).
+- **Ressalva:** downgrade de `torch` de `2.13.0` pra `2.6.0` (única versão
+  com build CUDA disponível no índice usado) -- APIs usadas no projeto
+  (nn.Module, optim.Adam, distributions.Categorical, operações de tensor
+  padrão) são estáveis nessa faixa de versão; nenhuma quebra observada nos
+  testes rodados após a troca.
+
+---
+
 ## Estado no fim desta sessão
 
 Todas as três relançadas mais uma vez após #23 (correção de fidelidade ao
@@ -770,9 +1113,9 @@ rodada foram descartadas por terem rodado com o GA/DQN não corrigido.
 
 | Base | Ambiente | Séries | Workers | Orçamento RL (DQN/PPO) | Fitness | GA (após #23) | Log | Status |
 |---|---|---|---|---|---|---|---|---|
-| Bahia (oficial, Experimento 2) | base | 145 | 1 (sequencial) | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_benchmark_final_v4.log` | em andamento |
-| "bot" (interna completa, 27 estados) | `bot` | 4.869 | 7 | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_bot_v3.log` | em andamento |
-| M5 (Walmart, FOODS+CV≥1,5 — #24) | `m5` | 2.408 | 7 | 1000 ep. (#25, sem corte) | nova (TR+BE) | uniform×adaptativa, 500 ger. (#25) | `prod_m5_v7.log` | em andamento |
+| Bahia (oficial, Experimento 2) | base | 145 | 1 (sequencial) | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_benchmark_final_v4.log` | **concluída** (exit 0, 3h51min, 2610 linhas/18 pol./145 séries) |
+| "bot" (interna completa, 27 estados) | `bot` | 4.869 | 7 | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_bot_v3.log` | em andamento (~2h38min) |
+| M5 (Walmart, FOODS+CV≥1,5 — #24) | `m5` | 2.408 | 7 | 1000 ep. (#25, sem corte) | nova (TR+BE) | uniform×adaptativa, 500 ger. (#25) | `prod_m5_v7.log` | em andamento (~2h37min) |
 
 **Ferramentas de acompanhamento desta sessão** (scratchpad, fora do
 repositório): log viewer (`http://127.0.0.1:8765/`) e dashboard
@@ -782,11 +1125,15 @@ parciais lidos dos `kpis_*.parquet`.
 
 ## Pendências / próximos passos
 
-- **Bahia v3 foi SUPERSEDIDA pela v4** (item #23) — v3 rodou com GA/DQN não
-  corrigidos (blend crossover, mutação fixa, epsilon decrescente, 500
-  episódios) e não deve mais ser citada como versão final. **v4 é a
-  versão válida** assim que terminar.
-- As três (Bahia v4, "bot" v3, M5 v5) estão rodando agora com o mesmo
+- **Bahia v4 CONCLUÍDA e verificada** (11:16, exit 0, 13892,8s ≈ 3h51min —
+  quase 2x a v3, consistente com dqn/ppo episodes 500→1000): `KPIs
+  agregados: 2610 linhas, 18 políticas, 145 séries | famílias:
+  {'metaheuristic': 580, 'classical': 435, 'sota_classical': 435,
+  'zabraoui': 435, 'rl': 435, 'hybrid': 290}` — contagem idêntica às
+  versões anteriores, confirma integridade. **v4 é a versão final e
+  válida da Bahia** (v3 SUPERSEDIDA pelo item #23 — GA/DQN não
+  corrigidos). "bot" e M5 ainda em andamento (~2h38min).
+- Bot (v3) e M5 (v7) estão rodando agora com o mesmo
   código corrigido (item #23) — precisam terminar e ser conferidas
   política por política (não só o `kpis` agregado, e não só o exit code)
   antes de dar qualquer uma como concluída, mesma lição do incidente #2.

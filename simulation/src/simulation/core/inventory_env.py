@@ -84,6 +84,9 @@ class InventoryEnv:
         self.inventory   = self.init_inv
         self.pipeline    = [0.0] * (self.lead_time + 1)
         self.total_cost  = 0.0
+        self.holding_cost = 0.0
+        self.stockout_cost = 0.0
+        self.order_cost  = 0.0
         self.n_orders    = 0
         self._demand_served   = 0.0
         self._demand_total    = 0.0
@@ -135,6 +138,9 @@ class InventoryEnv:
         oc = (self.o_fixed + self.o_unit * order_qty) if order_qty > 0 else 0.0
         cost = hc + sc + oc
         self.total_cost       += cost
+        self.holding_cost     += hc
+        self.stockout_cost    += sc
+        self.order_cost       += oc
         self._demand_served   += served
         self._demand_total    += d
         if shortage > 0:
@@ -169,6 +175,10 @@ class InventoryEnv:
             "N_Orders":       self.n_orders,
             "OrderFrequency": of,
             "BullwhipEffect": bw,
+            "HoldingCost":    self.holding_cost,
+            "StockoutCost":   self.stockout_cost,
+            "OrderCost":      self.order_cost,
+            "AvgInventory":   self.holding_cost / max(self.h_cost, 1e-9) / max(self.T, 1),
         }
 
     def run_policy(self, policy_fn, n_reps: int = 5,

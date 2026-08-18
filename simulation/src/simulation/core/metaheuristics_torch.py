@@ -51,8 +51,22 @@ class _ThresholdOptimizer:
 
     name = "base"
 
-    def __init__(self, demand, cfg: dict, device=None):
+    def __init__(self, demand, cfg: dict, device=None, demand_pool=None):
+        """
+        `demand_pool`: 2026-08-18, pedido do usuário -- treino "com perfil"
+        (pooling): lista de séries (arrays) do MESMO perfil operacional.
+        Quando dado, `evaluate()` avalia a MESMA população θ contra CADA
+        série do pool e devolve o custo MÉDIO -- uma única instância de
+        política otimizada pra performar bem em todas as séries do perfil,
+        não uma por série. `demand` continua obrigatório (usado sozinho
+        quando `demand_pool` é None -- comportamento antigo, inalterado;
+        quando `demand_pool` é dado, `demand` deve ser a concatenação do
+        pool, usada só para dimensionar os limites de busca via `_bounds()`
+        -- ver nota lá).
+        """
         self.demand = np.asarray(demand, dtype=float)
+        self.demand_pool = ([np.asarray(d, dtype=float) for d in demand_pool]
+                            if demand_pool is not None else None)
         self.cfg = cfg
         gcfg = cfg.get("GENETIC_ALGORITHM", {})
         # Padrão "zabraoui": aptidão da Eq. (3) do artigo-base, lambda1*SL - lambda2*TIC.
@@ -110,22 +124,45 @@ class _ThresholdOptimizer:
         t = lambda v: torch.tensor(v, dtype=self.dtype, device=self.device)
         return t(lo), t(hi)
 
-    def _env(self, batch: int) -> BatchInventoryEnv:
-        """Reaproveita o ambiente por tamanho de lote (evita recomputar stats)."""
-        if batch not in self._env_cache:
-            self._env_cache[batch] = BatchInventoryEnv(
-                self.demand, self.cfg, batch_size=batch, device=self.device)
-        return self._env_cache[batch]
+    def _env(self, batch: int, demand=None, cache_key=None) -> BatchInventoryEnv:
+        """Reaproveita o ambiente por (serie, tamanho de lote) -- evita recomputar stats."""
+        demand = self.demand if demand is None else demand
+        key = (cache_key, batch)
+        if key not in self._env_cache:
+            self._env_cache[key] = BatchInventoryEnv(
+                demand, self.cfg, batch_size=batch, device=self.device)
+        return self._env_cache[key]
 
-    def evaluate(self, pop: torch.Tensor) -> torch.Tensor:
-        """pop (B,3) -> custo (B,), a minimizar. Uma simulação para todo o lote."""
-        pop = torch.clamp(pop, self.lb, self.ub)
-        env = self._env(pop.shape[0])
-        k = env.run_threshold(pop[:, 0], torch.clamp(pop[:, 1], min=1.0), pop[:, 2])
+    def _fitness(self, k: dict) -> torch.Tensor:
         return fitness_cost(k, self.fitness_mode,
                             lambda1=self.lambda1, lambda2=self.lambda2,
                             alpha_min=self.alpha_min, penalty_weight=self.penalty_w,
                             tr_weight=self.tr_weight, be_weight=self.be_weight)
+
+    def evaluate(self, pop: torch.Tensor) -> torch.Tensor:
+        """
+        pop (B,3) -> custo (B,), a minimizar.
+
+        Sem `demand_pool`: uma simulação (a série única de sempre).
+        Com `demand_pool` ("com perfil"): a MESMA população é simulada
+        contra CADA série do pool, e o custo devolvido é a MÉDIA sobre o
+        pool -- é isso que faz o GA convergir para um único θ bom em
+        média para todas as séries do perfil, em vez de um θ por série.
+        """
+        pop = torch.clamp(pop, self.lb, self.ub)
+        Q = torch.clamp(pop[:, 1], min=1.0)
+
+        if self.demand_pool is None:
+            env = self._env(pop.shape[0])
+            k = env.run_threshold(pop[:, 0], Q, pop[:, 2])
+            return self._fitness(k)
+
+        costs = []
+        for i, d in enumerate(self.demand_pool):
+            env = self._env(pop.shape[0], demand=d, cache_key=i)
+            k = env.run_threshold(pop[:, 0], Q, pop[:, 2])
+            costs.append(self._fitness(k))
+        return torch.stack(costs, dim=0).mean(dim=0)
 
     def _rand(self, n: int, gen: torch.Generator) -> torch.Tensor:
         u = torch.rand((n, 3), dtype=self.dtype, device=self.device, generator=gen)
@@ -198,8 +235,8 @@ class TorchGA(_ThresholdOptimizer):
 
     name = "GA"
 
-    def __init__(self, demand, cfg, device=None):
-        super().__init__(demand, cfg, device)
+    def __init__(self, demand, cfg, device=None, demand_pool=None):
+        super().__init__(demand, cfg, device, demand_pool=demand_pool)
         g = cfg.get("GENETIC_ALGORITHM", {})
         self.pop_n = int(g.get("population_size", 100))
         self.n_gen = int(g.get("n_generations", 50))
@@ -291,8 +328,8 @@ class TorchSA(_ThresholdOptimizer):
 
     name = "SA"
 
-    def __init__(self, demand, cfg, device=None):
-        super().__init__(demand, cfg, device)
+    def __init__(self, demand, cfg, device=None, demand_pool=None):
+        super().__init__(demand, cfg, device, demand_pool=demand_pool)
         s = cfg.get("SA", {})
         self.T0 = float(s.get("initial_temp", 1000.0))
         self.cooling = float(s.get("cooling_rate", 0.95))
@@ -357,8 +394,8 @@ class TorchPSO(_ThresholdOptimizer):
 
     name = "PSO"
 
-    def __init__(self, demand, cfg, device=None):
-        super().__init__(demand, cfg, device)
+    def __init__(self, demand, cfg, device=None, demand_pool=None):
+        super().__init__(demand, cfg, device, demand_pool=demand_pool)
         p = cfg.get("PSO", {})
         self.n_part = int(p.get("n_particles", 40))
         self.n_iter = int(p.get("n_iterations", p.get("iterations", 80)))
@@ -426,8 +463,8 @@ class TorchDE(_ThresholdOptimizer):
 
     name = "DE"
 
-    def __init__(self, demand, cfg, device=None):
-        super().__init__(demand, cfg, device)
+    def __init__(self, demand, cfg, device=None, demand_pool=None):
+        super().__init__(demand, cfg, device, demand_pool=demand_pool)
         d = cfg.get("DE", {})
         self.pop_n = int(d.get("population_size", d.get("popsize", 15)) * 3)
         self.n_iter = int(d.get("maxiter", d.get("max_iter", 100)))

@@ -574,20 +574,47 @@ def generate_profile_policy_analysis(kpis: pd.DataFrame,
                                       params: dict) -> None:
     """
     Wrapper Kedro para reporting/profile_policy_analysis.py.
-    O script le kpis.parquet e demand_profiles.parquet diretamente do disco
-    (mesmos caminhos do catalog); os argumentos aqui apenas fixam a ordem de
-    execucao no DAG (depois que esses datasets foram salvos).
+
+    2026-08-18: CORRIGIDO. Antes o script relia em ler kpis.parquet e
+    demand_profiles.parquet direto do disco em caminho HARDCODED
+    (data/07_model_output/kpis.parquet) -- nao respeitava o isolamento de
+    catalogo por ambiente (item #8 do AJUSTES_INFRA), entao rodar isso
+    contra "bot"/M5 leria/sobrescreveria os artefatos da Bahia. Agora passa
+    os DataFrames que o Kedro ja carregou pelo catalogo (respeitando o
+    ambiente ativo) e um `out_dir` isolado por ambiente
+    (params:reporting.out_dir, ver conf/m5|bot/parameters_reporting.yml).
+
+    Saida principal (pedido do usuario): tabela com o SCORE de cada uma das
+    18 politicas para cada perfil operacional -- nao so a politica
+    vencedora. Ver `profile_policy_metrics.csv/.parquet` no out_dir.
     """
     from reporting.profile_policy_analysis import run
-    run()
+    out_dir = (params or {}).get("out_dir")
+    run(kpis=kpis, profiles=demand_profiles, out_dir=out_dir)
 
 
 def generate_strategy_cost_comparison(kpis: pd.DataFrame,
                                        demand_profiles: pd.DataFrame,
                                        params: dict) -> None:
-    """Wrapper Kedro para reporting/strategy_cost_comparison.py (mesmo padrao de I/O)."""
+    """
+    Wrapper Kedro para reporting/strategy_cost_comparison.py.
+
+    2026-08-18: CORRIGIDO (mesmo padrao de generate_profile_policy_analysis)
+    -- passa os DataFrames do catalogo (respeitando isolamento por
+    ambiente) e um `out_dir` isolado. Esta e a resposta direta a pergunta
+    do usuario "a selecao por perfil deve ser melhor que a geral": compara
+    politica unica global (A1), baseline EOQ (A2), selecao por perfil (B) e
+    oraculo por serie (C), com teste de Wilcoxon pareado (H1: CTI_B<CTI_A1)
+    em `strategy_hypothesis_tests.csv`.
+    """
+    from pathlib import Path
     from reporting.strategy_cost_comparison import run
-    run()
+    out_dir = (params or {}).get("out_dir")
+    # "strategy" e irmao de "profiles" (params:reporting.out_dir aponta pra
+    # .../profiles) -- mesma raiz de saida isolada por ambiente, subpasta
+    # diferente porque sao artefatos de analises distintas.
+    strategy_out_dir = str(Path(out_dir).parent / "strategy") if out_dir else None
+    run(kpis=kpis, profiles=demand_profiles, out_dir=strategy_out_dir)
 
 
 def generate_cti_adjusted_analysis(kpis: pd.DataFrame,

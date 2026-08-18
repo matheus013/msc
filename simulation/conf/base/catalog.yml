@@ -116,6 +116,14 @@ policy_selector_metrics:
   type: pandas.ParquetDataset
   filepath: data/07_model_output/policy_selector_metrics.parquet
 
+# 2026-08-18: resposta direta a "o ganho de usar perfil como entrada e
+# relevante?" -- comparacao com/sem `operational_profile` como feature,
+# mesmo split de CV (ver evaluate_profile_feature_gain em
+# policy_selection/nodes.py).
+policy_selector_profile_gain:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/policy_selector_profile_gain.parquet
+
 policy_recommendations:
   type: pandas.ParquetDataset
   filepath: data/07_model_output/policy_recommendations.parquet
