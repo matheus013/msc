@@ -260,6 +260,10 @@ simulation/data/08_reporting/*
 .venv312/
 .venv*/
 
+# Spill/temp storage do DuckDB (duckdb_loader.py, m5_loader.py) — pode
+# chegar a dezenas de GB em disco quando a memoria aperta
+simulation/.tmp/
+
 # Artefatos do macOS
 .DS_Store
 **/.DS_Store

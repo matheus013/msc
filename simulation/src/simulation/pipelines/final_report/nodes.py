@@ -150,14 +150,19 @@ def compare_with_proposal(kpis: pd.DataFrame, params: dict) -> pd.DataFrame:
     """
     cfg = params or {}
     path = cfg.get("baseline_kpis_path")
+    # DataFrame vazio "com coluna" (nao pd.DataFrame() puro): sem nenhuma
+    # coluna, o catalogo (CSVDataset) grava um arquivo sem cabecalho e a
+    # releitura subsequente por outro no do pipeline falha com
+    # EmptyDataError. `len(...)` continua 0 para quem consome a jusante.
+    empty = pd.DataFrame(columns=["policy"])
     if not path:
         log.warning("baseline_kpis_path nao configurado; comparacao ignorada")
-        return pd.DataFrame()
+        return empty
 
     p = Path(path)
     if not p.exists():
         log.warning("Baseline da proposta nao encontrado em %s; comparacao ignorada", p)
-        return pd.DataFrame()
+        return empty
 
     old = pd.read_parquet(p)
     a = old.groupby("policy")[KPI_COLS].mean()
@@ -165,7 +170,7 @@ def compare_with_proposal(kpis: pd.DataFrame, params: dict) -> pd.DataFrame:
     comuns = sorted(set(a.index) & set(b.index))
     if not comuns:
         log.warning("Nenhuma politica em comum entre proposta e versao final")
-        return pd.DataFrame()
+        return empty
 
     rows = []
     for pol in comuns:

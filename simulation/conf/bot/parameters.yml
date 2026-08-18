@@ -1,0 +1,44 @@
+# Ambiente "bot" — base interna COMPLETA (todos os 27 estados), apelido do
+# projeto para essa execucao em oposicao a "m5"/Walmart (base publica
+# externa). Ao contrario do recorte da Bahia (Experimento 2 da
+# dissertacao, states=["BA"]), este ambiente nao restringe estado algum —
+# e a base interna inteira, usada para avaliar o portfolio em escala maior
+# que o recorte oficial, nao para substitui-lo.
+#
+#     kedro run --pipeline benchmark_bot --env bot
+#
+# states=["all"] aciona o pre-passo DuckDB em load_raw_sales() (ver
+# duckdb_loader.py): os filtros globais de produto ativo/CV sao calculados
+# via streaming (nunca materializam as 55M linhas brutas), e so a lista de
+# produtos validos entra no filtro por particao, mantendo o pico de
+# memoria limitado a uma particao por vez em vez da soma das 27.
+data_ingestion:
+  states: ["all"]
+  products: null
+  # states=["all"] sem outro recorte da ~10,4 MILHOES de series (271460
+  # revendedoras x ~880 produtos validos) -- quebra ate a preparacao de
+  # cenarios (ArrayMemoryError no zero-fill, ~400M linhas). max_stores
+  # limita top-N series por n_positive, POR ESTADO, e agora roda ANTES do
+  # zero-fill E antes da extracao de perfil (nodes.py, build_demand_scenarios).
+  #
+  # 2026-08-18: usuario pediu cobertura MAXIMA que a maquina aguentar sem
+  # crashar (lentidao aceitavel). ~20 estados tem produto valido apos os
+  # filtros; max_stores=5000 -> ate 5000*20=100.000 series (~3,8M linhas no
+  # zero-fill) -- ~100x menor que o ponto onde o unrestricted (10,4M series,
+  # ~400M linhas) quebrou, margem generosa. Estados com menos de 5000
+  # series validas simplesmente nao sao cortados (nlargest com N maior que
+  # o disponivel devolve tudo). Ajustar pra cima se a maquina aguentar mais
+  # (checar simulation/logs + o memwatch de cada tentativa antes de subir).
+  # 2026-08-18: max_stores=5000 deu 4.787 series finais, max_stores=50000
+  # deu 4.869 -- quase o mesmo apesar de 10x mais candidatos. Causa: o teto
+  # real e min_positive_cycles (filtro de qualidade), nao memoria. Depois
+  # de mover esse filtro pra ANTES do zero-fill (nodes.py,
+  # build_demand_scenarios), max_stores vira so um teto de seguranca
+  # opcional sobre o pool JA filtrado por qualidade -- null = sem teto
+  # artificial, pega a cobertura maxima real que a base oferece.
+  max_stores: null
+
+simulation:
+  n_replications: 5
+  evaluation_mode: "walkforward"
+  train_split_cycles: 19

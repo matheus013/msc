@@ -1,0 +1,102 @@
+# Catalogo do ambiente "bot" — isola TODAS as saidas (e a entrada) em
+# diretorios proprios, pra nunca mais compartilhar arquivo com a base
+# interna "oficial" (recorte Bahia, states=["BA"]). Foi exatamente a falta
+# disso no ambiente m5 que sobrescreveu sales_raw.parquet da Bahia em
+# 2026-08-17 — ver REIMPLEMENTACAO_SOTA.md / historico da conversa.
+#
+# vendas_partitioned precisa ser redefinido aqui (nao so em conf/local/)
+# porque `--env bot` nao carrega conf/local — mesma razao documentada em
+# conf/m5/catalog.yml, mas aqui o valor tem que ser o caminho REAL (nao um
+# dummy): o caminho "bot" usa partitioned_input de verdade, particao por
+# particao, ao contrario do m5 que ignora esse argumento.
+vendas_partitioned:
+  type: partitions.PartitionedDataset
+  path: data/01_raw/vendas
+  dataset: pandas.ParquetDataset
+  filename_suffix: ".parquet"
+
+sales_raw:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/bot/sales_raw.parquet
+
+sales_filtered:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/bot/sales_filtered.parquet
+
+sales_cleaned:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/bot/sales_cleaned.parquet
+
+scenarios:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/bot/scenarios.parquet
+
+scenarios_meta:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/bot/scenarios_meta.parquet
+
+# Isolamento estendido (2026-08-18): scaled_params + demand_features/profiles
+# + os kpis_* POR FAMILIA tambem sao lidos/escritos pelo pipeline
+# benchmark_bot (di+dp+inv+fr). Confirmado na pratica: um smoke test do m5
+# rodando em paralelo com a producao da Bahia sobrescreveu
+# kpis_classical/kpis_metaheuristic/kpis_proposed/scaled_params sem prefixo
+# no meio da run, corrompendo os resultados finais da Bahia. Mesma correcao
+# aplicada aqui preventivamente, mesmo sem incidente confirmado para "bot".
+scaled_params:
+  type: pickle.PickleDataset
+  filepath: data/06_models/bot/scaled_params.pkl
+
+demand_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/bot/demand_features.parquet
+
+demand_profiles:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/bot/demand_profiles.parquet
+
+kpis_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_classical.parquet
+
+kpis_sota_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_sota_classical.parquet
+
+kpis_zabraoui:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_zabraoui.parquet
+
+kpis_metaheuristic:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_metaheuristic.parquet
+
+kpis_rl:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_rl.parquet
+
+kpis_proposed:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis_proposed.parquet
+
+kpis:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/bot/kpis.parquet
+
+policy_redundancy:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/bot/policy_redundancy.csv
+
+kpis_by_volume:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/bot/kpis_by_volume.csv
+
+proposal_comparison:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/bot/proposal_comparison.csv
+
+final_latex_tables:
+  type: partitions.PartitionedDataset
+  path: data/08_reporting/bot/tex
+  dataset:
+    type: text.TextDataset
+  filename_suffix: ".tex"

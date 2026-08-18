@@ -13,6 +13,8 @@ Regras de filtro aplicadas aqui (configuráveis via YAML):
   • NÃO filtrar por volume de vendas — o campo segmento já stratifica por receita
 """
 import logging
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from typing import Dict, Any
@@ -58,13 +60,53 @@ def load_raw_sales(partitioned_input: Dict[str, Any], params: dict) -> pd.DataFr
     states = params.get("states", ["all"])
     load_all = (states == ["all"] or states == "all")
 
+    # "bot" = base interna completa (todos os estados), apelido do projeto
+    # para diferenciar de "m5"/Walmart nas conversas. 55,3M linhas / 27
+    # particoes: concatenar tudo em pandas ANTES de filtrar mede dezenas de
+    # GB de RAM (ja quase deu OOM nesta maquina — ver duckdb_loader.py).
+    # Estrategia: um pre-passo DuckDB streaming calcula GLOBALMENTE (entre
+    # todos os estados, como o filtro de produtos ativos/CV exige) a lista
+    # de produtos validos, sem nunca materializar as linhas; essa lista
+    # entra como filtro por particao no loop abaixo, ANTES do concat — pico
+    # de memoria limitado a UMA particao, nao as 27. products=None e
+    # obrigatorio aqui porque um recorte manual de produto ja e pequeno por
+    # si so, sem risco de memoria — nao precisa do pre-passo.
+    valid_products = None
+    if load_all and not params.get("products"):
+        from simulation.pipelines.data_ingestion.duckdb_loader import compute_valid_products
+        raw_root = Path(params.get("raw_vendas_path", "data/01_raw/vendas"))
+        if not raw_root.is_absolute():
+            raw_root = Path.cwd() / raw_root
+        log.info('Fonte de dados: INTERNA COMPLETA ("bot", todos os estados) — '
+                 'pre-passo DuckDB (streaming) para produtos validos globais')
+        valid_products = set(compute_valid_products(params, raw_root))
+
+    active_statuses = params.get("active_statuses", ["Ativo"])
+    exclude_tipos = params.get("exclude_venda_tipos") or []
+
     frames = []
     for partition_key, load_fn in partitioned_input.items():
         uf = _extract_uf(partition_key)
         if not load_all and uf not in [s.upper() for s in states]:
             continue
         df = load_fn()
+        # No caminho "bot", pre-filtra cada particao pelos MESMOS criterios
+        # (status, venda_tipo, produtos validos globais) que
+        # filter_by_parameters aplicaria de qualquer forma a jusante —
+        # idempotente, so evita concatenar as 27 particoes inteiras antes
+        # de filtrar. Estados individuais (states=["BA"], etc.) nao passam
+        # por aqui: continuam sem pre-filtro, caminho ja validado.
+        if valid_products is not None:
+            if "status" in df.columns and active_statuses:
+                df = df[df["status"].isin(active_statuses)]
+            if exclude_tipos and "venda_tipo" in df.columns:
+                df = df[~df["venda_tipo"].isin(exclude_tipos)]
+            if "produto_cod" in df.columns:
+                df = df[df["produto_cod"].isin(valid_products)]
         df["_uf"] = uf
+        if valid_products is not None and df.empty:
+            log.info("Carregado: %s (0 linhas apos pre-filtro — pulando)", partition_key)
+            continue
         frames.append(df)
         log.info("Carregado: %s (%d linhas)", partition_key, len(df))
 
@@ -306,7 +348,103 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
     max_stores          = params.get("max_stores")
     cycles_per_year     = params.get("cycles_per_year", 17)
 
+    # ── Agrega por ciclo (adiantado: quando max_stores esta setado, o
+    # corte abaixo precisa rodar ANTES da extracao de perfil da
+    # revendedora, nao so antes do zero-fill) ──────────────────────────────
+    has_revenue = "revenue" in df.columns
+    has_revenue_gross = "revenue_gross" in df.columns
+    agg_dict: dict = {"demand": "sum"}
+    if has_revenue:
+        agg_dict["revenue"] = "sum"
+    if has_revenue_gross:
+        agg_dict["revenue_gross"] = "sum"
+
+    df_agg = (
+        df.groupby(["warehouse", "store_id", "item_id", "venda_ciclo"])
+        .agg(agg_dict)
+        .reset_index()
+    )
+
+    # ── Filtro de qualidade adiantado (min_positive_cycles) ────────────────
+    # E o MESMO filtro que roda mais abaixo, depois do zero-fill -- so que
+    # calculado aqui sobre df_agg pre-zero-fill, onde contar linhas com
+    # demand>0 por serie da EXATAMENTE o mesmo "n_positive" de depois (o
+    # zero-fill so acrescenta linhas com demand=0 para as MESMAS chaves
+    # existentes, nunca cria chave nova nem muda contagem de positivos) --
+    # resultado identico, sobre uma tabela ~15-20x menor. Roda sempre
+    # (nao so quando max_stores esta setado): e um recalculo antecipado do
+    # MESMO filtro que ja existia, nao um corte novo.
+    #
+    # Achado empirico em "bot" (2026-08-18, todos os estados): dos ~10,4
+    # milhoes de series candidatas (271 mil revendedoras x ~880 produtos),
+    # so uma fracao pequena passa neste filtro -- testado com pools
+    # pre-selecionados por atividade de 72 mil (max_stores=5000) e 615 mil
+    # (max_stores=50000) candidatos, ambos convergiram para ~4.800-4.900
+    # series finais. O teto real de cobertura e este filtro de qualidade,
+    # nao memoria ou max_stores. Sem filtrar aqui, o zero-fill processa
+    # TODOS os candidatos ANTES de descartar a maioria -- daqui veio o
+    # ArrayMemoryError original (~400 milhoes de linhas no caso irrestrito)
+    # e os ~10 min gastos extraindo perfil de 271 mil revendedoras das
+    # quais so uma fracao ia sobreviver de qualquer forma.
+    pre_positive = (
+        df_agg[df_agg["demand"] > 0]
+        .groupby(["warehouse", "store_id", "item_id"])
+        .size()
+        .reset_index(name="_n_pos_pre")
+    )
+    before_series = df_agg[["warehouse", "store_id", "item_id"]].drop_duplicates().shape[0]
+    valid_early = pre_positive[pre_positive["_n_pos_pre"] >= min_positive_cycles]
+
+    # max_stores (opcional): teto adicional por estado sobre o pool JA
+    # filtrado por qualidade, estratificado por segmento -- sem isso, um
+    # top-N por atividade tenderia a devolver so as lojas de maior giro
+    # (tipicamente concentradas num unico segmento, ex. Platina), perdendo
+    # representatividade dos demais (Bronze/Prata/Ouro/Rubi/Esmeralda
+    # GB/Diamante GB). Pedido explicito do usuario (2026-08-18): amostra de
+    # TODOS os segmentos disponiveis por estado. Na pratica, com
+    # min_positive_cycles=17/38, o pool ja filtrado por qualidade
+    # (~4-5 mil series) costuma ficar bem abaixo de qualquer max_stores
+    # razoavel -- este teto so morde se a base tiver muito mais series
+    # persistentes do que o observado aqui.
+    if max_stores is not None:
+        if "segmento" in df.columns:
+            store_segmento = (
+                df[["warehouse", "store_id", "segmento"]]
+                .dropna(subset=["segmento"])
+                .drop_duplicates(subset=["warehouse", "store_id"])
+            )
+            valid_early = valid_early.merge(store_segmento, on=["warehouse", "store_id"], how="left")
+            valid_early["segmento"] = valid_early["segmento"].fillna("(sem segmento)")
+        else:
+            valid_early = valid_early.assign(segmento="(sem segmento)")
+
+        keep_frames = []
+        for w in valid_early["warehouse"].unique():
+            sub_w = valid_early[valid_early["warehouse"] == w]
+            segmentos_w = sorted(sub_w["segmento"].unique())
+            quota = max(1, max_stores // len(segmentos_w))
+            for seg in segmentos_w:
+                sub_seg = sub_w[sub_w["segmento"] == seg]
+                keep_frames.append(
+                    sub_seg.nlargest(quota, "_n_pos_pre")[["warehouse", "store_id", "item_id"]]
+                )
+        keep_keys_early = (pd.concat(keep_frames, ignore_index=True) if keep_frames
+                            else valid_early[["warehouse", "store_id", "item_id"]])
+    else:
+        keep_keys_early = valid_early[["warehouse", "store_id", "item_id"]]
+
+    df_agg = df_agg.merge(keep_keys_early, on=["warehouse", "store_id", "item_id"], how="inner")
+    log.info("Filtro de qualidade adiantado (min_positive_cycles=%d%s): %d -> %d series",
+             min_positive_cycles,
+             f", max_stores={max_stores} estratificado por segmento" if max_stores is not None else "",
+             before_series, len(keep_keys_early))
+    keep_stores_early = keep_keys_early[["warehouse", "store_id"]].drop_duplicates()
+    df = df.merge(keep_stores_early, on=["warehouse", "store_id"], how="inner")
+
     # ── Extrai perfil da revendedora (constante por store_id) ─────────────
+    # Roda sobre `df` ja filtrado por max_stores (quando setado) -- e o que
+    # torna essa etapa rapida em "bot" (poucas centenas de lojas por estado
+    # em vez de 271 mil).
     present_profile = [c for c in STORE_PROFILE_COLS if c in df.columns]
     store_profile = pd.DataFrame()
     if present_profile:
@@ -327,21 +465,6 @@ def build_demand_scenarios(df: pd.DataFrame, params: dict) -> tuple:
                 ci.str[1:], errors="coerce")                  # número de ciclos
         log.info("Perfil extraído para %d revendedoras | colunas: %s",
                  len(store_profile), present_profile)
-
-    # ── Agrega por ciclo ──────────────────────────────────────────────────
-    has_revenue = "revenue" in df.columns
-    has_revenue_gross = "revenue_gross" in df.columns
-    agg_dict: dict = {"demand": "sum"}
-    if has_revenue:
-        agg_dict["revenue"] = "sum"
-    if has_revenue_gross:
-        agg_dict["revenue_gross"] = "sum"
-
-    df_agg = (
-        df.groupby(["warehouse", "store_id", "item_id", "venda_ciclo"])
-        .agg(agg_dict)
-        .reset_index()
-    )
 
     all_cycles = sorted(df_agg["venda_ciclo"].unique())
 

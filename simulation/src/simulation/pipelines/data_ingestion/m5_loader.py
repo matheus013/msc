@@ -40,6 +40,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import duckdb
 import numpy as np
 import pandas as pd
 
@@ -96,36 +97,75 @@ def load_m5_as_internal(params: dict) -> pd.DataFrame:
     with_revenue = bool(m5.get("with_revenue", False))
     seed = int(m5.get("seed", 42))
 
-    log.info("M5: lendo %s", root / SALES_FILE)
-    sales = pd.read_csv(root / SALES_FILE)
-
     id_cols = ["item_id", "dept_id", "cat_id", "store_id", "state_id"]
-    day_cols = [c for c in sales.columns if c.startswith("d_")]
+
+    # ── cabecalho apenas: descobre colunas de dia sem ler nenhuma linha ────
+    header_cols = pd.read_csv(root / SALES_FILE, nrows=0).columns.tolist()
+    day_cols = [c for c in header_cols if c.startswith("d_")]
     day_cols.sort(key=lambda c: int(c.split("_")[1]))
 
-    # ── recortes de entidade antes de derreter (economiza memória) ────────
+    # Se max_cycles restringe o horizonte, ja descarta as colunas de dia
+    # fora dele ANTES de ler — evita ler ~1940 colunas quando so ~800 (38
+    # ciclos x 21 dias) sao usadas.
+    if max_cycles:
+        day_cols = day_cols[: int(max_cycles) * days_per_cycle]
+
+    n_days = len(day_cols)
+    cycle_idx, labels = _cycle_labels(n_days, days_per_cycle, cycles_per_year, start_year)
+    n_cycles = int(cycle_idx.max()) + 1
+
+    # ── leitura + filtro + agregacao em ciclos via DuckDB ──────────────────
+    # sales_train_evaluation.csv: 30.490 series x 1.941 dias (116MB em
+    # disco). Ler isso inteiro com pandas antes de filtrar/agregar mede
+    # varios GB em RAM (overhead de parsing por coluna). DuckDB projeta so
+    # as colunas declaradas em `columns=` (nao aloca as ~1100+ que sobram
+    # quando max_cycles restringe o horizonte), aplica o WHERE de
+    # states/categories durante a leitura (nao depois) e resolve a soma por
+    # ciclo — que e uma expressao aritmetica entre colunas da MESMA linha,
+    # nao um agregado entre linhas — em streaming, sem materializar a
+    # tabela larga em nenhum momento. So cruza para pandas o resultado ja
+    # agregado: no maximo 30.490 linhas x (5 + n_cycles) colunas.
+    where = []
     if states:
-        sales = sales[sales["state_id"].isin([s.upper() for s in states])]
+        vals = ", ".join("'" + s.upper().replace("'", "''") + "'" for s in states)
+        where.append(f"upper(state_id) IN ({vals})")
     if categories:
-        sales = sales[sales["cat_id"].isin(categories)]
+        vals = ", ".join("'" + str(c).replace("'", "''") + "'" for c in categories)
+        where.append(f"cat_id IN ({vals})")
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+
+    cycle_exprs = []
+    for c in range(n_cycles):
+        cols_in_cycle = [day_cols[i] for i in range(n_days) if cycle_idx[i] == c]
+        summed = " + ".join(f'"{col}"' for col in cols_in_cycle)
+        cycle_exprs.append(f'({summed}) AS cycle_{c}')
+
+    # `columns=` explicito (so id_cols+day_cols) faria o DuckDB tentar
+    # decodificar o arquivo como se so tivesse essas colunas, e o sniffer
+    # de dialeto do CSV quebra (conta 1946 colunas reais x 803 declaradas).
+    # Deixa o auto-detect ler o cabecalho inteiro; a poda de colunas fica
+    # a cargo do projection pushdown do otimizador na SELECT abaixo — o
+    # ganho de memoria real vem de nunca materializar a tabela larga em
+    # pandas, nao de poupar leitura de bytes do CSV.
+    csv_path = (root / SALES_FILE).as_posix()
+    query = f"""
+        SELECT {", ".join(id_cols)}, {", ".join(cycle_exprs)}
+        FROM read_csv('{csv_path}', header=true)
+        {where_sql}
+    """
+    log.info("M5: lendo %s via DuckDB (states=%s categories=%s, %d colunas de dia agregadas em %d ciclos)",
+              csv_path, states, categories, n_days, n_cycles)
+    con = duckdb.connect()
+    import os as _os
+    con.execute(f"PRAGMA threads={max(1, (_os.cpu_count() or 4) - 2)}")
+    sales = con.execute(query).df()
+    con.close()
     if sales.empty:
         raise ValueError(f"Nenhuma serie M5 apos filtros states={states} categories={categories}")
+    log.info("M5: %d series apos filtro states=%s categories=%s (ja agregadas em %d ciclos)",
+             len(sales), states, categories, n_cycles)
 
-    # ── recorte temporal ─────────────────────────────────────────────────
-    cycle_idx, labels = _cycle_labels(len(day_cols), days_per_cycle,
-                                      cycles_per_year, start_year)
-    if max_cycles:
-        keep = cycle_idx < int(max_cycles)
-        day_cols = [c for c, k in zip(day_cols, keep) if k]
-        cycle_idx = cycle_idx[keep]
-        labels = labels[:int(max_cycles)]
-
-    # ── agrega dias em ciclos, ainda em formato largo ────────────────────
-    mat = sales[day_cols].to_numpy(dtype=np.float32)
-    n_cycles = int(cycle_idx.max()) + 1
-    agg = np.zeros((mat.shape[0], n_cycles), dtype=np.float32)
-    for c in range(n_cycles):
-        agg[:, c] = mat[:, cycle_idx == c].sum(axis=1)
+    agg = sales[[f"cycle_{c}" for c in range(n_cycles)]].to_numpy(dtype=np.float32)
 
     # ── amostra de séries, se pedido ─────────────────────────────────────
     meta = sales[id_cols].reset_index(drop=True)

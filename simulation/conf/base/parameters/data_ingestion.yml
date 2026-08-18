@@ -31,8 +31,14 @@ data_ingestion:
     with_revenue: false              # true le sell_prices.csv (226 MB)
     seed: 42                         # semente da amostragem de series
 
+  # Path da base particionada completa (todos os estados), usado apenas
+  # pelo caminho DuckDB quando states=["all"] ("bot" — apelido do projeto
+  # para a base interna completa, em contraste com "m5"/Walmart). Ver
+  # data_ingestion/duckdb_loader.py.
+  raw_vendas_path: "data/01_raw/vendas"
+
   # Selecao de dados (aplica-se a fonte "internal")
-  states: ["BA"]            # ["all"] para todos os 27 estados
+  states: ["BA"]            # ["all"] para todos os 27 estados ("bot")
   products: null            # null = todos os produtos ativos; lista = produto(s) especifico(s)
   date_start: "202301"      # Ciclo inicial (formato YYYYCC)
   date_end:   "202504"      # Ciclo final

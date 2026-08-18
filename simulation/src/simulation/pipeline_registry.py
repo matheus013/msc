@@ -70,4 +70,10 @@ def register_pipelines() -> dict[str, Pipeline]:
         # com a literatura (Zabraoui et al., 2025). Usa o ambiente m5:
         #     kedro run --pipeline benchmark_m5 --env m5
         "benchmark_m5":     di + dp + inv + fr,
+        # Benchmark sobre a base interna COMPLETA (todos os 27 estados,
+        # apelido "bot" — em oposição ao recorte oficial da Bahia e à base
+        # externa "m5"). Usa o ambiente bot (states=["all"], catálogo
+        # isolado em data/*/bot/, pré-passo DuckDB para caber na RAM):
+        #     kedro run --pipeline benchmark_bot --env bot
+        "benchmark_bot":    di + dp + inv + fr,
     }

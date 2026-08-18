@@ -1,5 +1,36 @@
 # Saidas do benchmark M5 em diretorio proprio, para nao sobrescrever os
 # artefatos da base interna.
+
+# Input dummy: quando data_ingestion.source=m5, load_raw_sales() ignora este
+# argumento e le a base M5 diretamente (m5_loader.py). Precisa existir no
+# catalogo mesmo assim porque `--env m5` nao carrega conf/local (onde o
+# vendas_partitioned real, especifico da base interna, esta definido) e o
+# pipeline completo (di) sempre declara esse dataset como input do primeiro no.
+vendas_partitioned:
+  type: partitions.PartitionedDataset
+  path: data/01_raw/vendas
+  dataset: pandas.ParquetDataset
+  filename_suffix: ".parquet"
+
+# sales_raw/sales_filtered/sales_cleaned isolados no ambiente m5: sem isso,
+# load_raw_sales() (que sempre grava em "sales_raw") cai de volta no dataset
+# BASE, que e o mesmo arquivo usado pela base interna (Bahia) —
+# data/02_intermediate/sales_raw.parquet, a UNICA copia em disco dos dados
+# transacionais proprietarios. Um `kedro run --env m5` sobrescrevia esse
+# arquivo com a base publica M5. Incidente real, nao hipotetico: aconteceu
+# em 2026-08-17 e destruiu sales_raw/sales_filtered/sales_cleaned da Bahia.
+sales_raw:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/m5/sales_raw.parquet
+
+sales_filtered:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/m5/sales_filtered.parquet
+
+sales_cleaned:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/m5/sales_cleaned.parquet
+
 scenarios:
   type: pandas.ParquetDataset
   filepath: data/03_primary/m5/scenarios.parquet
@@ -7,6 +38,51 @@ scenarios:
 scenarios_meta:
   type: pandas.ParquetDataset
   filepath: data/03_primary/m5/scenarios_meta.parquet
+
+# Isolamento estendido (2026-08-18): scaled_params + demand_features/profiles
+# + os kpis_* POR FAMILIA (nao so o "kpis" agregado) tambem sao lidos/escritos
+# pelo pipeline benchmark_m5 (di+dp+inv+fr) e, sem isso, caem nos mesmos
+# caminhos sem prefixo usados pela base interna. Confirmado na pratica:
+# uma execucao de smoke test do m5 rodando em paralelo com a producao da
+# Bahia sobrescreveu kpis_classical/kpis_metaheuristic/kpis_proposed/
+# scaled_params no meio da run, corrompendo os resultados finais da Bahia
+# (sota_classical/zabraoui ficaram vazios porque scaled_params.pkl passou
+# a conter as chaves do M5, que nao existem em scenarios da Bahia).
+scaled_params:
+  type: pickle.PickleDataset
+  filepath: data/06_models/m5/scaled_params.pkl
+
+demand_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/m5/demand_features.parquet
+
+demand_profiles:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/m5/demand_profiles.parquet
+
+kpis_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_classical.parquet
+
+kpis_sota_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_sota_classical.parquet
+
+kpis_zabraoui:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_zabraoui.parquet
+
+kpis_metaheuristic:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_metaheuristic.parquet
+
+kpis_rl:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_rl.parquet
+
+kpis_proposed:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis_proposed.parquet
 
 kpis:
   type: pandas.ParquetDataset

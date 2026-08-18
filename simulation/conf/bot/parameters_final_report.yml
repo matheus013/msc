@@ -1,0 +1,5 @@
+# Assim como no ambiente m5, nao ha baseline da proposta pra comparar aqui
+# (a proposta foi calibrada sobre o recorte da Bahia, nao a base completa).
+# O no de comparacao devolve vazio e registra aviso.
+final_report:
+  baseline_kpis_path: null

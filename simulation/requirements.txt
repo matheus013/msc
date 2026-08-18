@@ -8,6 +8,7 @@ xgboost>=2.0
 torch>=2.0            # simulador vetorizado, meta-heuristicas e agentes de RL
 # deap             -- NAO MAIS NECESSARIO: GA migrou para core/metaheuristics_torch.py
 scipy>=1.11           # linprog, usado pela regressao quantilica do BigDataNewsvendor
+duckdb>=1.0            # ingestao fora do nucleo da base interna completa ("bot", 27 estados)
 matplotlib>=3.7
 scikit-posthocs>=0.8
 pyyaml>=6.0
