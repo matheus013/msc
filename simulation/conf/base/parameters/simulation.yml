@@ -15,18 +15,33 @@ simulation:
     order_fixed: 50.0
     order_unit: 0.5
 
+  # Limiar minimo de nivel de servico (Eq. 4.2): politicas abaixo dele nao sao
+  # consideradas dominantes e sao penalizadas na busca das meta-heuristicas.
+  alpha_min: 0.70
+
   policies:
-    classical: true
+    classical: true          # EOQ, (s,S), Jornaleiro  -- baseline do varejo
+    sota_classical: true     # PIL, CappedBaseStock, BigDataNewsvendor
+    zabraoui: true           # MinMax, FixedInterval, VendorResponsive (Sec.3.5)
     metaheuristics: true
     reinforcement_learning: true
     proposed_architecture: true
 
   ga:
-    population: 100
+    # Hiperparametros conforme Zabraoui et al. (2025), Tabela 5.
+    #   fitness_mode "zabraoui"   -> Eq.(3) do artigo: lambda1*SL - lambda2*TIC
+    #   fitness_mode "constrained"-> Eq.(4.2) da proposta: min CTI s.a. NS>=alpha_min
+    # O artigo usa a soma ponderada; a variante restrita fica disponivel porque
+    # a soma ponderada e sensivel a escala do CTI entre series heterogeneas.
+    fitness_mode: "zabraoui"
+    fitness_weights: [1.0, 0.0001]   # [lambda1, lambda2]
+    penalty_weight: 10.0
+    population: 100         # Zabraoui Tab.5 (faixa 50-200)
     generations: 50
-    crossover_prob: 0.9
-    mutation_prob: 0.05
+    crossover_prob: 0.8     # Zabraoui Tab.5 (faixa 0.6-0.9)
+    mutation_prob: 0.05     # Zabraoui Tab.5 (faixa 0.01-0.1)
     tournament_size: 3
+    elitism: true           # Zabraoui Sec.3.4: "an elitist strategy is integrated"
 
   sa:
     initial_temp: 1000.0
@@ -47,7 +62,16 @@ simulation:
     max_iter: 100
     population_size: 15
 
+  # RL em PyTorch (simulation/core/rl_torch.py):
+  #   dqn   -> Double DQN dueling (van Hasselt 2016 / Wang 2016)
+  #   ppo   -> PPO com GAE (Schulman 2017 / 2016)
+  #   sarsa -> Expected SARSA (van Seijen 2009)
   dqn:
+    # Zabraoui et al. (2025) Tab.4: epsilon=0.2; Sec.3.8: >=1000 episodios
+    device: "cpu"            # "cpu" | "mps" | "cuda" | "auto"
+    seed: 42
+    soft_update_tau: 0.0     # >0 usa soft update no lugar de target_update_freq
+    grad_clip: 10.0
     episodes: 500
     gamma: 0.95
     epsilon_start: 1.0
@@ -60,6 +84,16 @@ simulation:
     hidden_layers: [64, 64]
 
   ppo:
+    # Zabraoui et al. (2025) Tab.4: coeficiente de entropia = 0.005
+    device: "cpu"
+    seed: 42
+    gae_lambda: 0.95
+    entropy_coef: 0.005
+    value_coef: 0.5
+    minibatch_size: 64
+    grad_clip: 0.5
+    clip_value_loss: true
+    hidden_layers: [64, 64]
     episodes: 500
     gamma: 0.99
     clip_epsilon: 0.2
@@ -68,6 +102,8 @@ simulation:
     n_actions: 20
 
   sarsa:
+    seed: 42
+    n_pipeline_states: 3     # discretizacao 2D: estoque x pedidos em transito
     episodes: 500
     n_states: 5
     n_actions: 10

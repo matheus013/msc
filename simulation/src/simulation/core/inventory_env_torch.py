@@ -1,0 +1,289 @@
+"""
+inventory_env_torch.py — Simulador de inventário vetorizado em PyTorch.
+
+Equivalente numérico do `InventoryEnv` original, mas avança B simulações
+independentes em paralelo no mesmo passo de tempo. É isso que torna a GPU
+útil neste projeto: as meta-heurísticas avaliam centenas de parametrizações
+candidatas por geração, e cada avaliação era antes um laço Python sobre T
+ciclos. Aqui a população inteira avança junta.
+
+Ganho esperado: o custo passa de O(B x T) chamadas Python para O(T) operações
+tensoriais de largura B.
+
+Fidelidade ao ambiente original (garantida por teste de equivalência em
+`tests/test_env_equivalence.py`):
+  - lost sales: demanda não atendida é perdida, não acumulada
+  - pipeline de L+1 posições; pedido emitido em t chega em t+L
+  - ordem das operações por ciclo: chegada -> demanda -> custo
+  - custo = h*I_t + c_s*S_t + c_o^fix*1(Q_t>0) + c_o^var*Q_t
+  - mesmos KPIs: TIC, ServiceLevel, StockoutRate, BullwhipEffect, OrderFrequency
+
+Convenção de shapes:
+    demand      (T,)      série compartilhada por todo o lote
+    inventory   (B,)
+    pipeline    (B, L+1)   coluna 0 chega no ciclo corrente
+    order       (B,)
+"""
+from __future__ import annotations
+
+import numpy as np
+import torch
+
+from simulation.core.device import default_dtype, get_device_for_batch
+
+
+class BatchInventoryEnv:
+    """
+    Simulador vetorizado. Uma instância representa B trajetórias paralelas
+    sobre a MESMA série de demanda, diferindo apenas na política/parâmetros —
+    exatamente o que as meta-heurísticas precisam.
+
+    O estado exposto a políticas segue o vetor de 6 componentes da Equação
+    (2.17) da dissertação, agora com dimensão de lote:
+        [I_t/I_0, D_hat_{t+1}/mu, OP_t/I_0, mu_6/mu, sigma_6/sigma, t/T]
+    """
+
+    STATE_DIM = 6
+
+    def __init__(self, demand, cfg: dict, batch_size: int = 1,
+                 device=None, forecast=None):
+        self.device = device if device is not None else get_device_for_batch(
+            int(batch_size), cfg.get("SIMULATION", {}).get("device", "auto"))
+        self.dtype = default_dtype(self.device)
+        d = torch.as_tensor(np.asarray(demand, dtype=np.float32),
+                            dtype=self.dtype, device=self.device)
+        self.demand = d
+        self.T = int(d.numel())
+        self.B = int(batch_size)
+
+        self._mu = float(d.mean().item()) if self.T else 0.0
+        self._sd = max(float(d.std(unbiased=False).item()) if self.T else 0.0, 1e-6)
+
+        if forecast is not None:
+            f = torch.as_tensor(np.asarray(forecast, dtype=np.float32),
+                                dtype=self.dtype, device=self.device)
+        else:
+            # previsão ingênua D_hat_{t+1} = D_{t-1}, igual ao ambiente original
+            f = torch.cat([torch.full((1,), self._mu, dtype=self.dtype,
+                                      device=self.device), d[:-1]])
+        self.forecast = f
+
+        scfg = cfg["SIMULATION"]
+        ccfg = cfg["COST"]
+        self.L = int(scfg.get("lead_time", 2))
+        self.init_inv = float(scfg.get("initial_inventory", 100))
+        self.h = float(ccfg.get("holding_cost_per_unit", 1.0))
+        self.cs = float(ccfg.get("stockout_cost_per_unit", 5.0))
+        self.of = float(ccfg.get("ordering_cost_per_order", 50.0))
+        self.ou = float(ccfg.get("ordering_cost_per_unit", 0.5))
+
+        # médias/desvios móveis de 6 ciclos, pré-computados (idênticos para
+        # todo o lote porque a série é compartilhada)
+        self._mu6, self._sd6 = self._rolling_stats()
+        self.reset()
+
+    # ── pré-cálculo ──────────────────────────────────────────────────────
+    def _rolling_stats(self):
+        mu6 = torch.empty(self.T, dtype=self.dtype, device=self.device)
+        sd6 = torch.empty(self.T, dtype=self.dtype, device=self.device)
+        for t in range(self.T):
+            lb = min(t, 6)
+            if lb > 1:
+                w = self.demand[max(0, t - lb):t]
+                mu6[t] = w.mean()
+                sd6[t] = w.std(unbiased=False)
+            else:
+                mu6[t] = self._mu
+                sd6[t] = self._sd
+        return mu6, sd6
+
+    # ── ciclo de vida ────────────────────────────────────────────────────
+    def reset(self):
+        B, dev, dt = self.B, self.device, self.dtype
+        self.t = 0
+        self.inventory = torch.full((B,), self.init_inv, dtype=dt, device=dev)
+        self.pipeline = torch.zeros((B, self.L + 1), dtype=dt, device=dev)
+        self.total_cost = torch.zeros(B, dtype=dt, device=dev)
+        self.n_orders = torch.zeros(B, dtype=dt, device=dev)
+        self.served = torch.zeros(B, dtype=dt, device=dev)
+        self.demand_total = torch.zeros(B, dtype=dt, device=dev)
+        self.stockout_events = torch.zeros(B, dtype=dt, device=dev)
+        self._order_sum = torch.zeros(B, dtype=dt, device=dev)
+        self._order_sqsum = torch.zeros(B, dtype=dt, device=dev)
+        return self.state()
+
+    def state(self) -> torch.Tensor:
+        """(B, 6) — mesmo vetor de estado do ambiente original."""
+        t = min(self.t, self.T - 1) if self.T else 0
+        dhat = self.forecast[t] if self.t < self.T else torch.zeros(
+            (), dtype=self.dtype, device=self.device)
+        pend = self.pipeline.sum(dim=1)
+        B = self.B
+        col = lambda v: torch.full((B,), float(v), dtype=self.dtype, device=self.device)
+        return torch.stack([
+            self.inventory / (self.init_inv + 1e-6),
+            col(dhat) / (self._mu + 1e-6),
+            pend / (self.init_inv + 1e-6),
+            col(self._mu6[t]) / (self._mu + 1e-6),
+            col(self._sd6[t]) / (self._sd + 1e-6),
+            col(self.t / max(self.T, 1)),
+        ], dim=1)
+
+    def step(self, order: torch.Tensor):
+        """Avança um ciclo para todo o lote. `order` shape (B,)."""
+        order = torch.clamp(order.to(self.dtype), min=0.0)
+
+        # 1. chegada do pedido emitido L ciclos atrás
+        arrived = self.pipeline[:, 0]
+        self.inventory = self.inventory + arrived
+        # desloca pipeline e insere o pedido novo na última posição
+        self.pipeline = torch.cat([self.pipeline[:, 1:], order.unsqueeze(1)], dim=1)
+
+        placed = (order > 0).to(self.dtype)
+        self.n_orders = self.n_orders + placed
+
+        # 2. realização da demanda (lost sales)
+        d = self.demand[self.t] if self.t < self.T else torch.zeros(
+            (), dtype=self.dtype, device=self.device)
+        served = torch.minimum(self.inventory, d.expand(self.B))
+        shortage = torch.clamp(d - served, min=0.0)
+        self.inventory = torch.clamp(self.inventory - d, min=0.0)
+
+        # 3. custos
+        cost = (self.h * self.inventory
+                + self.cs * shortage
+                + placed * (self.of + self.ou * order))
+        self.total_cost = self.total_cost + cost
+        self.served = self.served + served
+        self.demand_total = self.demand_total + d
+        self.stockout_events = self.stockout_events + (shortage > 0).to(self.dtype)
+        self._order_sum = self._order_sum + order
+        self._order_sqsum = self._order_sqsum + order * order
+
+        self.t += 1
+        done = self.t >= self.T
+        return self.state(), -cost, done, {"shortage": shortage}
+
+    # ── execução de política ─────────────────────────────────────────────
+    def run(self, policy_fn) -> dict:
+        """
+        Executa `policy_fn(state, env) -> order (B,)` até o fim do horizonte.
+        Retorna KPIs, cada um tensor (B,).
+        """
+        state = self.reset()
+        done = False
+        while not done:
+            state, _, done, _ = self.step(policy_fn(state, self))
+        return self.kpis()
+
+    def run_threshold(self, ROP: torch.Tensor, Q: torch.Tensor,
+                      SS: torch.Tensor) -> dict:
+        """
+        Caso especializado e mais rápido: política (s,Q) com limiar.
+
+            order = Q  se  (I_t + pipeline) <= ROP + SS,  senão 0
+
+        É a regra induzida por GA, SA, PSO e DE (Seção 4.4 da proposta), e o
+        caminho quente de todo o benchmark de meta-heurísticas.
+        """
+        thr = (ROP + SS).to(self.dtype)
+        Q = Q.to(self.dtype)
+        self.reset()
+        done = False
+        while not done:
+            pos = self.inventory + self.pipeline.sum(dim=1)
+            order = torch.where(pos <= thr, Q,
+                                torch.zeros_like(Q))
+            _, _, done, _ = self.step(order)
+        return self.kpis()
+
+    def kpis(self) -> dict:
+        T = max(self.T, 1)
+        sl = self.served / torch.clamp(self.demand_total, min=1e-9)
+        sr = self.stockout_events / T
+        of = self.n_orders / T
+        var_o = self._order_sqsum / T - (self._order_sum / T) ** 2
+        var_o = torch.clamp(var_o, min=0.0)
+        var_d = float(self.demand.var(unbiased=False).item()) if self.T else 1.0
+        bw = var_o / max(var_d, 1e-9)
+        return {
+            "TIC": self.total_cost,
+            "ServiceLevel": sl,
+            "StockoutRate": sr,
+            "StockoutEvents": self.stockout_events,
+            "N_Orders": self.n_orders,
+            "OrderFrequency": of,
+            "BullwhipEffect": bw,
+        }
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Função objetivo compartilhada
+# ═══════════════════════════════════════════════════════════════════════════
+
+def constrained_cost(kpis: dict, alpha_min: float = 0.70,
+                     penalty_weight: float = 10.0) -> torch.Tensor:
+    """
+    Custo a MINIMIZAR, implementando a Equação (4.2):
+
+        min CTI(theta)   sujeito a   NS(theta) >= alpha_min
+
+    Idêntica à formulação escalar de `policies._eval_static`, aqui vetorizada:
+    penalidade proporcional ao déficit de serviço e relativa ao próprio custo,
+    o que mantém a grandeza comparável entre séries de volumes muito distintos.
+    """
+    tic = kpis["TIC"]
+    deficit = torch.clamp(alpha_min - kpis["ServiceLevel"], min=0.0)
+    return tic + deficit * penalty_weight * torch.clamp(tic, min=1.0)
+
+
+def zabraoui_fitness_cost(kpis: dict, lambda1: float = 1.0,
+                          lambda2: float = 1e-4) -> torch.Tensor:
+    """
+    Custo a MINIMIZAR correspondente à aptidão do Zabraoui et al. (2025),
+    Equação (3):
+
+        Fitness = lambda1 * ServiceLevel - lambda2 * TotalInventoryCost
+
+    Como o restante do código minimiza, devolve-se o negativo da aptidão.
+
+    Ressalva metodológica, registrada uma vez: esta soma ponderada é
+    sensível à escala do CTI. Como o custo varia por ordens de grandeza entre
+    séries (razão de 124x entre a maior e a menor loja no estudo piloto), o
+    mesmo par (lambda1, lambda2) privilegia serviço em séries de baixo volume
+    e custo em séries de alto volume. No M5 do artigo, com itens de alto giro
+    e escala homogênea, o efeito é pequeno; no recorte brasileiro, não é.
+    A alternativa `constrained_cost` implementa a Eq. (4.2) da proposta e
+    permanece disponível.
+    """
+    return -(lambda1 * kpis["ServiceLevel"] - lambda2 * kpis["TIC"])
+
+
+def fitness_cost(kpis: dict, mode: str = "zabraoui", **kw) -> torch.Tensor:
+    """Despacha a função objetivo conforme o modo configurado."""
+    if mode in ("zabraoui", "weighted"):
+        return zabraoui_fitness_cost(
+            kpis, kw.get("lambda1", 1.0), kw.get("lambda2", 1e-4))
+    if mode == "constrained":
+        return constrained_cost(
+            kpis, kw.get("alpha_min", 0.70), kw.get("penalty_weight", 10.0))
+    raise ValueError(f"fitness_mode invalido: {mode!r}")
+
+
+def evaluate_threshold_population(demand, cfg: dict, params: torch.Tensor,
+                                  alpha_min: float = 0.70,
+                                  penalty_weight: float = 10.0,
+                                  device=None) -> torch.Tensor:
+    """
+    Avalia uma população inteira de parametrizações de uma vez.
+
+    params: (B, 3) com colunas (ROP, Q, SS)
+    retorna: (B,) custo restrito, a minimizar
+
+    Este é o ponto de entrada usado por GA, SA, PSO e DE.
+    """
+    B = params.shape[0]
+    env = BatchInventoryEnv(demand, cfg, batch_size=B, device=device)
+    p = params.to(device=env.device, dtype=env.dtype)
+    k = env.run_threshold(p[:, 0], torch.clamp(p[:, 1], min=1.0), p[:, 2])
+    return constrained_cost(k, alpha_min, penalty_weight)

@@ -21,8 +21,6 @@ Políticas implementadas:
    12. GA-PPO       — GA inicializa limiar, PPO decide quantidade
 """
 import numpy as np
-from scipy.optimize import differential_evolution, dual_annealing
-from deap import base, creator, tools
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -50,9 +48,32 @@ def _get_search_bounds(cfg: dict, demand: np.ndarray) -> tuple:
 
 
 def _eval_static(demand, cfg, ROP, Q, SS):
+    """
+    Aptidão de uma parametrização (ROP, Q, SS), a MAXIMIZAR.
+
+    Implementa a formulação restrita da Equação (4.2) da proposta:
+
+        min CTI(theta)   sujeito a   NS(theta) >= alpha_min
+
+    A versão anterior usava soma ponderada (w0*NS - w1*CTI), que não é a
+    mesma coisa: pesos fixos deixam o ponto de operação escolhido depender
+    da escala do CTI, que varia por ordens de grandeza entre séries (a razão
+    entre a maior e a menor loja chega a 124x no estudo piloto). Na prática
+    isso fazia a mesma configuração de pesos privilegiar serviço em séries
+    de baixo volume e custo em séries de alto volume, contaminando a
+    comparação entre políticas.
+
+    Aqui a restrição entra por penalidade proporcional ao déficit de serviço
+    e relativa ao próprio custo, o que mantém a aptidão adimensional e
+    comparável entre séries. Candidatos viáveis são ordenados por -CTI puro.
+
+    Retrocompatibilidade: se `fitness_mode` for "weighted" na configuração,
+    o comportamento antigo é preservado, para permitir reproduzir os
+    resultados já reportados no Capítulo 5.
+    """
     from simulation.core.inventory_env import InventoryEnv
-    env = InventoryEnv(demand, cfg, seed=42)
-    w   = cfg.get("GENETIC_ALGORITHM", {}).get("fitness_weights", [1.0, 0.0001])
+    gcfg = cfg.get("GENETIC_ALGORITHM", {})
+    env  = InventoryEnv(demand, cfg, seed=42)
 
     def policy(state, e):
         return Q if e.inventory + sum(e.pipeline) <= ROP + SS else 0.0
@@ -62,7 +83,17 @@ def _eval_static(demand, cfg, ROP, Q, SS):
         state, _, done, _ = env.step(policy(state, env))
 
     k = env.kpis()
-    return w[0] * k["ServiceLevel"] - w[1] * k["TIC"], k
+
+    if gcfg.get("fitness_mode", "constrained") == "weighted":
+        w = gcfg.get("fitness_weights", [1.0, 0.0001])
+        return w[0] * k["ServiceLevel"] - w[1] * k["TIC"], k
+
+    alpha_min = float(gcfg.get("alpha_min", 0.70))
+    penalty_w = float(gcfg.get("penalty_weight", 10.0))
+    tic = float(k["TIC"])
+    deficit = max(0.0, alpha_min - float(k["ServiceLevel"]))
+    cost = tic + deficit * penalty_w * max(tic, 1.0)
+    return -cost, k
 
 
 # ══════════════════════════════════════════════════════════════
@@ -127,581 +158,70 @@ class NewsvendorPolicy:
         return self.Q_opt if pos <= self.ROP else 0.0
 
 
-# ══════════════════════════════════════════════════════════════
-# 4. Genetic Algorithm
-# ══════════════════════════════════════════════════════════════
-class GAPolicyOptimizer:
-    def __init__(self, demand, cfg):
-        self.demand = demand; self.cfg = cfg
-        gc = cfg.get("GENETIC_ALGORITHM", {})
-        self.rop_r, self.q_r, self.ss_r = _get_search_bounds(cfg, demand)
-        self.pop_n = gc.get("population_size", 100)
-        self.n_gen = gc.get("n_generations", 50)
-        self.cx_p  = gc.get("crossover_prob", 0.8)
-        self.mut_r = gc.get("mutation_rate", 0.05)
-        self.w     = gc.get("fitness_weights", [1.0, 0.0001])
-        self.fitness_history = []
-        self.best = None
-        self._setup()
-
-    def _setup(self):
-        if not hasattr(creator, "FitnessMaxGA"):
-            creator.create("FitnessMaxGA", base.Fitness, weights=(1.0,))
-        if not hasattr(creator, "IndividualGA"):
-            creator.create("IndividualGA", list, fitness=creator.FitnessMaxGA)
-        tb = base.Toolbox()
-        tb.register("individual", lambda: creator.IndividualGA([
-            np.random.uniform(*self.rop_r),
-            np.random.uniform(*self.q_r),
-            np.random.uniform(*self.ss_r)]))
-        tb.register("population", tools.initRepeat, list, tb.individual)
-        tb.register("evaluate", self._eval)
-        tb.register("mate",   tools.cxBlend, alpha=0.5)
-        max_range = max(self.rop_r[1] - self.rop_r[0],
-                        self.q_r[1]   - self.q_r[0],
-                        self.ss_r[1]  - self.ss_r[0])
-        sigma = max_range / 10.0
-        tb.register("mutate", tools.mutGaussian, mu=0, sigma=sigma, indpb=self.mut_r)
-        tb.register("select", tools.selTournament, tournsize=3)
-        self.tb = tb
-
-    def _eval(self, ind):
-        ROP = np.clip(ind[0], *self.rop_r)
-        Q   = max(1.0, np.clip(ind[1], *self.q_r))
-        SS  = np.clip(ind[2], *self.ss_r)
-        fit, _ = _eval_static(self.demand, self.cfg, ROP, Q, SS)
-        return (fit,)
-
-    def optimize(self, verbose=True):
-        pop = self.tb.population(n=self.pop_n)
-        hof = tools.HallOfFame(1)
-        stats = tools.Statistics(lambda i: i.fitness.values)
-        stats.register("max", np.max); stats.register("avg", np.mean)
-        print(f"  [GA] {self.pop_n} ind x{self.n_gen} gen")
-        for gen in range(self.n_gen):
-            off = list(map(self.tb.clone, self.tb.select(pop, len(pop))))
-            for i in range(0, len(off)-1, 2):
-                if np.random.rand() < self.cx_p:
-                    self.tb.mate(off[i], off[i+1])
-                    del off[i].fitness.values, off[i+1].fitness.values
-            for ind in off:
-                if np.random.rand() < self.mut_r:
-                    self.tb.mutate(ind); del ind.fitness.values
-            inv = [i for i in off if not i.fitness.valid]
-            for ind, fit in zip(inv, map(self.tb.evaluate, inv)):
-                ind.fitness.values = fit
-            pop[:] = off; hof.update(pop)
-            rec = stats.compile(pop)
-            self.fitness_history.append(rec["max"])
-            if verbose and (gen+1) % 10 == 0:
-                print(f"    Gen {gen+1:3d}/{self.n_gen} | Best={rec['max']:.4f}")
-        b = hof[0]
-        self.best = {
-            "ROP": np.clip(b[0], *self.rop_r),
-            "Q":   max(1.0, np.clip(b[1], *self.q_r)),
-            "SS":  np.clip(b[2], *self.ss_r),
-            "fitness": b.fitness.values[0],
-            "fitness_history": self.fitness_history,
-        }
-        print(f"  [GA] ROP={self.best['ROP']:.1f} Q={self.best['Q']:.1f} SS={self.best['SS']:.1f}")
-        return self.best
-
-    def make_policy(self):
-        ROP, Q, SS = self.best["ROP"], self.best["Q"], self.best["SS"]
-        def p(state, env):
-            return Q if env.inventory + sum(env.pipeline) <= ROP + SS else 0.0
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 5. Simulated Annealing
-# ══════════════════════════════════════════════════════════════
-class SimulatedAnnealingPolicy:
-    def __init__(self, demand, cfg):
-        self.demand = demand; self.cfg = cfg
-        self.best = None
-        self.cost_history = []
-        self._rop_r, self._q_r, self._ss_r = _get_search_bounds(cfg, demand)
-
-    def optimize(self, verbose=True):
-        bounds = [list(self._rop_r), list(self._q_r), list(self._ss_r)]
-        print(f"  [SA] Dual Annealing...")
-        calls = [0]
-        hist  = []
-
-        def objective(x):
-            ROP, Q, SS = x
-            fit, _ = _eval_static(self.demand, self.cfg,
-                                  max(0,ROP), max(1,Q), max(0,SS))
-            calls[0] += 1
-            hist.append(-fit)
-            return -fit
-
-        result = dual_annealing(
-            objective, bounds=bounds,
-            maxiter=self.cfg.get("SA", {}).get("maxiter", 500),
-            seed=42, minimizer_kwargs={"method": "Nelder-Mead"})
-
-        self.cost_history = hist
-        ROP, Q, SS = result.x
-        self.best = {"ROP": max(0,ROP), "Q": max(1,Q), "SS": max(0,SS),
-                     "fitness": -result.fun, "cost_history": hist}
-        print(f"  [SA] ROP={self.best['ROP']:.1f} Q={self.best['Q']:.1f} "
-              f"SS={self.best['SS']:.1f} | calls={calls[0]}")
-        return self.best
-
-    def make_policy(self):
-        ROP, Q, SS = self.best["ROP"], self.best["Q"], self.best["SS"]
-        def p(state, env):
-            return Q if env.inventory + sum(env.pipeline) <= ROP + SS else 0.0
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 6. Particle Swarm Optimization
-# ══════════════════════════════════════════════════════════════
-class PSOPolicy:
-    """PSO clássico em numpy puro."""
-    def __init__(self, demand, cfg):
-        self.demand = demand; self.cfg = cfg
-        self.best = None
-        self.fitness_history = []
-        self._rop_r, self._q_r, self._ss_r = _get_search_bounds(cfg, demand)
-
-    def optimize(self, verbose=True):
-        pc = self.cfg.get("PSO", {})
-        n_particles = pc.get("n_particles", 40)
-        n_iter      = pc.get("n_iterations", 80)
-        w           = pc.get("inertia", 0.7)
-        c1          = pc.get("cognitive", 1.5)
-        c2          = pc.get("social", 1.5)
-
-        lb = np.array([self._rop_r[0], self._q_r[0], self._ss_r[0]], float)
-        ub = np.array([self._rop_r[1], self._q_r[1], self._ss_r[1]], float)
-
-        rng = np.random.default_rng(42)
-        pos = lb + rng.random((n_particles, 3)) * (ub - lb)
-        vel = np.zeros_like(pos)
-        pbest = pos.copy()
-        pbest_fit = np.full(n_particles, -np.inf)
-        gbest = pos[0].copy(); gbest_fit = -np.inf
-
-        print(f"  [PSO] {n_particles} partículas x{n_iter} iterações")
-        for it in range(n_iter):
-            for i in range(n_particles):
-                ROP, Q, SS = np.clip(pos[i], lb, ub)
-                Q = max(1.0, Q)
-                fit, _ = _eval_static(self.demand, self.cfg, ROP, Q, SS)
-                if fit > pbest_fit[i]:
-                    pbest_fit[i] = fit; pbest[i] = pos[i].copy()
-                if fit > gbest_fit:
-                    gbest_fit = fit; gbest = pos[i].copy()
-
-            r1 = rng.random((n_particles, 3))
-            r2 = rng.random((n_particles, 3))
-            vel = (w * vel
-                   + c1 * r1 * (pbest - pos)
-                   + c2 * r2 * (gbest - pos))
-            pos = np.clip(pos + vel, lb, ub)
-            self.fitness_history.append(gbest_fit)
-
-            if verbose and (it+1) % 20 == 0:
-                print(f"    Iter {it+1:3d}/{n_iter} | Best={gbest_fit:.4f}")
-
-        ROP, Q, SS = np.clip(gbest, lb, ub)
-        self.best = {"ROP": float(ROP), "Q": max(1.0, float(Q)), "SS": float(SS),
-                     "fitness": gbest_fit, "fitness_history": self.fitness_history}
-        print(f"  [PSO] ROP={self.best['ROP']:.1f} Q={self.best['Q']:.1f} SS={self.best['SS']:.1f}")
-        return self.best
-
-    def make_policy(self):
-        ROP, Q, SS = self.best["ROP"], self.best["Q"], self.best["SS"]
-        def p(state, env):
-            return Q if env.inventory + sum(env.pipeline) <= ROP + SS else 0.0
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 7. Differential Evolution
-# ══════════════════════════════════════════════════════════════
-class DEPolicy:
-    def __init__(self, demand, cfg):
-        self.demand = demand; self.cfg = cfg
-        self.best = None
-        self.fitness_history = []
-        self._rop_r, self._q_r, self._ss_r = _get_search_bounds(cfg, demand)
-
-    def optimize(self, verbose=True):
-        dec = self.cfg.get("DE", {})
-        bounds = [list(self._rop_r), list(self._q_r), list(self._ss_r)]
-        calls = [0]; hist = []
-
-        def objective(x):
-            ROP, Q, SS = x
-            fit, _ = _eval_static(self.demand, self.cfg,
-                                  max(0,ROP), max(1,Q), max(0,SS))
-            calls[0] += 1; hist.append(-fit)
-            return -fit
-
-        print(f"  [DE] Differential Evolution...")
-        result = differential_evolution(
-            objective, bounds=bounds,
-            maxiter=dec.get("maxiter", 100),
-            popsize=dec.get("popsize", 15),
-            mutation=dec.get("mutation", (0.5, 1.0)),
-            recombination=dec.get("recombination", 0.7),
-            seed=42, tol=1e-6, polish=True)
-
-        self.fitness_history = hist
-        ROP, Q, SS = result.x
-        self.best = {"ROP": max(0,ROP), "Q": max(1,Q), "SS": max(0,SS),
-                     "fitness": -result.fun, "fitness_history": hist}
-        print(f"  [DE] ROP={self.best['ROP']:.1f} Q={self.best['Q']:.1f} "
-              f"SS={self.best['SS']:.1f} | calls={calls[0]}")
-        return self.best
-
-    def make_policy(self):
-        ROP, Q, SS = self.best["ROP"], self.best["Q"], self.best["SS"]
-        def p(state, env):
-            return Q if env.inventory + sum(env.pipeline) <= ROP + SS else 0.0
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# REDE NEURAL SIMPLES (compartilhada por DQN, PPO, SARSA)
-# ══════════════════════════════════════════════════════════════
-class _NN:
-    def __init__(self, sizes, lr=0.001):
-        self.lr = lr
-        self.W = [np.random.randn(sizes[i], sizes[i+1]) * np.sqrt(2/sizes[i])
-                  for i in range(len(sizes)-1)]
-        self.b = [np.zeros((1, sizes[i+1])) for i in range(len(sizes)-1)]
-
-    def _relu(self, x): return np.maximum(0, x)
-    def _drel(self, x): return (x > 0).astype(float)
-
-    def predict(self, x):
-        a = np.atleast_2d(x)
-        for i, (W, b) in enumerate(zip(self.W, self.b)):
-            a = a @ W + b
-            if i < len(self.W) - 1:
-                a = self._relu(a)
-        return a
-
-    def update(self, x, target):
-        x = np.atleast_2d(x)
-        acts, pre = [x], []
-        a = x
-        for i, (W, b) in enumerate(zip(self.W, self.b)):
-            z = a @ W + b; pre.append(z)
-            a = self._relu(z) if i < len(self.W)-1 else z
-            acts.append(a)
-        loss = float(np.mean((a - target)**2))
-        delta = 2*(a - target)/len(x)
-        for i in reversed(range(len(self.W))):
-            dW = np.clip(acts[i].T @ delta, -1, 1)
-            db = np.clip(delta.sum(axis=0, keepdims=True), -1, 1)
-            self.W[i] -= self.lr * dW; self.b[i] -= self.lr * db
-            if i > 0:
-                delta = (delta @ self.W[i].T) * self._drel(pre[i-1])
-        return loss
-
-    def copy_from(self, other):
-        self.W = [w.copy() for w in other.W]
-        self.b = [b.copy() for b in other.b]
-
-
-# ══════════════════════════════════════════════════════════════
-# 8. DQN
-# ══════════════════════════════════════════════════════════════
-from collections import deque
-import random as _random
-
-class DQNPolicy:
-    def __init__(self, state_dim, cfg):
-        dc = cfg.get("DQN", {})
-        self.n_act     = dc.get("n_actions", 20)
-        self.max_ord   = dc.get("max_order_qty", 200)
-        self.gamma     = dc.get("gamma", 0.95)
-        self.eps       = dc.get("epsilon_start", 1.0)
-        self.eps_end   = dc.get("epsilon_end", 0.01)
-        self.eps_dec   = dc.get("epsilon_decay", 0.995)
-        self.bs        = dc.get("batch_size", 64)
-        self.tgt_freq  = dc.get("target_update_freq", 10)
-        lr             = dc.get("learning_rate", 0.001)
-        hidden         = dc.get("hidden_layers", [128, 64])
-        sizes = [state_dim] + hidden + [self.n_act]
-        self.actions   = np.linspace(0, self.max_ord, self.n_act)
-        self.q_net     = _NN(sizes, lr)
-        self.t_net     = _NN(sizes, lr); self.t_net.copy_from(self.q_net)
-        self.mem       = deque(maxlen=dc.get("memory_size", 10000))
-        self._step     = 0
-        self.reward_hist = []
-
-    def act(self, s, explore=True):
-        if explore and _random.random() < self.eps:
-            idx = _random.randint(0, self.n_act-1)
-        else:
-            idx = int(np.argmax(self.q_net.predict(s.reshape(1,-1))[0]))
-        return idx, self.actions[idx]
-
-    def remember(self, s, a, r, ns, d):
-        self.mem.append((s, a, r, ns, d))
-
-    def replay(self):
-        if len(self.mem) < self.bs: return
-        batch = _random.sample(self.mem, self.bs)
-        S  = np.array([b[0] for b in batch])
-        A  = np.array([b[1] for b in batch])
-        R  = np.array([b[2] for b in batch])
-        NS = np.array([b[3] for b in batch])
-        D  = np.array([b[4] for b in batch])
-        qc = self.q_net.predict(S)
-        qn = self.t_net.predict(NS)
-        tgt = qc.copy()
-        for i in range(self.bs):
-            tgt[i, A[i]] = R[i] if D[i] else R[i] + self.gamma * np.max(qn[i])
-        self.q_net.update(S, tgt)
-        self.eps = max(self.eps_end, self.eps * self.eps_dec)
-        self._step += 1
-        if self._step % self.tgt_freq == 0:
-            self.t_net.copy_from(self.q_net)
-
-    def prepopulate_from_ga(self, demand, cfg, ga_params: dict,
-                            n_transitions: int = 1000) -> int:
-        """Pré-popula o replay buffer com trajetórias da solução GA (proposta Fase ii)."""
-        from simulation.core.inventory_env import InventoryEnv
-        ROP = ga_params["ROP"]
-        Q   = ga_params["Q"]
-        SS  = ga_params["SS"]
-        q_idx = int(np.argmin(np.abs(self.actions - Q)))
-
-        added = 0; ep = 0
-        while added < n_transitions:
-            env = InventoryEnv(demand, cfg, seed=2000 + ep)
-            s = env.reset(); done = False
-            while not done and added < n_transitions:
-                inv_pos = env.inventory + sum(env.pipeline)
-                if inv_pos <= ROP + SS:
-                    a_idx, qty = q_idx, Q
-                else:
-                    a_idx, qty = 0, 0.0
-                ns, r, done, _ = env.step(qty)
-                self.remember(s, a_idx, r, ns, done)
-                s = ns; added += 1
-            ep += 1
-        print(f"  [DQN] Buffer pré-populado com {added} transições GA")
-        return added
-
-    def train(self, demand, cfg, verbose=True):
-        from simulation.core.inventory_env import InventoryEnv
-        n_ep = cfg["DQN"].get("episodes", 500)
-        print(f"  [DQN] Treinando {n_ep} episódios...")
-        for ep in range(n_ep):
-            env   = InventoryEnv(demand, cfg, seed=ep)
-            s     = env.reset(); done = False; tot = 0.0
-            while not done:
-                idx, qty = self.act(s, explore=True)
-                ns, r, done, _ = env.step(qty)
-                self.remember(s, idx, r, ns, done)
-                self.replay(); s = ns; tot += r
-            self.reward_hist.append(tot)
-            if verbose and (ep+1) % 100 == 0:
-                print(f"    Ep {ep+1}/{n_ep} eps={self.eps:.3f} "
-                      f"avg_r={np.mean(self.reward_hist[-50:]):.1f}")
-
-    def make_policy(self):
-        def p(s, env): return self.act(s, False)[1]
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 9. PPO
-# ══════════════════════════════════════════════════════════════
-class PPOPolicy:
-    def __init__(self, state_dim, cfg):
-        pc = cfg.get("PPO", {})
-        self.n_act   = pc.get("n_actions", 20)
-        self.max_ord = pc.get("max_order_qty", 200)
-        self.gamma   = pc.get("gamma", 0.99)
-        self.clip    = pc.get("clip_epsilon", 0.2)
-        self.k_ep    = pc.get("update_epochs", 4)
-        lr           = pc.get("learning_rate", 0.0003)
-        self.actions = np.linspace(0, self.max_ord, self.n_act)
-        self.actor   = _NN([state_dim, 64, 32, self.n_act], lr)
-        self.critic  = _NN([state_dim, 64, 32, 1], lr)
-        self.reward_hist = []
-
-    def _softmax(self, x):
-        x = x - x.max(axis=-1, keepdims=True)
-        e = np.exp(np.clip(x, -20, 20))
-        return e / (e.sum(axis=-1, keepdims=True) + 1e-8)
-
-    def act(self, s, explore=True):
-        lg = self.actor.predict(s.reshape(1,-1))[0]
-        pr = self._softmax(lg)
-        idx = np.random.choice(self.n_act, p=pr) if explore else np.argmax(pr)
-        return idx, self.actions[idx], np.log(pr[idx]+1e-8)
-
-    def warmstart_from_ga(self, demand, cfg, ga_params: dict,
-                          n_episodes: int = 20) -> None:
-        """Aquece a política PPO com trajetórias GA antes do treinamento regular."""
-        from simulation.core.inventory_env import InventoryEnv
-        ROP = ga_params["ROP"]
-        Q   = ga_params["Q"]
-        SS  = ga_params["SS"]
-
-        for ep in range(n_episodes):
-            env = InventoryEnv(demand, cfg, seed=3000 + ep)
-            s = env.reset(); done = False
-            traj = {"s": [], "a": [], "r": [], "lp": [], "v": []}
-            while not done:
-                inv_pos = env.inventory + sum(env.pipeline)
-                qty_ga  = Q if inv_pos <= ROP + SS else 0.0
-                a_idx   = int(np.argmin(np.abs(self.actions - qty_ga)))
-                lp      = float(np.log(1.0 / self.n_act))
-                v       = float(self.critic.predict(s.reshape(1, -1))[0, 0])
-                ns, r, done, _ = env.step(self.actions[a_idx])
-                traj["s"].append(s); traj["a"].append(a_idx)
-                traj["r"].append(r); traj["lp"].append(lp); traj["v"].append(v)
-                s = ns
-            self.reward_hist.append(sum(traj["r"]))
-            G = 0; rets = []
-            for r_t in reversed(traj["r"]): G = r_t + self.gamma * G; rets.insert(0, G)
-            rets = np.array(rets); rets = (rets - rets.mean()) / (rets.std() + 1e-8)
-            S = np.array(traj["s"]); A = np.array(traj["a"])
-            old_lp = np.array(traj["lp"]); V = np.array(traj["v"])
-            adv = rets - V
-            for _ in range(self.k_ep):
-                lg = self.actor.predict(S); pr = self._softmax(lg)
-                new_lp = np.log(pr[np.arange(len(A)), A] + 1e-8)
-                rat = np.exp(new_lp - old_lp)
-                cl = np.clip(rat, 1 - self.clip, 1 + self.clip)
-                tgt_a = lg.copy()
-                for i in range(len(A)):
-                    tgt_a[i, A[i]] += adv[i] * min(rat[i], cl[i])
-                self.actor.update(S, tgt_a)
-                self.critic.update(S, rets.reshape(-1, 1))
-        print(f"  [PPO] Warm-start concluído: {n_episodes} episódios GA")
-
-    def train(self, demand, cfg, verbose=True):
-        from simulation.core.inventory_env import InventoryEnv
-        n_ep = cfg["PPO"].get("episodes", 500)
-        print(f"  [PPO] Treinando {n_ep} episódios...")
-        for ep in range(n_ep):
-            env = InventoryEnv(demand, cfg, seed=ep)
-            s = env.reset(); done=False
-            traj = {"s":[],"a":[],"r":[],"lp":[],"v":[]}
-            while not done:
-                idx, qty, lp = self.act(s)
-                v = float(self.critic.predict(s.reshape(1,-1))[0,0])
-                ns, r, done, _ = env.step(qty)
-                traj["s"].append(s); traj["a"].append(idx)
-                traj["r"].append(r); traj["lp"].append(lp); traj["v"].append(v)
-                s = ns
-            self.reward_hist.append(sum(traj["r"]))
-            G=0; rets=[]
-            for r in reversed(traj["r"]): G=r+self.gamma*G; rets.insert(0,G)
-            rets=np.array(rets); rets=(rets-rets.mean())/(rets.std()+1e-8)
-            S=np.array(traj["s"]); A=np.array(traj["a"])
-            old_lp=np.array(traj["lp"]); V=np.array(traj["v"])
-            adv = rets - V
-            for _ in range(self.k_ep):
-                lg=self.actor.predict(S); pr=self._softmax(lg)
-                new_lp=np.log(pr[np.arange(len(A)),A]+1e-8)
-                rat=np.exp(new_lp-old_lp)
-                cl=np.clip(rat,1-self.clip,1+self.clip)
-                tgt_a=lg.copy()
-                for i in range(len(A)):
-                    tgt_a[i,A[i]]+=adv[i]*min(rat[i],cl[i])
-                self.actor.update(S, tgt_a)
-                self.critic.update(S, rets.reshape(-1,1))
-            if verbose and (ep+1) % 100 == 0:
-                print(f"    Ep {ep+1}/{n_ep} "
-                      f"avg_r={np.mean(self.reward_hist[-50:]):.1f}")
-
-    def make_policy(self):
-        def p(s, env): return self.act(s, False)[1]
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 10. SARSA tabular — Tabela-Q 5×10  (proposta seção 4.3)
-#     α=0.1, γ=0.99, ε=0.1 (fixo)
-# ══════════════════════════════════════════════════════════════
-class SARSAPolicy:
-    def __init__(self, state_dim, cfg):
-        sc = cfg.get("SARSA", {})
-        self.n_states = sc.get("n_states", 5)
-        self.n_act    = sc.get("n_actions", 10)
-        self.max_ord  = sc.get("max_order_qty", 200)
-        self.gamma    = sc.get("gamma", 0.99)
-        self.alpha    = sc.get("learning_rate", 0.1)
-        self.eps      = sc.get("epsilon", 0.1)
-        self.actions  = np.linspace(0, self.max_ord, self.n_act)
-        self.Q        = np.zeros((self.n_states, self.n_act))
-        self.reward_hist = []
-
-    def _discretize(self, state: np.ndarray) -> int:
-        """Mapeia inv normalizado (state[0] ∈ [0,1+]) → bin [0, n_states)."""
-        inv_norm = float(np.clip(state[0], 0.0, 1.0))
-        return min(int(inv_norm * self.n_states), self.n_states - 1)
-
-    def act(self, s, explore=True):
-        si = self._discretize(s)
-        if explore and _random.random() < self.eps:
-            idx = _random.randint(0, self.n_act - 1)
-        else:
-            idx = int(np.argmax(self.Q[si]))
-        return idx, self.actions[idx]
-
-    def train(self, demand, cfg, verbose=True):
-        from simulation.core.inventory_env import InventoryEnv
-        n_ep = cfg.get("SARSA", {}).get("episodes", 500)
-        print(f"  [SARSA] Treinando {n_ep} episódios (tabular {self.n_states}×{self.n_act})...")
-        for ep in range(n_ep):
-            env = InventoryEnv(demand, cfg, seed=ep)
-            s = env.reset(); done = False; tot = 0.0
-            si = self._discretize(s)
-            idx, qty = self.act(s)
-            while not done:
-                ns, r, done, _ = env.step(qty)
-                nsi  = self._discretize(ns)
-                nidx, nqty = self.act(ns) if not done else (0, 0.0)
-                td_target = r + (self.gamma * self.Q[nsi, nidx] if not done else r)
-                self.Q[si, idx] += self.alpha * (td_target - self.Q[si, idx])
-                s = ns; si = nsi; idx = nidx; qty = nqty; tot += r
-            self.reward_hist.append(tot)
-            if verbose and (ep + 1) % 100 == 0:
-                print(f"    Ep {ep+1}/{n_ep} avg_r={np.mean(self.reward_hist[-50:]):.1f}")
-
-    def make_policy(self):
-        def p(s, env): return self.act(s, False)[1]
-        return p
-
-
-# ══════════════════════════════════════════════════════════════
-# 11-12. Hybrid GA-RL (base compartilhada por DQN e PPO)
-# ══════════════════════════════════════════════════════════════
-class _HybridGARL:
-    """GA decide QUANDO pedir (ROP gate); RL decide QUANTO pedir."""
-    def __init__(self, ga_params: dict, rl_agent):
-        self.ROP = ga_params["ROP"]; self.SS = ga_params["SS"]
-        self.Q   = ga_params["Q"];   self._rl = rl_agent
-
-    def make_policy(self):
-        def p(s, env):
-            if env.inventory + sum(env.pipeline) <= self.ROP + self.SS:
-                return max(self._rl.act(s, False)[1], self.Q * 0.5)
-            return 0.0
-        return p
-
-
-class HybridGADQN(_HybridGARL):
-    def __init__(self, ga_params, dqn: DQNPolicy):
-        super().__init__(ga_params, dqn)
-
-
-class HybridGAPPO(_HybridGARL):
-    def __init__(self, ga_params, ppo: PPOPolicy):
-        super().__init__(ga_params, ppo)
+# ═══════════════════════════════════════════════════════════════════════════
+# Meta-heurísticas
+#
+# GA, SA, PSO e DE migraram para `simulation.core.metaheuristics_torch`, com
+# simulação vetorizada: a população inteira é avaliada em uma chamada, em vez
+# de um laço Python por indivíduo. DEAP e scipy deixaram de ser necessários.
+#
+# Não se trata de upgrade para estado da arte: conforme
+# docs/references/estado_da_arte_politicas.md (Secao 3.2), nao existe estado da
+# arte publicado em veiculo relevante para meta-heuristicas em inventario.
+# O que mudou foi (i) a funcao objetivo, agora a formulacao restrita da
+# Eq. (4.2), (ii) elitismo no GA, (iii) fator de constricao no PSO, e
+# (iv) cronograma de Metropolis explicito no SA, em vez de scipy.dual_annealing.
+# ═══════════════════════════════════════════════════════════════════════════
+
+from simulation.core.metaheuristics_torch import (   # noqa: E402
+    TorchGA, TorchSA, TorchPSO, TorchDE,
+    GAPolicyOptimizer, SimulatedAnnealingPolicy, PSOPolicy, DEPolicy,
+)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Aprendizado por reforço e arquiteturas híbridas
+#
+# Os agentes DQN, PPO e SARSA implementados à mão em NumPy foram removidos e
+# substituídos pelas versões em PyTorch de `simulation.core.rl_torch`:
+#
+#   DQNPolicy    -> DoubleDQNAgent     Double DQN (van Hasselt et al., 2016)
+#                                      com arquitetura dueling (Wang et al.,
+#                                      2016), perda de Huber e rede alvo.
+#   PPOPolicy    -> PPOAgent           PPO (Schulman et al., 2017) com GAE
+#                                      (Schulman et al., 2016).
+#   SARSAPolicy  -> ExpectedSARSAAgent Expected SARSA (van Seijen et al., 2009).
+#
+# Motivo da substituição, além da atualização para o estado da arte: a
+# atualização do ator no PPO antigo somava a vantagem diretamente aos logits
+# alvo e treinava por erro quadrático. Isso NÃO é o gradiente da surrogate
+# function recortada, de modo que o agente rotulado "PPO" nos resultados
+# anteriores não otimizava o objetivo do PPO. A degeneração observada no
+# Experimento 1 (FP = 0,98) é consistente com esse defeito.
+#
+# Os nomes antigos seguem exportados como aliases para não quebrar imports
+# existentes no pipeline e nos notebooks.
+# ═══════════════════════════════════════════════════════════════════════════
+
+from simulation.core.rl_torch import (      # noqa: E402  (import tardio proposital)
+    DoubleDQNAgent,
+    PPOAgent,
+    ExpectedSARSAAgent,
+    HybridGARL,
+    HybridGADQN,
+    HybridGAPPO,
+)
+
+# Aliases de compatibilidade
+DQNPolicy   = DoubleDQNAgent
+PPOPolicy   = PPOAgent
+SARSAPolicy = ExpectedSARSAAgent
+_HybridGARL = HybridGARL
+
+__all__ = [
+    "EOQPolicy", "SsPolicyClass", "NewsvendorPolicy",
+    "TorchGA", "TorchSA", "TorchPSO", "TorchDE",
+    "GAPolicyOptimizer", "SimulatedAnnealingPolicy", "PSOPolicy", "DEPolicy",
+    "DoubleDQNAgent", "PPOAgent", "ExpectedSARSAAgent",
+    "DQNPolicy", "PPOPolicy", "SARSAPolicy",
+    "HybridGARL", "HybridGADQN", "HybridGAPPO",
+]

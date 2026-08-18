@@ -5,8 +5,9 @@ pyarrow>=14.0
 numpy>=1.24
 scikit-learn>=1.3
 xgboost>=2.0
-deap>=1.4
-scipy>=1.11
+torch>=2.0            # simulador vetorizado, meta-heuristicas e agentes de RL
+# deap             -- NAO MAIS NECESSARIO: GA migrou para core/metaheuristics_torch.py
+scipy>=1.11           # linprog, usado pela regressao quantilica do BigDataNewsvendor
 matplotlib>=3.7
 scikit-posthocs>=0.8
 pyyaml>=6.0
