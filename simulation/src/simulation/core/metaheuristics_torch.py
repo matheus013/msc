@@ -167,12 +167,33 @@ class _ThresholdOptimizer:
 
 class TorchGA(_ThresholdOptimizer):
     """
-    GA com seleção por torneio, crossover blend e mutação gaussiana.
+    GA com seleção por torneio, crossover uniforme e mutação gaussiana
+    adaptativa -- alinhado a Zabraoui et al. (2025), Seções 3.4/4.4:
+    "tournament selection, uniform crossover, and adaptive mutation".
 
-    Acrescenta elitismo em relação à versão DEAP anterior: o melhor indivíduo
-    sobrevive intacto a cada geração. Sem elitismo, o crossover blend podia
-    destruir a melhor solução encontrada — o que explica parte da instabilidade
-    do GA entre séries nos resultados anteriores.
+    2026-08-18: CORRIGIDO após auditoria de fidelidade (pedido do usuário).
+    Até esta correção, o GA usava *blend crossover* (BLX-α, herdado da
+    versão DEAP de julho/2026) e mutação gaussiana de taxa FIXA -- só os
+    três números da Tabela 5 (população/crossover_prob/mutation_prob)
+    batiam com o artigo, não o mecanismo dos operadores em si, embora o
+    código citasse "Zabraoui Tab.5" de um jeito que sugeria alinhamento
+    completo. Agora:
+      - crossover UNIFORME: cada gene do filho herda do pai A ou do pai B
+        com probabilidade 0,5 (recombinação discreta gene-a-gene), não uma
+        combinação linear contínua como o blend.
+      - mutação ADAPTATIVA: o artigo não dá fórmula ("adaptive mutation"
+        sem detalhe). Leitura adotada, documentada aqui (mesmo padrão de
+        transparência usado em `policies_zabraoui.VendorResponsivePolicy`):
+        a taxa de mutação decai LINEARMENTE de `mutation_prob` na primeira
+        geração até `mutation_prob * mutation_final_ratio` na última --
+        mais exploração no início, mais exploração fina (convergência) no
+        fim, esquema padrão de "adaptive GA" na literatura (ex.: Srinivas &
+        Patnaik, 1994).
+
+    Mantém o elitismo em relação à versão DEAP anterior: o melhor indivíduo
+    sobrevive intacto a cada geração. Sem elitismo, o crossover podia
+    destruir a melhor solução encontrada — o que explica parte da
+    instabilidade do GA entre séries nos resultados anteriores.
     """
 
     name = "GA"
@@ -183,9 +204,17 @@ class TorchGA(_ThresholdOptimizer):
         self.pop_n = int(g.get("population_size", 100))
         self.n_gen = int(g.get("n_generations", 50))
         self.cx_p = float(g.get("crossover_prob", 0.9))
-        self.mut_p = float(g.get("mutation_rate", 0.05))
+        self.mut_p0 = float(g.get("mutation_rate", 0.05))
+        self.mut_final_ratio = float(g.get("mutation_final_ratio", 0.2))
         self.tourn = int(g.get("tournament_size", 3))
         self.seed = int(g.get("seed", 42))
+
+    def _mutation_rate(self, it: int) -> float:
+        """Taxa de mutação adaptativa: decaimento linear ao longo das gerações."""
+        if self.n_gen <= 1:
+            return self.mut_p0
+        frac = it / (self.n_gen - 1)
+        return self.mut_p0 * (1.0 - frac) + (self.mut_p0 * self.mut_final_ratio) * frac
 
     def optimize(self, verbose: bool = False):
         gen = self._generator(self.seed)
@@ -203,19 +232,20 @@ class TorchGA(_ThresholdOptimizer):
             winners = idx.gather(1, torch.argmin(cost[idx], dim=1, keepdim=True)).squeeze(1)
             off = pop[winners].clone()
 
-            # crossover blend em pares
+            # crossover uniforme em pares: cada gene herda de A ou B com p=0.5
             half = self.pop_n // 2
             a, b = off[:half], off[half:2 * half]
             do_cx = (torch.rand(half, device=self.device, generator=gen) < self.cx_p)
-            alpha = torch.rand((half, 3), dtype=self.dtype,
-                               device=self.device, generator=gen)
-            na = torch.where(do_cx.unsqueeze(1), alpha * a + (1 - alpha) * b, a)
-            nb = torch.where(do_cx.unsqueeze(1), alpha * b + (1 - alpha) * a, b)
+            gene_mask = (torch.rand((half, 3), dtype=self.dtype,
+                                    device=self.device, generator=gen) < 0.5)
+            na = torch.where(do_cx.unsqueeze(1), torch.where(gene_mask, a, b), a)
+            nb = torch.where(do_cx.unsqueeze(1), torch.where(gene_mask, b, a), b)
             off[:half], off[half:2 * half] = na, nb
 
-            # mutação gaussiana
+            # mutação gaussiana adaptativa: taxa decai ao longo das gerações
+            mut_p = self._mutation_rate(it)
             mask = (torch.rand((self.pop_n, 3), device=self.device,
-                               generator=gen) < self.mut_p)
+                               generator=gen) < mut_p)
             noise = torch.randn((self.pop_n, 3), dtype=self.dtype,
                                 device=self.device, generator=gen) * span
             off = torch.clamp(off + mask * noise, self.lb, self.ub)
@@ -232,7 +262,8 @@ class TorchGA(_ThresholdOptimizer):
                 best_theta, best_cost = pop[i].clone(), float(cost[i].item())
             self.cost_history.append(best_cost)
             if verbose and (it + 1) % 10 == 0:
-                log.info("  [GA] gen %d/%d best=%.1f", it + 1, self.n_gen, best_cost)
+                log.info("  [GA] gen %d/%d best=%.1f mut_p=%.3f", it + 1, self.n_gen,
+                         best_cost, mut_p)
 
         return self._finalize(best_theta, best_cost)
 

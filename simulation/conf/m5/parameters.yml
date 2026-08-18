@@ -63,10 +63,14 @@ simulation:
     iterations: 16
   de:
     max_iter: 20
+  # 2026-08-18: base dqn/ppo.episodes subiu de 500 para 1000 (correcao de
+  # fidelidade ao Zabraoui, ver simulation.yml) -- o corte de 10x aqui foi
+  # preservado (era 500->50, agora 1000->100), mesma logica de orcamento de
+  # tempo, nao a mesma logica de fidelidade ao artigo.
   dqn:
-    episodes: 50
+    episodes: 100
   ppo:
-    episodes: 50
+    episodes: 100
   sarsa:
     episodes: 50
   hybrid:

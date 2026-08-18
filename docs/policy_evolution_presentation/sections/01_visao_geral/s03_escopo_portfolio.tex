@@ -1,0 +1,36 @@
+% Slide — Escopo da mudança: panorama geral
+\begin{frame}{Panorama: o que mudou em cada família}
+  \centering
+  \resizebox{\linewidth}{!}{%
+  \tabstyle
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Família} & \textbf{O que mudou} & \textbf{Natureza} \\
+    \midrule
+    Clássicas (EOQ, $(s,S)$, Jornaleiro) & Nada -- mantidas como baseline & inalterada \\
+    SOTA clássicas (PIL, CappedBaseStock, BDN) & Não existiam & \textcolor{aftergreen}{nova} \\
+    Zabraoui (Min-Max, Fixed Interval, Vendor-Resp.) & Não existiam & \textcolor{aftergreen}{nova} \\
+    GA & Vetorizado; +elitismo; aptidão corrigida; \textbf{crossover/mutação
+      corrigidos p/ bater c/ o artigo} & \textcolor{beforered}{corrigida + vetorizada} \\
+    SA & \texttt{scipy.dual\_annealing} $\to$ Metropolis explícito, cadeias paralelas & \textcolor{accentpetrol}{reescrita} \\
+    PSO & Sem constrição $\to$ fator de constrição de Clerc \& Kennedy & \textcolor{beforered}{corrigida} \\
+    DE & \texttt{scipy.differential\_evolution} $\to$ DE/rand/1/bin vetorizado & \textcolor{accentpetrol}{reescrita} \\
+    DQN & Rede NumPy manual $\to$ Double DQN dueling; \textbf{epsilon/episódios
+      corrigidos p/ bater c/ o artigo} & \textcolor{beforered}{reescrita + corrigida} \\
+    PPO & \textbf{Gradiente do ator corrigido} + GAE; episódios corrigidos & \textcolor{beforered}{corrigida} \\
+    SARSA & Tabular 1D $\to$ Expected SARSA, discretização 2D & \textcolor{accentpetrol}{reescrita} \\
+    GA-DQN / GA-PPO & Piso de quantidade (\texttt{floor\_ratio}) adicionado & \textcolor{accentpetrol}{ajustada} \\
+    \bottomrule
+  \end{tabular}}
+  \vspace{0.8em}
+  \footnotesize\textcolor{slategray}{Vermelho = corrige defeito. Verde = nova política. Azul-petróleo = reescrita sem mudança de defeito conhecido (vetorização/robustez).}
+
+  \note{
+    Este slide é o mapa da apresentação: cada linha vira uma ou mais seções
+    adiante, com o antes e o depois em detalhe. Vale notar a assimetria --
+    as três políticas clássicas originais (EOQ, s-S, Jornaleiro) não
+    mudaram nada, porque continuam sendo o baseline de referência do
+    Capítulo 5. Tudo que é novo entra como alternativa moderna do mesmo
+    slot conceitual, não como substituição.
+  }
+\end{frame}

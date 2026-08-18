@@ -1,0 +1,45 @@
+% Slide — Formulação restrita
+\begin{frame}{Estágio 2: formulação restrita (Eq.~4.2)}
+  \footnotesize
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Objetivo, a minimizar:}
+      \[
+        \mathrm{custo} = \mathrm{CTI} + \delta \cdot p \cdot
+        \max(\mathrm{CTI}, 1)
+      \]
+      \[
+        \delta = \max(0,\ \alpha_{\min} - \mathrm{NS})
+      \]
+      em que $\alpha_{\min}=0{,}70$ e $p=10$ (peso de penalidade).
+    \column{0.5\textwidth}
+      \textbf{Por que isso resolve o problema de escala}
+      \begin{itemize}
+        \item A penalidade é \highlight{proporcional ao próprio CTI}
+          (via $\max(\mathrm{CTI},1)$), não uma constante fixa.
+        \item Candidatos viáveis ($\mathrm{NS}\geq\alpha_{\min}$) são
+          ordenados por $-\mathrm{CTI}$ puro -- sem distorção de escala.
+        \item Mesma fórmula usada nas versões escalar
+          (\texttt{policies.\_eval\_static}) e vetorizada
+          (\texttt{constrained\_cost}) -- \textbf{idênticas por construção}.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \small \textbf{Retrocompatibilidade:} \texttt{fitness\_mode="weighted"}
+  preserva o comportamento antigo, para reproduzir os resultados já
+  reportados no Capítulo 5 se necessário.
+
+  \note{
+    A formulação restrita segue exatamente a Equação 4.2 da proposta:
+    minimizar CTI sujeito a NS maior ou igual a 0,70. Em vez de descartar
+    candidatos inviáveis (o que perderia informação de gradiente para a
+    busca), a restrição entra como penalidade proporcional ao déficit de
+    serviço, escalada pelo próprio CTI da trajetória. Isso é o que resolve
+    o problema de escala: como a penalidade é relativa, não absoluta, o
+    mesmo critério funciona igualmente bem numa loja de CTI=50 e numa de
+    CTI=6000. O modo antigo continua disponível por retrocompatibilidade,
+    caso seja necessário reproduzir exatamente os números já publicados no
+    capítulo de resultados.
+  }
+\end{frame}

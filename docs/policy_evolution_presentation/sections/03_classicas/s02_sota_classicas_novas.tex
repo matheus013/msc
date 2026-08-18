@@ -1,0 +1,46 @@
+% Slide — Novas: SOTA clássicas
+\begin{frame}{\novo: três políticas clássicas em versão estado da arte}
+  \footnotesize Complementam (não substituem) EOQ/$(s,S)$/Jornaleiro -- mesmo
+  slot conceitual, referência publicada mais recente.
+
+  \renewcommand{\arraystretch}{0.95}\scriptsize
+  \begin{tabular}{@{}p{0.20\linewidth}p{0.52\linewidth}p{0.22\linewidth}@{}}
+    \toprule
+    \textbf{Política} & \textbf{Ideia central} & \textbf{Referência} \\
+    \midrule
+    PIL (\textit{Projected Inv.\ Level}) &
+      $Q_t=\max(0, S-\mathrm{PIL}_t)$, estoque projetado $L$ ciclos à
+      frente por reamostragem empírica, $\max(0,\cdot)$ em \textbf{cada}
+      ciclo (evita viés sob \textit{lost sales}) &
+      van Jaarsveld \& Arts, \textit{OR} 72(5), 2024 \\
+    \addlinespace
+    Capped base-stock &
+      $Q_t=\min(\text{cap}, \max(0, S-\mathrm{IP}_t))$ -- híbrido
+      base-stock/pedido constante; piso honesto p/ comparar RL &
+      Xin, \textit{OR} 69(1), 2021 \\
+    \addlinespace
+    Big Data Newsvendor &
+      Regressão quantílica, $\tau=c_s/(c_s{+}h)$, 8 características de
+      intermitência (sem suposição de distribuição) &
+      Ban \& Rudin, \textit{OR} 67(1), 2019 \\
+    \bottomrule
+  \end{tabular}
+
+  \note{
+    Estas três não existiam em julho -- é portfólio novo, não correção. O
+    critério de escolha foi: para cada slot conceitual (banda de reposição,
+    base-stock, jornaleiro), qual é a referência mais recente publicada em
+    veículo relevante. O PIL corrige um viés sutil de projeção sob venda
+    perdida: projetar linearmente sem truncar em zero a cada ciclo
+    intermediário superestima a recuperação do estoque, o que é
+    especialmente grave em séries Lumpy onde o estoque zera com
+    frequência. O capped base-stock entra porque a literatura de RL para
+    inventário usa exatamente essa política como piso -- incluí-la torna
+    o benchmark honesto, evitando comparar agentes de RL só contra
+    heurísticas fracas. O Big Data Newsvendor troca a suposição de
+    distribuição normal por minimização de risco empírico via regressão
+    quantílica, usando características de intermitência (fração de zeros
+    recentes, tempo desde a última venda) que carregam mais sinal do que
+    a média em regime Lumpy.
+  }
+\end{frame}

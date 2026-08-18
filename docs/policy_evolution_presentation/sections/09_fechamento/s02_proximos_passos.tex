@@ -1,0 +1,40 @@
+% Slide — Próximos passos
+\begin{frame}{Onde isso está sendo validado agora}
+  \small As 18 políticas, com a função de aptidão em seu estágio mais
+  recente (Eq.~4.2/Zabraoui $+$ TR/BE), estão sendo reexecutadas em
+  \textbf{três bases}, com o mesmo critério de otimização em todas:
+  \vspace{0.4em}
+
+  \tabstyle\footnotesize
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Base} & \textbf{Escopo} & \textbf{Status} \\
+    \midrule
+    Bahia (Experimento 2, oficial) & 145 séries & concluída \\
+    ``bot'' (interna completa, 27 estados) & 4.869 séries & em andamento \\
+    M5 (Walmart, benchmark externo, sem cortes) & 30.490 séries & em andamento \\
+    \bottomrule
+  \end{tabular}
+  \vspace{1em}
+
+  \begin{block}{Por que reexecutar a Bahia}
+    \small A extensão TR/BE (estágio 3 da aptidão) foi aplicada
+    \textbf{durante} a execução anterior da Bahia -- deixando etapas já
+    concluídas (clássica, meta-heurística, híbrida) com a aptidão antiga.
+    Reexecutada do zero para que as \textbf{três bases otimizem pelo mesmo
+    critério}, condição necessária para qualquer comparação entre elas.
+  \end{block}
+
+  \note{
+    Este slide fecha o círculo entre a implementação apresentada e o
+    trabalho em andamento. Como a extensão de aptidão com TR e BE foi a
+    mudança mais recente, aplicada no meio de uma execução de produção da
+    Bahia, essa execução específica ficou com etapas inconsistentes entre
+    si -- as que já tinham rodado usaram o critério antigo. A decisão foi
+    reexecutar a Bahia do zero com o critério novo do início ao fim, para
+    garantir que qualquer comparação futura entre Bahia, "bot" e M5 esteja
+    otimizando exatamente o mesmo objetivo nas três. Isso não é
+    apresentado como resultado -- é o estado do trabalho de validação no
+    momento desta apresentação.
+  }
+\end{frame}

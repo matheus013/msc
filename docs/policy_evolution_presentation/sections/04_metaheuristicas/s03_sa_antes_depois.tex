@@ -1,0 +1,49 @@
+% Slide — SA antes/depois
+\begin{frame}{Simulated Annealing -- \antes\ vs. \depois}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small \texttt{scipy.optimize.dual\_annealing}
+      \begin{itemize}\footnotesize
+        \item Cronograma de temperatura e critério de aceitação
+          \textbf{internos à biblioteca} -- caixa-preta com parâmetros
+          próprios, não os documentados na proposta.
+        \item Refinamento local por Nelder-Mead a cada iteração.
+        \item Uma cadeia, avaliação sequencial.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{TorchSA}: cronograma explícito
+      \begin{itemize}\footnotesize
+        \item $T_0=1000$, $\alpha_{\text{resfr.}}=0{,}95$ (Seção 4.4 da
+          proposta), $T_{k+1}=\alpha\, T_k$.
+        \item Critério de Metropolis auditável: aceita se $\Delta C<0$, ou
+          com probabilidade $e^{-\Delta C/T_k}$.
+        \item \highlight{32 cadeias independentes} (\texttt{n\_chains=32})
+          em paralelo, mesmo cronograma, saída = melhor entre elas.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \begin{block}{Por que isso é uma reescrita, não só uma correção}
+    \small SA é inerentemente sequencial. Vetorizar sem descaracterizar o
+    método significa rodar várias cadeias \textbf{independentes} com o
+    mesmo cronograma, em vez de fingir paralelismo dentro de uma cadeia.
+    O ganho de robustez vem de reportar o melhor entre 32 buscas, não de
+    uma cadeia mais rápida.
+  \end{block}
+
+  \note{
+    O scipy.dual\_annealing é uma implementação respeitável, mas é uma
+    caixa-preta: o cronograma de temperatura e os parâmetros de aceitação
+    internos não são os mesmos documentados na Seção 4.4 da proposta, o
+    que dificultava justificar por que aquele T0 e aquele alpha específicos.
+    A versão atual implementa o critério de Metropolis manualmente, o que
+    o torna auditável linha a linha, e explora paralelismo de um jeito
+    metodologicamente honesto: como SA clássico é sequencial por natureza,
+    a vetorização aqui significa rodar 32 cadeias independentes com o
+    MESMO cronograma de temperatura, não inventar um SA "paralelo" que não
+    existe na literatura -- a saída é simplesmente a melhor solução entre
+    as 32.
+  }
+\end{frame}

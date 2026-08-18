@@ -53,7 +53,19 @@ simulation:
     population: 100         # Zabraoui Tab.5 (faixa 50-200)
     generations: 50
     crossover_prob: 0.8     # Zabraoui Tab.5 (faixa 0.6-0.9)
-    mutation_prob: 0.05     # Zabraoui Tab.5 (faixa 0.01-0.1)
+    # 2026-08-18: CORRIGIDO apos auditoria de fidelidade. O artigo (Sec.3.4/4.4)
+    # descreve "tournament selection, uniform crossover, and adaptive mutation"
+    # -- ate esta correcao, o codigo usava blend crossover (BLX-alpha, herdado
+    # da versao DEAP de julho/2026) e mutacao gaussiana de TAXA FIXA, so os
+    # tres numeros da Tab.5 (population/crossover_prob/mutation_prob) batiam
+    # com o artigo, nao o mecanismo dos operadores. TorchGA.optimize() agora
+    # implementa uniform crossover (cada gene herda de um dos pais com
+    # probabilidade 0.5) e mutacao adaptativa (taxa decai linearmente de
+    # mutation_prob no inicio ate mutation_prob*mutation_final_ratio na
+    # ultima geracao -- o artigo nao da formula, esta e a leitura adotada,
+    # documentada em TorchGA).
+    mutation_prob: 0.05     # Zabraoui Tab.5 (faixa 0.01-0.1) -- taxa INICIAL
+    mutation_final_ratio: 0.2   # taxa final = mutation_prob * este fator
     tournament_size: 3
     elitism: true           # Zabraoui Sec.3.4: "an elitist strategy is integrated"
 
@@ -81,16 +93,22 @@ simulation:
   #   ppo   -> PPO com GAE (Schulman 2017 / 2016)
   #   sarsa -> Expected SARSA (van Seijen 2009)
   dqn:
-    # Zabraoui et al. (2025) Tab.4: epsilon=0.2; Sec.3.8: >=1000 episodios
+    # 2026-08-18: CORRIGIDO apos auditoria de fidelidade (pedido do usuario).
+    # Ate esta correcao, o comentario citava Zabraoui et al. (2025) Tab.4/Sec.3.8
+    # mas os valores abaixo (epsilon_start=1.0 decaindo, episodes=500) NUNCA
+    # implementavam epsilon=0.2 fixo nem >=1000 episodios -- ficava so na
+    # citacao, sem chegar no config. Agora epsilon_start=epsilon_end=0.2 (via
+    # epsilon_decay=1.0, ou seja, taxa de exploracao CONSTANTE, conforme
+    # Tab.4) e episodes=1000 (piso "no fewer than 1000 episodes" do Sec.3.8).
     device: "cpu"            # "cpu" | "mps" | "cuda" | "auto"
     seed: 42
     soft_update_tau: 0.0     # >0 usa soft update no lugar de target_update_freq
     grad_clip: 10.0
-    episodes: 500
+    episodes: 1000           # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
     gamma: 0.95
-    epsilon_start: 1.0
-    epsilon_end: 0.01
-    epsilon_decay: 0.995
+    epsilon_start: 0.2       # Zabraoui Tab.4: epsilon=0.2 (fixo, nao decrescente)
+    epsilon_end: 0.2
+    epsilon_decay: 1.0
     batch_size: 64
     memory_size: 10000
     target_update_freq: 10
@@ -98,17 +116,20 @@ simulation:
     hidden_layers: [64, 64]
 
   ppo:
-    # Zabraoui et al. (2025) Tab.4: coeficiente de entropia = 0.005
+    # 2026-08-18: episodes alinhado ao mesmo piso do Sec.3.8 ("each RL agent
+    # was exposed to the environment for no fewer than 1000 episodes" -- o
+    # artigo usa DQN e PPO como os dois agentes de RL, entao o piso vale
+    # para os dois, nao so o DQN).
     device: "cpu"
     seed: 42
     gae_lambda: 0.95
-    entropy_coef: 0.005
+    entropy_coef: 0.005      # Zabraoui et al. (2025) Tab.4: coeficiente de entropia
     value_coef: 0.5
     minibatch_size: 64
     grad_clip: 0.5
     clip_value_loss: true
     hidden_layers: [64, 64]
-    episodes: 500
+    episodes: 1000            # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
     gamma: 0.99
     clip_epsilon: 0.2
     update_epochs: 4

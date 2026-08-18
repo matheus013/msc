@@ -1,0 +1,58 @@
+% Slide — Termos de risco TR/BE
+\begin{frame}{\novo: termos de risco (TR, BE) somados à aptidão}
+  \footnotesize
+  \textbf{\textcolor{darkblue}{CTI só registra o custo de ruptura JÁ REALIZADO na trajetória simulada. TR e BE capturam fragilidade que o CTI sozinho não pune.}}
+  \vspace{0.4em}
+
+  \[
+    \mathrm{fitness}\ \mathrel{+}=\ \underbrace{\lambda_{\mathrm{TR}}\cdot \mathrm{TR}\cdot(1-\mathrm{NS})\cdot \mathrm{CTI}_{\mathrm{ref}}}_{\text{risco de ruptura}}
+    \ +\ \underbrace{\lambda_{\mathrm{BE}}\cdot \max(\mathrm{BE}-1,\,0)\cdot \mathrm{CTI}_{\mathrm{ref}}}_{\text{compra excessiva}}
+  \]
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{TR $\times$ (1$-$NS)}
+      \begin{itemize}
+        \item TR = fração de ciclos em que \highlight{falta produto pro
+          cliente} (probabilidade de ruptura).
+        \item Modulado por $(1{-}\mathrm{NS})$: risco composto cresce
+          quando serviço \textbf{já ruim} E ruptura \textbf{frequente}
+          coincidem.
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{$\max(\mathrm{BE}-1,0)$}
+      \begin{itemize}
+        \item $\mathrm{BE}=\mathrm{Var}(Q)/\mathrm{Var}(D)$.
+        \item $\mathrm{BE}\leq1$: pedido tão ou mais suave que a demanda
+          -- \textbf{não punido}.
+        \item $\mathrm{BE}>1$: amplificação -- só o \highlight{excesso}
+          acima de 1 é punido (``compra excessiva'').
+      \end{itemize}
+  \end{columns}
+  \vspace{0.6em}
+  \small $\lambda_{\mathrm{TR}}=\lambda_{\mathrm{BE}}=1{,}0$ por padrão;
+  $\mathrm{CTI}_{\mathrm{ref}}=\max(\mathrm{CTI},1)$, mesmo truque de escala
+  da penalidade de NS. Soma-se a QUALQUER \texttt{fitness\_mode}
+  (\texttt{constrained} ou \texttt{zabraoui}).
+
+  \note{
+    Esta é a extensão metodológica mais recente, feita nesta mesma sessão
+    de acompanhamento. A motivação veio de uma auditoria de onde TR e BE
+    eram usados no pipeline: eram calculadas e reportadas como KPIs, mas
+    NUNCA entravam na busca de nenhuma meta-heurística -- o CTI sozinho
+    define a busca, e o CTI só reflete o custo de ruptura que de fato
+    aconteceu na trajetória simulada, não o RISCO de que aconteça de novo.
+    TR entra como uma probabilidade de gerar custo futuro, ponderada por
+    NS porque o pior cenário é quando as duas coisas coincidem: serviço já
+    ruim e ruptura frequente. BE entra como punição especificamente pela
+    amplificação do pedido sobre a variabilidade da própria demanda -- o
+    "efeito chicote" -- mas só acima de 1, porque BE menor ou igual a 1 é
+    comportamento saudável, não deve ser punido. A formulação foi validada
+    contra a literatura: a definição de BE como razão de variâncias com
+    1,0 como zero natural vem da literatura padrão de bullwhip effect; a
+    penalidade por probabilidade de ruptura em otimização com restrição de
+    nível de serviço tem precedente publicado em pesquisa operacional; e
+    há precedente de GA com aptidão penalizada especificamente para
+    mitigar bullwhip effect na literatura de cadeia de suprimentos.
+  }
+\end{frame}

@@ -1,0 +1,39 @@
+% Slide — GPU routing
+\begin{frame}{Sobre GPU: implementada, mas raramente usada}
+  \keymessage{A vetorização é o que traz o ganho de desempenho -- não a GPU. E isso foi medido, não assumido.}
+  \vspace{0.6em}
+
+  \begin{itemize}
+    \item \texttt{core/device.py}: roteamento CPU/CUDA/MPS
+      \textbf{consciente do tamanho do lote} -- decide o acelerador só
+      acima de um limiar medido, não por preferência fixa.
+    \item Medição: MPS (Apple GPU) só compensa acima de
+      \textbf{$\sim$150 mil trajetórias simultâneas}.
+    \item Com população de 100 indivíduos (GA) ou 40 partículas (PSO), a
+      \textbf{CPU é 35$\times$ mais rápida} -- overhead de transferência
+      CPU$\leftrightarrow$GPU domina em lotes pequenos.
+  \end{itemize}
+  \vspace{0.8em}
+
+  \begin{block}{Decisão de engenharia}
+    \small Rotas de RL (\texttt{rl\_torch.py}) fixam CPU por padrão
+    (redes de $\sim10^4$ parâmetros, lotes de 64 -- overhead de
+    sincronização de GPU não compensa). Meta-heurísticas
+    (\texttt{metaheuristics\_torch.py}) consultam o limiar medido a cada
+    execução, por tamanho de população.
+  \end{block}
+
+  \note{
+    Este slide existe para não deixar a impressão de que "PyTorch" implica
+    "GPU". A infraestrutura de roteamento foi implementada e testada, mas
+    a medição honesta mostrou que, na escala de população usada neste
+    projeto -- dezenas a centenas de indivíduos por geração -- o overhead
+    de transferência de dados entre CPU e GPU é maior que o ganho de
+    paralelismo da GPU. O ganho real de desempenho, que tornou viável
+    rodar sobre bases de dezenas de milhares de séries, veio inteiramente
+    da vetorização (população inteira em uma chamada), não do hardware.
+    Isso é consistente com a literatura de sistemas: GPUs compensam
+    quando o paralelismo é massivo (aqui, só acima de 150 mil trajetórias
+    simultâneas), não em lotes de 100.
+  }
+\end{frame}

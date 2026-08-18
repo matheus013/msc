@@ -1,0 +1,57 @@
+% Slide — PPO: o bug em detalhe
+\begin{frame}{PPO -- o defeito, em detalhe matemático}
+  \footnotesize
+  \textbf{Objetivo correto do PPO (Schulman et al., 2017):}
+  \[
+    L(\theta) = -\mathbb{E}\Big[\min\big(r_t A_t,\ \mathrm{clip}(r_t, 1{-}\epsilon, 1{+}\epsilon)\,A_t\big)\Big],
+    \qquad r_t = \frac{\pi_{\text{novo}}(a_t|s_t)}{\pi_{\text{antigo}}(a_t|s_t)}
+  \]
+  \vspace{0.3em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\ (o defeito)
+      \begin{itemize}\footnotesize
+        \item \texttt{tgt\_a[i, A[i]] += adv[i] * min(rat[i], cl[i])}
+        \item Soma a vantagem \textbf{diretamente aos logits-alvo} e treina
+          o ator por \textbf{erro quadrático} contra esse alvo.
+        \item Isso \highlight{NÃO é o gradiente} de $L(\theta)$ acima --
+          é uma heurística sem garantia de melhoria monotônica da política.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\ (a correção)
+      \begin{itemize}\footnotesize
+        \item Gradiente obtido por \textbf{autograd} diretamente sobre
+          $r_t A_t$ e o termo recortado, como na formulação original.
+        \item \texttt{policy\_loss = -torch.min(s1, s2).mean()}
+        \item \highlight{GAE$(\lambda{=}0{,}95)$} para o estimador de
+          vantagem, normalização de vantagem, recorte também da função
+          valor, bônus de entropia.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.6em}
+
+  \begin{alertblock}{Evidência do impacto}
+    \small Experimento 1: PPO com FP $=0{,}98$ (pede em quase todo ciclo)
+    -- comportamento consistente com um ator que nunca convergiu para uma
+    política seletiva, porque nunca foi de fato otimizado pelo objetivo
+    do PPO.
+  \end{alertblock}
+
+  \note{
+    Este é o defeito mais grave encontrado na auditoria, porque não é uma
+    questão de estado da arte ou de escolha de hiperparâmetro -- é
+    matematicamente incorreto. Somar a vantagem aos logits-alvo e treinar
+    por MSE é uma heurística que parece plausível ("empurra a
+    probabilidade da ação boa para cima"), mas não corresponde ao
+    gradiente de nenhuma função objetivo bem definida, muito menos à
+    surrogate function recortada do PPO, que é o que garante que a
+    atualização não afaste demais a nova política da antiga. Sem essa
+    garantia, o treino pode divergir de formas imprevisíveis -- e o
+    sintoma observado, frequência de pedido de 0,98, é exatamente o tipo
+    de degeneração esperada: o agente não aprendeu a diferenciar quando
+    pedir e quando não pedir, então pede quase sempre. A correção usa
+    autograd do PyTorch sobre a expressão matemática correta, o que
+    elimina a possibilidade desse tipo de erro de derivação manual.
+  }
+\end{frame}

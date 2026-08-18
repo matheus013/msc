@@ -1,0 +1,50 @@
+% Slide — SARSA antes/depois
+\begin{frame}{SARSA -- \antes\ vs. \depois}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small SARSA tabular clássico
+      \begin{itemize}\footnotesize
+        \item Tabela $Q$ de $5\times10$ (5 estados de estoque $\times$ 10
+          ações).
+        \item Discretização \textbf{1D}: só nível de estoque normalizado.
+        \item Alvo TD amostra a próxima ação $a'$ realmente tomada
+          ($\epsilon$-greedy) -- variância de amostragem.
+        \item $\alpha=0{,}1$, $\gamma=0{,}99$, $\epsilon=0{,}1$.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{ExpectedSARSAAgent}
+      \begin{itemize}\footnotesize
+        \item Tabela $Q$ de $(5\times3)\times10$ -- discretização
+          \highlight{\textbf{2D}}: estoque $\times$ pedidos em trânsito
+          (\texttt{n\_pipeline\_states=3}).
+        \item Alvo = \highlight{esperança} sob a política $\epsilon$-greedy:
+          $y=r+\gamma\sum_a \pi(a|s')\,Q(s',a)$, não uma amostra.
+        \item Mesmos $\alpha$, $\gamma$, $\epsilon$ (\textbf{inalterados}).
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \begin{block}{Sem estado da arte publicado para este slot}
+    \small Diferente de DQN e PPO, não existe estado da arte publicado em
+    veículo relevante para SARSA aplicado a inventário. A escolha foi
+    Expected SARSA (van Seijen et al., ADPRL 2009) -- reduz a variância do
+    SARSA amostrado mantendo o caráter \textit{on-policy}, permanecendo
+    deliberadamente como \textbf{baseline tabular simples} do portfólio.
+  \end{block}
+
+  \note{
+    O SARSA é o único slot de RL em que não há uma referência mais recente
+    óbvia para adotar -- por isso a mudança aqui é mais modesta que em DQN
+    e PPO. Duas melhorias, ambas bem estabelecidas: Expected SARSA
+    substitui a amostra da próxima ação por sua esperança sob a política
+    corrente, o que elimina uma fonte de variância sem abandonar o
+    caráter on-policy que distingue SARSA de Q-learning; e a
+    discretização do estado ganhou uma segunda dimensão -- pedidos em
+    trânsito -- porque a versão anterior, que só olhava para o nível de
+    estoque, não conseguia diferenciar um estado de estoque baixo com
+    pedido a caminho de um estado de estoque baixo sem nada em trânsito,
+    que exigem decisões diferentes.
+  }
+\end{frame}

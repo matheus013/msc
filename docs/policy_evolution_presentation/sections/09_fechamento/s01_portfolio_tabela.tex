@@ -1,0 +1,40 @@
+% Slide — Portfólio final: 12 -> 18
+\begin{frame}{Portfólio final: de 12 para 18 políticas}
+  \centering
+  \resizebox{\linewidth}{!}{%
+  \tabstyle
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    \textbf{Clássicas} & \textbf{SOTA / Zabraoui \novo} & \textbf{Busca \& RL} & \textbf{Híbridas} \\
+    \midrule
+    EOQ & PIL & GA & GA-DQN \\
+    $(s,S)$ & CappedBaseStock & SA & GA-PPO \\
+    Jornaleiro & BigDataNewsvendor & PSO & \\
+     & Min-Max & DE & \\
+     & Fixed Interval & DQN & \\
+     & Vendor-Responsive & PPO & \\
+     & & SARSA & \\
+    \midrule
+    \textbf{3} & \textbf{6 novas} & \textbf{7} & \textbf{2} \\
+    \bottomrule
+  \end{tabular}}
+  \vspace{1em}
+
+  \small \textbf{3 inalteradas} $\cdot$ \textbf{6 novas} $\cdot$
+  \textbf{4 corrigidas} (GA, SA, PSO, DE por vetorização/aptidão; PPO por
+  gradiente) $\cdot$ \textbf{5 reescritas} sem defeito conhecido (DQN,
+  SARSA, GA-DQN, GA-PPO por herança das correções, simulador por
+  vetorização).
+
+  \note{
+    O número final é 18: as 12 políticas de julho, menos zero (nenhuma foi
+    removida), mais as 6 novas -- 3 do slot de estado da arte clássico
+    (PIL, capped base-stock, big data newsvendor) e 3 do artigo-base
+    Zabraoui (Min-Max, Fixed Interval, Vendor-Responsive). Cada célula
+    deste portfólio tem agora uma justificativa documentada: ou é
+    baseline preservado por comparabilidade, ou é a referência mais
+    recente publicada para aquele slot conceitual, ou -- quando não existe
+    referência publicada -- é a formulação canônica do método com a
+    função objetivo corrigida.
+  }
+\end{frame}

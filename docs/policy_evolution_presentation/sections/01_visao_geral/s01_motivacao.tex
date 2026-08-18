@@ -1,0 +1,39 @@
+% Slide — Por que reimplementar
+\begin{frame}{Por que reimplementar o portfólio inteiro?}
+  \textbf{\textcolor{darkblue}{Não foi troca de biblioteca. Foram dois defeitos que afetam resultados já reportados.}}
+  \vspace{0.4em}
+
+  \begin{itemize}
+    \item A política rotulada \textbf{PPO não otimizava o objetivo do PPO}: a
+      atualização do ator estava matematicamente errada (próximo slide).
+    \item A \textbf{aptidão das meta-heurísticas} (GA/SA/PSO/DE) usava soma
+      ponderada com pesos fixos -- ponto de operação sensível à escala do
+      custo, que varia por ordens de grandeza entre séries.
+  \end{itemize}
+  \vspace{0.6em}
+
+  \textbf{Consequência prática:} qualquer correção pontual exigiria retreinar
+  RL e recalibrar meta-heurísticas de qualquer forma. A decisão foi
+  aproveitar a reescrita para também:
+  \begin{itemize}
+    \item vetorizar o simulador (laço Python $\rightarrow$ lote em PyTorch);
+    \item ampliar o portfólio de 12 para \highlight{18 políticas}, cobrindo
+      estado da arte publicado onde ele existe;
+    \item alinhar hiperparâmetros a uma referência auditável (Zabraoui et
+      al., 2025) onde não existe estado da arte de meta-heurísticas para
+      inventário.
+  \end{itemize}
+
+  \note{
+    Esta reimplementação não nasceu de uma preferência por PyTorch. Nasceu
+    de dois defeitos concretos encontrados ao auditar o código depois do
+    Experimento 1: o PPO tinha o gradiente do ator errado, e a aptidão das
+    meta-heurísticas misturava níveis de serviço e custo numa soma
+    ponderada cuja escala dependia do volume da série. Como corrigir os
+    dois exigia mexer no núcleo de RL e de meta-heurísticas de qualquer
+    forma, a decisão foi reescrever o simulador de forma vetorizada ao
+    mesmo tempo -- o que abriu espaço para rodar populações inteiras em
+    uma única simulação, tornando viável ampliar o portfólio sem explodir
+    o tempo de execução.
+  }
+\end{frame}

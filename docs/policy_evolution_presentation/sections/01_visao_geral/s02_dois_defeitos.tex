@@ -1,0 +1,50 @@
+% Slide — Os dois defeitos, em detalhe
+\begin{frame}{Os dois defeitos que motivaram a reescrita}
+  \tabstyle\footnotesize
+  \begin{tabular}{@{}p{0.16\linewidth}p{0.40\linewidth}p{0.40\linewidth}@{}}
+    \toprule
+    & \antes & \depois \\
+    \midrule
+    \textbf{PPO} &
+      Ator atualizado somando a vantagem $A_t$ diretamente aos logits-alvo e
+      treinado por \textbf{erro quadrático}. Isso não é o gradiente da
+      \textit{surrogate function} recortada do PPO. &
+      Gradiente correto por autograd sobre a razão de verossimilhanças
+      $r_t=\pi_{\text{novo}}/\pi_{\text{antigo}}$, com \textbf{clipping}
+      explícito e \textbf{GAE}$(\lambda)$. \\
+    \addlinespace
+    \textbf{Aptidão GA/SA/PSO/DE} &
+      Soma ponderada fixa $\lambda_1\,\mathrm{NS}-\lambda_2\,\mathrm{CTI}$.
+      O ponto de operação depende da \textbf{escala do CTI}, que varia até
+      124$\times$ entre a maior e a menor loja do recorte piloto. &
+      Formulação \textbf{restrita} (Eq.~4.2 da proposta):
+      $\min \mathrm{CTI}$ s.a. $\mathrm{NS}\geq\alpha_{\min}$, com
+      penalidade \textbf{relativa ao próprio CTI} -- adimensional, comparável
+      entre séries. \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.8em}
+
+  \begin{alertblock}{Por que isso importa para os resultados já reportados}
+    \small A degeneração observada no Experimento 1 (frequência de pedidos
+    FP $=0{,}98$ para a política PPO -- pedir quase todo ciclo) é
+    \highlight{consistente com o defeito do gradiente}, não com uma
+    limitação real do método PPO.
+  \end{alertblock}
+
+  \note{
+    O defeito do PPO é sutil de detectar olhando só para o código, mas
+    óbvio olhando para o resultado: um agente PPO bem treinado não deveria
+    pedir em 98\% dos ciclos -- isso é comportamento de política quase
+    aleatória, não de política otimizada. A causa raiz é que a atualização
+    do ator não seguia o gradiente do objetivo clipped surrogate do PPO; ela
+    empurrava os logits na direção da vantagem e depois ajustava por MSE,
+    o que é uma heurística sem garantia de melhoria monotônica. O segundo
+    defeito, da aptidão das meta-heurísticas, é mais estrutural: como o
+    custo varia por ordens de grandeza entre séries de volumes diferentes,
+    o mesmo par de pesos (lambda1, lambda2) que funciona bem numa loja de
+    alto giro pode privilegiar demais o serviço numa loja pequena, ou
+    demais o custo numa loja grande -- contaminando qualquer comparação
+    entre políticas feita com a mesma configuração de pesos.
+  }
+\end{frame}

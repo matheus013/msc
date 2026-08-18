@@ -1,0 +1,52 @@
+% Slide — DQN antes/depois
+\begin{frame}{DQN -- \antes\ vs. \depois}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small Rede \texttt{\_NN}: NumPy escrito à mão
+      \begin{itemize}\footnotesize
+        \item MLP simples, \textit{forward}/\textit{backward} manuais,
+          \texttt{ReLU}, sem otimizador adaptativo (SGD puro).
+        \item DQN padrão: mesma rede escolhe e avalia a ação do próximo
+          estado -- \textbf{superestimação} de valor conhecida na
+          literatura.
+        \item Perda: erro quadrático médio.
+        \item Sem \textit{clipping} de gradiente.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{DoubleDQNAgent} (PyTorch)
+      \begin{itemize}\footnotesize
+        \item Arquitetura \highlight{\textit{dueling}} (Wang et al., 2016):
+          $Q(s,a)=V(s)+[A(s,a)-\overline{A(s,\cdot)}]$.
+        \item \highlight{Double DQN} (van Hasselt et al., 2016): rede
+          \textit{online} escolhe a ação, rede \textit{alvo} avalia --
+          $y=r+\gamma\,Q_{\text{alvo}}(s',\arg\max_a Q_{\text{online}}(s',a))$.
+        \item Perda de \textbf{Huber} (\texttt{smooth\_l1\_loss}), Adam,
+          \textit{grad clipping} em 10.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.6em}
+
+  \begin{block}{Por que Double DQN dueling especificamente}
+    \small Em horizontes curtos ($T=38$ ciclos), a superestimação do DQN
+    clássico é especialmente danosa: o agente aprende a pedir demais
+    porque valoriza excessivamente estados de estoque alto. A separação
+    $V(s)/A(s,a)$ estabiliza o treino em estados onde a ação pouco altera
+    o retorno -- frequente quando o estoque já está muito acima do ponto
+    de pedido.
+  \end{block}
+
+  \note{
+    O que era rotulado "DQN" em julho era, tecnicamente, DQN vanilla com
+    uma rede neural implementada do zero em NumPy -- funcional, mas sem
+    nenhuma das melhorias que a literatura de RL desenvolveu desde 2015
+    especificamente para o problema de superestimação de valor. A versão
+    atual não é apenas uma reescrita em PyTorch: é a adoção de Double DQN
+    com arquitetura dueling, que são, juntos, considerados a versão de
+    estado da arte razoável para este slot no portfólio -- van Hasselt et
+    al. 2016 para o Double DQN, Wang et al. 2016 para dueling. A perda de
+    Huber, em vez de erro quadrático, também é mais robusta a
+    recompensas de escala variável entre séries.
+  }
+\end{frame}

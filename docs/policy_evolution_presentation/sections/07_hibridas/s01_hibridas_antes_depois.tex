@@ -1,0 +1,48 @@
+% Slide — Híbridas GA-RL antes/depois
+\begin{frame}{GA-DQN / GA-PPO -- \antes\ vs. \depois}
+  \small GA decide \textbf{QUANDO} pedir (limiar $\mathrm{ROP}{+}\mathrm{SS}$); o agente de RL decide \textbf{QUANTO} -- inalterado nas duas versões.
+  \vspace{0.4em}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes
+      \begin{itemize}\footnotesize
+        \item \texttt{qty = max(rl.act(s)[1], self.Q * 0.5)}
+        \item Piso de \textbf{50\% do $Q$ do GA} fixo, sem parametrização.
+        \item RL de baixo nível ainda sofria do defeito do PPO
+          (Seção~6) quando o híbrido usava GA-PPO.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois
+      \begin{itemize}\footnotesize
+        \item Mesmo piso, agora \highlight{parametrizado}:
+          \texttt{floor\_ratio} (padrão 0,5), configurável por
+          \texttt{simulation.hybrid}.
+        \item Herda \textbf{automaticamente} as correções de DQN e PPO
+          (Seção~6) -- a classe \texttt{HybridGARL} recebe qualquer agente
+          já treinado como componente.
+        \item Herda também o GA vetorizado com elitismo (Seção~4) na fase
+          (i) de inicialização.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \begin{alertblock}{Por que o piso de quantidade existe}
+    \small Sem ele, o agente de RL pode aprender a emitir pedidos
+    \textbf{simbólicos} (quantidade $\approx0$) só para satisfazer o
+    gatilho de \textit{quando} pedir do GA -- comportamento degenerado
+    observado no Experimento 1 com PPO sem inicialização adequada.
+  \end{alertblock}
+
+  \note{
+    A arquitetura híbrida em si -- GA decide quando, RL decide quanto -- não
+    mudou. O que mudou é que ela herda automaticamente todas as correções
+    das duas peças que a compõem: o GA vetorizado com elitismo entra na
+    fase de inicialização/pré-treino (prepopulate\_from\_ga para o DQN,
+    warmstart\_from\_ga para o PPO), e o agente de RL de baixo nível agora é
+    o Double DQN ou o PPO corrigido, não as versões antigas. O piso de
+    quantidade (floor\_ratio) passou de uma constante hardcoded para um
+    parâmetro configurável, o que facilita qualquer análise de
+    sensibilidade futura sobre esse valor.
+  }
+\end{frame}

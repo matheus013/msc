@@ -1,0 +1,33 @@
+% Slide — GA: antes (julho)
+\begin{frame}{Algoritmo Genético -- \antes}
+  \footnotesize Biblioteca \texttt{DEAP}. Representação real $\theta=(\mathrm{ROP}, Q, \mathrm{SS})$.
+
+  \renewcommand{\arraystretch}{1.05}\footnotesize
+  \begin{tabular}{@{}p{0.28\linewidth}p{0.66\linewidth}@{}}
+    \toprule
+    \textbf{Operador} & \textbf{Implementação} \\
+    \midrule
+    População & 100 indivíduos, inicializados uniformemente nos limites de busca \\
+    Gerações & 50 \\
+    Seleção & Torneio, tamanho 3 (\texttt{tools.selTournament}) \\
+    Cruzamento & \textit{Blend crossover} $\alpha=0{,}5$ (\texttt{tools.cxBlend}), prob. 0,8 \\
+    Mutação & Gaussiana, $\sigma=$ maior amplitude do espaço de busca $/10$, prob. 0,05 por gene (\texttt{tools.mutGaussian}) \\
+    Elitismo & \textbf{Nenhum} -- \texttt{HallOfFame(1)} só registra o melhor, não o protege do crossover \\
+    Avaliação & 1 simulação completa de $T$ ciclos por indivíduo, \textbf{em laço Python} \\
+    Aptidão & Soma ponderada $\lambda_1\,\mathrm{NS}-\lambda_2\,\mathrm{CTI}$, pesos fixos \\
+    \bottomrule
+  \end{tabular}
+
+  \note{
+    Este é o inventário completo do GA de julho, operador por operador,
+    porque a pergunta natural da banca é "o que exatamente mudou". A
+    população, o número de gerações, o tipo de cruzamento e o tipo de
+    mutação continuam os mesmos na versão atual -- não houve mudança de
+    metaheurística, só de execução e de aptidão. O ponto crítico aqui é a
+    ausência de elitismo: sem proteção, o melhor indivíduo encontrado numa
+    geração pode ser destruído pelo cruzamento blend na geração seguinte,
+    o que explica parte da instabilidade observada entre séries nos
+    resultados do Experimento 1. E cada geração custava 100 simulações
+    sequenciais em Python puro.
+  }
+\end{frame}

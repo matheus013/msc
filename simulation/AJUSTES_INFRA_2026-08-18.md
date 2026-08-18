@@ -443,24 +443,252 @@ diferentes", é "orçamento ajustado por base").
 
 ---
 
+## 19. Paralelização entre séries (ProcessPoolExecutor)
+
+**Descrição:** Os 6 nós de política (`run_classical_policies`,
+`run_sota_classical_policies`, `run_zabraoui_policies`,
+`run_metaheuristic_policies`, `run_rl_policies`,
+`run_proposed_architecture`) reescritos para despachar cada série a um
+`ProcessPoolExecutor` via uma infraestrutura genérica compartilhada
+(`_run_parallel_policies` + workers de módulo `_worker_generic`/
+`_worker_proposed`). Novo parâmetro `simulation.n_workers` (default:
+núcleos disponíveis − 2).
+
+**Motivo:** Cada série é 100% independente das demais (mesmo cfg, mesma
+demanda, sem estado compartilhado) — mas o loop era sequencial, 1 núcleo
+de 16 usados. "bot" (4.869 séries) e M5 (30.490 séries) em orçamento
+completo davam ~48h e ~65h respectivamente — muito acima do teto de 12h
+combinado com o usuário.
+
+**Objetivo:** Usar os núcleos ociosos sem sacrificar orçamento de busca
+nem cobertura de dados.
+
+**Impacto:** Processos (não threads) — evita o conflito de libomp entre
+torch/xgboost/sklearn documentado em REIMPLEMENTACAO_SOTA.md, que é
+específico de threads dividindo o mesmo processo. Sementes são locais por
+série (`cfg[...]["seed"]`, `params["random_seed"]`), sem RNG global
+acumulado entre séries mesmo no código sequencial original — validado
+empiricamente 2x (8 e 40 séries): resultado numérico **idêntico**
+(0 diferenças) entre sequencial e paralelo. Ganho de velocidade no teste
+pequeno foi modesto (1,6x com 10 workers, 40 séries, orçamento de teste
+bem reduzido) porque o overhead fixo por processo (import de
+torch/xgboost/sklearn no spawn) domina tarefas curtas; com o orçamento de
+produção real (muito mais pesado por série) o ganho esperado fica bem
+mais perto do número de workers. `n_workers=7` para bot e M5 (não os 14
+disponíveis) porque os dois rodam ao mesmo tempo nesta máquina de 16
+núcleos, com a Bahia (ainda sequencial) também ativa.
+
+---
+
+## 20. Meta-heurísticas reduzidas no M5 (viraram o novo gargalo)
+
+**Descrição:** `conf/m5/parameters.yml`: `ga.generations` 50→10,
+`sa.max_iter` 500→100, `pso.iterations` 80→16, `de.max_iter` 100→20 (~5x).
+
+**Motivo:** Depois de medir os tempos reais por família na Bahia (v2:
+classical 6,4s, metaheurística 8,12min, híbrida 23,34min, RL ~53,5min/145
+séries), a projeção para M5 mostrou que meta-heurísticas — sem nenhum
+corte, ao contrário do RL (#18) — passariam a dominar o tempo total
+(28,5h das 65,5h estimadas), porque não são vetorizadas o bastante para
+serem irrelevantes numa base de 30.490 séries.
+
+**Objetivo:** Combinado com a paralelização (#19), caber no teto de 12h
+sem cortar nenhuma série do M5.
+
+**Impacto:** Estimativa combinada (cortes + 7 workers): M5 de ~65,5h
+sequencial-sem-corte para ~6h; "bot" (sem corte de meta-heurística, só
+paralelização) de ~48,3h para ~6,9h. Ambas dentro do teto de 12h. Medição
+real pendente (runs em andamento no momento deste registro).
+
+---
+
+## 21. Fitness com termos de risco (TR, BE) — extensão sobre Zabraoui/proposta
+
+**Descrição:** `core/inventory_env_torch.py`: nova função `_risk_terms`,
+somada a `constrained_cost` (Eq. 4.2) E `zabraoui_fitness_cost` (Eq. 3),
+usada por GA/SA/PSO/DE e por extensão GA-DQN/GA-PPO (todos herdam
+`_ThresholdOptimizer.evaluate()`):
+
+```
+fitness += tr_weight * TR * (1 - NS) * clamp(TIC, min=1)   # risco de ruptura
+fitness += be_weight * max(BE - 1, 0) * clamp(TIC, min=1)  # compra excessiva
+```
+
+Novos parâmetros `simulation.ga.tr_weight`/`be_weight` (default 1.0 cada).
+
+**Motivo:** Pedido do usuário — TIC só registra o custo de ruptura JÁ
+REALIZADO na trajetória simulada; TR (fração de ciclos sem produto pro
+cliente — "TR é quando falta produto pro cliente") e BE (amplificação do
+pedido sobre a demanda) capturam fragilidade que TIC sozinho não pune, e
+não influenciavam a busca de nenhuma política antes desta mudança (achado
+do item anterior desta conversa: TR/BE eram calculadas e testadas
+estatisticamente, mas nunca otimizadas).
+
+**Objetivo:** TR entra como probabilidade de gerar custo (ponderada por
+NS — risco composto quando serviço já ruim E ruptura frequente
+coincidem); BE entra como punição especificamente pela AMPLIFICAÇÃO acima
+da variabilidade da própria demanda (BE≤1 não é punido — validado contra
+a literatura: BE=1,0 é o zero natural da métrica, "sem amplificação",
+ver fontes abaixo).
+
+**Impacto:** Validado sem regressão de execução (0 erros, mesma
+consistência sequencial=paralelo) mas **muda os ótimos encontrados** —
+efeito esperado e desejado, não uma regressão a corrigir. Os resultados
+de "bot"/M5 em andamento no momento deste registro já usam a fitness
+nova; a Bahia (v2, já em RL quando a mudança foi aplicada) usa a fitness
+ANTIGA só nas etapas que já haviam rodado (classical/metaheurística/
+híbrida) — silenciosamente inconsistente entre etapas dessa run
+especificamente, considerar re-executar a Bahia depois com a fitness nova
+para manter as 3 bases comparáveis com o mesmo objetivo de otimização.
+Validado contra a literatura (não é fórmula ad-hoc):
+- BE = var(pedidos)/var(demanda), 1,0 = sem amplificação: [Bullwhip Effect — Finale Inventory](https://www.finaleinventory.com/inventory-planning-software/bullwhip-effect)
+- Penalidade por probabilidade de ruptura em otimização com restrição de nível de serviço: [Optimization of a Stochastic Joint Replenishment Inventory System with Service Level Constraints](https://www.sciencedirect.com/science/article/abs/pii/S0305054822002349)
+- GA + fitness penalizada para mitigar bullwhip: [Minimizing the bullwhip effect in a supply chain using genetic algorithms](https://www.tandfonline.com/doi/abs/10.1080/00207540500431347)
+
+---
+
+## 22. Bahia relançada como v3 (fitness nova, para consistência entre bases)
+
+**Descrição:** `kedro run --pipeline benchmark_final --params
+"simulation.n_workers=1"` → `prod_benchmark_final_v3.log`.
+
+**Motivo:** A v2 da Bahia (item #21) tinha terminado com a fitness ANTIGA
+nas etapas classical/metaheurística/híbrida (já haviam rodado quando a
+mudança de #21 foi aplicada) — inconsistente com "bot"/M5, que já usavam a
+fitness nova (TR+BE) do início ao fim.
+
+**Objetivo:** As três bases otimizando pelo mesmo critério, para qualquer
+comparação entre elas fazer sentido.
+
+**Impacto:** Concluído com sucesso — `EXIT=0`,
+`Pipeline execution completed successfully in 7076.1 sec` (~1h58min,
+`n_workers=1` deliberado para não disputar núcleo com bot/M5 rodando em
+paralelo). Conferido política por política (lição do incidente #2): `KPIs
+agregados: 2610 linhas, 18 políticas, 145 séries | famílias:
+{'metaheuristic': 580, 'classical': 435, 'sota_classical': 435, 'zabraoui':
+435, 'rl': 435, 'hybrid': 290}` — idêntico em contagem à v2, agora com a
+fitness nova em TODAS as etapas. Esta é a versão final/válida da Bahia
+para a dissertação.
+
+---
+
+## 23. Correção de fidelidade ao Zabraoui: DQN, episódios de RL e operadores do GA
+
+**Descrição:** O usuário apontou (e a auditoria confirmou, lendo o artigo
+completo) que quatro coisas citadas como "adotadas de Zabraoui et al. (2025)"
+nunca chegaram ao código:
+1. `dqn.epsilon_start/end/decay`: citava Tab.4 (ε=0,2 fixo), mas o config
+   tinha epsilon DECRESCENTE (1,0→0,01) — nunca fixo em 0,2.
+2. `dqn.episodes`/`ppo.episodes`: citava Sec.3.8 ("no fewer than 1000
+   episodes"), mas o config tinha 500 (e 50 no M5).
+3. GA `crossover`: o artigo (Sec.3.4/4.4) diz "uniform crossover"; o código
+   usava *blend crossover* (BLX-α), herdado sem mudança da versão DEAP de
+   julho/2026.
+4. GA `mutation`: o artigo diz "adaptive mutation"; o código usava taxa
+   FIXA (0,05), não adaptativa.
+Só os *valores numéricos* de população, probabilidade de crossover, taxa
+inicial de mutação (GA) e coeficiente de entropia (PPO) de fato batiam com
+as Tabelas 4/5 do artigo — a citação nos comentários dava a entender
+alinhamento completo, quando só esses números estavam alinhados.
+
+**Motivo:** Correção pedida explicitamente pelo usuário, que optou por
+corrigir o **código** (não só a citação/documentação), mesmo sabendo que
+isso invalida as execuções de "bot" e M5 em andamento no momento do
+pedido (ambas rodando com os valores antigos).
+
+**Objetivo:** Fazer o código bater de fato com o que os comentários e o
+`REIMPLEMENTACAO_SOTA.md` afirmavam ter sido adotado do artigo-base, para
+que qualquer citação de "hiperparâmetros alinhados a Zabraoui" na
+dissertação seja verificável no código, não apenas no comentário.
+
+**Impacto:**
+- `conf/base/parameters/simulation.yml`: `dqn.epsilon_start=epsilon_end=0.2`,
+  `epsilon_decay=1.0` (exploração constante); `dqn.episodes` e
+  `ppo.episodes` de 500 → 1000; novo `ga.mutation_final_ratio: 0.2`.
+- `conf/m5/parameters.yml`: `dqn.episodes`/`ppo.episodes` de 50 → 100
+  (preserva o corte de 10x sobre o novo piso de 1000, mesma lógica de
+  orçamento de tempo já documentada no item 18 — **não** uma correção de
+  fidelidade, o corte em si continua sendo decisão nossa de tempo de
+  execução, não do artigo).
+- `core/metaheuristics_torch.py` (`TorchGA`): crossover trocado de blend
+  para uniforme (cada gene herda do pai A ou B com p=0,5); mutação trocada
+  de taxa fixa para adaptativa (decaimento linear de `mutation_prob` até
+  `mutation_prob × mutation_final_ratio` na última geração — o artigo não
+  dá fórmula para "adaptive mutation", esta é a leitura adotada, documentada
+  na classe com a mesma transparência já usada em
+  `VendorResponsivePolicy`). Testado isoladamente (20 indivíduos × 5
+  gerações, série sintética): roda sem erro.
+- `pipelines/inventory_simulation/nodes.py` (`_build_cfg`): novo campo
+  `mutation_final_ratio` propagado ao `GENETIC_ALGORITHM` cfg.
+- `simulation/REIMPLEMENTACAO_SOTA.md`: tabela "Hiperparâmetros adotados"
+  reescrita para refletir o estado real (antes/depois desta correção).
+- **NÃO corrigido, deliberadamente:** o horizonte de simulação. O artigo
+  cita 365 dias (§4.7.1, só na seção híbrida) OU >40.000 *time steps*
+  (§4.2, resultados principais) — as duas granularidades já divergem
+  dentro do próprio artigo, e nenhuma bate com "ciclo comercial" (nossa
+  unidade). Mudar a granularidade para dias quebraria o Experimento 2
+  oficial da Bahia (145 séries, já validado) e o mapeamento
+  `days_per_cycle=21` que torna Bahia/M5 comparáveis entre si — não
+  alterado sem confirmação explícita adicional do usuário.
+- **Consequência operacional:** as execuções de "bot" (`prod_bot_v2.log`,
+  já na última etapa, `run_proposed_architecture`, ~1h56min de trabalho) e
+  M5 (`prod_m5_v4.log`, em meta-heurística, ~2h12min) em andamento no
+  momento desta correção usavam os valores ANTIGOS — descartadas e
+  relançadas: `prod_bot_v3.log` (task `b3xkx0pcm`) e `prod_m5_v5.log`
+  (task `b8isyiszt`). A Bahia v3 (`prod_benchmark_final_v3.log`, já
+  CONCLUÍDA com 2610 linhas, ver item 22) também tinha rodado com o
+  GA/DQN antigo — mesmo problema, pedido explicitamente ao usuário e
+  confirmado: relançada como v4 (`prod_benchmark_final_v4.log`, task
+  `b9puskok3`, `n_workers=1`). Dashboard (`scratchpad/dashboard.py`)
+  atualizado para as três novas versões e reiniciado.
+
+**Nota sobre por que este item existe:** esta correção não veio de uma
+auditoria autônoma minha — o usuário afirmou ter certeza de que os
+algoritmos do PDF do artigo-base não estavam implementados como descrito,
+e pediu verificação. A leitura completa do artigo (22 páginas) confirmou a
+suspeita. Registrado aqui integralmente porque é exatamente o tipo de
+achado que este arquivo existe para não deixar perder: comentário de
+código que cita uma fonte não é a mesma coisa que o código implementar o
+que a fonte diz.
+
+---
+
 ## Estado no fim desta sessão
 
-Três execuções de produção rodando:
+Todas as três relançadas mais uma vez após #23 (correção de fidelidade ao
+Zabraoui: epsilon fixo, 1000/100 episódios, GA uniform crossover +
+mutação adaptativa) — Bahia v3 e as primeiras tentativas de bot/M5 desta
+rodada foram descartadas por terem rodado com o GA/DQN não corrigido.
 
-| Base | Ambiente | Séries | Orçamento RL | Log |
-|---|---|---|---|---|
-| Bahia (oficial, Experimento 2) | base | 145 | 500 ep. | `prod_benchmark_final_v2.log` |
-| "bot" (interna completa, 27 estados) | `bot` | 4.869 | 500 ep. | `prod_bot.log` |
-| M5 (Walmart, externa, sem cortes — #16) | `m5` | 30.490 | 50 ep. (#18) | `prod_m5_v3.log` |
+| Base | Ambiente | Séries | Workers | Orçamento RL (DQN/PPO) | Fitness | GA (após #23) | Log | Status |
+|---|---|---|---|---|---|---|---|---|
+| Bahia (oficial, Experimento 2) | base | 145 | 1 (sequencial) | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_benchmark_final_v4.log` | em andamento |
+| "bot" (interna completa, 27 estados) | `bot` | 4.869 | 7 | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_bot_v3.log` | em andamento |
+| M5 (Walmart, externa, sem cortes — #16) | `m5` | 30.490 | 7 | 100 ep. (#18+#23) | nova (TR+BE) | uniform×adaptativa | `prod_m5_v5.log` | em andamento |
+
+**Ferramentas de acompanhamento desta sessão** (scratchpad, fora do
+repositório): log viewer (`http://127.0.0.1:8765/`) e dashboard
+(`http://127.0.0.1:8767/`) — etapa atual, duração por etapa, progresso
+série-a-série, parametrização real (via `KedroSession`) e resultados
+parciais lidos dos `kpis_*.parquet`.
 
 ## Pendências / próximos passos
 
-- As três runs de produção precisam terminar e ser conferidas política
-  por política (não só o `kpis` agregado, e não só o exit code) antes de
-  dar qualquer uma como concluída — foi exatamente essa checagem que
-  revelou o incidente #2 na primeira tentativa da Bahia.
+- **Bahia v3 foi SUPERSEDIDA pela v4** (item #23) — v3 rodou com GA/DQN não
+  corrigidos (blend crossover, mutação fixa, epsilon decrescente, 500
+  episódios) e não deve mais ser citada como versão final. **v4 é a
+  versão válida** assim que terminar.
+- As três (Bahia v4, "bot" v3, M5 v5) estão rodando agora com o mesmo
+  código corrigido (item #23) — precisam terminar e ser conferidas
+  política por política (não só o `kpis` agregado, e não só o exit code)
+  antes de dar qualquer uma como concluída, mesma lição do incidente #2.
 - Confirmar que rodar as três em paralelo não reproduz o incidente #2,
   agora que o isolamento de catálogo (#8) cobre todos os datasets
-  intermediários usados por `benchmark_m5`/`benchmark_bot`. Sequência desta
-  sessão: lançadas em paralelo deliberadamente como teste do isolamento
-  (Bahia sozinha primeiro, depois bot e M5 somados sem parar a Bahia).
+  intermediários usados por `benchmark_m5`/`benchmark_bot`. A Bahia v3
+  (descartada) tinha terminado limpa com bot/M5 ainda rodando ao lado —
+  primeira evidência prática de que o isolamento se sustenta em paralelo;
+  esta rodada (v4/v3/v5, lançadas juntas) é o segundo teste.
+- Horizonte de simulação (365 dias vs. ciclos comerciais) permanece
+  DIVERGENTE do artigo-base, deliberadamente não corrigido (ver item #23,
+  ressalva) — decisão pendente do usuário se algum dia isso precisar ser
+  reconciliado.

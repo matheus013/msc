@@ -1,0 +1,36 @@
+% Slide — Garantia de fidelidade do simulador vetorizado
+\begin{frame}{Garantia: o novo simulador reproduz o antigo}
+  \keymessage{Reescrever o simulador é o maior risco desta mudança -- por
+  isso ele foi validado numericamente antes de qualquer política ser
+  reimplementada sobre ele.}
+  \vspace{0.8em}
+
+  \begin{itemize}
+    \item Teste de equivalência (\texttt{tests/test\_env\_equivalence.py}):
+      mesma política, mesma demanda, mesma semente, comparando
+      \texttt{InventoryEnv} escalar contra \texttt{BatchInventoryEnv} em
+      \textbf{30 casos}.
+    \item Erro relativo máximo: $\mathbf{3{,}7\times10^{-7}}$ em CTI, NS,
+      TR, BE e FP -- compatível com precisão de ponto flutuante, não com
+      diferença de lógica.
+  \end{itemize}
+  \vspace{0.6em}
+
+  \begin{alertblock}{Consequência metodológica}
+    \small Qualquer diferença nos resultados entre a versão de julho e a
+    atual é atribuível às políticas e à função de aptidão -- \highlight{não
+    a uma mudança silenciosa nas regras do ambiente de simulação}.
+  \end{alertblock}
+
+  \note{
+    Este é o slide de credibilidade da reescrita. Antes de reimplementar
+    qualquer política, o simulador vetorizado foi comparado contra o
+    original em 30 casos com política, demanda e semente idênticas -- o
+    erro relativo máximo encontrado, 3,7e-7, está na faixa de erro de
+    arredondamento de ponto flutuante, não de divergência de lógica. Isso
+    significa que qualquer diferença de resultado que apareça mais adiante
+    (por exemplo, no comportamento do GA ou do PPO) pode ser atribuída com
+    confiança às mudanças na política ou na função de aptidão, e não a uma
+    mudança silenciosa nas regras do jogo.
+  }
+\end{frame}

@@ -94,16 +94,40 @@ O ambiente da dissertação inclui `c_o^var · Q_t = 0,5·Q`. `policies_zabraoui
 
 ### Hiperparâmetros adotados
 
-| Parâmetro | Valor | Fonte |
-|---|---|---|
-| GA população | 100 | Tabela 5 (faixa 50–200) |
-| GA crossover | **0,8** (era 0,9) | Tabela 5 (faixa 0,6–0,9) |
-| GA mutação | 0,05 | Tabela 5 (faixa 0,01–0,1) |
-| GA elitismo | sim | §3.4 |
-| ε (DQN) | 0,2 | Tabela 4 |
-| Entropia (PPO) | **0,005** (era 0,01) | Tabela 4 |
-| Episódios de RL | **≥1000** | §3.8 |
-| Horizonte | 365 dias por item | §3.8 |
+**2026-08-18 — CORREÇÃO DE FIDELIDADE.** A tabela abaixo, na versão anterior
+deste documento, listava ε(DQN)=0,2, episódios de RL ≥1000 e horizonte de 365
+dias como "adotados", mas isso nunca chegou ao `simulation.yml`: o DQN usava
+epsilon decrescente (1,0→0,01, nunca fixo em 0,2), os episódios eram 500 (50
+no M5) e o horizonte sempre foi T=38/93 ciclos comerciais, não 365 dias. O
+crossover do GA também nunca foi "uniform crossover" (o artigo, Seções
+3.4/4.4) — era *blend crossover* (BLX-α) herdado da versão DEAP de julho,
+e a mutação era de taxa fixa, não "adaptive mutation". A citação ficava no
+comentário; o valor real do config divergia. Encontrado numa auditoria
+pedida pelo usuário, que decidiu corrigir o **código** (não só a citação) —
+ver `AJUSTES_INFRA_2026-08-18.md`, item 23, para o registro completo.
+
+| Parâmetro | Valor | Fonte | Status |
+|---|---|---|---|
+| GA população | 100 | Tabela 5 (faixa 50–200) | ok, já batia |
+| GA crossover — probabilidade | 0,8 | Tabela 5 (faixa 0,6–0,9) | ok, já batia |
+| GA crossover — mecanismo | **uniform crossover** (era blend/BLX-α) | §3.4/4.4 | **corrigido agora** |
+| GA mutação — taxa inicial | 0,05 | Tabela 5 (faixa 0,01–0,1) | ok, já batia |
+| GA mutação — mecanismo | **adaptativa**, decai até 0,05×0,2 (era taxa fixa) | §3.4/4.4 ("adaptive mutation", sem fórmula — leitura nossa) | **corrigido agora** |
+| GA elitismo | sim | §3.4 | ok, já batia |
+| ε (DQN) | **0,2 fixo** (era decrescente 1,0→0,01) | Tabela 4 | **corrigido agora** |
+| Entropia (PPO) | 0,005 | Tabela 4 | ok, já batia |
+| Episódios de RL (DQN/PPO) | **1000** (era 500; 100 no M5, era 50) | §3.8 ("no fewer than 1000") | **corrigido agora** |
+| Horizonte | 38/93 ciclos comerciais (Bahia/M5) — **NÃO é 365 dias** | §3.8/§4.7.1 | **não corrigido, ver ressalva abaixo** |
+
+**Ressalva sobre o horizonte (não corrigido, decisão pendente):** o artigo
+usa 365 períodos diários (§4.7.1, específico da seção híbrida) ou mais de
+40.000 *time steps* nos resultados principais (§4.2) — as duas granularidades
+já divergem *dentro do próprio artigo*, e nenhuma das duas é "ciclo
+comercial". Mudar a granularidade da nossa simulação para dias quebraria o
+Experimento 2 oficial da Bahia (145 séries, já validado, protegido contra
+alteração silenciosa) e o mapeamento `days_per_cycle=21` que torna Bahia e M5
+comparáveis entre si (Seção 4 deste documento). Não foi alterado sem
+confirmação explícita do usuário.
 
 ---
 

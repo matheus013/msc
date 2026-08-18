@@ -1,0 +1,45 @@
+% Slide — Simulador: antes/depois
+\begin{frame}{O simulador: de laço Python a lote vetorizado}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small \texttt{InventoryEnv}: uma trajetória por chamada.
+      \begin{itemize}\footnotesize
+        \item Um indivíduo/partícula = 1 simulação de $T$ ciclos, em laço Python.
+        \item População 100 $\times$ 50 gerações do GA $=$ \textbf{5.000
+          simulações sequenciais}.
+        \item Cada `step` é uma chamada de função Python por ciclo.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{BatchInventoryEnv}: $B$ trajetórias em paralelo.
+      \begin{itemize}\footnotesize
+        \item Toda a população avança \textbf{um ciclo por vez, em bloco}
+          (operações tensoriais de largura $B$).
+        \item Mesma configuração do GA $=$ \textbf{50 chamadas} de simulação
+          de largura 100, não 5.000 chamadas de largura 1.
+        \item Custo passa de $O(B\times T)$ chamadas Python para $O(T)$
+          operações tensoriais.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \begin{block}{O que NÃO mudou}
+    \small Ordem das operações por ciclo (chegada $\to$ demanda $\to$
+    custo), \textit{lost sales} (demanda não atendida é perdida, não
+    acumulada), pipeline de $L{+}1$ posições, e os cinco KPIs (CTI, NS,
+    TR, BE, FP). O simulador vetorizado é uma reimplementação, não uma
+    reformulação do ambiente.
+  \end{block}
+
+  \note{
+    A mudança central não é "trocar numpy por PyTorch". É que a população
+    inteira de uma meta-heurística passou a ser avaliada em UMA chamada ao
+    simulador, em vez de um laço Python por indivíduo. Isso é o que torna
+    GPU potencialmente útil neste projeto -- embora, como veremos adiante,
+    a medição real mostrou que não compensa nesta escala de população.
+    O ambiente continua representando exatamente as mesmas regras de
+    negócio: mesma ordem de operações, mesma política de venda perdida,
+    mesmo pipeline de lead time.
+  }
+\end{frame}

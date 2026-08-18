@@ -1,0 +1,167 @@
+% Apresentação: Evolução do Portfólio de Políticas (Julho -> Agosto/2026)
+% Antes/depois de cada política, defeitos corrigidos e novas famílias.
+% Compilar com: latexmk -xelatex main.tex  (ver Makefile)
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usetheme{metropolis}
+
+% --- Idioma e fontes ---
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage[variant=brazilian]{portuguese}
+
+% --- Pacotes de suporte ---
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+\usepackage{amsmath}
+\usepackage{textcomp}
+
+% --- Paleta acadêmica (idêntica à apresentação de qualificação) ---
+\definecolor{darkblue}{HTML}{0F2F57}
+\definecolor{slategray}{HTML}{4D6175}
+\definecolor{lightgray}{HTML}{EAF0F6}
+\definecolor{accenteal}{HTML}{0E8C95}
+\definecolor{accentpetrol}{HTML}{1E5D8C}
+\definecolor{warnred}{HTML}{9A3A3A}
+\definecolor{softink}{HTML}{1F3348}
+\definecolor{cardbg}{HTML}{F4F8FC}
+\definecolor{canvasbg}{HTML}{FFFFFF}
+% --- Cores extras: antes (defeito/legado) vs depois (corrigido/novo) ---
+\definecolor{beforered}{HTML}{9A3A3A}
+\definecolor{aftergreen}{HTML}{1E7A4C}
+
+\setbeamercolor{background canvas}{bg=canvasbg}
+\setbeamercolor{normal text}{fg=softink,bg=white}
+
+\setbeamercolor{palette primary}{bg=darkblue,fg=white}
+\setbeamercolor{palette secondary}{bg=accenteal!85!darkblue,fg=white}
+\setbeamercolor{palette tertiary}{bg=darkblue,fg=white}
+\setbeamercolor{frametitle}{bg=white,fg=darkblue}
+\setbeamercolor{progress bar}{fg=accenteal,bg=darkblue!12}
+\setbeamercolor{alerted text}{fg=accentpetrol!85!darkblue}
+\setbeamercolor{item}{fg=accenteal!90!darkblue}
+\setbeamercolor{subitem}{fg=accentpetrol!85!darkblue}
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamerfont{normal text}{size=\normalsize}
+
+\setbeamertemplate{frame numbering}[fraction]
+\metroset{block=fill,sectionpage=none,numbering=fraction,progressbar=frametitle}
+
+\setbeamercolor{block title}{fg=darkblue,bg=lightgray}
+\setbeamercolor{block body}{fg=softink,bg=cardbg}
+\setbeamercolor{alertblock title}{fg=white,bg=accentpetrol!65!darkblue}
+\setbeamercolor{alertblock body}{fg=softink,bg=accentpetrol!8}
+
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.14em,dp=0ex]{progress bar}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{section page}{
+  \begin{centering}
+    \vspace*{0.17\paperheight}
+    {\color{darkblue}\rule{0.42\linewidth}{1.1pt}}\par
+    \vspace{0.9em}
+    {\usebeamerfont{section title}\color{darkblue}\insertsectionhead\par}
+    \vspace{0.9em}
+    {\color{accentpetrol}\rule{0.24\linewidth}{0.9pt}}\par
+    \vfill
+  \end{centering}
+}
+
+\AtBeginSection[]{\begin{frame}[plain,noframenumbering]\sectionpage\end{frame}}
+
+% --- Comandos auxiliares de estilo ---
+\newcommand{\highlight}[1]{\textcolor{accenteal}{\textbf{#1}}}
+\newcommand{\fonte}[1]{{\footnotesize\textcolor{slategray}{Fonte: #1}}}
+\newcommand{\keymessage}[1]{%
+  \begin{beamercolorbox}[wd=\linewidth,rounded=true,sep=0.8em,leftskip=0.8em,rightskip=0.8em]{block body}
+    \textbf{\textcolor{darkblue}{#1}}
+  \end{beamercolorbox}%
+}
+\newcommand{\tabstyle}{\renewcommand{\arraystretch}{1.22}}
+
+% --- Comandos específicos deste deck: rótulos ANTES (julho) / DEPOIS (atual) ---
+\newcommand{\antes}{\textcolor{beforered}{\textbf{Antes (jul/2026)}}}
+\newcommand{\depois}{\textcolor{aftergreen}{\textbf{Depois (atual)}}}
+\newcommand{\novo}{\textcolor{aftergreen}{\textbf{Novo (ago/2026)}}}
+
+\title{Da Implementação de Julho ao Portfólio Atual}
+\subtitle{O que mudou em cada uma das 18 políticas de reposição do AIPE}
+\author{Matheus Inácio Batista Santos}
+\institute{\small Universidade Federal de Alagoas (UFAL)\\
+\small Instituto de Computação (IC)\\
+\scriptsize Programa de Pós-Graduação em Informática (PPGI)\\
+\scriptsize Orientadores: Dr. Rian G. S. Pinheiro e Dr. Bruno C. S. Nogueira}
+\date{\small Apresentação técnica de acompanhamento}
+
+\begin{document}
+
+\input{sections/00_titulo/s00_titulo}
+
+\begin{frame}{Sumário}
+  \begin{enumerate}
+    \item Por que reimplementar?
+    \item O simulador: de laço Python a lote vetorizado
+    \item Políticas clássicas: o que ficou e o que entrou
+    \item Meta-heurísticas: GA, SA, PSO, DE
+    \item A função de aptidão: de soma ponderada a restrição com risco
+    \item Aprendizado por reforço: DQN, PPO, SARSA
+    \item Híbridas GA-RL
+    \item Infraestrutura e hiperparâmetros
+    \item Portfólio final e próximos passos
+  \end{enumerate}
+\end{frame}
+
+\section{Por que reimplementar?}
+\input{sections/01_visao_geral/s01_motivacao}
+\input{sections/01_visao_geral/s02_dois_defeitos}
+\input{sections/01_visao_geral/s03_escopo_portfolio}
+
+\section{O simulador}
+\input{sections/02_simulador/s01_simulador_antes_depois}
+\input{sections/02_simulador/s02_equivalencia_numerica}
+
+\section{Políticas clássicas: o que ficou e o que entrou}
+\input{sections/03_classicas/s01_classicas_mantidas}
+\input{sections/03_classicas/s02_sota_classicas_novas}
+\input{sections/03_classicas/s03_zabraoui_novas}
+
+\section{Meta-heurísticas}
+\input{sections/04_metaheuristicas/s01_ga_antes}
+\input{sections/04_metaheuristicas/s02_ga_depois}
+\input{sections/04_metaheuristicas/s03_sa_antes_depois}
+\input{sections/04_metaheuristicas/s04_pso_antes_depois}
+\input{sections/04_metaheuristicas/s05_de_antes_depois}
+
+\section{A função de aptidão}
+\input{sections/05_fitness/s01_problema_escala}
+\input{sections/05_fitness/s02_eq_restrita}
+\input{sections/05_fitness/s03_termos_risco_tr_be}
+
+\section{Aprendizado por reforço}
+\input{sections/06_rl/s01_dqn_antes_depois}
+\input{sections/06_rl/s02_ppo_bug_fix}
+\input{sections/06_rl/s03_sarsa_antes_depois}
+
+\section{Híbridas GA-RL}
+\input{sections/07_hibridas/s01_hibridas_antes_depois}
+
+\section{Infraestrutura e hiperparâmetros}
+\input{sections/08_infra/s01_gpu_routing}
+\input{sections/08_infra/s02_hiperparametros_zabraoui}
+
+\section{Portfólio final}
+\input{sections/09_fechamento/s01_portfolio_tabela}
+\input{sections/09_fechamento/s02_proximos_passos}
+
+\end{document}

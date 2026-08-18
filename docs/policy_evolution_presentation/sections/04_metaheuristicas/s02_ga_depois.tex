@@ -1,0 +1,58 @@
+% Slide — GA: depois (atual)
+\begin{frame}{Algoritmo Genético -- \depois}
+  \footnotesize PyTorch (\texttt{TorchGA}), sem DEAP. Mesma representação $\theta=(\mathrm{ROP}, Q, \mathrm{SS})$.
+
+  \renewcommand{\arraystretch}{0.95}\scriptsize
+  \begin{tabular}{@{}p{0.24\linewidth}p{0.72\linewidth}@{}}
+    \toprule
+    \textbf{Operador} & \textbf{Implementação} \\
+    \midrule
+    População & 100 (\textbf{inalterado}) \\
+    Gerações & 50 na Bahia/"bot"; \textbf{10} no M5 (orçamento de tempo) \\
+    Seleção & Torneio, tamanho 3 (\textbf{inalterado}), vetorizada:
+      \texttt{torch.randint} sorteia $100\times3$ candidatos de uma vez,
+      \texttt{argmin} por linha decide os vencedores \\
+    Cruzamento & \highlight{Corrigido}: \textit{uniform crossover} -- cada
+      gene herda do pai A ou B com $p=0{,}5$ (era \textit{blend}/BLX-$\alpha$,
+      herdado do DEAP de julho) \\
+    Mutação & \highlight{Corrigido}: gaussiana \textbf{adaptativa} -- taxa
+      decai de 0,05 (1ª geração) até $0{,}05\times0{,}2$ (última), era taxa
+      fixa \\
+    Elitismo & \highlight{Novo}: melhor indivíduo histórico substitui o
+      pior da nova geração -- nunca é perdido \\
+    Avaliação & \highlight{Toda a população em 1 simulação vetorizada}
+      (\texttt{BatchInventoryEnv}, largura 100) por geração \\
+    Aptidão & Restrita (Eq.~4.2) \highlight{+ termos de risco} TR/BE \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.3em}
+
+  \begin{alertblock}{Por que o cruzamento e a mutação mudaram de novo}
+    \scriptsize Auditoria (18/08) achou que o comentário do código citava
+    "Zabraoui Tab.5" para o GA inteiro, mas só população/crossover\_prob/
+    mutation\_prob batiam -- o artigo (Seç.\ 3.4/4.4) descreve
+    \textit{uniform crossover} e \textit{adaptive mutation}, nunca
+    implementados. Corrigido nesta sessão.
+  \end{alertblock}
+
+  \note{
+    Este slide mudou duas vezes na mesma sessão de trabalho. A primeira
+    versão comparava seleção/cruzamento/mutação como operadores idênticos
+    ao slide anterior -- e isso era verdade em relação a julho, mas
+    escondia um problema mais profundo: o comentário do código dizia
+    "hiperparâmetros conforme Zabraoui Tabela 5" de um jeito que sugeria
+    que o GA inteiro estava alinhado ao artigo, quando só os NÚMEROS
+    (população, probabilidade de cruzamento, taxa inicial de mutação)
+    batiam -- o MECANISMO dos operadores (blend crossover, mutação de
+    taxa fixa) nunca foi trocado para o que o artigo realmente descreve
+    (uniform crossover, mutação adaptativa). Auditado e corrigido nesta
+    sessão: cruzamento uniforme (cada gene herda de um dos pais com
+    probabilidade 0,5, não uma combinação linear contínua) e mutação com
+    taxa decrescente ao longo das gerações (mais exploração no início,
+    mais refinamento no fim -- leitura nossa de "adaptive mutation", o
+    artigo não dá fórmula, documentada como tal no código). O elitismo
+    continua sendo a correção mais simples e mais importante: sem ele, o
+    cruzamento pode destruir a melhor solução encontrada geração após
+    geração.
+  }
+\end{frame}

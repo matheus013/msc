@@ -1,0 +1,52 @@
+% Slide — Hiperparâmetros alinhados ao Zabraoui (+ auditoria de fidelidade)
+\begin{frame}{Hiperparâmetros: alinhados ao artigo-base -- e auditados}
+  \footnotesize Onde \textbf{não existe} estado da arte publicado para
+  meta-heurísticas em inventário, os hiperparâmetros foram alinhados às
+  Tabelas 4 e 5 de Zabraoui et al. (2025). Uma auditoria de fidelidade
+  (18/08) achou que parte disso ficava só no comentário do código, sem
+  chegar no valor real.
+
+  \renewcommand{\arraystretch}{0.95}\scriptsize
+  \begin{tabular}{@{}p{0.24\linewidth}p{0.30\linewidth}p{0.38\linewidth}@{}}
+    \toprule
+    \textbf{Parâmetro} & \textbf{Citado como adotado} & \textbf{Valor real antes da auditoria} \\
+    \midrule
+    GA crossover\_prob & 0,8 (Tab.5) & 0,8 -- \textcolor{aftergreen}{já batia} \\
+    GA mutation\_prob (inicial) & 0,05 (Tab.5) & 0,05 -- \textcolor{aftergreen}{já batia} \\
+    GA crossover (mecanismo) & \textit{uniform} (Seç.3.4) & \textit{blend/BLX-$\alpha$} -- \textcolor{beforered}{divergia} \\
+    GA mutação (mecanismo) & adaptativa (Seç.3.4) & taxa fixa -- \textcolor{beforered}{divergia} \\
+    PPO entropy\_coef & 0,005 (Tab.4) & 0,005 -- \textcolor{aftergreen}{já batia} \\
+    DQN epsilon & 0,2 fixo (Tab.4) & 1,0$\to$0,01 decrescente -- \textcolor{beforered}{divergia} \\
+    Episódios DQN/PPO & $\geq$1000 (Seç.3.8) & 500 (50 no M5) -- \textcolor{beforered}{divergia} \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.4em}
+
+  \begin{alertblock}{Corrigido nesta sessão (não só a citação -- o código)}
+    \scriptsize Os quatro itens que divergiam foram corrigidos no
+    \texttt{simulation.yml} e no \texttt{TorchGA}: epsilon fixo, 1000
+    episódios (100 no M5, mesmo corte de tempo de 10$\times$), cruzamento
+    uniforme, mutação adaptativa. \highlight{Consequência}: as execuções de
+    "bot"/M5 em andamento no momento da auditoria usavam os valores
+    antigos e precisaram ser relançadas.
+  \end{alertblock}
+
+  \note{
+    Este slide existe em duas camadas. A primeira -- por que esses valores
+    específicos -- já estava no deck original: para meta-heurísticas em
+    inventário não existe estado da arte publicado, então alinhar ao
+    artigo-base é mais defensável que valores ad-hoc. A segunda camada,
+    adicionada depois de uma auditoria pedida pelo usuário durante esta
+    mesma sessão de trabalho, é mais desconfortável de admitir: nem tudo
+    que o comentário do código citava como "adotado de Zabraoui" de fato
+    tinha chegado ao valor configurado. DQN com epsilon decrescente em vez
+    de fixo, 500 episódios em vez de 1000, cruzamento blend em vez de
+    uniforme, mutação de taxa fixa em vez de adaptativa -- quatro casos em
+    que a citação ficou no comentário e o config divergia silenciosamente.
+    O usuário decidiu corrigir o código, não só a documentação, mesmo
+    sabendo que isso invalidava as execuções de "bot" e M5 que estavam
+    rodando havia quase duas horas no momento do pedido. É importante
+    apresentar isso com transparência: não é vergonha ter encontrado o
+    problema, seria vergonha não corrigir ou não relatar.
+  }
+\end{frame}

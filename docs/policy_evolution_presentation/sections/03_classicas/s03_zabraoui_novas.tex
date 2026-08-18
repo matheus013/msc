@@ -1,0 +1,50 @@
+% Slide — Novas: Zabraoui
+\begin{frame}{\novo: três heurísticas do artigo-base (Zabraoui et al., 2025)}
+  \footnotesize Seção 3.5 do artigo-base define quatro políticas de
+  referência; apenas $(s,S)$ já existia no portfólio. As outras três entram
+  aqui.
+
+  \renewcommand{\arraystretch}{0.95}\scriptsize
+  \begin{tabular}{@{}p{0.24\linewidth}p{0.66\linewidth}@{}}
+    \toprule
+    \textbf{Política} & \textbf{Regra adotada} \\
+    \midrule
+    Min-Max &
+      Pede até $M$ quando posição $\leq m$;
+      $m=\mu L$ (lead time $L$), $M=m + \mu\cdot$cobertura \\
+    Fixed Interval Repl. &
+      Revisão a cada $R$ ciclos; repõe até
+      $S=\mu(R{+}L)+z\sigma\sqrt{R{+}L}$ \\
+    Vendor-Responsive &
+      $s_t=\mu L + z_t\sigma\sqrt{L}$,
+      $z_t=z_0(1+\kappa(\alpha_{\text{alvo}}-\mathrm{SL}_t))$ -- realimentação
+      pelo serviço realizado \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.3em}
+
+  \begin{alertblock}{Ressalva de fidelidade, registrada no código}
+    \scriptsize Min-Max e Fixed Interval: descritas no artigo em
+    \textbf{uma frase cada, sem fórmula}. Vendor-Responsive é a mais
+    subespecificada (``\textit{adapts order timing based on supplier lead
+    times and historical service levels}''). Fórmulas acima são leitura
+    razoável, \highlight{não transcrição literal} -- dito explicitamente
+    nos comentários do código.
+  \end{alertblock}
+
+  \note{
+    Este slide existe para ser transparente sobre o grau de fidelidade de
+    cada implementação. O artigo do Zabraoui é a referência que este
+    trabalho adota para o que não tem estado da arte próprio -- mas o
+    artigo descreve essas três políticas em uma frase cada, sem equação.
+    Documentei no próprio código, com essa mesma ressalva, qual foi a
+    leitura escolhida: Min-Max e Fixed Interval seguem a definição
+    clássica de manual de operações; Vendor-Responsive foi a mais livre de
+    interpretar, porque "adapta o timing do pedido com base no lead time
+    do fornecedor e no nível de serviço histórico" não tem parâmetro
+    algum -- montei um laço de realimentação em que o z-score de segurança
+    sobe quando o serviço realizado fica abaixo da meta. É importante que
+    a banca saiba que isso é uma escolha nossa razoável, não uma
+    reprodução certificada do artigo.
+  }
+\end{frame}

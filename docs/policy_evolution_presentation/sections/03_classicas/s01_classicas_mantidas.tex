@@ -1,0 +1,34 @@
+% Slide — Clássicas: mantidas intactas
+\begin{frame}{As três clássicas originais: nada mudou}
+  \centering
+  \tabstyle\footnotesize
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Política} & \textbf{Regra} & \textbf{Parâmetros} \\
+    \midrule
+    EOQ & $Q^\ast=\sqrt{2D K/h}$; pede quando $I{+}\text{pipeline}\leq \mathrm{ROP}$ &
+      $\mathrm{ROP}=\mu L + z\sigma\sqrt{L}$ \\
+    $(s,S)$ & Banda min-max: pede até $S$ quando posição $\leq s$ &
+      $s=\mu L{+}z\sigma\sqrt{L}$; $S=s{+}Q_{\mathrm{EOQ}}$ \\
+    Jornaleiro & $Q^\ast=\hat\mu+z\hat\sigma$ (quantil crítico fixo) &
+      $z=1{,}28$ (SL alvo 90\%) \\
+    \bottomrule
+  \end{tabular}
+  \vspace{1em}
+
+  \begin{block}{Por que preservar}
+    \small São o \highlight{baseline do varejo} e o denominador de todas as
+    comparações já reportadas no Capítulo 5. Mudar sua fórmula invalidaria
+    a leitura de qualquer resultado anterior que as usa como referência.
+  \end{block}
+
+  \note{
+    Estas três são as únicas políticas do portfólio original de 12 que
+    permanecem byte-a-byte equivalentes em lógica -- só a chamada ao
+    simulador por baixo delas mudou (do InventoryEnv escalar, que
+    continua existindo e sendo usado por elas, sem alteração). A decisão
+    de mantê-las intocadas foi deliberada: são o piso de comparação usado
+    em todo o Capítulo 5 da proposta, e qualquer mudança nelas quebraria a
+    comparabilidade com os números já reportados.
+  }
+\end{frame}

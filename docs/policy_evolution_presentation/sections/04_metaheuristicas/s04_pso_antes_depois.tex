@@ -1,0 +1,46 @@
+% Slide — PSO antes/depois
+\begin{frame}{Particle Swarm Optimization -- \antes\ vs. \depois}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small NumPy puro, laço Python por partícula
+      \begin{itemize}\footnotesize
+        \item 40 partículas $\times$ 80 iterações.
+        \item $w=0{,}7$, $c_1=c_2=1{,}5$, \textbf{sem} fator de constrição.
+        \item Velocidade sem limite explícito -- pode divergir.
+        \item Avaliação: laço \texttt{for i in range(n\_particles)}, uma
+          simulação por partícula.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{TorchPSO}, avaliação em lote
+      \begin{itemize}\footnotesize
+        \item 40 $\times$ 80 (\textbf{inalterado}).
+        \item Mesmos $w$, $c_1$, $c_2$ \highlight{+ fator de constrição de
+          Clerc \& Kennedy (2002)}:
+          $\chi = \dfrac{2}{|2-\phi-\sqrt{\phi^2-4\phi}|}$, $\phi=c_1{+}c_2$.
+        \item $v \leftarrow \chi\,[w v + c_1 r_1(p_{\text{best}}{-}x) +
+          c_2 r_2(g_{\text{best}}{-}x)]$ -- converge sem \textit{clamp}
+          arbitrário de velocidade.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.8em}
+
+  \begin{alertblock}{Sintoma observado que motivou a correção}
+    \small Nos resultados anteriores, $Q$ frequentemente ``colava'' no
+    limite superior do espaço de busca -- assinatura clássica de
+    velocidade divergente em PSO sem constrição.
+  \end{alertblock}
+
+  \note{
+    O PSO antigo usava a combinação w=0,7 e c1=c2=1,5 sem nenhum mecanismo
+    de controle de velocidade -- combinação em que, pela teoria de
+    convergência de PSO, a velocidade PODE divergir. O sintoma prático era
+    Q colando repetidamente no teto do espaço de busca, o que é
+    exatamente o que se espera quando a velocidade cresce sem controle: a
+    partícula "voa" para fora da região de interesse e é sempre truncada
+    no limite. O fator de constrição de Clerc e Kennedy resolve isso
+    matematicamente, sem precisar de um clamp arbitrário de velocidade que
+    seria mais um parâmetro para justificar.
+  }
+\end{frame}

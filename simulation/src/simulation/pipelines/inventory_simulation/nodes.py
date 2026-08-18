@@ -253,6 +253,9 @@ def _build_cfg(params: dict) -> dict:
             "n_generations":    params.get("ga", {}).get("generations", 50),
             "crossover_prob":   params.get("ga", {}).get("crossover_prob", 0.8),
             "mutation_rate":    params.get("ga", {}).get("mutation_prob", 0.05),
+            # 2026-08-18: mutacao adaptativa (correcao de fidelidade, ver
+            # TorchGA._mutation_rate) -- taxa final = mutation_rate * este fator.
+            "mutation_final_ratio": params.get("ga", {}).get("mutation_final_ratio", 0.2),
             "tournament_size":  params.get("ga", {}).get("tournament_size", 3),
             "fitness_mode":     params.get("ga", {}).get("fitness_mode", "zabraoui"),
             "fitness_weights":  params.get("ga", {}).get("fitness_weights", [1.0, 0.0001]),

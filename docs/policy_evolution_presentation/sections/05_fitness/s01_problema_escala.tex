@@ -1,0 +1,39 @@
+% Slide — Problema de escala na aptidão antiga
+\begin{frame}{A função de aptidão tem sua própria evolução}
+  \textbf{\textcolor{darkblue}{Três versões, em ordem cronológica -- não é uma correção pontual, é uma linha evolutiva.}}
+  \vspace{0.5em}
+
+  \begin{enumerate}
+    \item \textbf{\antes} -- soma ponderada (Eq.~3 do artigo-base):
+      $\mathrm{Fitness}=\lambda_1\,\mathrm{NS}-\lambda_2\,\mathrm{CTI}$,
+      $(\lambda_1,\lambda_2)=(1{,}0;\ 0{,}0001)$ fixos.
+    \item \textbf{Intermediário (ago/2026, reimplementação)} -- formulação
+      restrita (Eq.~4.2 da proposta): $\min \mathrm{CTI}$ s.a.
+      $\mathrm{NS}\geq\alpha_{\min}$, penalidade relativa ao próprio CTI.
+    \item \textbf{\novo\ (esta sessão)} -- qualquer um dos dois modos
+      \highlight{$+$ termos de risco} baseados em TR e BE (próximos slides).
+  \end{enumerate}
+  \vspace{0.6em}
+
+  \begin{alertblock}{Por que a versão 1 é problemática}
+    \small O CTI varia por \textbf{ordens de grandeza} entre séries (razão
+    de $124\times$ entre a maior e a menor loja no estudo piloto). Pesos
+    fixos fazem a MESMA configuração privilegiar serviço em séries de
+    baixo volume e custo em séries de alto volume -- contaminando a
+    comparação entre políticas.
+  \end{alertblock}
+
+  \note{
+    É importante deixar claro que a função de aptidão passou por uma
+    evolução em três estágios, não uma correção única. A primeira versão é
+    literalmente a Equação 3 do artigo-base do Zabraoui -- reproduzida
+    fielmente, com os mesmos pesos. O problema é que essa soma ponderada
+    funciona bem no contexto do artigo (itens de alto giro, M5, escala
+    homogênea), mas no recorte brasileiro, onde o CTI varia 124 vezes
+    entre a maior e a menor loja, o mesmo par de pesos produz
+    comportamentos completamente diferentes dependendo do volume da
+    série. A segunda versão resolve isso tornando a penalidade relativa ao
+    próprio custo. A terceira, mais recente, adiciona dois termos de risco
+    que nem a formulação restrita nem a soma ponderada capturavam.
+  }
+\end{frame}

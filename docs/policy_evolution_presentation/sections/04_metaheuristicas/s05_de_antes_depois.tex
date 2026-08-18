@@ -1,0 +1,45 @@
+% Slide — DE antes/depois
+\begin{frame}{Differential Evolution -- \antes\ vs. \depois}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \antes\\[0.3em]
+      \small \texttt{scipy.optimize.differential\_evolution}
+      \begin{itemize}\footnotesize
+        \item \texttt{popsize=15} (multiplicador interno do scipy $\to$
+          população efetiva maior, não documentada explicitamente).
+        \item Estratégia padrão do scipy (\texttt{best1bin}), mutação em
+          faixa $(0{,}5,\,1{,}0)$.
+        \item \texttt{polish=True}: refinamento local por L-BFGS-B ao final
+          -- passo extra fora da formulação DE canônica.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \depois\\[0.3em]
+      \small \texttt{TorchDE}: DE/rand/1/bin explícito (Storn \& Price, 1997)
+      \begin{itemize}\footnotesize
+        \item População $=15\times3=45$ (\textbf{tamanho equivalente},
+          agora explícito no código, sem multiplicador implícito).
+        \item Mutação: $v_i = x_{r_1} + F(x_{r_2}{-}x_{r_3})$, $F=0{,}8$.
+        \item Cruzamento binomial com $CR=0{,}9$, garantindo $\geq1$
+          dimensão herdada do mutante (\texttt{jrand}).
+        \item Seleção \textbf{gulosa} elemento a elemento -- \textbf{sem}
+          polimento local: fiel à formulação DE/rand/1/bin canônica.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.6em}
+
+  \small Toda a geração avaliada em uma chamada; a seleção gulosa é um
+  único \texttt{torch.where} -- não há laço Python sobre indivíduos.
+
+  \note{
+    O DE antigo delegava a uma implementação de caixa-preta do scipy, cuja
+    estratégia padrão (best1bin) e cujo passo de polimento local por
+    L-BFGS-B ao final não são parte da formulação DE/rand/1/bin canônica
+    de Storn e Price -- eram comportamento padrão do scipy, não uma
+    escolha metodológica documentada. A versão atual implementa a
+    formulação canônica explicitamente: mutação diferencial rand/1,
+    cruzamento binomial garantindo que pelo menos uma dimensão venha do
+    mutante, e seleção gulosa pura, sem qualquer refinamento local
+    adicional. Isso torna o método auditável e consistente com a citação
+    de Storn \& Price (1997) usada na dissertação.
+  }
+\end{frame}
