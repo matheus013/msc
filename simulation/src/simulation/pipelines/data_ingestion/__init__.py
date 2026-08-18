@@ -1,3 +1,6 @@
-from simulation.pipelines.data_ingestion.pipeline import create_pipeline
+from simulation.pipelines.data_ingestion.pipeline import (
+    create_pipeline,
+    create_resume_pipeline,
+)
 
-__all__ = ["create_pipeline"]
+__all__ = ["create_pipeline", "create_resume_pipeline"]

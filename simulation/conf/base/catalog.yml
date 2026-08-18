@@ -66,6 +66,14 @@ kpis_classical:
   type: pandas.ParquetDataset
   filepath: data/07_model_output/kpis_classical.parquet
 
+kpis_sota_classical:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_sota_classical.parquet
+
+kpis_zabraoui:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/kpis_zabraoui.parquet
+
 kpis_metaheuristic:
   type: pandas.ParquetDataset
   filepath: data/07_model_output/kpis_metaheuristic.parquet
@@ -150,3 +158,25 @@ latex_tables:
 dissertation_report:
   type: pickle.PickleDataset
   filepath: data/08_reporting/dissertation_report.pkl
+
+# -----------------------------------------------------------------------------
+# 08_reporting — versão final (pipeline final_report)
+# -----------------------------------------------------------------------------
+policy_redundancy:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/versao_final/policy_redundancy.csv
+
+kpis_by_volume:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/versao_final/kpis_by_volume.csv
+
+proposal_comparison:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/versao_final/proposal_comparison.csv
+
+final_latex_tables:
+  type: partitions.PartitionedDataset
+  path: data/08_reporting/versao_final/tex
+  dataset:
+    type: text.TextDataset
+  filename_suffix: ".tex"

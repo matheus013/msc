@@ -1,0 +1,200 @@
+"""
+m5_loader.py — Carga da base Walmart M5 no formato interno do pipeline.
+
+Permite executar todo o AIPE sobre a base pública usada por Zabraoui et al.
+(Supply Chain Analytics 12:100154, 2025), o artigo-base da arquitetura GA-DQN,
+sem alterar nenhum estágio a jusante: a saída desta função tem exatamente o
+mesmo schema do parquet transacional interno, de modo que os nós de filtragem,
+limpeza e construção de cenários seguem inalterados.
+
+Mapeamento de entidades
+-----------------------
+    warehouse  <- state_id   (CA, TX, WI)
+    store_id   <- store_id   (CA_1, CA_2, ..., WI_3)
+    item_id    <- item_id    (HOBBIES_1_001, ...)
+    segmento   <- cat_id     (HOBBIES, HOUSEHOLD, FOODS)
+    praca      <- state_id
+    filial     <- store_id
+
+Agregação temporal
+------------------
+O M5 é diário; o pipeline opera em ciclo comercial de ~21 dias. Os dias são
+agrupados em blocos consecutivos de `days_per_cycle` e rotulados no formato
+YYYYCC do calendário interno, preservando a semântica de `venda_ciclo`.
+
+Essa agregação é o que torna as duas bases comparáveis. Sem ela a comparação é
+inválida: o M5 diário tem CV² tipicamente < 1, enquanto o recorte brasileiro
+por ciclo comercial está em 3,8-4,1. Agregar em janelas equivalentes é
+condição necessária para que o benchmark meça diferença de política, e não
+diferença de granularidade.
+
+Custo de memória
+----------------
+`sales_train_evaluation.csv` tem 30.490 séries x 1.941 dias (116 MB) e
+`sell_prices.csv` tem 226 MB. A leitura é feita em formato largo e derretida
+apenas para as séries selecionadas, e o preço só é lido quando
+`with_revenue: true`.
+"""
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+log = logging.getLogger(__name__)
+
+SALES_FILE = "sales_train_evaluation.csv"
+CALENDAR_FILE = "calendar.csv"
+PRICES_FILE = "sell_prices.csv"
+
+
+def _cycle_labels(n_days: int, days_per_cycle: int, cycles_per_year: int,
+                  start_year: int) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Rótulos YYYYCC para cada dia, no mesmo formato de `venda_ciclo` interno.
+
+    Retorna (índice_de_ciclo_por_dia, rótulo_por_ciclo).
+    """
+    cycle_idx = np.arange(n_days) // days_per_cycle
+    n_cycles = int(cycle_idx.max()) + 1
+    labels = []
+    for c in range(n_cycles):
+        year = start_year + c // cycles_per_year
+        within = c % cycles_per_year + 1
+        labels.append(f"{year}{within:02d}")
+    return cycle_idx, np.asarray(labels)
+
+
+def load_m5_as_internal(params: dict) -> pd.DataFrame:
+    """
+    Lê a base M5 e devolve DataFrame long no schema transacional interno:
+        [warehouse, store_id, item_id, venda_ciclo, demand, revenue?,
+         segmento, praca, filial, status, venda_tipo]
+
+    As colunas `status` e `venda_tipo` são preenchidas com valores neutros
+    para que os filtros de qualidade do pipeline interno não descartem tudo.
+    """
+    m5 = params.get("m5", {}) or {}
+    root = Path(m5.get("path", "data/01_raw/m5_walmart"))
+    if not root.is_absolute():
+        root = Path.cwd() / root
+    if not (root / SALES_FILE).exists():
+        raise FileNotFoundError(
+            f"Base M5 nao encontrada em {root}. Esperado: {SALES_FILE}. "
+            "Baixe de https://github.com/Nixtla/m5-forecasts (datasets/m5.zip)."
+        )
+
+    days_per_cycle = int(m5.get("days_per_cycle", 21))
+    cycles_per_year = int(params.get("cycles_per_year", 17))
+    start_year = int(m5.get("start_year", 2011))
+    states = m5.get("states")
+    categories = m5.get("categories")
+    max_series = m5.get("max_series")
+    max_cycles = m5.get("max_cycles")
+    with_revenue = bool(m5.get("with_revenue", False))
+    seed = int(m5.get("seed", 42))
+
+    log.info("M5: lendo %s", root / SALES_FILE)
+    sales = pd.read_csv(root / SALES_FILE)
+
+    id_cols = ["item_id", "dept_id", "cat_id", "store_id", "state_id"]
+    day_cols = [c for c in sales.columns if c.startswith("d_")]
+    day_cols.sort(key=lambda c: int(c.split("_")[1]))
+
+    # ── recortes de entidade antes de derreter (economiza memória) ────────
+    if states:
+        sales = sales[sales["state_id"].isin([s.upper() for s in states])]
+    if categories:
+        sales = sales[sales["cat_id"].isin(categories)]
+    if sales.empty:
+        raise ValueError(f"Nenhuma serie M5 apos filtros states={states} categories={categories}")
+
+    # ── recorte temporal ─────────────────────────────────────────────────
+    cycle_idx, labels = _cycle_labels(len(day_cols), days_per_cycle,
+                                      cycles_per_year, start_year)
+    if max_cycles:
+        keep = cycle_idx < int(max_cycles)
+        day_cols = [c for c, k in zip(day_cols, keep) if k]
+        cycle_idx = cycle_idx[keep]
+        labels = labels[:int(max_cycles)]
+
+    # ── agrega dias em ciclos, ainda em formato largo ────────────────────
+    mat = sales[day_cols].to_numpy(dtype=np.float32)
+    n_cycles = int(cycle_idx.max()) + 1
+    agg = np.zeros((mat.shape[0], n_cycles), dtype=np.float32)
+    for c in range(n_cycles):
+        agg[:, c] = mat[:, cycle_idx == c].sum(axis=1)
+
+    # ── amostra de séries, se pedido ─────────────────────────────────────
+    meta = sales[id_cols].reset_index(drop=True)
+    if max_series and len(meta) > int(max_series):
+        rng = np.random.default_rng(seed)
+        # prioriza séries com alguma demanda, depois amostra sem viés de volume
+        nonzero = np.flatnonzero(agg.sum(axis=1) > 0)
+        pick = rng.choice(nonzero, size=min(int(max_series), nonzero.size),
+                          replace=False)
+        pick.sort()
+        meta = meta.iloc[pick].reset_index(drop=True)
+        agg = agg[pick]
+        log.info("M5: amostradas %d series (seed=%d)", len(meta), seed)
+
+    # ── formato long ─────────────────────────────────────────────────────
+    n_series, n_cyc = agg.shape
+    df = pd.DataFrame({
+        "warehouse": np.repeat(meta["state_id"].to_numpy(), n_cyc),
+        "store_id":  np.repeat(meta["store_id"].to_numpy(),  n_cyc),
+        "item_id":   np.repeat(meta["item_id"].to_numpy(),   n_cyc),
+        "segmento":  np.repeat(meta["cat_id"].to_numpy(),    n_cyc),
+        "venda_ciclo": np.tile(labels[:n_cyc], n_series),
+        "demand":    agg.reshape(-1),
+    })
+    df["praca"] = df["warehouse"]
+    df["filial"] = df["store_id"]
+    # valores neutros para os filtros do pipeline interno
+    df["status"] = "Ativo"
+    df["venda_tipo"] = "Normal"
+
+    # ── receita (opcional; exige ler sell_prices, 226 MB) ────────────────
+    if with_revenue:
+        df["revenue"] = _attach_revenue(df, root, days_per_cycle, labels,
+                                        cycles_per_year, start_year)
+    else:
+        # receita proxy: mantém a coluna para os relatórios que a esperam
+        df["revenue"] = df["demand"]
+
+    log.info("M5 carregado: %d linhas | %d series | %d ciclos | estados=%s",
+             len(df), n_series, n_cyc,
+             sorted(df["warehouse"].unique().tolist()))
+    return df
+
+
+def _attach_revenue(df: pd.DataFrame, root: Path, days_per_cycle: int,
+                    labels: np.ndarray, cycles_per_year: int,
+                    start_year: int) -> pd.Series:
+    """
+    Receita = demanda do ciclo x preço médio do item-loja no ciclo.
+
+    O M5 fornece preço semanal (`wm_yr_wk`); o calendário mapeia dia -> semana.
+    Aproximamos o preço do ciclo pela média das semanas que ele cobre.
+    """
+    cal = pd.read_csv(root / CALENDAR_FILE, usecols=["d", "wm_yr_wk"])
+    cal["day_n"] = cal["d"].str.split("_").str[1].astype(int)
+    cal = cal.sort_values("day_n")
+    cal["cycle"] = (cal["day_n"] - 1) // days_per_cycle
+    cal = cal[cal["cycle"] < len(labels)]
+    cal["venda_ciclo"] = labels[cal["cycle"].to_numpy()]
+    wk2cycle = cal[["wm_yr_wk", "venda_ciclo"]].drop_duplicates()
+
+    keys = df[["store_id", "item_id"]].drop_duplicates()
+    prices = pd.read_csv(root / PRICES_FILE)
+    prices = prices.merge(keys, on=["store_id", "item_id"], how="inner")
+    prices = prices.merge(wk2cycle, on="wm_yr_wk", how="inner")
+    price_cycle = (prices.groupby(["store_id", "item_id", "venda_ciclo"])
+                   ["sell_price"].mean().reset_index())
+
+    merged = df[["store_id", "item_id", "venda_ciclo", "demand"]].merge(
+        price_cycle, on=["store_id", "item_id", "venda_ciclo"], how="left")
+    price = merged["sell_price"].fillna(merged["sell_price"].median()).fillna(0.0)
+    return (merged["demand"] * price).to_numpy()

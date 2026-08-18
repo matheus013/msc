@@ -1,0 +1,22 @@
+# Ambiente "m5" — benchmark sobre a base publica Walmart M5.
+#
+#     kedro run --pipeline benchmark_m5 --env m5
+#
+# Objetivo: comparacao externa com a literatura, em particular com
+# Zabraoui et al. (Supply Chain Analytics 12:100154, 2025), que usa a mesma
+# base. NAO substitui os dados da rede varejista brasileira, que permanecem a
+# contribuicao empirica da dissertacao.
+data_ingestion:
+  source: "m5"
+  min_positive_cycles: 17
+  m5:
+    max_cycles: 38          # mesmo horizonte dos Experimentos 1 e 2
+    max_series: 6000
+    states: null
+    categories: null
+    seed: 42
+
+simulation:
+  n_replications: 5
+  evaluation_mode: "walkforward"
+  train_split_cycles: 19

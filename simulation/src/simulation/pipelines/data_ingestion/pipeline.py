@@ -34,3 +34,37 @@ def create_pipeline(**kwargs) -> Pipeline:
             name="build_demand_scenarios",
         ),
     ])
+
+
+def create_resume_pipeline(**kwargs) -> Pipeline:
+    """
+    Ingestao a partir de `sales_raw` ja materializado, pulando a leitura do
+    parquet particionado por UF.
+
+    Necessario porque a fonte particionada original (data/source/vendas) nao
+    existe mais nesta maquina: `data/02_intermediate/sales_raw.parquet` e a
+    unica copia em disco dos dados transacionais proprietarios, preservada
+    tambem no backup externo.
+
+        kedro run --pipeline data_resume
+    """
+    return pipeline([
+        node(
+            func=filter_by_parameters,
+            inputs=["sales_raw", "params:data_ingestion"],
+            outputs="sales_filtered",
+            name="filter_by_parameters",
+        ),
+        node(
+            func=clean_sales_data,
+            inputs=["sales_filtered", "params:data_cleaning"],
+            outputs="sales_cleaned",
+            name="clean_sales_data",
+        ),
+        node(
+            func=build_demand_scenarios,
+            inputs=["sales_cleaned", "params:data_ingestion"],
+            outputs=["scenarios", "scenarios_meta"],
+            name="build_demand_scenarios",
+        ),
+    ])

@@ -32,9 +32,29 @@ STORE_PROFILE_COLS = [
 
 def load_raw_sales(partitioned_input: Dict[str, Any], params: dict) -> pd.DataFrame:
     """
-    Carrega os parquet particionados por estado (uf=XX/).
-    Suporta states=["all"] ou states=["PB","SP",...].
+    Carrega a base transacional conforme `data_ingestion.source`.
+
+      source: "internal"  -> parquet particionado por estado (uf=XX/), base
+                             proprietaria da rede varejista brasileira
+      source: "m5"        -> base publica Walmart M5, agregada em ciclos
+                             comerciais equivalentes
+
+    Ambas saem no mesmo schema, de modo que os estagios seguintes (filtragem,
+    limpeza, construcao de cenarios) nao mudam.
     """
+    source = str(params.get("source", "internal")).lower()
+
+    if source == "m5":
+        from simulation.pipelines.data_ingestion.m5_loader import load_m5_as_internal
+        log.info("Fonte de dados: WALMART M5 (publica)")
+        return load_m5_as_internal(params)
+
+    if source != "internal":
+        raise ValueError(
+            f"data_ingestion.source invalido: {source!r}. Use 'internal' ou 'm5'."
+        )
+
+    log.info("Fonte de dados: INTERNA (rede varejista brasileira)")
     states = params.get("states", ["all"])
     load_all = (states == ["all"] or states == "all")
 
@@ -176,8 +196,16 @@ def filter_by_parameters(df: pd.DataFrame, params: dict) -> pd.DataFrame:
         log.info("Filtro produto %s: %d linhas", products, len(df))
 
     # ── 5. Filtro por período ──────────────────────────────────────────────
-    date_start = params.get("date_start")
-    date_end   = params.get("date_end")
+    # A janela é específica da fonte: os rótulos YYYYCC da base interna cobrem
+    # 202301-202504, enquanto os do M5 começam em 2011. Aplicar a janela
+    # interna ao M5 descartaria a base inteira, então cada fonte lê a sua.
+    if str(params.get("source", "internal")).lower() == "m5":
+        _m5 = params.get("m5", {}) or {}
+        date_start = _m5.get("date_start")   # None = sem recorte temporal
+        date_end   = _m5.get("date_end")
+    else:
+        date_start = params.get("date_start")
+        date_end   = params.get("date_end")
     if date_start:
         df = df[df["venda_ciclo"].astype(str) >= str(date_start)]
     if date_end:

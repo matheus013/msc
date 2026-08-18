@@ -1,0 +1,20 @@
+final_report:
+  # Limiar de viabilidade operacional (Eq. 4.2)
+  alpha_min: 0.70
+
+  # Criterio de redundancia entre politicas (Secao 4.4.2 da dissertacao).
+  # Pares acima de rho_min E abaixo de dif_max sao agrupados em uma unica
+  # classe no conjunto de rotulos do PSE, porque a diferenca entre eles nao
+  # carrega sinal operacional -- apenas ruido numerico que degrada o
+  # aprendizado do meta-modelo.
+  redundancy_rho_min: 0.98
+  redundancy_dif_max: 0.05
+
+  # Estratos de volume de demanda media por ciclo (Secao 5.2)
+  volume_high: 50.0
+  volume_low: 10.0
+
+  # KPIs reportados na proposta, para o confronto com a versao final.
+  # Gerados pela implementacao anterior, com o gradiente do PPO incorreto e a
+  # aptidao das meta-heuristicas em soma ponderada.
+  baseline_kpis_path: "/Users/matheus/Documents/mestrado_resultados_backup_2026-08-17/simulation_data/07_model_output/kpis.parquet"

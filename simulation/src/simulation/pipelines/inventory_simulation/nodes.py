@@ -18,9 +18,24 @@ log = logging.getLogger(__name__)
 
 POLICY_NAMES = {
     "classical":      ["EOQ", "sS", "Newsvendor"],
+    "sota_classical": ["PIL", "CappedBaseStock", "BigDataNewsvendor"],
+    "zabraoui":       ["MinMax", "FixedInterval", "VendorResponsive"],
     "metaheuristics": ["GA", "SA", "PSO", "DE"],
     "rl":             ["DQN", "PPO", "SARSA"],
     "proposed":       ["GA-DQN", "GA-PPO"],
+}
+
+# Famílias das políticas, para estratificar relatórios e testes estatísticos
+POLICY_FAMILY = {
+    "EOQ": "classical", "sS": "classical", "Newsvendor": "classical",
+    "PIL": "sota_classical", "CappedBaseStock": "sota_classical",
+    "BigDataNewsvendor": "sota_classical",
+    "MinMax": "zabraoui", "FixedInterval": "zabraoui",
+    "VendorResponsive": "zabraoui",
+    "GA": "metaheuristic", "SA": "metaheuristic",
+    "PSO": "metaheuristic", "DE": "metaheuristic",
+    "DQN": "rl", "PPO": "rl", "SARSA": "rl",
+    "GA-DQN": "hybrid", "GA-PPO": "hybrid",
 }
 
 
@@ -42,27 +57,43 @@ def _build_cfg(params: dict) -> dict:
         "HEURISTIC": {
             "z_score": params.get("z_score", 1.28),
         },
+        # GA: hiperparametros de Zabraoui et al. (2025), Tabela 5, e a
+        # funcao de aptidao da Eq.(3) do artigo (fitness_mode "zabraoui").
         "GENETIC_ALGORITHM": {
             "population_size":  params.get("ga", {}).get("population", 100),
             "n_generations":    params.get("ga", {}).get("generations", 50),
-            "crossover_prob":   params.get("ga", {}).get("crossover_prob", 0.7),
+            "crossover_prob":   params.get("ga", {}).get("crossover_prob", 0.8),
             "mutation_rate":    params.get("ga", {}).get("mutation_prob", 0.05),
-            "fitness_weights":  [1.0, 0.0001],
+            "tournament_size":  params.get("ga", {}).get("tournament_size", 3),
+            "fitness_mode":     params.get("ga", {}).get("fitness_mode", "zabraoui"),
+            "fitness_weights":  params.get("ga", {}).get("fitness_weights", [1.0, 0.0001]),
+            "alpha_min":        params.get("alpha_min", 0.70),
+            "penalty_weight":   params.get("ga", {}).get("penalty_weight", 10.0),
+            "seed":             params.get("random_seed", 42),
             "search_space":     {"ROP": [0, 2000], "Q": [1, 2000], "SS": [0, 1000]},
         },
-        "SA":  {"maxiter": params.get("sa", {}).get("max_iter", 500)},
+        "SA":  {
+            "maxiter":      params.get("sa", {}).get("max_iter", 500),
+            "initial_temp": params.get("sa", {}).get("initial_temp", 1000.0),
+            "cooling_rate": params.get("sa", {}).get("cooling_rate", 0.95),
+            "n_chains":     params.get("sa", {}).get("n_chains", 32),
+            "seed":         params.get("random_seed", 42),
+        },
         "PSO": {
             "n_particles":  params.get("pso", {}).get("n_particles", 40),
             "n_iterations": params.get("pso", {}).get("iterations", 80),
             "inertia":      params.get("pso", {}).get("inertia", 0.7),
             "cognitive":    params.get("pso", {}).get("cognitive", 1.5),
             "social":       params.get("pso", {}).get("social", 1.5),
+            "use_constriction": params.get("pso", {}).get("use_constriction", True),
+            "seed":         params.get("random_seed", 42),
         },
         "DE": {
             "maxiter":      params.get("de", {}).get("max_iter", 100),
-            "popsize":      params.get("de", {}).get("population_size", 15),
-            "mutation":     params.get("de", {}).get("mutation", [0.5, 1.0]),
-            "recombination":params.get("de", {}).get("recombination", 0.7),
+            "population_size": params.get("de", {}).get("population_size", 15),
+            "mutation":     params.get("de", {}).get("mutation", 0.8),
+            "recombination":params.get("de", {}).get("recombination", 0.9),
+            "seed":         params.get("random_seed", 42),
         },
         "DQN": {
             "episodes":          params.get("dqn", {}).get("episodes", 500),
@@ -77,6 +108,10 @@ def _build_cfg(params: dict) -> dict:
             "max_order_qty":     200,
             "learning_rate":     0.001,
             "hidden_layers":     params.get("dqn", {}).get("hidden_layers", [64, 64]),
+            "device":            params.get("dqn", {}).get("device", "cpu"),
+            "seed":              params.get("dqn", {}).get("seed", 42),
+            "grad_clip":         params.get("dqn", {}).get("grad_clip", 10.0),
+            "soft_update_tau":   params.get("dqn", {}).get("soft_update_tau", 0.0),
         },
         "PPO": {
             "episodes":      params.get("ppo", {}).get("episodes", 300),
@@ -86,6 +121,15 @@ def _build_cfg(params: dict) -> dict:
             "learning_rate": params.get("ppo", {}).get("learning_rate", 0.0003),
             "n_actions":     params.get("ppo", {}).get("n_actions", 20),
             "max_order_qty": 200,
+            "device":        params.get("ppo", {}).get("device", "cpu"),
+            "seed":          params.get("ppo", {}).get("seed", 42),
+            "gae_lambda":    params.get("ppo", {}).get("gae_lambda", 0.95),
+            "entropy_coef":  params.get("ppo", {}).get("entropy_coef", 0.005),
+            "value_coef":    params.get("ppo", {}).get("value_coef", 0.5),
+            "minibatch_size":params.get("ppo", {}).get("minibatch_size", 64),
+            "grad_clip":     params.get("ppo", {}).get("grad_clip", 0.5),
+            "clip_value_loss": params.get("ppo", {}).get("clip_value_loss", True),
+            "hidden_layers": params.get("ppo", {}).get("hidden_layers", [64, 64]),
         },
         # SARSA tabular: α, γ, ε fixo (seção 2.2.4 e tabela 5×10 da dissertação)
         "SARSA": {
@@ -96,6 +140,8 @@ def _build_cfg(params: dict) -> dict:
             "learning_rate": params.get("sarsa", {}).get("learning_rate", 0.1),
             "epsilon":       params.get("sarsa", {}).get("epsilon", 0.1),
             "max_order_qty": 200,
+            "n_pipeline_states": params.get("sarsa", {}).get("n_pipeline_states", 3),
+            "seed":          params.get("sarsa", {}).get("seed", 42),
         },
     }
 
@@ -245,6 +291,116 @@ def run_classical_policies(scenarios: pd.DataFrame,
                 rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
             except Exception as e:
                 log.warning("[Classical] %s failed for %s: %s", name, key, e)
+
+    return pd.DataFrame(rows)
+
+
+def run_sota_classical_policies(scenarios: pd.DataFrame,
+                                scenarios_meta: pd.DataFrame,
+                                scaled_params: dict,
+                                params: dict) -> pd.DataFrame:
+    """
+    Políticas clássicas em versão estado da arte, adicionadas ao portfólio
+    sem substituir as de referência:
+
+      PIL                 van Jaarsveld & Arts, Operations Research 72(5), 2024
+      CappedBaseStock     Xin, Operations Research 69(1), 2021
+      BigDataNewsvendor   Ban & Rudin, Operations Research 67(1), 2019
+
+    O `CappedBaseStock` é o benchmark que a literatura de DRL em lost sales
+    não supera de forma consistente. Sem ele, os agentes de RL do portfólio
+    seriam comparados apenas contra heurísticas subdimensionadas, o que
+    inflaria artificialmente qualquer ganho reportado.
+    """
+    from simulation.core.policies_sota import (
+        PILPolicy, CappedBaseStockPolicy, BigDataNewsvendorPolicy
+    )
+
+    if not params.get("policies", {}).get("sota_classical", True):
+        log.info("Políticas clássicas SOTA desativadas — pulando")
+        return pd.DataFrame()
+
+    n_reps = params.get("n_replications", 5)
+    seed = params.get("random_seed", 42)
+    alpha_min = params.get("alpha_min", 0.70)
+    rows = []
+    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
+
+    for key, cfg in scaled_params.items():
+        demand = _get_series(scenarios, key)
+        if len(demand) < 5:
+            continue
+        w, s, i = key
+        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
+        log.info("[SOTA-Classical] (%s, %s, %s)", w, s, i)
+
+        demand_train, demand_eval = _split_demand(demand, params)
+
+        for PolicyClass, name, kw in [
+            (PILPolicy,               "PIL",               {"alpha_min": alpha_min}),
+            (CappedBaseStockPolicy,   "CappedBaseStock",   {"alpha_min": alpha_min}),
+            (BigDataNewsvendorPolicy, "BigDataNewsvendor", {}),
+        ]:
+            try:
+                # Calibração só na janela de treino; avaliação no período de teste
+                pol = PolicyClass(demand_train, cfg, **kw)
+                kpis = _run_episode(demand_eval, cfg, pol, n_reps, seed)
+                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
+            except Exception as e:
+                log.warning("[SOTA-Classical] %s failed for %s: %s", name, key, e)
+
+    return pd.DataFrame(rows)
+
+
+def run_zabraoui_policies(scenarios: pd.DataFrame,
+                          scenarios_meta: pd.DataFrame,
+                          scaled_params: dict,
+                          params: dict) -> pd.DataFrame:
+    """
+    Heuristicas de referencia de Zabraoui et al. (2025), Secao 3.5.
+
+    O artigo define quatro heuristicas baseline: (s,S), Min-Max, Fixed
+    Interval Replenishment e Vendor-Responsive. A primeira ja existe no
+    portfolio como politica classica; as outras tres entram aqui.
+
+    Adotadas por decisao explicita: para as politicas do portfolio sem estado
+    da arte publicado, usa-se a versao do artigo-base. Ver
+    docs/references/estado_da_arte_politicas.md.
+    """
+    from simulation.core.policies_zabraoui import (
+        MinMaxPolicy, FixedIntervalPolicy, VendorResponsivePolicy
+    )
+
+    if not params.get("policies", {}).get("zabraoui", True):
+        log.info("Politicas Zabraoui desativadas - pulando")
+        return pd.DataFrame()
+
+    n_reps = params.get("n_replications", 5)
+    seed = params.get("random_seed", 42)
+    rows = []
+    meta_idx = scenarios_meta.set_index(["warehouse", "store_id", "item_id"])
+
+    for key, cfg in scaled_params.items():
+        demand = _get_series(scenarios, key)
+        if len(demand) < 5:
+            continue
+        w, s, i = key
+        meta_row = meta_idx.loc[key].to_dict() if key in meta_idx.index else {}
+        log.info("[Zabraoui] (%s, %s, %s)", w, s, i)
+
+        demand_train, demand_eval = _split_demand(demand, params)
+
+        for PolicyClass, name in [
+            (MinMaxPolicy, "MinMax"),
+            (FixedIntervalPolicy, "FixedInterval"),
+            (VendorResponsivePolicy, "VendorResponsive"),
+        ]:
+            try:
+                pol = PolicyClass(demand_train, cfg)
+                kpis = _run_episode(demand_eval, cfg, pol, n_reps, seed)
+                rows.append(_kpi_row(w, s, i, name, kpis, meta_row, 0))
+            except Exception as e:
+                log.warning("[Zabraoui] %s failed for %s: %s", name, key, e)
 
     return pd.DataFrame(rows)
 
@@ -431,20 +587,24 @@ def run_proposed_architecture(scenarios: pd.DataFrame,
 
 
 def aggregate_kpis(kpis_classical: pd.DataFrame,
+                   kpis_sota_classical: pd.DataFrame,
+                   kpis_zabraoui: pd.DataFrame,
                    kpis_metaheuristic: pd.DataFrame,
                    kpis_rl: pd.DataFrame,
                    kpis_proposed: pd.DataFrame) -> pd.DataFrame:
     """Concatena todos os KPIs em um único DataFrame."""
-    frames = [df for df in [kpis_classical, kpis_metaheuristic,
-                             kpis_rl, kpis_proposed]
+    frames = [df for df in [kpis_classical, kpis_sota_classical, kpis_zabraoui,
+                            kpis_metaheuristic, kpis_rl, kpis_proposed]
               if df is not None and not df.empty]
 
     if not frames:
         raise RuntimeError("Nenhum KPI gerado — todas as políticas falharam ou estão desativadas")
 
     kpis = pd.concat(frames, ignore_index=True)
-    log.info("KPIs agregados: %d linhas, %d políticas, %d séries",
+    kpis["policy_family"] = kpis["policy"].map(POLICY_FAMILY).fillna("other")
+    log.info("KPIs agregados: %d linhas, %d políticas, %d séries | famílias: %s",
              len(kpis),
              kpis["policy"].nunique(),
-             kpis.groupby(["warehouse", "store_id", "item_id"]).ngroups)
+             kpis.groupby(["warehouse", "store_id", "item_id"]).ngroups,
+             kpis["policy_family"].value_counts().to_dict())
     return kpis

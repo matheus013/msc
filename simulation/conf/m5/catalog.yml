@@ -1,0 +1,32 @@
+# Saidas do benchmark M5 em diretorio proprio, para nao sobrescrever os
+# artefatos da base interna.
+scenarios:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/m5/scenarios.parquet
+
+scenarios_meta:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/m5/scenarios_meta.parquet
+
+kpis:
+  type: pandas.ParquetDataset
+  filepath: data/07_model_output/m5/kpis.parquet
+
+policy_redundancy:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/m5/policy_redundancy.csv
+
+kpis_by_volume:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/m5/kpis_by_volume.csv
+
+proposal_comparison:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/m5/proposal_comparison.csv
+
+final_latex_tables:
+  type: partitions.PartitionedDataset
+  path: data/08_reporting/m5/tex
+  dataset:
+    type: text.TextDataset
+  filename_suffix: ".tex"

@@ -7,6 +7,11 @@ Uso:
   kedro run --pipeline inventory_simulation    # só simulação
   kedro run --pipeline statistical_validation  # só testes estatísticos
   kedro run --pipeline reporting               # só relatórios
+
+Versão final da dissertação:
+  kedro run --pipeline benchmark_final         # Experimento 2 (BA) reexecutado
+  kedro run --pipeline benchmark_m5 --env m5   # comparação externa no Walmart M5
+  kedro run --pipeline final_report            # só as análises e tabelas LaTeX
 """
 from kedro.pipeline import Pipeline
 
@@ -18,6 +23,7 @@ from simulation.pipelines import (
     reporting,
     demand_profiling,
     policy_selection,
+    final_report,
 )
 
 
@@ -29,11 +35,15 @@ def register_pipelines() -> dict[str, Pipeline]:
     rep = reporting.create_pipeline()
     dp  = demand_profiling.create_pipeline()
     ps  = policy_selection.create_pipeline()
+    fr  = final_report.create_pipeline()
+    dir_ = data_ingestion.create_resume_pipeline()
 
     return {
         # Pipeline completo AIPE: ingestão → perfil → simulação → seleção → validação → relatório
         "__default__": di + df + dp + inv + sv + ps + rep,
         "data_ingestion":         di,
+        "data_resume":            dir_,   # parte de sales_raw ja materializado
+        "final_report":           fr,
         "demand_forecasting":     df,
         "inventory_simulation":   inv,
         "statistical_validation": sv,
@@ -49,4 +59,15 @@ def register_pipelines() -> dict[str, Pipeline]:
         "aipe":             di + dp + inv + ps,
         # Só o engine de seleção (quando kpis e demand_features já existem)
         "policy_engine":    dp + ps,
+
+        # ── Versão final da dissertação ──────────────────────────────────
+        # Reexecução do Experimento 2 (Bahia) a partir de sales_raw, com o
+        # portfólio ampliado e o código corrigido, seguida das análises e
+        # tabelas LaTeX:
+        #     kedro run --pipeline benchmark_final
+        "benchmark_final":  dir_ + dp + inv + sv + fr,
+        # Benchmark sobre a base pública Walmart M5, para comparação externa
+        # com a literatura (Zabraoui et al., 2025). Usa o ambiente m5:
+        #     kedro run --pipeline benchmark_m5 --env m5
+        "benchmark_m5":     di + dp + inv + fr,
     }

@@ -2,6 +2,8 @@ from kedro.pipeline import Pipeline, node, pipeline
 from simulation.pipelines.inventory_simulation.nodes import (
     scale_parameters_per_store,
     run_classical_policies,
+    run_sota_classical_policies,
+    run_zabraoui_policies,
     run_metaheuristic_policies,
     run_rl_policies,
     run_proposed_architecture,
@@ -24,6 +26,18 @@ def create_pipeline(**kwargs) -> Pipeline:
             name="run_classical_policies",
         ),
         node(
+            func=run_sota_classical_policies,
+            inputs=["scenarios", "scenarios_meta", "scaled_params", "params:simulation"],
+            outputs="kpis_sota_classical",
+            name="run_sota_classical_policies",
+        ),
+        node(
+            func=run_zabraoui_policies,
+            inputs=["scenarios", "scenarios_meta", "scaled_params", "params:simulation"],
+            outputs="kpis_zabraoui",
+            name="run_zabraoui_policies",
+        ),
+        node(
             func=run_metaheuristic_policies,
             inputs=["scenarios", "scenarios_meta", "scaled_params", "params:simulation"],
             outputs="kpis_metaheuristic",
@@ -43,7 +57,9 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
         node(
             func=aggregate_kpis,
-            inputs=["kpis_classical", "kpis_metaheuristic", "kpis_rl", "kpis_proposed"],
+            inputs=["kpis_classical", "kpis_sota_classical", "kpis_zabraoui",
+                    "kpis_metaheuristic",
+                    "kpis_rl", "kpis_proposed"],
             outputs="kpis",
             name="aggregate_kpis",
         ),

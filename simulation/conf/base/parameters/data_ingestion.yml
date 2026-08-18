@@ -1,5 +1,37 @@
 data_ingestion:
-  # Selecao de dados
+  # ---------------------------------------------------------------------------
+  # FONTE DE DADOS
+  #   "internal" -> base proprietaria da rede varejista brasileira (parquet
+  #                 particionado por UF). Recorte dos Experimentos 1 e 2.
+  #   "m5"       -> base publica Walmart M5, a mesma usada por Zabraoui et al.
+  #                 (Supply Chain Analytics 12:100154, 2025), artigo-base do
+  #                 GA-DQN. Serve para comparacao externa e reprodutibilidade.
+  #
+  # Trocar por linha de comando, sem editar este arquivo:
+  #   kedro run --params "data_ingestion.source=m5"
+  #
+  # ATENCAO na comparacao entre as duas fontes: o M5 e diario e tem CV^2
+  # tipicamente < 1; o recorte brasileiro e por ciclo comercial (~21 dias) e
+  # esta em CV^2 3.8-4.1. O loader do M5 agrega em ciclos equivalentes para
+  # tornar as bases comparaveis, mas o regime de demanda continua diferente:
+  # aplique tambem cv_threshold para isolar as series intermitentes do M5.
+  # ---------------------------------------------------------------------------
+  source: "internal"        # "internal" | "m5"
+
+  m5:
+    path: "data/01_raw/m5_walmart"   # relativo a simulation/
+    days_per_cycle: 21               # casa com o ciclo comercial interno
+    start_year: 2011                 # M5 comeca em 2011-01-29
+    states: null                     # null = CA+TX+WI; ex: ["CA"]
+    categories: null                 # null = todas; ex: ["FOODS"]
+    max_series: 200                  # limita o custo do benchmark; null = todas
+    max_cycles: null                 # null = todos os ~92 ciclos
+    date_start: null                 # janela YYYYCC propria do M5 (null = tudo)
+    date_end: null
+    with_revenue: false              # true le sell_prices.csv (226 MB)
+    seed: 42                         # semente da amostragem de series
+
+  # Selecao de dados (aplica-se a fonte "internal")
   states: ["BA"]            # ["all"] para todos os 27 estados
   products: null            # null = todos os produtos ativos; lista = produto(s) especifico(s)
   date_start: "202301"      # Ciclo inicial (formato YYYYCC)

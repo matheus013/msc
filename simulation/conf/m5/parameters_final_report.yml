@@ -1,0 +1,4 @@
+# No M5 nao ha baseline da proposta com que comparar: os numeros da proposta
+# vem da base brasileira. O no de comparacao devolve vazio e registra aviso.
+final_report:
+  baseline_kpis_path: null
