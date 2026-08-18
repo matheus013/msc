@@ -653,6 +653,114 @@ que a fonte diz.
 
 ---
 
+## 24. Correção de fidelidade ao Zabraoui: tratamento de dados do M5
+
+**Descrição:** O usuário pediu para validar se o Zabraoui usa a base M5
+inteira ou aplica algum corte/tratamento, e reproduzir o que ele de fato
+faz. A Seção 3.7 do artigo (texto completo) é explícita:
+
+> "Our experiments centered on a **curated selection of high-volatility
+> food items**... The selection criteria included demand variability,
+> **coefficient of variation**, and historical incidence of stockouts."
+>
+> "Outliers... were smoothed using a **robust 1.5 × IQR filtering
+> method**... Missing values... forward-fill... Each time series was
+> standardized using **z-score normalization**."
+
+O artigo NUNCA usa o M5 inteiro (30.490 séries, 3 categorias) — usa só
+**FOODS**, filtrado por CV/volatilidade. O `conf/m5/parameters.yml` desta
+sessão (item #16, "M5 sem cortar nada") usava as 30.490 séries × 3
+categorias, `cv_threshold=0` — o oposto do que o artigo-base faz com a
+mesma base.
+
+**Motivo:** Pedido explícito do usuário, no mesmo padrão de auditoria já
+aplicado aos hiperparâmetros (item #23): "deve reproduzir qualquer
+tratamento e seleção usada por ele... assim como os parâmetros" — ou seja,
+corrigir o código, não só registrar a divergência.
+
+**Objetivo:** Fazer a ingestão do M5 reproduzir a seleção e o tratamento
+de dados que o artigo-base efetivamente usa, onde isso é possível
+verificar precisamente a partir do texto.
+
+**Impacto:**
+- `conf/m5/parameters.yml`: `categories: ["FOODS"]` (era `null`, todas as
+  3), `cv_threshold: 1.5` (era `0`) — mesmo valor já usado e testado no
+  recorte interno e já validado para o M5-CA no item 4 de
+  `REIMPLEMENTACAO_SOTA.md` (22 séries Lumpy de 23, regime comparável).
+  `min_positive_cycles`/`active_product_window` permanecem OFF (0) — não
+  são os critérios que o artigo cita, reativá-los seria inventar um corte
+  que Zabraoui não descreve.
+- `m5_loader.py`: novo passo de suavização de outliers (1,5×IQR) aplicado
+  por série sobre a demanda agregada por ciclo — trunca a cauda superior
+  em `Q3 + 1,5×(Q3−Q1)`, reproduzindo a Seção 3.7. Testado isoladamente
+  (200 séries, 5 ciclos, categoria FOODS): roda sem erro, filtro de
+  categoria confirmado (`df["segmento"].unique() == ["FOODS"]`).
+- **NÃO reproduzido, com justificativa:**
+  - "historical incidence of stockouts" como critério de seleção — o M5
+    bruto só tem vendas realizadas, sem marcação de ruptura; não há proxy
+    óbvio sem o artigo especificar um.
+  - z-score normalization — normalizaria a escala para o treino do LSTM
+    deles, mas corromperia as unidades reais de demanda que o nosso
+    simulador usa para calcular custo de estoque. Mesma lógica da
+    ressalva já registrada para o horizonte de 365 dias (item #23): não
+    faz sentido no nosso pipeline, mesmo sendo citado no artigo.
+  - forward-fill de valores ausentes — o `sales_train_evaluation.csv` do
+    M5 não tem células ausentes (zero = sem venda, não é dado faltante);
+    a nuance do artigo provavelmente se refere ao arquivo de preços
+    (`sell_prices.csv`), que só é lido quando `with_revenue=true`
+    (desligado por padrão) e já tem preenchimento por mediana em
+    `_attach_revenue()`.
+- **Consequência operacional:** M5 caiu de 30.490 para **2.408 séries**
+  (confirmado no dashboard) — muito mais próximo da escala real que o
+  artigo-base usa (não divulgada exatamente, mas descrita como "curated
+  selection", não a base inteira). M5 relançado como `prod_m5_v6.log`
+  (task `bbbdpdg77`), descartando o `prod_m5_v5.log` que tinha acabado de
+  começar com a seleção antiga (baixo custo afundado — ainda em
+  `run_classical_policies` no momento da correção).
+
+---
+
+## 25. Orçamento de busca do M5 alinhado ao Zabraoui, onde o artigo cobre
+
+**Descrição:** Pedido do usuário: ajustar os parâmetros de cada algoritmo
+do M5 para fidelidade ao Zabraoui — mesmo padrão dos itens #23/#24, agora
+sobre os cortes de orçamento (`conf/m5/parameters.yml` bloco
+`simulation`), que tinham sido feitos por teto de tempo (itens #18/#20)
+quando o M5 tinha 30.490 séries, não por fidelidade.
+
+**Motivo:** Com o M5 agora em 2.408 séries (item #24, 12,7x menos), o
+orçamento completo ficou tempo-viável para os dois algoritmos que o
+artigo de fato especifica: GA (Seç.4.4, "the best parameter set emerged
+after 500 generations") e DQN/PPO (Seç.3.8, "no fewer than 1000
+episodes" — já corrigido na base, item #23). Para SA, PSO, DE e SARSA,
+**não há valor de fidelidade possível**: confirmado na auditoria do item
+#23 que o artigo tem **zero ocorrências** desses quatro termos — não
+existe parâmetro do Zabraoui para alinhar.
+
+**Objetivo:** Usar o orçamento pleno do artigo onde ele é verificável;
+deixar claro, em vez de silenciar, onde "fidelidade" simplesmente não se
+aplica.
+
+**Impacto:**
+- `conf/m5/parameters.yml`: `ga.generations` 10 → **500**; `dqn.episodes`
+  e `ppo.episodes` 100 → **1000** (remove o corte, iguala à Bahia/"bot").
+- **Mantidos sem alteração, por ausência de referência no artigo:**
+  `sa.max_iter=100`, `pso.iterations=16`, `de.max_iter=20`,
+  `sarsa.episodes=50`, `hybrid.rl_episodes=30` — cortes de tempo puros,
+  não uma escolha de fidelidade.
+- **Estimativa de tempo, não medição:** com base no tempo real da Bahia
+  v4 (metaheurística completa = 8m21s/145 séries sequencial;
+  extrapolação de RL para 1000 episódios ≈ 107 min/145 séries), GA a 500
+  gerações + DQN/PPO a 1000 episódios sobre 2.408 séries/7 workers deve
+  ficar bem abaixo do teto de 12h — a redução de 12,7x em séries
+  compensa o aumento de 10x/2x em gerações/episódios. **Não medido
+  ainda**; acompanhar no dashboard e cortar de volta se necessário.
+- M5 relançado como `prod_m5_v7.log` (task `bz42p2ykf`), descartando
+  `prod_m5_v6.log` (só 3min em `run_metaheuristic_policies`, custo
+  afundado desprezível).
+
+---
+
 ## Estado no fim desta sessão
 
 Todas as três relançadas mais uma vez após #23 (correção de fidelidade ao
@@ -664,7 +772,7 @@ rodada foram descartadas por terem rodado com o GA/DQN não corrigido.
 |---|---|---|---|---|---|---|---|---|
 | Bahia (oficial, Experimento 2) | base | 145 | 1 (sequencial) | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_benchmark_final_v4.log` | em andamento |
 | "bot" (interna completa, 27 estados) | `bot` | 4.869 | 7 | 1000 ep. | nova (TR+BE) | uniform×adaptativa | `prod_bot_v3.log` | em andamento |
-| M5 (Walmart, externa, sem cortes — #16) | `m5` | 30.490 | 7 | 100 ep. (#18+#23) | nova (TR+BE) | uniform×adaptativa | `prod_m5_v5.log` | em andamento |
+| M5 (Walmart, FOODS+CV≥1,5 — #24) | `m5` | 2.408 | 7 | 1000 ep. (#25, sem corte) | nova (TR+BE) | uniform×adaptativa, 500 ger. (#25) | `prod_m5_v7.log` | em andamento |
 
 **Ferramentas de acompanhamento desta sessão** (scratchpad, fora do
 repositório): log viewer (`http://127.0.0.1:8765/`) e dashboard

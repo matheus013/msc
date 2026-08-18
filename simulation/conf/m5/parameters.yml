@@ -8,34 +8,61 @@
 # contribuicao empirica da dissertacao.
 data_ingestion:
   source: "m5"
-  # 2026-08-18: pedido explicito do usuario — M5 sem nenhum corte. Zera os
-  # tres filtros de qualidade herdados do conf/base (que existem para
-  # tornar M5 comparavel ao regime de demanda do recorte interno, ver
-  # REIMPLEMENTACAO_SOTA.md secao 4-5): cv_threshold, min_positive_cycles,
-  # active_product_window. RESSALVA METODOLOGICA: sem cv_threshold>=1.5 o
-  # M5 (diario, CV^2 tipicamente <1) deixa de estar no mesmo regime Lumpy
-  # do recorte interno (CV^2 3,8-4,1) -- os dois deixam de ser comparaveis
-  # regime a regime. Decisao consciente do usuario, nao um default.
+  # 2026-08-18: CORRIGIDO (2a vez) apos auditoria de fidelidade pedida pelo
+  # usuario -- desta vez sobre o TRATAMENTO DE DADOS do M5, nao so os
+  # hiperparametros. Secao 3.7 do artigo (paginas 7-8) e explicita:
+  # "Our experiments centered on a curated selection of high-volatility
+  # food items... The selection criteria included demand variability,
+  # coefficient of variation, and historical incidence of stockouts."
+  # Ou seja, Zabraoui NUNCA usa o M5 inteiro (30.490 series, 3 categorias)
+  # -- usa so FOODS, filtrado por CV. A decisao anterior de "M5 sem cortar
+  # nada" (pedido explicito do usuario, registrada abaixo por historico)
+  # cobria comparabilidade de regime com a Bahia, mas nao tinha sido
+  # cruzada com o que o PROPRIO artigo faz com a mesma base -- cruzada
+  # agora, e o resultado diverge do artigo nesse ponto especifico.
+  #   categories: ["FOODS"]  -- unica categoria usada por Zabraoui
+  #   cv_threshold: 1.5      -- "coefficient of variation" (criterio deles),
+  #                             mesmo valor ja usado no recorte interno e
+  #                             ja testado para o M5 (ver REIMPLEMENTACAO_
+  #                             SOTA.md secao 4: CA/M5 com este limiar da
+  #                             22 series Lumpy de 23, regime comparavel)
+  # NAO reproduzido (o artigo nao da limiar/formula, so criterio qualitativo,
+  # e nossos filtros nao tem o analogo direto):
+  #   "historical incidence of stockouts" -- o M5 bruto so tem vendas
+  #   realizadas, sem marcacao de ruptura; nao ha como filtrar por isso
+  #   sem assumir um proxy nao especificado pelo artigo.
+  #   min_positive_cycles/active_product_window seguem OFF (0): nao sao os
+  #   criterios que o artigo cita (CV e volatilidade), entao mante-los
+  #   ligados seria inventar um corte que Zabraoui nao descreve.
   min_positive_cycles: 0
-  cv_threshold: 0
+  cv_threshold: 1.5
   active_product_window: 0
   m5:
     # 2026-08-18: null (era 38, "mesmo horizonte dos Experimentos 1 e 2") —
     # pedido explicito do usuario, usa todo o horizonte disponivel do M5
     # (~92 ciclos de 21 dias, ~1941 dias) em vez de truncar pra bater com
     # o horizonte interno. Cobertura maxima tambem no eixo temporal, nao
-    # so no numero de series.
+    # so no numero de series. Nao mexido nesta correcao -- o artigo nao
+    # define um horizonte reproduzivel (365 dias em uma secao, "40.000+
+    # time steps" em outra, ver ressalva de horizonte ja registrada em
+    # REIMPLEMENTACAO_SOTA.md).
     max_cycles: null
-    # null = todas as 30.490 series (cobertura maxima), mesma
-    # filosofia aplicada em "bot" -- a agregacao do M5 e feita via DuckDB
-    # (sem o padrao de zero-fill que estourou memoria na base interna
-    # completa), entao nao ha risco de crash equivalente aqui; os filtros
-    # de qualidade (cv_threshold, min_positive_cycles) que ja rodam depois
-    # decidem o volume final util.
+    # null = todas as series QUE SOBREVIVEREM ao filtro categories=FOODS +
+    # cv_threshold=1.5 acima (cobertura maxima DENTRO do subconjunto que o
+    # artigo usa, nao mais "toda a base sem qualificacao").
     max_series: null
     states: null
-    categories: null
+    categories: ["FOODS"]   # 2026-08-18: unica categoria usada por Zabraoui (Sec.3.7)
     seed: 42
+    # 2026-08-18: 1.5xIQR outlier smoothing (Sec.3.7: "Outliers... were
+    # smoothed using a robust 1.5 x IQR filtering method to reduce noise").
+    # Aplicado por serie sobre a demanda ja agregada por ciclo, em
+    # m5_loader.py. z-score normalization (tambem citada na mesma secao)
+    # NAO reproduzida: normaliza a escala para o treino do LSTM deles, mas
+    # corromperia as unidades reais de demanda que nosso simulador precisa
+    # para calcular custo de estoque -- nao faz sentido no nosso pipeline,
+    # mesmo tipo de ressalva ja usada para o horizonte de 365 dias.
+    iqr_outlier_smoothing: true
 
 simulation:
   n_replications: 5
@@ -46,32 +73,46 @@ simulation:
   # mesmo tempo nesta maquina de 16 nucleos, com a Bahia (sequencial,
   # ainda sem paralelizacao) tambem ativa: 7+7+1=15, sobra 1 pro SO.
   n_workers: 7
-  # 2026-08-18: 30.490 series sem nenhum corte de dados (#16) em orcamento
-  # de producao (500 episodios) extrapolava para ~13 dias corridos so pro
-  # M5, a partir do tempo real medido na Bahia (145 series, 88,7 min).
-  # Decisao do usuario: manter as 30.490 series intactas, reduzir o
-  # orcamento de treino em vez disso. RL/hibridas ja cortados abaixo (10x
-  # e ~6,7x). Depois de medir que meta-heuristicas (GA/SA/PSO/DE, sem
-  # corte) passaram a dominar o tempo do M5 (28,5h das 65,5h estimadas --
-  # nao sao vetorizadas o bastante pra serem irrelevantes numa base deste
-  # tamanho), reduzido tambem o orcamento delas em ~5x, mesma logica.
+  # 2026-08-18 (3a correcao desta sessao): os cortes abaixo foram feitos
+  # quando o M5 tinha 30.490 series (item #16-#20), por orcamento de tempo
+  # -- nao tinham relacao com fidelidade ao artigo. Apos o item #24 (M5
+  # agora e FOODS+CV>=1,5, 2.408 series, 12,7x menos), o usuario pediu para
+  # tornar os parametros de CADA algoritmo do M5 fieis ao Zabraoui. Isso so
+  # e possivel para o que o artigo de fato cobre:
+  #
+  #   GA: Sec.4.4, ultimo paragrafo -- "The best parameter set emerged
+  #       after 500 generations". generations: 10 -> 500.
+  #   DQN/PPO: Sec.3.8 -- "no fewer than 1000 episodes"; ja fixado na base
+  #       (simulation.yml, item #23). episodes: 100 -> 1000 (remove o corte,
+  #       usa o mesmo valor da Bahia/"bot").
+  #
+  # SA, PSO, DE e SARSA NAO aparecem no artigo (0 ocorrencias, confirmado
+  # na auditoria do item #23/REIMPLEMENTACAO_SOTA.md Sec.2a) -- nao ha
+  # valor de "fidelidade ao Zabraoui" para eles, entao os cortes de tempo
+  # abaixo permanecem (nenhuma referencia a violar ou respeitar). O mesmo
+  # vale para `hybrid.rl_episodes`: o Algoritmo 1 do artigo nao especifica
+  # um numero de episodios para a fase de RL do hibrido.
+  #
+  # Estimativa de tempo (nao medida ainda, baseada no tempo real da Bahia
+  # v4: metaheuristica completa = 8m21s/145 series sequencial; RL = ~53,5min/
+  # 145 series em 500 episodios, ~107min extrapolado p/ 1000): GA a 500
+  # geracoes + DQN/PPO a 1000 episodios sobre 2.408 series / 7 workers fica
+  # bem abaixo do teto de 12h (a reducao de 12,7x em series compensa o
+  # aumento de 10x/2x em geracoes/episodios) -- mas e uma estimativa, nao
+  # uma medicao; acompanhar no dashboard e cortar de volta se necessario.
   ga:
-    generations: 10
+    generations: 500        # Zabraoui Sec.4.4: "emerged after 500 generations"
   sa:
-    max_iter: 100
+    max_iter: 100            # SEM referencia no artigo -- corte de tempo mantido
   pso:
-    iterations: 16
+    iterations: 16           # SEM referencia no artigo -- corte de tempo mantido
   de:
-    max_iter: 20
-  # 2026-08-18: base dqn/ppo.episodes subiu de 500 para 1000 (correcao de
-  # fidelidade ao Zabraoui, ver simulation.yml) -- o corte de 10x aqui foi
-  # preservado (era 500->50, agora 1000->100), mesma logica de orcamento de
-  # tempo, nao a mesma logica de fidelidade ao artigo.
+    max_iter: 20              # SEM referencia no artigo -- corte de tempo mantido
   dqn:
-    episodes: 100
+    episodes: 1000            # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
   ppo:
-    episodes: 100
+    episodes: 1000            # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
   sarsa:
-    episodes: 50
+    episodes: 50              # SEM referencia no artigo -- corte de tempo mantido
   hybrid:
-    rl_episodes: 30
+    rl_episodes: 30           # SEM referencia no artigo -- corte de tempo mantido

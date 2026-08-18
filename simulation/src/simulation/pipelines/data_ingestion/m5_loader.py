@@ -167,6 +167,24 @@ def load_m5_as_internal(params: dict) -> pd.DataFrame:
 
     agg = sales[[f"cycle_{c}" for c in range(n_cycles)]].to_numpy(dtype=np.float32)
 
+    # ── suavização de outliers (1,5x IQR), se pedido ────────────────────
+    # 2026-08-18: reproduz o tratamento de dados descrito na Seção 3.7 do
+    # artigo-base ("Outliers -- especially during holiday demand surges --
+    # were smoothed using a robust 1.5 x IQR filtering method to reduce
+    # noise"). Aplicado POR SÉRIE (cada linha de `agg` é uma série
+    # loja-produto ao longo dos ciclos): valores acima de Q3 + 1,5*IQR são
+    # truncados nesse teto. Só a cauda superior importa aqui -- picos de
+    # demanda em feriados, que é o caso citado no artigo; o piso natural da
+    # demanda já é 0, então não há cauda inferior a truncar.
+    if bool(m5.get("iqr_outlier_smoothing", True)):
+        q1 = np.percentile(agg, 25, axis=1, keepdims=True)
+        q3 = np.percentile(agg, 75, axis=1, keepdims=True)
+        fence = q3 + 1.5 * (q3 - q1)
+        n_clipped = int((agg > fence).sum())
+        agg = np.minimum(agg, fence).astype(np.float32)
+        log.info("M5: suavizacao 1,5xIQR aplicada -- %d valores truncados de %d",
+                 n_clipped, agg.size)
+
     # ── amostra de séries, se pedido ─────────────────────────────────────
     meta = sales[id_cols].reset_index(drop=True)
     if max_series and len(meta) > int(max_series):
