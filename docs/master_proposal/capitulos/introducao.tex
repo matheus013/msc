@@ -40,9 +40,7 @@ Portanto, o problema de otimização é este: dado um histórico de vendas de ca
 
 \subsection{Questões de Pesquisa e Hipóteses}
 
-Com o problema e a representação das séries definidos, o AIPE é estruturado em um ciclo de avaliação e recomendação composto por quatro etapas: observação do padrão de venda histórico de cada combinação loja-produto; avaliação das políticas candidatas em simulação para identificar qual apresenta melhor desempenho naquele perfil; aprendizado da relação entre padrão operacional e política dominante, entendida preliminarmente como a política com melhor desempenho naquele perfil; e geração de recomendações para novas séries com perfis similares. Esse ciclo permite tratar a escolha da política como uma decisão aprendida a partir de evidência empírica.
-
-Com base nesse ciclo, a dissertação investiga se históricos de venda podem ser convertidos em recomendações orientadas por dados para políticas de reposição, utilizando simulações para identificar quais políticas apresentam melhor desempenho em diferentes perfis de demanda. A investigação combina, portanto, avaliação operacional e aprendizagem supervisionada em um mesmo protocolo metodológico.
+Com o problema e a representação das séries definidos, o AIPE é estruturado em um ciclo de avaliação e recomendação composto por quatro etapas: observação do padrão de venda histórico de cada combinação loja-produto; avaliação das políticas candidatas em simulação para identificar qual apresenta melhor desempenho naquele perfil; aprendizado da relação entre padrão operacional e política dominante; e geração de recomendações para novas séries com perfis similares. Esse ciclo permite tratar a escolha da política como uma decisão aprendida a partir de evidência empírica, combinando avaliação operacional e aprendizagem supervisionada em um mesmo protocolo metodológico.
 
 \paragraph{Questão principal.} A questão que sintetiza essa investigação é: é possível construir uma abordagem metodológica que aprenda qual política de reposição é mais adequada para cada combinação loja-produto, a partir de características operacionais da série, e que ofereça uma alternativa empiricamente avaliada às políticas únicas aplicadas uniformemente à rede? Essa questão orienta a avaliação empírica e define o papel do PSE como componente de seleção contextual.
 
@@ -55,8 +53,6 @@ Com base nesse ciclo, a dissertação investiga se históricos de venda podem se
 Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. Se encontrarem apoio empírico nos dados, a seleção contextual torna-se uma abordagem operacionalmente plausível. Os resultados preliminares sustentam parcialmente essas hipóteses, especialmente quanto às diferenças entre políticas e à viabilidade do meta-modelo de seleção. A validação da generalização do PSE para novas séries dentro dos regimes observados será aprofundada nos estudos de caso adicionais em andamento (M5 e expansão multiestado).
 
 \section{Objetivos}
-
-Com a motivação, o problema e as hipóteses delineados, esta seção enuncia o objetivo geral, os objetivos específicos e as delimitações do escopo desta dissertação. Essa organização explicita o que a pesquisa pretende demonstrar e quais fronteiras metodológicas serão preservadas.
 
 \subsection*{Objetivo geral}
 
@@ -97,9 +93,7 @@ A proposta entrega um protocolo reprodutível para comparar políticas e treinar
 \section{Escopo da Pesquisa e Delimitações}
 \label{sec:delimitacoes}
 
-Após explicitar os objetivos e contribuições, é importante delimitar o escopo geral da pesquisa. As restrições descritas nesta seção indicam quais problemas operacionais não são tratados pela dissertação, evitando atribuir ao AIPE funções que não fazem parte da contribuição proposta.
-
-O escopo experimental, incluindo experimentos executados, políticas avaliadas, replicações e métricas, é detalhado no Capítulo~\ref{cap:metod}. O texto separa, assim, o alcance conceitual da pesquisa das escolhas do experimento.
+As restrições descritas nesta seção indicam quais problemas operacionais não são tratados pela dissertação, evitando atribuir ao AIPE funções que não fazem parte da contribuição proposta. O escopo experimental, incluindo experimentos executados, políticas avaliadas, replicações e métricas, é detalhado no Capítulo~\ref{cap:metod}. O texto separa, assim, o alcance conceitual da pesquisa das escolhas do experimento.
 
 \begin{itemize}
   \item Coordenação multiagente entre escalões: a dissertação mede o efeito \textit{bullwhip} como indicador de amplificação de variabilidade à montante, mas não implementa coordenação centralizada entre armazém e lojas. As decisões de reposição são descentralizadas e independentes por loja.
