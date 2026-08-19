@@ -251,21 +251,7 @@ Versão escalada do RMSE, utilizada como métrica principal na M4, competição 
 \end{equation}
 Na Equação~\ref{eq:rmsse}, o numerador é o erro quadrático médio do modelo e o denominador é o erro quadrático médio da previsão ingênua. A métrica penaliza erros grandes (via quadrado), mas permanece comparável entre séries de diferentes escalas.
 
-\paragraph{MBE (\textit{Mean Bias Error}).}
-Detecta viés sistemático na previsão:
-\begin{equation}
-  \text{MBE} = \frac{1}{T}\sum_t e_t = \overline{D} - \overline{\hat{D}}.
-  \label{eq:mbe}
-\end{equation}
-Na Equação~\ref{eq:mbe}, $\overline{D}$ e $\overline{\hat{D}}$ representam, respectivamente, a média da demanda observada e a média da previsão no horizonte avaliado. Como $e_t = D_t - \hat{D}_t$, $\text{MBE} > 0$ indica subestimação sistemática (risco de ruptura); $\text{MBE} < 0$, superestimação (excesso de estoque).
-
-\paragraph{U de Theil.}
-Proposta por \citet{Theil1966AppliedEconometrics}, essa estatística corresponde à razão entre RMSE da previsão e RMSE do modelo ingênuo:
-\begin{equation}
-  U_{\text{Theil}} = \frac{\text{RMSE}}{\text{RMSE}_{\text{naïve}}}.
-  \label{eq:theil}
-\end{equation}
-Na Equação~\ref{eq:theil}, $\text{RMSE}$ é a raiz do erro quadrático médio da previsão avaliada e $\text{RMSE}_{\text{naïve}}$ é a mesma métrica aplicada ao modelo ingênuo. Assim, $U_{\text{Theil}} < 1$ indica desempenho melhor que o \textit{naïve}; valores $U_{\text{Theil}} \gg 1$ sinalizam modelo inadequado.
+\paragraph{Métricas diagnósticas complementares.} Duas métricas adicionais aparecem como diagnóstico complementar (Figura~\ref{fig:forecast_boxplot}, Capítulo~\ref{cap:results}), sem papel na seleção do modelo principal: o MBE (\textit{Mean Bias Error}), $\text{MBE} = \overline{D} - \overline{\hat{D}}$, detecta viés sistemático -- $\text{MBE}>0$ indica subestimação (risco de ruptura), $\text{MBE}<0$ superestimação (excesso de estoque); e o U de Theil~\citep{Theil1966AppliedEconometrics}, $U_{\text{Theil}} = \text{RMSE}/\text{RMSE}_{\text{naïve}}$, com $U_{\text{Theil}}<1$ indicando desempenho melhor que o \textit{naïve}.
 
 \paragraph{Seleção da métrica principal.}
 O MASE é adotado como métrica principal nesta dissertação por três razões: (i)~invariância à escala permite comparar modelos entre lojas com volumes heterogêneos (razão de até 124 vezes no conjunto de dados); (ii)~definição clara quando $D_t = 0$; (iii)~interpretação intuitiva em relação ao \textit{benchmark} ingênuo. O sMAPE é métrica secundária por sua \textit{bounded range} e ampla adoção em \textit{benchmarks} competitivos. No processo de seleção contextual, o MASE por série é tratado como sinal operacional prospectivo: séries com menor erro de previsão tendem a favorecer políticas orientadas a previsão, enquanto séries mais imprevisíveis favorecem políticas menos sensíveis à variância.
