@@ -355,15 +355,18 @@ A heterogeneidade entre séries é pronunciada: para a melhor série avaliada, o
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.80\textwidth]{../../simulation/data/08_reporting/forecast/forecast_model_ranking}
-\caption{Ranking dos modelos de previsão por série: frequência com que cada modelo obteve o menor MASE por série. LSTM apresenta o menor MASE em aproximadamente 60\% das séries avaliadas.}
+\begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/forecast/forecast_model_ranking}\\
+    \footnotesize (a) \textit{Ranking} por série
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/forecast/forecast_metrics_boxplot}\\
+    \footnotesize (b) Distribuição das métricas
+\end{minipage}
+\caption{Avaliação dos modelos de previsão. (a) Frequência com que cada modelo obteve o menor MASE por série -- LSTM vence em aproximadamente 60\% das séries. (b) Distribuição por modelo (boxplots) de MASE, RMSSE, sMAPE, MBE e Theil's U para ANN, LSTM e XGBoost; valores abaixo de 1 em MASE e RMSSE indicam desempenho melhor que o \textit{baseline naïve}.}
 \label{fig:forecast_ranking}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.80\textwidth]{../../simulation/data/08_reporting/forecast/forecast_metrics_boxplot}
-\caption[Distribuição das métricas de previsão por modelo.]{Distribuição das métricas de previsão por modelo (boxplots): MASE, RMSSE, sMAPE, MBE e Theil's U para ANN, LSTM e XGBoost. A figura inclui métricas adicionais de diagnóstico além das reportadas na síntese tabular; valores abaixo de 1 em MASE e RMSSE indicam desempenho melhor que o \textit{baseline naïve}.}
 \label{fig:forecast_boxplot}
 \end{figure}
 
