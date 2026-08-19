@@ -180,16 +180,16 @@ A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política dep
 \subsection{Análise Estratificada por Filial e Segmento}
 \label{sec:estratificada_segmento}
 
-A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro políticas representativas, estratificados por segmento comercial. CTI indica o custo absoluto das políticas (minimizar); NS mostra a proporção da demanda atendida (maximizar); TR indica a frequência de falta de estoque (minimizar). Diferenças entre segmentos indicam que a mesma política pode se comportar de forma distinta conforme o perfil comercial da loja.
+A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro políticas representativas do portfólio final (uma por família ainda presente: EOQ, Jornaleiro, SA e GA-DQN), estratificados por segmento comercial. CTI indica o custo absoluto das políticas (minimizar); NS mostra a proporção da demanda atendida (maximizar); TR indica a frequência de falta de estoque (minimizar). Diferenças entre segmentos indicam que a mesma política pode se comportar de forma distinta conforme o perfil comercial da loja.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/maps/kpi_por_segmento}
-\caption{CTI, NS e TR por segmento de loja para as políticas EOQ, Jornaleiro, PSO e GA-DQN. O segmento Platina exibe maior CTI absoluto (maior volume médio), mas menor variância relativa entre políticas. O segmento Esmeralda~GB apresenta maior heterogeneidade de NS entre políticas, indicando sensibilidade ao mecanismo de reposição. \textbf{Figura pendente de regeneração} sobre o portfólio final de 12 políticas (Seção~\ref{sec:benchmark_massivo}): PSO não compõe mais o portfólio avaliado; mantida como referência de padrão até a atualização.}
+\caption{CTI, NS e TR por segmento de loja para as políticas EOQ, Jornaleiro, SA e GA-DQN (portfólio final, Seção~\ref{sec:benchmark_massivo}). O segmento Diamante~GB exibe o maior CTI absoluto entre as políticas de maior custo (SA), refletindo maior volume médio de demanda. O segmento Platina apresenta a maior dispersão de NS entre as quatro políticas, indicando sensibilidade elevada ao mecanismo de reposição.}
 \label{fig:kpi_segmento}
 \end{figure}
 
-O resultado principal é que a sensibilidade à política varia entre segmentos: em alguns, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB essa diferença cai para 40\%, reforçando que a recomendação de política deve ser contextualizada pelo perfil da loja, não uniforme para toda a rede.
+O resultado principal é que a sensibilidade à política varia entre segmentos: em alguns, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. O segmento Rubi apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Diamante~GB essa diferença cai para 44\%, reforçando que a recomendação de política deve ser contextualizada pelo perfil da loja, não uniforme para toda a rede.
 
 \subsection{Comparação por Perfil Operacional de Demanda}
 \label{sec:comparacao_pod}
@@ -295,21 +295,21 @@ Enquanto o Wilcoxon indica se a diferença é estatisticamente consistente, o $d
 \begin{table}[ht]
 \centering
 \small
-\caption{Tamanhos de efeito de Cohen ($d$) para CTI: política híbrida versus \textit{baselines} selecionados. Classificação: $|d| < 0.20$ trivial; $0.20$ a $0.50$ pequeno; $0.50$ a $0.80$ médio; $> 0.80$ grande. \textbf{Valores pendentes de recomputação} sobre o portfólio final de 12 políticas (Seção~\ref{sec:benchmark_massivo}): os valores abaixo são da rodada anterior ao ajuste do portfólio e à correção da função objetivo, mantidos como referência de magnitude até a atualização.}
+\caption{Tamanhos de efeito de Cohen ($d$) para CTI: política híbrida versus \textit{baselines} selecionados, portfólio final de 12 políticas (Seção~\ref{sec:benchmark_massivo}). Classificação: $|d| < 0.20$ trivial; $0.20$ a $0.50$ pequeno; $0.50$ a $0.80$ médio; $> 0.80$ grande.}
 \label{tab:cohens_d_resumo}
 \begin{tabular}{@{}llrrl@{}}
 \toprule
 Política A & Política B & $d$ (CTI) & $d$ (NS) & Magnitude \\
 \midrule
-GA-DQN & EOQ        & $+1.284$ & $-1.043$ & ambos: grande \\
-GA-DQN & $(s,S)$    & $+1.134$ & $-1.052$ & ambos: grande \\
-GA-DQN & Newsvendor & $+2.931$ & $+1.153$ & ambos: grande \\
-GA-DQN & PPO        & $-1.944$ & $-1.283$ & ambos: grande \\
+GA-DQN & EOQ        & $+2.319$ & $-1.310$ & ambos: grande \\
+GA-DQN & $(s,S)$    & $+2.003$ & $-1.321$ & ambos: grande \\
+GA-DQN & Newsvendor & $+6.170$ & $+1.006$ & ambos: grande \\
+GA-DQN & PPO        & $-4.975$ & $-1.365$ & ambos: grande \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O maior efeito absoluto observado nessa rodada de referência é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença entre a política analítica de baixo custo e a arquitetura híbrida mais complexa. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo maior que o EOQ neste conjunto de séries, porém com NS menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série. Essa magnitude de efeito é consistente com o padrão observado na Tabela~\ref{tab:kpis_fase2} atualizada (GA-DQN: CTI\,=\,R\$\,1.175,79, NS\,=\,$0{,}73$ vs.\ EOQ: CTI\,=\,R\$\,628,42, NS\,=\,$0{,}94$), mas os valores exatos de $d$ acima ainda não foram recalculados sobre essa base.
+O maior efeito absoluto reportado é $d=+6.170$ (GA-DQN vs Newsvendor em CTI), refletindo a diferença entre a política analítica de baixo custo e a arquitetura híbrida mais complexa. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+2.319$ em CTI (grande) indica que o GA-DQN opera com custo maior que o EOQ neste conjunto de séries, porém com NS menor ($d=-1.310$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série. Essa magnitude de efeito é consistente com o padrão observado na Tabela~\ref{tab:kpis_fase2} (GA-DQN: CTI\,=\,R\$\,1.175,79, NS\,=\,$0{,}73$ vs.\ EOQ: CTI\,=\,R\$\,628,42, NS\,=\,$0{,}94$).
 
 \noindent A Figura~\ref{fig:critical_diff} complementa os tamanhos de efeito ao mostrar os agrupamentos estatísticos do teste de Nemenyi. Políticas conectadas pela barra horizontal não diferem significativamente no CTI ao nível $\alpha=0.05$; políticas sem conexão apresentam diferença estatisticamente detectável.
 
