@@ -7,6 +7,30 @@ rigor nem os resultados relevantes. O autor está disposto a **reduzir o número
 políticas do portfólio**, desde que a decisão seja baseada em literatura — essa é a
 alavanca de maior impacto e a mais defensável academicamente, então o plano começa por ela.
 
+> **Status (última atualização: 19/08/2026, branch `enxugamento-texto`): 124 → 116
+> páginas.** A Alavanca 1 (corte de portfólio) foi decidida em chat com um recorte
+> **mais agressivo que o proposto originalmente aqui** — **12 políticas**, não 14
+> (ver nota abaixo). A Alavanca 2 (enxugamento de prosa) está em andamento por
+> capítulo, com commits individuais na branch `enxugamento-texto`: Metodologia
+> (parcial), Resultados (parcial + 1 correção factual de dado obsoleto), Referencial
+> Teórico (parcial). A Alavanca 3 avançou nos Apêndices A e B (consolidação de
+> tabelas e figuras, alto ganho por esforço) e teve a estimativa de Referências
+> **corrigida**: como o documento não usa `\nocite{*}`, o BibTeX só imprime entradas
+> efetivamente citadas — o `.bib` tinha 78 entradas mas só 64 apareciam no PDF; as
+> 14 órfãs foram removidas por higiene, mas isso **não reduziu a contagem de
+> páginas** (a estimativa original de "-6 páginas" partia de uma premissa errada).
+> Faltam ainda a Introdução e a continuação das Alavancas 2/3 para chegar a ~80p.
+
+**Nota sobre o corte de portfólio real**: a decisão tomada em chat (não neste
+documento) cortou **SA, PSO, DE, SARSA e GA-PPO** do conjunto de 18 políticas
+testadas no Experimento~1 original (não do conjunto de 12 descrito na Seção~2 deste
+plano, que já refletia uma proposta anterior), chegando a um portfólio final de
+**12 políticas**: EOQ, $(s,S)$, Jornaleiro, *Capped Base-Stock*, Jornaleiro *Big
+Data*, *Fixed Interval*, *Vendor-Responsive*, GA, SA, DQN, PPO, GA-DQN. As políticas
+excluídas permanecem implementadas no pipeline (desabilitadas via configuração, não
+apagadas). A Seção~2 abaixo, que descreve um corte alternativo para 14 políticas,
+é mantida como registro do raciocínio original, mas **não reflete a decisão final**.
+
 ---
 
 ## 1. Diagnóstico — onde estão as 124 páginas
