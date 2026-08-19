@@ -87,8 +87,6 @@ O conjunto de dados do Experimento~2 cobre 145 combinações (loja, produto) de 
 \label{fig:distribuicao_lojas}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} não representa validação nacional completa; a cobertura experimental do Experimento~2 restringe-se à Bahia. O mapa contextualiza a escala potencial do \textit{pipeline}, não os resultados reportados neste capítulo.
-
 A filial Calçada concentra 104 das 145 séries (72\%), com segmento Platina dominante: as lojas de maior ticket médio e maior regularidade de demanda. As filiais Cajazeiras (17\%) e Lauro de Freitas (11\%) exibem perfis distintos: Cajazeiras com mix mais equilibrado entre Ouro e Rubi; Lauro concentrado em Rubi e Diamante GB. Esta heterogeneidade de segmento e volume justifica a estratificação por filial e segmento na análise de desempenho das políticas. A concentração em Calçada implica que os resultados agregados são fortemente influenciados pelo perfil desta filial; os padrões específicos de cada unidade são destacados na análise estratificada da Seção~\ref{sec:estratificada_segmento}.
 
 A Figura~\ref{fig:receita_segmento} apresenta a distribuição da receita esperada por ciclo comercial (em R\$) por filial e segmento. A visualização ajuda a contextualizar a heterogeneidade econômica das séries avaliadas.
@@ -109,7 +107,7 @@ A Figura~\ref{fig:lojas_segmento} complementa essa leitura ao mostrar a concentr
 \label{fig:lojas_segmento}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura do Experimento~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo do Estudo de Caso 4 (expansão multiestado, Capítulo~\ref{cap:plano_continuidade}).
+A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a escala potencial do \textit{pipeline} no território nacional -- não uma validação nacional completa, já que a cobertura experimental do Experimento~2 restringe-se à Bahia; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo do Estudo de Caso 4 (expansão multiestado, Capítulo~\ref{cap:plano_continuidade}).
 
 \begin{figure}[ht]
 \centering
@@ -170,12 +168,12 @@ A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS e mostra que ne
 \label{fig:pareto}
 \end{figure}
 
-A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão mais adequada varia por série, oferecendo evidência empírica para o AIPE. Essa evidência apoia a formulação do PSE como componente de seleção contextual.
+A principal leitura da Figura~\ref{fig:pareto} é que a escolha da política depende do compromisso desejado: operadores que priorizam custo apontam para Jornaleiro; os que priorizam serviço apontam para EOQ ou $(s,S)$; a decisão mais adequada varia por série -- evidência empírica direta para a formulação do PSE como componente de seleção contextual.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.72\textwidth]{../../simulation/data/08_reporting/comparison/boxplot_tic}
-\caption{Distribuição do CTI por política (boxplot sobre as 145 séries). Caixas mais altas indicam que a mesma política produz custos muito diferentes entre séries: a eficácia depende do perfil da demanda, não apenas da política escolhida. Essa heterogeneidade oferece evidência empírica para a formulação do AIPE.}
+\caption{Distribuição do CTI por política (boxplot sobre as 145 séries). Caixas mais altas indicam que a mesma política produz custos muito diferentes entre séries: a eficácia depende do perfil da demanda, não apenas da política escolhida.}
 \label{fig:boxplot_tic}
 \end{figure}
 
@@ -191,9 +189,7 @@ A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro polí
 \label{fig:kpi_segmento}
 \end{figure}
 
-O resultado principal é que a sensibilidade à política varia entre segmentos. Em alguns segmentos, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. Esse padrão reforça a tese do AIPE: a recomendação de política não deve ser uniforme para toda a rede.
-
-O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB esta diferença cai para 40\%. Isso reforça que a escolha da política deve ser contextualizada pelo perfil da loja, oferecendo evidência empírica para o módulo AIPE.
+O resultado principal é que a sensibilidade à política varia entre segmentos: em alguns, a troca de política altera principalmente o custo; em outros, altera de forma mais intensa o nível de serviço e a taxa de ruptura. O segmento Platina (maior ticket e regularidade) apresenta diferença relativa de CTI entre EOQ e GA-DQN de aproximadamente 110\%, enquanto no segmento Esmeralda~GB essa diferença cai para 40\% -- reforçando que a recomendação de política deve ser contextualizada pelo perfil da loja, não uniforme para toda a rede.
 
 \subsection{Comparação por Perfil Operacional de Demanda}
 \label{sec:comparacao_pod}
@@ -206,12 +202,12 @@ A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a polític
 
 O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o EOQ é a política dominante (CTI\,=\,R\$\,632,51; CTI ajustado\,=\,R\$\,908,05; NS\,=\,$0{,}939$) entre as operacionalmente viáveis (NS médio $\geq 0{,}70$), pelo critério de menor CTI ajustado, métrica de escolha final que soma ao CTI uma penalidade por déficit de nível de serviço (com referência de custo fixa por série) e por excesso de estoque em relação à mediana das demais políticas na mesma série. O Jornaleiro apresenta o menor CTI bruto neste perfil, mas é excluído pelo critério de viabilidade: seu NS médio (0,54) fica abaixo do limiar de $0{,}70$, configurando ruptura de estoque excessiva para uso operacional direto. O ganho de custo do Jornaleiro nesse perfil não é, portanto, alcançável sem violar o nível de serviço mínimo adotado. O perfil \textit{Unstable Trend} (18 séries, evidência exploratória por $n<20$) apresenta padrão de demanda com tendência não estacionária; o EOQ também domina aqui (CTI\,=\,R\$\,607,95; CTI ajustado\,=\,R\$\,836,73; NS\,=\,$0{,}947$). O perfil \textit{High Vol.~Seasonal} (11 séries, evidência exploratória por $n<20$) é o único em que o EOQ não domina: o \textit{Fixed Interval} (heurística do artigo-base) assume a dominância (CTI\,=\,R\$\,422,93; CTI ajustado\,=\,R\$\,426,12; NS\,=\,$0{,}907$), com custo ajustado bem próximo do custo bruto -- indício de que, nesse perfil, a política já opera perto do equilíbrio custo-serviço sem depender de correção de penalidade.
 
-A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio por política e perfil, mostrando a heterogeneidade de custo que motiva o AIPE: o custo de cada política varia de forma expressiva entre perfis, de modo que nenhuma política minimiza CTI em todos os contextos simultaneamente.
+A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio por política e perfil: o custo de cada política varia de forma expressiva entre perfis, de modo que nenhuma política minimiza CTI em todos os contextos simultaneamente.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/profiles/profile_policy_heatmap_cti}
-\caption{CTI médio por política e Perfil Operacional de Demanda (Experimento~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) indica que a mesma política produz custos muito distintos segundo o padrão de demanda, oferecendo evidência empírica para a formulação do \textit{Adaptive Inventory Policy Engine}.}
+\caption{CTI médio por política e Perfil Operacional de Demanda (Experimento~2, BA). Células mais escuras indicam maior custo médio. A variação horizontal (entre perfis) indica que a mesma política produz custos muito distintos segundo o padrão de demanda.}
 \label{fig:heatmap_cti_pod}
 \end{figure}
 
@@ -242,7 +238,7 @@ Essa comparação fornece suporte empírico à motivação do AIPE: a heterogene
 
 \subsection{Heterogeneidade e Evidência para o AIPE}
 
-Um resultado central do Experimento~2 é que não existe política universalmente dominante: para o perfil que concentra a maior parte das séries, o SA oferece o menor custo entre as políticas viáveis, enquanto o Jornaleiro, apesar do menor CTI bruto, exige sacrifício de NS incompatível com o limiar mínimo de serviço adotado; para outros perfis, EOQ ou $(s,S)$ oferecem o melhor equilíbrio custo-serviço; para séries em que o efeito \textit{bullwhip} é a métrica prioritária, PSO e DE apresentam os menores valores entre as meta-heurísticas (BE\,=\,$0.40$ e BE\,=\,$0.20$, respectivamente). A dispersão ilustrada na Figura~\ref{fig:boxplot_tic}, com coeficientes de variação do CTI acima de 100\% para GA, GA-DQN e GA-PPO, indica que a política mais adequada depende das características da série.
+Um resultado central do Experimento~2 é que não existe política universalmente dominante: no perfil que concentra a maior parte das séries (\textit{Sparse High Impact}), o EOQ oferece o menor CTI ajustado entre as políticas viáveis, enquanto o Jornaleiro, apesar do menor CTI bruto, exige sacrifício de NS incompatível com o limiar mínimo de serviço adotado; no perfil \textit{High Vol.~Seasonal}, é o \textit{Fixed Interval} que domina (Seção~\ref{sec:comparacao_pod}). A dispersão ilustrada na Figura~\ref{fig:boxplot_tic}, com coeficientes de variação do CTI acima de 100\% para GA, GA-DQN e GA-PPO, indica que a política mais adequada depende das características da série.
 
 Este achado oferece fundamento empírico para o \textit{Adaptive Inventory Policy Engine} (AIPE). A Tabela~\ref{tab:regime_policy_dominance} sintetiza o mapeamento empírico regime$\rightarrow$política dominante obtido nos dois experimentos executados, convertendo os resultados de simulação em rótulos de treinamento para o \textit{Policy Selection Engine}.
 
