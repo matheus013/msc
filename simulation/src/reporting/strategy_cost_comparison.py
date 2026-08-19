@@ -51,8 +51,10 @@ PROF_PATH    = DATA_DIR / "04_feature" / "demand_profiles.parquet"
 OUT_DIR      = DATA_DIR / "08_reporting" / "strategy"
 
 NS_THRESHOLD     = 0.70
+PENALTY_WEIGHT   = 10.0
+EXCESS_WEIGHT    = 0.5
 BASELINE_POLICY  = "EOQ"
-METRIC_COLS      = ["CTI", "NS", "TR", "BE", "FP"]
+METRIC_COLS      = ["CTI", "CTI_ajustado", "NS", "TR", "BE", "FP"]
 
 POLICY_DISPLAY = {
     "sS":         "(s,S)",
@@ -105,6 +107,46 @@ def _load(kpis: pd.DataFrame | None = None, profiles: pd.DataFrame | None = None
         n_missing = df["operational_profile"].isna().sum()
         log.warning(f"  {n_missing} linhas sem perfil operacional após o join.")
     df = df.rename(columns={"TIC": "CTI"})
+    df = _add_adjusted_cost(df)
+    return df
+
+
+def _add_adjusted_cost(df: pd.DataFrame, ns_threshold: float = NS_THRESHOLD,
+                       penalty_weight: float = PENALTY_WEIGHT,
+                       excess_weight: float = EXCESS_WEIGHT) -> pd.DataFrame:
+    """
+    CTI_ajustado — métrica de escolha final (2026-08-18, AJUSTES_INFRA item
+    #33; pedido do usuário: "no comparativo final devemos comparar o custo
+    total ajustado"). Mesma formulação de `profile_policy_analysis.
+    _add_adjusted_cost`, reimplementada aqui sobre a coluna já renomeada
+    `CTI` (== TIC) para não criar dependência cruzada entre os dois
+    scripts de relatório:
+
+        CTI_ajustado = CTI
+                      + deficit_NS * penalty_weight * CTI_ref_serie   (prejuízo por indisponibilidade;
+                                                                        CTI_ref FIXO = maior CTI entre
+                                                                        as 18 políticas da mesma série,
+                                                                        não o CTI da própria candidata —
+                                                                        corrige o bug de auto-referência
+                                                                        que fazia "nunca pedir" vencer)
+                      + excess_weight * max(0, HoldingCost - mediana(HoldingCost na série))
+                                                                       (estoque excessivo, se a
+                                                                        decomposição de custo estiver
+                                                                        disponível)
+    """
+    series_key = ["warehouse", "store_id", "item_id"]
+    cti_ref_series = df.groupby(series_key)["CTI"].transform("max").clip(lower=1.0)
+    deficit = (ns_threshold - df["NS"]).clip(lower=0.0)
+    service_loss = deficit * penalty_weight * cti_ref_series
+
+    if "HoldingCost" in df.columns and df["HoldingCost"].notna().any():
+        median_holding = df.groupby(series_key)["HoldingCost"].transform("median")
+        excess = (df["HoldingCost"] - median_holding).clip(lower=0.0) * excess_weight
+    else:
+        excess = 0.0
+
+    df = df.copy()
+    df["CTI_ajustado"] = df["CTI"] + service_loss + excess
     return df
 
 
@@ -114,7 +156,7 @@ def _load(kpis: pd.DataFrame | None = None, profiles: pd.DataFrame | None = None
 
 def _global_metrics(df: pd.DataFrame) -> pd.DataFrame:
     agg = (
-        df.groupby("policy")[["CTI", "NS", "TR", "BE", "FP"]]
+        df.groupby("policy")[["CTI", "CTI_ajustado", "NS", "TR", "BE", "FP"]]
         .agg(["mean", "std", "sum"])
     )
     agg.columns = ["_".join(c) for c in agg.columns]
@@ -126,11 +168,13 @@ def _global_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _pick_global_best(global_agg: pd.DataFrame) -> str:
+    """Escolhe A1 (política única global) por menor CTI_ajustado_mean entre as
+    viáveis (2026-08-18: era CTI_mean puro -- ver `_add_adjusted_cost`)."""
     viable = global_agg[global_agg["viable"]]
     if viable.empty:
         log.warning("Nenhuma política viável globalmente; usando política com maior NS.")
         return global_agg.loc[global_agg["NS_mean"].idxmax(), "policy"]
-    return viable.loc[viable["CTI_mean"].idxmin(), "policy"]
+    return viable.loc[viable["CTI_ajustado_mean"].idxmin(), "policy"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -139,7 +183,7 @@ def _pick_global_best(global_agg: pd.DataFrame) -> str:
 
 def _profile_metrics(df: pd.DataFrame) -> pd.DataFrame:
     agg = (
-        df.groupby(["operational_profile", "policy"])[["CTI", "NS", "TR", "BE", "FP"]]
+        df.groupby(["operational_profile", "policy"])[["CTI", "CTI_ajustado", "NS", "TR", "BE", "FP"]]
         .agg(["mean", "std", "sum"])
     )
     agg.columns = ["_".join(c) for c in agg.columns]
@@ -166,15 +210,15 @@ def _dominant_by_profile(profile_agg: pd.DataFrame) -> pd.DataFrame:
             dominant_row = grp.loc[grp["NS_mean"].idxmax()]
             fallback = True
         else:
-            dominant_row = viable.loc[viable["CTI_mean"].idxmin()]
+            dominant_row = viable.loc[viable["CTI_ajustado_mean"].idxmin()]
 
-        # Segunda melhor política viável
+        # Segunda melhor política viável (por CTI_ajustado -- ver _add_adjusted_cost)
         if len(viable) >= 2:
             others = viable[viable.policy != dominant_row.policy]
-            second_row = others.loc[others["CTI_mean"].idxmin()]
+            second_row = others.loc[others["CTI_ajustado_mean"].idxmin()]
             second_policy = second_row.policy
-            second_cti = second_row.CTI_mean
-            diff_pct = 100.0 * (second_cti - dominant_row.CTI_mean) / (dominant_row.CTI_mean + 1e-9)
+            second_cti = second_row.CTI_ajustado_mean
+            diff_pct = 100.0 * (second_cti - dominant_row.CTI_ajustado_mean) / (dominant_row.CTI_ajustado_mean + 1e-9)
         else:
             second_policy = None
             second_cti = None
@@ -187,6 +231,7 @@ def _dominant_by_profile(profile_agg: pd.DataFrame) -> pd.DataFrame:
             "dominant_policy":         dominant_row.policy,
             "dominant_policy_disp":    POLICY_DISPLAY.get(dominant_row.policy, dominant_row.policy),
             "CTI_mean":                round(dominant_row.CTI_mean, 2),
+            "CTI_ajustado_mean":       round(dominant_row.CTI_ajustado_mean, 2),
             "CTI_std":                 round(dominant_row.CTI_std, 2),
             "NS_mean":                 round(dominant_row.NS_mean, 3),
             "TR_mean":                 round(dominant_row.TR_mean, 3),
@@ -194,12 +239,12 @@ def _dominant_by_profile(profile_agg: pd.DataFrame) -> pd.DataFrame:
             "FP_mean":                 round(dominant_row.FP_mean, 3),
             "status":                  "fallback" if fallback else "normal",
             "second_policy":           second_policy,
-            "second_CTI_mean":         round(second_cti, 2) if second_cti else None,
+            "second_CTI_ajustado_mean": round(second_cti, 2) if second_cti else None,
             "diff_pct_vs_second":      round(diff_pct, 1) if diff_pct is not None else None,
             "exploratory":             int(grp["n_series"].iloc[0]) < 20,
         })
 
-    dom = pd.DataFrame(rows).sort_values("CTI_mean")
+    dom = pd.DataFrame(rows).sort_values("CTI_ajustado_mean")
     return dom
 
 
@@ -212,11 +257,16 @@ def _strategy_per_series(df: pd.DataFrame, best_global: str,
     """
     Tabela wide: uma linha por série, com CTI sob cada estratégia.
     """
-    # Pivot para CTI por (série, política)
+    # Pivot para CTI (e CTI_ajustado) por (série, política)
     piv_cti = df.pivot_table(
         index=["warehouse", "store_id", "item_id", "operational_profile"],
         columns="policy",
         values="CTI",
+    ).reset_index()
+    piv_adj = df.pivot_table(
+        index=["warehouse", "store_id", "item_id", "operational_profile"],
+        columns="policy",
+        values="CTI_ajustado",
     ).reset_index()
     piv_ns = df.pivot_table(
         index=["warehouse", "store_id", "item_id", "operational_profile"],
@@ -230,21 +280,6 @@ def _strategy_per_series(df: pd.DataFrame, best_global: str,
     # Mapa perfil → política dominante
     dom_map = dict(zip(dominant.operational_profile, dominant.dominant_policy))
 
-    def oracle_cti(row: pd.Series) -> float:
-        best = None
-        best_ns = piv_ns.loc[row.name, policies] if True else {}
-        for p in policies:
-            ns_val = piv_ns.loc[piv_ns.index[
-                (piv_ns.warehouse == row.warehouse) &
-                (piv_ns.store_id == row.store_id) &
-                (piv_ns.item_id == row.item_id)
-            ][0], p]
-            cti_val = row[p]
-            if ns_val >= NS_THRESHOLD:
-                if best is None or cti_val < best:
-                    best = cti_val
-        return best if best is not None else min(row[p] for p in policies)
-
     piv_cti["CTI_A1"] = piv_cti[best_global]
     piv_cti["CTI_A2"] = piv_cti[BASELINE_POLICY]
     piv_cti["CTI_B"]  = piv_cti.apply(
@@ -252,16 +287,33 @@ def _strategy_per_series(df: pd.DataFrame, best_global: str,
         axis=1,
     )
 
-    # Oracle: por série, menor CTI viável (requer NS por série também)
+    # CTI_ajustado por estratégia -- métrica de escolha final (ver
+    # _add_adjusted_cost); mesmo esquema de A1/A2/B acima, sobre piv_adj.
+    piv_adj_key = piv_adj.set_index(["warehouse", "store_id", "item_id", "operational_profile"])
+    piv_cti["CTI_ajustado_A1"] = piv_cti.apply(
+        lambda r: piv_adj_key.loc[(r.warehouse, r.store_id, r.item_id, r.operational_profile), best_global], axis=1)
+    piv_cti["CTI_ajustado_A2"] = piv_cti.apply(
+        lambda r: piv_adj_key.loc[(r.warehouse, r.store_id, r.item_id, r.operational_profile), BASELINE_POLICY], axis=1)
+    piv_cti["CTI_ajustado_B"] = piv_cti.apply(
+        lambda r: piv_adj_key.loc[(r.warehouse, r.store_id, r.item_id, r.operational_profile),
+                                   dom_map.get(r["operational_profile"], best_global)], axis=1)
+
+    # Oracle: por série, menor CTI_ajustado viável (requer NS por série também)
     piv_ns_idx = piv_ns.set_index(["warehouse", "store_id", "item_id"])
+    piv_adj_idx = piv_adj.set_index(["warehouse", "store_id", "item_id"])
     def oracle_row(row):
         ns_row = piv_ns_idx.loc[(row.warehouse, row.store_id, row.item_id), policies]
+        adj_row = piv_adj_idx.loc[(row.warehouse, row.store_id, row.item_id), policies]
         viable_p = [p for p in policies if ns_row[p] >= NS_THRESHOLD]
         if viable_p:
-            return min(row[p] for p in viable_p)
-        return min(row[p] for p in policies)
+            best_p = min(viable_p, key=lambda p: adj_row[p])
+        else:
+            best_p = min(policies, key=lambda p: adj_row[p])
+        return pd.Series({"CTI_C": row[best_p], "CTI_ajustado_C": adj_row[best_p]})
 
-    piv_cti["CTI_C"] = piv_cti.apply(oracle_row, axis=1)
+    oracle = piv_cti.apply(oracle_row, axis=1)
+    piv_cti["CTI_C"] = oracle["CTI_C"]
+    piv_cti["CTI_ajustado_C"] = oracle["CTI_ajustado_C"]
 
     return piv_cti
 
@@ -340,7 +392,7 @@ def _strategy_hypothesis_tests(paired_df: pd.DataFrame) -> pd.DataFrame:
             ref = paired[ref_col].astype(float).to_numpy()
             prof = paired[prof_col].astype(float).to_numpy()
             diff = prof - ref
-            alternative = "less" if metric == "CTI" else "two-sided"
+            alternative = "less" if metric in ("CTI", "CTI_ajustado") else "two-sided"
 
             if np.all(np.abs(diff) <= 1e-12):
                 stat, p_value = 0.0, 1.0
@@ -431,13 +483,17 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
     # Estratégia A1
     cti_total_A1 = series_df["CTI_A1"].sum()
     cti_mean_A1  = series_df["CTI_A1"].mean()
+    adj_total_A1 = series_df["CTI_ajustado_A1"].sum()
+    adj_mean_A1  = series_df["CTI_ajustado_A1"].mean()
     rows.append({
         "estrategia":    "A1",
         "descricao":     STRATEGY_LABELS["A1"],
-        "regra":         f"Política única: {POLICY_DISPLAY.get(best_global, best_global)} (menor CTI global viável)",
+        "regra":         f"Política única: {POLICY_DISPLAY.get(best_global, best_global)} (menor CTI ajustado global viável)",
         "politica_repr": POLICY_DISPLAY.get(best_global, best_global),
         "CTI_total":     round(cti_total_A1, 2),
         "CTI_medio":     round(cti_mean_A1, 2),
+        "CTI_ajustado_total": round(adj_total_A1, 2),
+        "CTI_ajustado_medio": round(adj_mean_A1, 2),
         "NS_medio":      round(ns_map.get(best_global, 0), 3),
         "TR_medio":      round(tr_map.get(best_global, 0), 3),
         "BE_medio":      round(be_map.get(best_global, 0), 3),
@@ -447,6 +503,8 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
     # Estratégia A2 (baseline)
     cti_total_A2 = series_df["CTI_A2"].sum()
     cti_mean_A2  = series_df["CTI_A2"].mean()
+    adj_total_A2 = series_df["CTI_ajustado_A2"].sum()
+    adj_mean_A2  = series_df["CTI_ajustado_A2"].mean()
     rows.append({
         "estrategia":    "A2",
         "descricao":     STRATEGY_LABELS["A2"],
@@ -454,6 +512,8 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
         "politica_repr": POLICY_DISPLAY.get(BASELINE_POLICY, BASELINE_POLICY),
         "CTI_total":     round(cti_total_A2, 2),
         "CTI_medio":     round(cti_mean_A2, 2),
+        "CTI_ajustado_total": round(adj_total_A2, 2),
+        "CTI_ajustado_medio": round(adj_mean_A2, 2),
         "NS_medio":      round(ns_map.get(BASELINE_POLICY, 0), 3),
         "TR_medio":      round(tr_map.get(BASELINE_POLICY, 0), 3),
         "BE_medio":      round(be_map.get(BASELINE_POLICY, 0), 3),
@@ -463,17 +523,21 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
     # Estratégia B
     cti_total_B  = series_df["CTI_B"].sum()
     cti_mean_B   = series_df["CTI_B"].mean()
+    adj_total_B  = series_df["CTI_ajustado_B"].sum()
+    adj_mean_B   = series_df["CTI_ajustado_B"].mean()
     ns_B, tr_B, be_B, fp_B = _profile_ns_mean(series_df, dominant)
     rows.append({
         "estrategia":    "B",
         "descricao":     STRATEGY_LABELS["B"],
-        "regra":         "Política dominante por perfil operacional (menor CTI viável no perfil)",
+        "regra":         "Política dominante por perfil operacional (menor CTI ajustado viável no perfil)",
         "politica_repr": "; ".join(
             f"{PROFILE_DISPLAY.get(p, p)}: {POLICY_DISPLAY.get(v, v)}"
             for p, v in dom_map.items()
         ),
         "CTI_total":     round(cti_total_B, 2),
         "CTI_medio":     round(cti_mean_B, 2),
+        "CTI_ajustado_total": round(adj_total_B, 2),
+        "CTI_ajustado_medio": round(adj_mean_B, 2),
         "NS_medio":      round(ns_B, 3),
         "TR_medio":      round(tr_B, 3),
         "BE_medio":      round(be_B, 3),
@@ -483,13 +547,17 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
     # Estratégia C (oracle)
     cti_total_C  = series_df["CTI_C"].sum()
     cti_mean_C   = series_df["CTI_C"].mean()
+    adj_total_C  = series_df["CTI_ajustado_C"].sum()
+    adj_mean_C   = series_df["CTI_ajustado_C"].mean()
     rows.append({
         "estrategia":    "C",
         "descricao":     STRATEGY_LABELS["C"],
-        "regra":         "Melhor política viável por série (referência exploratória)",
+        "regra":         "Melhor política viável por série, por CTI ajustado (referência exploratória)",
         "politica_repr": "Variável por série",
         "CTI_total":     round(cti_total_C, 2),
         "CTI_medio":     round(cti_mean_C, 2),
+        "CTI_ajustado_total": round(adj_total_C, 2),
+        "CTI_ajustado_medio": round(adj_mean_C, 2),
         "NS_medio":      round(NS_THRESHOLD, 3),   # por construção, NS >= threshold
         "TR_medio":      None,
         "BE_medio":      None,
@@ -498,20 +566,22 @@ def _strategy_table(series_df: pd.DataFrame, global_agg: pd.DataFrame,
 
     result = pd.DataFrame(rows)
 
-    # Calcular reduções vs A1 e vs A2
-    ref_A1 = cti_total_A1
-    ref_A2 = cti_total_A2
+    # Calcular reduções vs A1 e vs A2 -- métrica de comparação final é
+    # CTI_ajustado (2026-08-18, AJUSTES_INFRA item #33), CTI bruto mantido
+    # só para referência/retrocompatibilidade.
+    ref_A1 = adj_total_A1
+    ref_A2 = adj_total_A2
 
-    result["red_abs_vs_A1"] = result["CTI_total"].apply(
+    result["red_abs_vs_A1"] = result["CTI_ajustado_total"].apply(
         lambda x: round(ref_A1 - x, 2) if x is not None else None
     )
-    result["red_pct_vs_A1"] = result["CTI_total"].apply(
+    result["red_pct_vs_A1"] = result["CTI_ajustado_total"].apply(
         lambda x: round(100.0 * (ref_A1 - x) / ref_A1, 2) if x is not None else None
     )
-    result["red_abs_vs_A2"] = result["CTI_total"].apply(
+    result["red_abs_vs_A2"] = result["CTI_ajustado_total"].apply(
         lambda x: round(ref_A2 - x, 2) if x is not None else None
     )
-    result["red_pct_vs_A2"] = result["CTI_total"].apply(
+    result["red_pct_vs_A2"] = result["CTI_ajustado_total"].apply(
         lambda x: round(100.0 * (ref_A2 - x) / ref_A2, 2) if x is not None else None
     )
     return result
@@ -560,7 +630,7 @@ def _validation_report(df_raw: pd.DataFrame, global_agg: pd.DataFrame,
     lines.append(f"  Match: {'OK' if policies == expected else 'DIVERGE'}")
 
     lines.append("\n## Checagem 3 — Política única global (A1)")
-    lines.append(f"  Política dominante global: **{POLICY_DISPLAY.get(best_global, best_global)}**")
+    lines.append(f"  Política dominante global (por CTI ajustado): **{POLICY_DISPLAY.get(best_global, best_global)}**")
     viable = global_agg[global_agg["viable"]]
     lines.append(f"  Políticas viáveis (NS >= {NS_THRESHOLD}): {list(viable.policy)}")
 
@@ -569,13 +639,18 @@ def _validation_report(df_raw: pd.DataFrame, global_agg: pd.DataFrame,
         marker = " (*)" if row["exploratory"] else ""
         lines.append(
             f"  {row['profile_display']}{marker}: "
-            f"{row['dominant_policy_disp']} | CTI={row['CTI_mean']} | NS={row['NS_mean']} | status={row['status']}"
+            f"{row['dominant_policy_disp']} | CTI={row['CTI_mean']} | CTI_ajustado={row['CTI_ajustado_mean']} | NS={row['NS_mean']} | status={row['status']}"
         )
     lines.append("  (*) n < 20: evidência exploratória")
 
-    lines.append("\n## Checagem 5 — Redução de CTI (fórmula verificada)")
+    lines.append("\n## Checagem 5 — Redução de CTI ajustado (fórmula verificada)")
     lines.append(
-        "  redução (%) = 100 × (CTI_A1_total − CTI_B_total) / CTI_A1_total"
+        "  redução (%) = 100 × (CTI_ajustado_A1_total − CTI_ajustado_B_total) / CTI_ajustado_A1_total"
+    )
+    lines.append(
+        "  CTI_ajustado = CTI + deficit_NS*penalty_weight*CTI_ref_serie(fixo) + excess_weight*excesso_holding"
+        " (AJUSTES_INFRA item #33; corrige auto-referência do score antigo e"
+        " incorpora estoque excessivo + indisponibilidade)."
     )
     for _, row in strategy.iterrows():
         if row["estrategia"] == "A1":
@@ -638,16 +713,18 @@ def _latex_table(strategy: pd.DataFrame, best_global: str,
         r"\small",
         r"\setlength{\tabcolsep}{4pt}",
         r"\caption{Comparação de custo entre estratégias de seleção de política"
-        r" (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). Redução calculada como"
-        r" $100 \times (\mathrm{CTI}_{\text{ref}} - \mathrm{CTI}_{\text{estratégia}}) /"
-        r" \mathrm{CTI}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência"
+        r" (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). CTI ajustado incorpora"
+        r" prejuízo por indisponibilidade (referência fixa por série) e estoque excessivo"
+        r" (AJUSTES\_INFRA item \#33); é a métrica de comparação final. Redução calculada como"
+        r" $100 \times (\mathrm{CTI}^{\text{ajust}}_{\text{ref}} - \mathrm{CTI}^{\text{ajust}}_{\text{estratégia}}) /"
+        r" \mathrm{CTI}^{\text{ajust}}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência"
         r" exploratória: assume conhecimento perfeito da política ótima de cada série.}",
         r"\label{tab:strategy_cost_comparison}",
-        r"\begin{tabular}{@{}p{4.0cm}rrrrr@{}}",
+        r"\begin{tabular}{@{}p{3.6cm}rrrrr@{}}",
         r"\toprule",
         r"\makecell[l]{Estratégia} &",
-        r"\makecell[r]{CTI total\\(R\$)} &",
-        r"\makecell[r]{CTI médio\\(R\$)} &",
+        r"\makecell[r]{CTI ajust.\\total (R\$)} &",
+        r"\makecell[r]{CTI ajust.\\médio (R\$)} &",
         r"\makecell[r]{NS\\médio} &",
         r"\makecell[r]{Red. vs A1\\(\%)} &",
         r"\makecell[r]{Red. vs A2\\(\%)} \\",
@@ -665,10 +742,10 @@ def _latex_table(strategy: pd.DataFrame, best_global: str,
         ns_str   = _fmt_num(row.get("NS_medio"), decimals=3)
         pct_a1   = _fmt_pct(row.get("red_pct_vs_A1"))
         pct_a2   = _fmt_pct(row.get("red_pct_vs_A2"))
-        cti_t    = _fmt_num(row["CTI_total"])
-        cti_m    = _fmt_num(row["CTI_medio"])
+        adj_t    = _fmt_num(row["CTI_ajustado_total"])
+        adj_m    = _fmt_num(row["CTI_ajustado_medio"])
         lines.append(
-            f"{desc} & {cti_t} & {cti_m} & {ns_str} & {pct_a1} & {pct_a2} \\\\"
+            f"{desc} & {adj_t} & {adj_m} & {ns_str} & {pct_a1} & {pct_a2} \\\\"
         )
 
     lines += [
@@ -725,6 +802,7 @@ def _latex_hypothesis_table(tests: pd.DataFrame, out_path: Path) -> None:
     }
     metric_label = {
         "CTI": "CTI",
+        "CTI_ajustado": "CTI ajust.",
         "NS": "NS",
         "TR": "TR",
         "BE": "BE",
@@ -837,7 +915,8 @@ def run(kpis: pd.DataFrame | None = None, profiles: pd.DataFrame | None = None,
     log.info("=" * 60)
     for _, row in strategy.iterrows():
         log.info(
-            f"  {row['estrategia']:2s} | CTI_medio={row['CTI_medio']:8.2f}"
+            f"  {row['estrategia']:2s} | CTI_ajustado_medio={row['CTI_ajustado_medio']:8.2f}"
+            f" | CTI_medio={row['CTI_medio']:8.2f}"
             f" | NS={row.get('NS_medio','N/A')}"
             f" | red_vs_A1={row.get('red_pct_vs_A1','—')}%"
         )

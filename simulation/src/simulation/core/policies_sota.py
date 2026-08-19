@@ -39,7 +39,8 @@ import torch
 
 from simulation.core.device import get_device_for_batch
 from simulation.core.inventory_env import InventoryEnv
-from simulation.core.inventory_env_torch import BatchInventoryEnv, constrained_cost  # noqa: F401
+from simulation.core.inventory_env_torch import (  # noqa: F401
+    BatchInventoryEnv, constrained_cost, series_tic_ref)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -47,7 +48,7 @@ from simulation.core.inventory_env_torch import BatchInventoryEnv, constrained_c
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
-                     alpha_min: float = 0.70, penalty_weight: float = 10.0,
+                     alpha_min: float = 0.70, penalty_weight: float = None,
                      device=None, demand_pool=None) -> tuple:
     """
     Avalia toda a grade de parâmetros em UMA simulação vetorizada.
@@ -64,11 +65,26 @@ def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
     escolher o candidato vencedor é a MÉDIA sobre o pool -- mesmo padrão
     usado em `TorchGA.evaluate` (metaheuristics_torch.py).
 
+    2026-08-18 (AJUSTES_INFRA item #33): `constrained_cost` agora recebe
+    `tic_ref_fixed` (referência de custo intrínseca à série, não a TIC do
+    próprio candidato) -- corrige o colapso "nunca pedir" (S=0) que a
+    busca em grade de PIL/CappedBaseStock encontrava como mínimo global
+    da versão auto-referencial da penalidade. Isso sozinho não bastou pra
+    algumas séries de baixo volume (custo fixo de pedido K domina): o
+    `penalty_weight` também passou a ser lido de
+    `cfg["GENETIC_ALGORITHM"]["penalty_weight"]` (mesmo campo usado por
+    GA/SA/PSO/DE, default 20.0 -- ver simulation.yml) em vez de um valor
+    fixo de 10.0 que nem respeitava override de config. Ver docstring de
+    `constrained_cost` em inventory_env_torch.py.
+
     Retorna (melhor_theta como tuple, melhor_custo).
     """
     B = int(grid.shape[0])
     dev = device if device is not None else get_device_for_batch(
         B, cfg.get("SIMULATION", {}).get("device", "auto"))
+    cs = float(cfg["COST"].get("stockout_cost_per_unit", 5.0))
+    if penalty_weight is None:
+        penalty_weight = float(cfg.get("GENETIC_ALGORITHM", {}).get("penalty_weight", 30.0))
 
     def _run_one(d) -> torch.Tensor:
         env = BatchInventoryEnv(d, cfg, batch_size=B, device=dev)
@@ -77,7 +93,8 @@ def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
         done = False
         while not done:
             _, _, done, _ = env.step(order_fn(env, theta))
-        return constrained_cost(env.kpis(), alpha_min, penalty_weight)
+        tic_ref = series_tic_ref(d, cs)
+        return constrained_cost(env.kpis(), alpha_min, penalty_weight, tic_ref_fixed=tic_ref)
 
     if demand_pool is None:
         cost = _run_one(demand)

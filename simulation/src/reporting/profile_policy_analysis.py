@@ -50,6 +50,7 @@ OUT_DIR     = DATA_DIR / "08_reporting" / "profiles"
 
 NS_THRESHOLD = 0.70
 PENALTY_WEIGHT = 10.0  # mesmo peso da restrição de NS usado em constrained_cost (Eq. 4.2)
+EXCESS_WEIGHT = 0.5  # peso do termo de estoque excessivo em CTI_ajustado (ver _add_adjusted_cost)
 
 # 2026-08-18: portfolio ampliado de 12 para 18 politicas (reimplementacao
 # 66d5ad8 + adocao Zabraoui). Faltavam as 6 novas aqui -- sem elas, o
@@ -129,27 +130,82 @@ def _merge(kpis: pd.DataFrame, profiles: pd.DataFrame) -> pd.DataFrame:
 # Aggregation
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _add_adjusted_cost(merged: pd.DataFrame, ns_threshold: float = NS_THRESHOLD,
+                       penalty_weight: float = PENALTY_WEIGHT,
+                       excess_weight: float = EXCESS_WEIGHT) -> pd.DataFrame:
+    """
+    CTI_ajustado por linha (série x política) -- ver AJUSTES_INFRA item #33.
+
+    Motivação (2026-08-18, "esse calculo de score não ta legal"): o `score`
+    antigo (e `constrained_cost`, usado no treino) escalam a penalidade de
+    déficit de NS pelo TIC_ref = clip(TIC_DA_PRÓPRIA_CANDIDATA, min=1.0).
+    Isso cria uma brecha auto-referencial: uma política que nunca pede
+    (S=0) tem TIC quase zero, então mesmo um déficit de NS de 45pp vira
+    uma penalidade pequena em valor absoluto -- comprovado numericamente
+    numa série real da Bahia (S=0: custo=474 vs S=8 com NS=1.0: custo=587;
+    o "nunca pedir" vence porque penaliza a si mesmo com sua própria régua
+    minúscula). É a causa-raiz do colapso "nunca pedir" encontrado em PIL,
+    CappedBaseStock, DQN e PPO.
+
+    Correção: a régua de penalidade (`tic_ref`) passa a ser FIXA por série
+    -- o maior TIC observado entre as 18 políticas para aquela mesma série
+    (o "teto" de custo que já se paga por ali) -- em vez do TIC da própria
+    candidata. Isso torna o déficit de NS caro em termos absolutos mesmo
+    quando a candidata finge ser barata não pedindo nada.
+
+    Além disso, soma-se um termo explícito de estoque excessivo (pedido do
+    usuário: "aumento do custo por estoque excessivo e manter no armazém
+    além de prejuízo por não ter produto disponível"):
+
+        CTI_ajustado = TIC
+                     + deficit_NS * penalty_weight * tic_ref_serie   (prejuízo por indisponibilidade,
+                                                                       referência FIXA por série)
+                     + excess_weight * max(0, HoldingCost - mediana(HoldingCost na série))
+                                                                      (estoque excessivo vs. o que as
+                                                                       outras políticas da mesma série
+                                                                       precisaram manter)
+
+    O termo de excesso só é calculado se `HoldingCost` estiver presente
+    (kpis.parquet gerado após este item; rodadas antigas caem no termo
+    apenas de indisponibilidade). `AvgInventory`/`HoldingCost`/
+    `StockoutCost` vêm da decomposição nova de `.kpis()` em
+    `inventory_env.py`/`inventory_env_torch.py`.
+    """
+    series_key = ["store_id", "item_id"]
+    tic_ref_series = merged.groupby(series_key)["TIC"].transform("max").clip(lower=1.0)
+    deficit = (ns_threshold - merged["NS"]).clip(lower=0.0)
+    service_loss = deficit * penalty_weight * tic_ref_series
+
+    if "HoldingCost" in merged.columns and merged["HoldingCost"].notna().any():
+        median_holding = merged.groupby(series_key)["HoldingCost"].transform("median")
+        excess = (merged["HoldingCost"] - median_holding).clip(lower=0.0) * excess_weight
+    else:
+        excess = 0.0
+
+    merged = merged.copy()
+    merged["CTI_ajustado"] = merged["TIC"] + service_loss + excess
+    return merged
+
+
 def _aggregate_by_profile(merged: pd.DataFrame, ns_threshold: float = NS_THRESHOLD,
-                          penalty_weight: float = PENALTY_WEIGHT) -> pd.DataFrame:
+                          penalty_weight: float = PENALTY_WEIGHT,
+                          excess_weight: float = EXCESS_WEIGHT) -> pd.DataFrame:
     """
     Agrega KPIs por (operational_profile, policy) -- esta é a saída principal
     do AIPE pedida pelo usuário: uma tabela com o SCORE de cada uma das 18
     políticas para cada perfil operacional (não só a política vencedora).
 
-    `score`: mesma formulação restrita da Eq. 4.2 já usada em
-    `constrained_cost`/`_eval_static` em todo o resto do projeto (GA/SA/
-    PSO/DE) -- reaproveitada aqui, não uma métrica nova:
-
-        score = -(TIC_mean + max(0, ns_threshold - NS_mean) * penalty_weight
-                            * max(TIC_mean, 1))
-
-    Quanto maior o score, melhor a política para aquele perfil. Políticas
-    que não atingem `ns_threshold` de NS médio são penalizadas
-    proporcionalmente ao próprio TIC (mesmo truque de escala do resto do
-    projeto), não descartadas -- o score continua comparável entre todas
-    as 18 políticas em qualquer perfil.
+    `score_ajustado`/`CTI_ajustado_mean`: métrica de escolha final -- ver
+    `_add_adjusted_cost` para a formulação e a motivação (correção do bug
+    de auto-referência + termos de estoque excessivo / indisponibilidade
+    pedidos pelo usuário). `score` (formulação antiga, TIC_ref por linha)
+    é mantido só por retrocompatibilidade de leitura dos relatórios já
+    publicados; `score_ajustado` é o que deve ser usado daqui em diante.
     """
-    kpi_cols = [c for c in ["TIC", "NS", "TR", "BE", "FP"] if c in merged.columns]
+    merged = _add_adjusted_cost(merged, ns_threshold, penalty_weight, excess_weight)
+    kpi_cols = [c for c in ["TIC", "NS", "TR", "BE", "FP", "CTI_ajustado",
+                            "HoldingCost", "StockoutCost", "OrderCost", "AvgInventory"]
+               if c in merged.columns]
 
     grp = merged.groupby(["operational_profile", "policy"])
     agg = grp[kpi_cols].agg(["mean", "std"])
@@ -170,16 +226,25 @@ def _aggregate_by_profile(merged: pd.DataFrame, ns_threshold: float = NS_THRESHO
         lambda x: POLICY_DISPLAY.get(x, x)
     )
 
+    # score antigo (retrocompatibilidade) -- TIC_ref auto-referencial por linha
     tic_ref = agg["TIC_mean"].clip(lower=1.0)
     deficit = (ns_threshold - agg["NS_mean"]).clip(lower=0.0)
     agg["score"] = -(agg["TIC_mean"] + deficit * penalty_weight * tic_ref)
     agg["viable"] = agg["NS_mean"] >= ns_threshold
+
+    # score_ajustado -- métrica de escolha final (ver _add_adjusted_cost)
+    agg["score_ajustado"] = -agg["CTI_ajustado_mean"]
     return agg
 
 
 def _dominant_policy_per_profile(agg: pd.DataFrame,
                                  ns_threshold: float = NS_THRESHOLD) -> pd.DataFrame:
-    """Identifica política dominante por perfil: min CTI entre NS_mean >= ns_threshold.
+    """Identifica política dominante por perfil: min CTI_ajustado entre NS_mean >= ns_threshold.
+
+    2026-08-18 (AJUSTES_INFRA item #33): critério de desempate passou de
+    `min(TIC_mean)` para `min(CTI_ajustado_mean)` -- pedido explícito do
+    usuário ("no comparativo final devemos comparar o custo total
+    ajustado"). Ver `_add_adjusted_cost` para a formulação.
 
     Resumo de 1 linha por perfil sobre a tabela completa de `score` (que
     tem as 18 políticas x todos os perfis) -- útil pra leitura rápida, mas
@@ -197,7 +262,7 @@ def _dominant_policy_per_profile(agg: pd.DataFrame,
             log.warning(f"Perfil '{profile}': nenhuma política atinge NS>={ns_threshold}. Usando fallback (maior NS).")
             dominant_row = viable.loc[viable["NS_mean"].idxmax()]
         else:
-            dominant_row = viable.loc[viable["TIC_mean"].idxmin()]
+            dominant_row = viable.loc[viable["CTI_ajustado_mean"].idxmin()]
 
         note = "fallback: nenhuma política viável" if fallback else ""
         if dominant_row["policy"] in DEGENERATE_POLICIES:
@@ -210,6 +275,7 @@ def _dominant_policy_per_profile(agg: pd.DataFrame,
             "dominant_policy":      dominant_row["policy"],
             "dominant_policy_disp": POLICY_DISPLAY.get(dominant_row["policy"], dominant_row["policy"]),
             "CTI_mean":             round(dominant_row["TIC_mean"], 2),
+            "CTI_ajustado_mean":    round(dominant_row["CTI_ajustado_mean"], 2),
             "NS_mean":              round(dominant_row["NS_mean"], 3),
             "TR_mean":              round(dominant_row.get("TR_mean", float("nan")), 3),
             "BE_mean":              round(dominant_row.get("BE_mean", float("nan")), 2),
@@ -382,13 +448,14 @@ def _latex_dominance_table(dominant: pd.DataFrame, out_path: Path) -> None:
         r"\small",
         r"\caption{Política dominante por Perfil Operacional de Demanda (Experimento~2, BA,"
         r" regime \textit{Lumpy}). Para cada perfil, são reportados o número de séries,"
-        r" a política dominante (menor CTI médio entre políticas com NS médio"
-        r" $\geq 0{,}70$), o CTI médio e o NS médio da política dominante."
+        r" a política dominante (menor CTI ajustado médio entre políticas com NS médio"
+        r" $\geq 0{,}70$), o CTI médio, o CTI ajustado médio (Eq. custo total ajustado,"
+        r" AJUSTES\_INFRA item \#33) e o NS médio da política dominante."
         r" Perfis com $n < 20$ séries devem ser interpretados de forma exploratória.}",
         r"\label{tab:dominancia_por_perfil}",
-        r"\begin{tabular}{@{}p{3.2cm}clrrl@{}}",
+        r"\begin{tabular}{@{}p{3.0cm}clrrrl@{}}",
         r"\toprule",
-        r"Perfil & $n$ & Política dominante & CTI médio (R\$) & NS médio & Observação \\",
+        r"Perfil & $n$ & Política dominante & CTI médio (R\$) & CTI ajustado (R\$) & NS médio & Observação \\",
         r"\midrule",
     ]
     for _, row in dominant.iterrows():
@@ -399,12 +466,13 @@ def _latex_dominance_table(dominant: pd.DataFrame, out_path: Path) -> None:
             f"{row['n_series']}{n_marker} & "
             f"{row['dominant_policy_disp']} & "
             f"{row['CTI_mean']:.2f} & "
+            f"{row['CTI_ajustado_mean']:.2f} & "
             f"{row['NS_mean']:.3f} & "
             f"{note} \\\\"
         )
     lines += [
         r"\bottomrule",
-        r"\multicolumn{6}{l}{\scriptsize{*}$n < 20$: evidência exploratória.} \\",
+        r"\multicolumn{7}{l}{\scriptsize{*}$n < 20$: evidência exploratória.} \\",
         r"\end{tabular}",
         r"\end{table}",
     ]
@@ -421,6 +489,7 @@ def run(kpis: pd.DataFrame | None = None,
         out_dir: Path | str | None = None,
         ns_threshold: float = NS_THRESHOLD,
         penalty_weight: float = PENALTY_WEIGHT,
+        excess_weight: float = EXCESS_WEIGHT,
         kpi_path: Path = KPI_PATH,
         prof_path: Path = PROF_PATH) -> pd.DataFrame:
     """
@@ -446,7 +515,7 @@ def run(kpis: pd.DataFrame | None = None,
              f"{merged[['store_id','item_id']].drop_duplicates().shape[0]} séries, "
              f"{merged['operational_profile'].nunique()} perfis.")
 
-    agg = _aggregate_by_profile(merged, ns_threshold, penalty_weight)
+    agg = _aggregate_by_profile(merged, ns_threshold, penalty_weight, excess_weight)
     dominant = _dominant_policy_per_profile(agg, ns_threshold)
 
     # Export CSVs and parquets
@@ -465,7 +534,9 @@ def run(kpis: pd.DataFrame | None = None,
              out_dir / "profile_policy_heatmap_cti.pdf", cmap="RdYlGn_r", fmt=".0f")
     _heatmap(agg, "NS_mean", "NS médio por Perfil e Política",
              out_dir / "profile_policy_heatmap_ns.pdf", cmap="RdYlGn", fmt=".2f")
-    _heatmap(agg, "score", "Score por Perfil e Política (maior = melhor)",
+    _heatmap(agg, "CTI_ajustado_mean", "CTI ajustado médio por Perfil e Política (R$, menor = melhor)",
+             out_dir / "profile_policy_heatmap_cti_ajustado.pdf", cmap="RdYlGn_r", fmt=".0f")
+    _heatmap(agg, "score_ajustado", "Score ajustado por Perfil e Política (maior = melhor)",
              out_dir / "profile_policy_heatmap_score.pdf", cmap="RdYlGn", fmt=".0f")
     _dominance_barplot(dominant, out_dir / "profile_policy_dominance_barplot.pdf")
 

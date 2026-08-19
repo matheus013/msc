@@ -35,7 +35,18 @@ simulation:
     # a soma ponderada e sensivel a escala do CTI entre series heterogeneas.
     fitness_mode: "zabraoui"
     fitness_weights: [1.0, 0.0001]   # [lambda1, lambda2]
-    penalty_weight: 10.0
+    # 2026-08-18 (AJUSTES_INFRA item #33): 10.0 -> 30.0. Combinado com a
+    # correcao de tic_ref_fixed (nao mais auto-referencial -- ver
+    # constrained_cost em core/inventory_env_torch.py), 10.0 ainda deixava
+    # "nunca pedir" vencer em series de baixo volume onde o custo fixo de
+    # pedido (K=50) domina: confirmado numericamente (serie BA/3775034/
+    # 48062) que so a partir de penalty_weight=20 (CappedBaseStock) / 30
+    # (PIL, projecao mais cara em TIC que o limiar simples) o candidato
+    # viavel passa a custar menos que o degenerado. 30.0 cobre as duas e
+    # nao piora GA/SA/PSO/DE (deficit=0 quando ja viavel, penalty so entra
+    # em jogo se NS<alpha_min). Vale tambem para PIL/CappedBaseStock
+    # (policies_sota.py), que reaproveitam este mesmo campo.
+    penalty_weight: 30.0
     # 2026-08-18: extensao desta dissertacao sobre a Eq.(3)/Eq.(4.2) —
     # somados a QUALQUER fitness_mode (ver _risk_terms em
     # core/inventory_env_torch.py). TIC so registra o custo de ruptura

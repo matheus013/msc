@@ -1,6 +1,6 @@
 # Validação — Avaliação por Perfil Operacional
 
-Gerado em: 2026-08-18 12:04
+Gerado em: 2026-08-18 19:40
 
 ## Fonte dos dados
 - KPIs: `data\07_model_output\kpis.parquet`
@@ -16,9 +16,9 @@ Gerado em: 2026-08-18 12:04
 - Perfis operacionais presentes: **3** de 5 definidos
 
 ## Distribuição por perfil
-- **High Vol. Seasonal**: 11 séries | dominante: Vendor-Responsive | CTI=395.1 | NS=0.80
-- **Sparse High Impact**: 116 séries | dominante: Vendor-Responsive | CTI=432.8 | NS=0.78
-- **Unstable Trend**: 18 séries | dominante: Fixed Interval | CTI=453.2 | NS=0.79
+- **High Vol. Seasonal**: 11 séries | dominante: Fixed Interval | CTI=422.9 | NS=0.91
+- **Sparse High Impact**: 116 séries | dominante: EOQ | CTI=632.5 | NS=0.94
+- **Unstable Trend**: 18 séries | dominante: EOQ | CTI=608.0 | NS=0.95
 
 ## Regra de dominância
 - Políticas viáveis: NS médio >= 0.7

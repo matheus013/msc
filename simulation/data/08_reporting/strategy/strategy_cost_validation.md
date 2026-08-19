@@ -1,6 +1,6 @@
 # Validação — Comparação de Estratégias de Política de Inventário
 
-Gerado em: 2026-08-18 12:04
+Gerado em: 2026-08-18 19:41
 
 ## Fonte dos dados
 - KPIs: `kpis.parquet` (caminho isolado por ambiente, ver conf/*/catalog.yml)
@@ -20,25 +20,26 @@ Gerado em: 2026-08-18 12:04
   Match: OK
 
 ## Checagem 3 — Política única global (A1)
-  Política dominante global: **VendorResponsive**
+  Política dominante global (por CTI ajustado): **EOQ**
   Políticas viáveis (NS >= 0.7): ['BigDataNewsvendor', 'DE', 'EOQ', 'FixedInterval', 'GA', 'GA-DQN', 'GA-PPO', 'PSO', 'SA', 'VendorResponsive', 'sS']
 
 ## Checagem 4 — Dominância por perfil (B)
-  High Vol. Seasonal (*): VendorResponsive | CTI=395.15 | NS=0.797 | status=normal
-  Sparse High Impact: VendorResponsive | CTI=432.78 | NS=0.779 | status=normal
-  Unstable Trend (*): FixedInterval | CTI=453.21 | NS=0.79 | status=normal
+  High Vol. Seasonal (*): FixedInterval | CTI=422.93 | CTI_ajustado=422.93 | NS=0.907 | status=normal
+  Unstable Trend (*): EOQ | CTI=607.95 | CTI_ajustado=607.95 | NS=0.947 | status=normal
+  Sparse High Impact: EOQ | CTI=632.51 | CTI_ajustado=686.35 | NS=0.939 | status=normal
   (*) n < 20: evidência exploratória
 
-## Checagem 5 — Redução de CTI (fórmula verificada)
-  redução (%) = 100 × (CTI_A1_total − CTI_B_total) / CTI_A1_total
-  A2 (Política baseline (EOQ)…): CTI_total=91120.69 | red_pct_vs_A1=-45.03%
-  B (Seleção por perfil operacional…): CTI_total=62706.67 | red_pct_vs_A1=0.2%
-  C (Oráculo por série (exploratório)…): CTI_total=52452.91 | red_pct_vs_A1=16.52%
+## Checagem 5 — Redução de CTI ajustado (fórmula verificada)
+  redução (%) = 100 × (CTI_ajustado_A1_total − CTI_ajustado_B_total) / CTI_ajustado_A1_total
+  CTI_ajustado = CTI + deficit_NS*penalty_weight*CTI_ref_serie(fixo) + excess_weight*excesso_holding (AJUSTES_INFRA item #33; corrige auto-referência do score antigo e incorpora estoque excessivo + indisponibilidade).
+  A2 (Política baseline (EOQ)…): CTI_total=91120.69 | red_pct_vs_A1=0.0%
+  B (Seleção por perfil operacional…): CTI_total=88966.2 | red_pct_vs_A1=2.21%
+  C (Oráculo por série (exploratório)…): CTI_total=52452.91 | red_pct_vs_A1=46.13%
 
 ## Checagem 6 — NS médio preservado
-  A1: NS_medio=0.774
+  A1: NS_medio=0.942
   A2: NS_medio=0.942
-  B: NS_medio=0.782
+  B: NS_medio=0.938
   C: NS_medio=0.7
 
 ## Checagem 7 — Consistência com Tabela 5.2 (agregado global)

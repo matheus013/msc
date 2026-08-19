@@ -93,6 +93,32 @@ def _action_grid(max_order_qty: float, n_actions: int) -> np.ndarray:
     return np.linspace(0.0, float(max_order_qty), int(n_actions))
 
 
+def _terminal_deficit_penalty(k: dict, demand_ep, cfg: dict) -> float:
+    """
+    Penalidade terminal de déficit de NS, aplicada ao ÚLTIMO passo do
+    episódio (2026-08-18, AJUSTES_INFRA item #33).
+
+    A recompensa por passo de DQN/PPO é o custo cru do ciclo (-cost, ver
+    `InventoryEnv.step`), sem nenhum termo de nível de serviço -- ao
+    contrário de `constrained_cost` (usado por GA/SA/PSO/DE/PIL/
+    CappedBaseStock), que penaliza déficit de NS explicitamente na função
+    objetivo. Minimizar custo cru miopemente favorece "nunca pedir" em
+    séries de baixo volume onde o custo fixo de pedido (K) domina o custo
+    de ruptura -- mesma causa-raiz do colapso corrigido em
+    `constrained_cost`, aqui reaproveitada como penalidade TERMINAL
+    (só pode ser calculada no fim do episódio, quando NS é conhecido; ver
+    `series_tic_ref` para a referência fixa que evita a mesma brecha
+    auto-referencial).
+    """
+    from simulation.core.inventory_env_torch import series_tic_ref
+    alpha_min = float(cfg.get("SIMULATION", {}).get("alpha_min", cfg.get("alpha_min", 0.70)))
+    penalty_weight = float(cfg.get("GENETIC_ALGORITHM", {}).get("penalty_weight", 30.0))
+    cs = float(cfg.get("COST", {}).get("stockout_cost_per_unit", 5.0))
+    tic_ref = series_tic_ref(demand_ep, cs)
+    deficit = max(0.0, alpha_min - float(k.get("ServiceLevel", 1.0)))
+    return deficit * penalty_weight * tic_ref
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Redes
 # ═══════════════════════════════════════════════════════════════════════════
@@ -291,6 +317,14 @@ class DoubleDQNAgent:
         série do pool em vez de sempre usar `demand` -- o agente aprende
         uma política que generaliza sobre as séries do perfil, não uma
         rede por série. `demand_pool=None` preserva o comportamento antigo.
+
+        2026-08-18 (AJUSTES_INFRA item #33): as transições do episódio são
+        armazenadas num buffer local e só entram no replay memory (+
+        `self.replay()`) DEPOIS que o episódio termina, porque a última
+        recompensa recebe uma penalidade de déficit de NS que só é
+        conhecida no fim do episódio (`_terminal_deficit_penalty`) -- ver
+        docstring lá. Mesmo número de chamadas de `replay()` por episódio
+        de antes, só que em lote no fim em vez de intercaladas.
         """
         from simulation.core.inventory_env import InventoryEnv
         n_ep = int(cfg.get("DQN", {}).get("episodes", 500))
@@ -299,13 +333,21 @@ class DoubleDQNAgent:
             env = InventoryEnv(demand_ep, cfg, seed=ep)
             s = env.reset()
             done, tot = False, 0.0
+            transitions: list[list] = []
             while not done:
                 idx, qty = self.act(s, explore=True)
                 ns, r, done, _ = env.step(qty)
-                self.remember(s, idx, r, ns, done)
-                self.replay()
+                transitions.append([s, idx, r, ns, done])
                 s = ns
                 tot += r
+            if transitions:
+                penalty = _terminal_deficit_penalty(env.kpis(), demand_ep, cfg)
+                if penalty > 0.0:
+                    transitions[-1][2] -= penalty
+                    tot -= penalty
+            for s_, idx_, r_, ns_, done_ in transitions:
+                self.remember(s_, idx_, r_, ns_, done_)
+                self.replay()
             self.reward_hist.append(tot)
             if verbose and (ep + 1) % 100 == 0:
                 print(f"    [DoubleDQN] ep {ep+1}/{n_ep} eps={self.eps:.3f} "
@@ -466,6 +508,16 @@ class PPOAgent:
             S.append(s); A.append(a_idx); R.append(r)
             LP.append(logp); V.append(val); D.append(done)
             s = ns
+        # 2026-08-18 (AJUSTES_INFRA item #33): penalidade de déficit de NS
+        # aplicada ao último passo do episódio -- ver
+        # `_terminal_deficit_penalty`. Sem isso, o retorno de PPO é a soma
+        # do custo cru (-cost), sem termo de NS, o que favorece "nunca
+        # pedir" em séries de baixo volume (mesma causa-raiz corrigida em
+        # `constrained_cost`).
+        if R:
+            penalty = _terminal_deficit_penalty(env.kpis(), demand, cfg)
+            if penalty > 0.0:
+                R[-1] -= penalty
         return (np.asarray(S, dtype=np.float32), np.asarray(A),
                 np.asarray(R, dtype=np.float32), np.asarray(LP, dtype=np.float32),
                 np.asarray(V, dtype=np.float32), np.asarray(D))

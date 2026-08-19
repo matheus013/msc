@@ -266,27 +266,41 @@ def _risk_terms(kpis: dict, tr_weight: float, be_weight: float,
 
 def constrained_cost(kpis: dict, alpha_min: float = 0.70,
                      penalty_weight: float = 10.0,
-                     tr_weight: float = 1.0, be_weight: float = 1.0) -> torch.Tensor:
+                     tr_weight: float = 1.0, be_weight: float = 1.0,
+                     tic_ref_fixed=None) -> torch.Tensor:
     """
     Custo a MINIMIZAR, implementando a Equação (4.2):
 
         min CTI(theta)   sujeito a   NS(theta) >= alpha_min
 
     Idêntica à formulação escalar de `policies._eval_static`, aqui vetorizada:
-    penalidade proporcional ao déficit de serviço e relativa ao próprio custo,
-    o que mantém a grandeza comparável entre séries de volumes muito distintos.
+    penalidade proporcional ao déficit de serviço e relativa a um custo de
+    referência, o que mantém a grandeza comparável entre séries de volumes
+    muito distintos.
 
-    Acrescenta os termos de risco de `_risk_terms` (TR, BE) — ver docstring.
+    `tic_ref_fixed` (2026-08-18, AJUSTES_INFRA item #33): a régua da
+    penalidade era `clamp(TIC da PRÓPRIA candidata, min=1.0)` -- brecha
+    auto-referencial que permite a um candidato "nunca pedir" (TIC quase
+    zero) escapar da penalidade de déficit de NS mesmo com deficit de
+    ~45pp, porque penaliza a si mesmo com sua própria régua minúscula.
+    Raiz do colapso "nunca pedir" achado em PIL/CappedBaseStock (grid
+    search sobre esta mesma função). Se `tic_ref_fixed` for passado (custo
+    intrínseco da série, independente do candidato -- ex.: `cs * soma da
+    demanda`, o pior caso de nunca servir nada), ele substitui a régua
+    auto-referencial tanto no termo de déficit quanto nos termos de risco
+    de `_risk_terms`. Sem `tic_ref_fixed` (None), mantém o comportamento
+    antigo -- retrocompatível com quem ainda não passa a referência fixa.
     """
     tic = kpis["TIC"]
-    tic_ref = torch.clamp(tic, min=1.0)
+    tic_ref = torch.clamp(tic, min=1.0) if tic_ref_fixed is None else tic_ref_fixed
     deficit = torch.clamp(alpha_min - kpis["ServiceLevel"], min=0.0)
     return tic + deficit * penalty_weight * tic_ref + _risk_terms(kpis, tr_weight, be_weight, tic_ref)
 
 
 def zabraoui_fitness_cost(kpis: dict, lambda1: float = 1.0,
                           lambda2: float = 1e-4,
-                          tr_weight: float = 1.0, be_weight: float = 1.0) -> torch.Tensor:
+                          tr_weight: float = 1.0, be_weight: float = 1.0,
+                          tic_ref_fixed=None) -> torch.Tensor:
     """
     Custo a MINIMIZAR correspondente à aptidão do Zabraoui et al. (2025),
     Equação (3):
@@ -309,21 +323,42 @@ def zabraoui_fitness_cost(kpis: dict, lambda1: float = 1.0,
     abaixo e uma extensao do portfolio desta dissertacao sobre o artigo-base,
     nao uma reproducao literal da Eq. (3).
     """
-    tic_ref = torch.clamp(kpis["TIC"], min=1.0)
+    tic_ref = torch.clamp(kpis["TIC"], min=1.0) if tic_ref_fixed is None else tic_ref_fixed
     return -(lambda1 * kpis["ServiceLevel"] - lambda2 * kpis["TIC"]) \
         + _risk_terms(kpis, tr_weight, be_weight, tic_ref)
+
+
+def series_tic_ref(demand, cs: float) -> float:
+    """
+    Referência de custo FIXA e intrínseca à série, independente de qual
+    candidato/política está sendo avaliado -- usada para escalar a
+    penalidade de déficit de NS em `constrained_cost`/`zabraoui_fitness_cost`
+    sem a brecha auto-referencial descrita ali (AJUSTES_INFRA item #33).
+
+    `cs * soma(demanda)`: custo do pior caso -- nunca servir NADA da
+    demanda da série, e portanto pagar ruptura em 100% dela. É sempre um
+    limite superior real do custo de ruptura de QUALQUER candidato
+    (nenhum pode ter mais shortage que a demanda inteira), então não pode
+    ser burlado ficando artificialmente pequeno como o TIC da própria
+    candidata podia.
+    """
+    total_demand = float(np.asarray(demand).sum())
+    return max(cs * total_demand, 1.0)
 
 
 def fitness_cost(kpis: dict, mode: str = "zabraoui", **kw) -> torch.Tensor:
     """Despacha a função objetivo conforme o modo configurado."""
     tr_weight = kw.get("tr_weight", 1.0)
     be_weight = kw.get("be_weight", 1.0)
+    tic_ref_fixed = kw.get("tic_ref_fixed", None)
     if mode in ("zabraoui", "weighted"):
         return zabraoui_fitness_cost(
-            kpis, kw.get("lambda1", 1.0), kw.get("lambda2", 1e-4), tr_weight, be_weight)
+            kpis, kw.get("lambda1", 1.0), kw.get("lambda2", 1e-4), tr_weight, be_weight,
+            tic_ref_fixed=tic_ref_fixed)
     if mode == "constrained":
         return constrained_cost(
-            kpis, kw.get("alpha_min", 0.70), kw.get("penalty_weight", 10.0), tr_weight, be_weight)
+            kpis, kw.get("alpha_min", 0.70), kw.get("penalty_weight", 10.0), tr_weight, be_weight,
+            tic_ref_fixed=tic_ref_fixed)
     raise ValueError(f"fitness_mode invalido: {mode!r}")
 
 

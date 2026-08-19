@@ -434,6 +434,13 @@ def _kpi_row(w, s, i, policy, kpis_agg: dict, meta_row: pd.Series,
         "FP":      kpis_agg.get("OrderFrequency", np.nan),
         "TIC_std": kpis_agg.get("TIC_std", np.nan),
         "NS_std":  kpis_agg.get("ServiceLevel_std", np.nan),
+        # Decomposição do custo (2026-08-18, base p/ CTI_ajustado — ver
+        # AJUSTES_INFRA item #33): holding/stockout/pedido separados, antes
+        # só existiam somados dentro de TIC.
+        "HoldingCost":  kpis_agg.get("HoldingCost", np.nan),
+        "StockoutCost": kpis_agg.get("StockoutCost", np.nan),
+        "OrderCost":    kpis_agg.get("OrderCost", np.nan),
+        "AvgInventory": kpis_agg.get("AvgInventory", np.nan),
         # Estatísticas da série
         "group":      meta_row.get("group", "?"),
         "cv":         meta_row.get("cv", np.nan),

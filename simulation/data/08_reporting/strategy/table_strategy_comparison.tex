@@ -2,21 +2,21 @@
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\caption{Comparação de custo entre estratégias de seleção de política (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). Redução calculada como $100 \times (\mathrm{CTI}_{\text{ref}} - \mathrm{CTI}_{\text{estratégia}}) / \mathrm{CTI}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência exploratória: assume conhecimento perfeito da política ótima de cada série.}
+\caption{Comparação de custo entre estratégias de seleção de política (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). CTI ajustado incorpora prejuízo por indisponibilidade (referência fixa por série) e estoque excessivo (AJUSTES\_INFRA item \#33); é a métrica de comparação final. Redução calculada como $100 \times (\mathrm{CTI}^{\text{ajust}}_{\text{ref}} - \mathrm{CTI}^{\text{ajust}}_{\text{estratégia}}) / \mathrm{CTI}^{\text{ajust}}_{\text{ref}}$. O oráculo por série (C$^\dagger$) é referência exploratória: assume conhecimento perfeito da política ótima de cada série.}
 \label{tab:strategy_cost_comparison}
-\begin{tabular}{@{}p{4.0cm}rrrrr@{}}
+\begin{tabular}{@{}p{3.6cm}rrrrr@{}}
 \toprule
 \makecell[l]{Estratégia} &
-\makecell[r]{CTI total\\(R\$)} &
-\makecell[r]{CTI médio\\(R\$)} &
+\makecell[r]{CTI ajust.\\total (R\$)} &
+\makecell[r]{CTI ajust.\\médio (R\$)} &
 \makecell[r]{NS\\médio} &
 \makecell[r]{Red. vs A1\\(\%)} &
 \makecell[r]{Red. vs A2\\(\%)} \\
 \midrule
-A1: política única (melhor viável) & 62829.23 & 433.31 & 0.774 & 0.0 & +31.1 \\
-A2: política única (EOQ, \textit{baseline}) & 91120.69 & 628.42 & 0.942 & -45.0 & 0.0 \\
-B\phantom{0}: seleção por perfil & 62706.67 & 432.46 & 0.782 & +0.2 & +31.2 \\
-C$^\dagger$: oráculo por série & 52452.91 & 361.74 & 0.700 & +16.5 & +42.4 \\
+A1: política única (melhor viável) & 97366.46 & 671.49 & 0.942 & 0.0 & 0.0 \\
+A2: política única (EOQ, \textit{baseline}) & 97366.46 & 671.49 & 0.942 & 0.0 & 0.0 \\
+B\phantom{0}: seleção por perfil & 95211.97 & 656.63 & 0.938 & +2.2 & +2.2 \\
+C$^\dagger$: oráculo por série & 52452.91 & 361.74 & 0.700 & +46.1 & +46.1 \\
 \bottomrule
 \multicolumn{6}{l}{\scriptsize $^\dagger$Não é estratégia operacional direta; representa limite inferior exploratório.} \\
 \end{tabular}

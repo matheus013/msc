@@ -1104,6 +1104,242 @@ numa GPU discreta de verdade, não só num notebook.
 
 ---
 
+## 33. Bug "nunca pedir" (PIL/CappedBaseStock/DQN/PPO) + métrica de custo total ajustado
+
+**Descrição:** Pedido do usuário ("esse calculo de score não ta legal") levou
+a investigar o `score` de `profile_policy_analysis.py` e descobrir algo mais
+sério: PIL, CappedBaseStock, DQN e PPO colapsam para "nunca pedir" (S=0 ou
+política sempre-ação-0) numa fração grande das séries da Bahia, com NS na
+casa de 0,13-0,25 -- muito abaixo do resto do portfólio (GA/SA/PSO/DE:
+NS≈0,87-0,90). Usuário autorizou ("Investigar e corrigir os 4 agora") via
+AskUserQuestion. Em seguida, pediu uma métrica de escolha final ("custo total
+ajustado") considerando estoque excessivo + indisponibilidade, e que o
+comparativo final passasse a usar essa métrica.
+
+**Causa-raiz #1 (confirmada numericamente, série BA/3775034/48062, grade S=0
+a 40):** `constrained_cost` (Eq. 4.2) escala a penalidade de déficit de NS por
+`tic_ref = clamp(TIC DA PRÓPRIA CANDIDATA, min=1.0)`. Um candidato "nunca
+pedir" tem TIC quase zero, então penaliza a si mesmo com sua própria régua
+minúscula -- mesmo com déficit de NS de 45+ pontos percentuais, a penalidade
+em valor absoluto fica pequena. Confirmado: em uma série real, S=0 (NS=0,247,
+custo=474,25) batia S=8 (NS=1,0, custo=587,06) na função objetivo ORIGINAL.
+
+**Causa-raiz #2 (descoberta ao corrigir #1 e o problema persistir):**
+mesmo com uma referência FIXA (não auto-referencial), `penalty_weight=10.0`
+não bastava para séries de baixo volume onde o custo fixo de pedido (K=50)
+domina -- o custo de de fato atingir NS≥0,70 (mais pedidos/estoque) cresce
+mais rápido que a penalidade de aceitar o déficit. Empiricamente, séries que
+precisavam de `penalty_weight≈20` (CappedBaseStock) a `≈30` (PIL, cuja
+projeção de estoque tende a pedir mais agressivamente que um limiar simples
+no mesmo S, ficando ainda mais caro).
+
+**Causa-raiz #3 (DQN especificamente, não resolvida totalmente -- ver
+Limitação):** DQN/PPO usam a recompensa CRUA do ambiente por passo (-custo),
+sem NENHUM termo de NS -- diferente de `constrained_cost`. Adicionar uma
+penalidade terminal (só computável no fim do episódio) resolveu PPO (porque
+GAE calcula retorno multi-passo, propagando a correção pra toda a
+trajetória numa única atualização), mas NÃO resolveu DQN sozinho: seu
+bootstrap de 1 passo (TD) cria um ponto fixo autoconsistente ("nunca pedir"
+já é a política gulosa em s', então o lookahead do Bellman nunca descobre o
+benefício de pedir) -- testado com penalidade só no último passo e
+distribuída por todos os passos, ambas sem efeito na série de teste, mesmo
+com 500-1000 episódios.
+
+**Motivo:** o objetivo é o mesmo em todo o projeto (Eq. 4.2, `constrained_cost`)
+mas a busca em grade de PIL/CappedBaseStock e a otimização de DQN/PPO
+exploravam essa brecha de um jeito que GA/SA/PSO/DE (busca populacional)
+raramente encontravam sozinhos.
+
+**Objetivo:** corrigir os 4 (autorizado pelo usuário) e criar uma métrica de
+comparação final que não seja enganada pelo mesmo tipo de brecha.
+
+**Impacto:**
+
+1. **`inventory_env_torch.py`/`inventory_env.py`:** `.kpis()` ganhou
+   decomposição de custo -- `HoldingCost`, `StockoutCost`, `OrderCost`,
+   `AvgInventory` -- antes só existiam somados dentro de `TIC`. Propagado até
+   `_kpi_row()` (nodes.py) para rodadas futuras gravarem esses campos em
+   `kpis.parquet`.
+2. **`constrained_cost`/`zabraoui_fitness_cost`/`fitness_cost`
+   (inventory_env_torch.py):** novo parâmetro `tic_ref_fixed` -- quando dado,
+   substitui a régua auto-referencial tanto no termo de déficit quanto em
+   `_risk_terms`. Nova função `series_tic_ref(demand, cs) = max(cs *
+   soma(demanda), 1.0)` -- custo do pior caso (nunca servir nada), intrínseco
+   à série, não ao candidato. `None` preserva o comportamento antigo
+   (retrocompatível).
+3. **`penalty_weight`: 10.0 → 30.0** (`conf/base/parameters/simulation.yml`,
+   `simulation.ga.penalty_weight` -- mesmo campo reaproveitado por
+   GA/SA/PSO/DE e agora também por PIL/CappedBaseStock). Empiricamente
+   necessário mesmo com `tic_ref_fixed`; não piora GA/SA/PSO/DE (o termo de
+   deficit só entra em jogo quando NS<alpha_min, e eles já operam acima).
+4. **`metaheuristics_torch.py` (`_ThresholdOptimizer`):** computa
+   `self.tic_ref_fixed = series_tic_ref(...)` (média sobre o pool quando
+   `demand_pool` é usado) e passa pra `_fitness()` -- GA/SA/PSO/DE agora
+   usam a régua fixa também, por consistência (não tinham o bug de forma
+   grave, mas ficavam sujeitos à mesma brecha em tese).
+5. **`policies_sota.py` (`_calibrate_batch`, usado por PIL e
+   CappedBaseStock):** passa `tic_ref_fixed=series_tic_ref(d, cs)` a cada
+   candidato avaliado; `penalty_weight` deixou de ser um valor fixo
+   hardcoded (10.0, nem lia config) e passou a ler
+   `cfg["GENETIC_ALGORITHM"]["penalty_weight"]` (default 30.0).
+   **Verificado end-to-end** em 3 séries reais degenerandas: série
+   BA/9751111/75792 foi de NS=0,144 (S=0) pra NS=0,902 (S=5,71, viável) na
+   janela de avaliação; série BA/3775034/48062 de NS=0,131 pra NS=0,402
+   (melhora real, ainda não viável). Duas séries com janela de TREINO quase
+   vazia (soma de demanda ≤5 em 17 ciclos) permaneceram em S=0 -- ver
+   Limitação.
+6. **`rl_torch.py`:** nova `_terminal_deficit_penalty(kpis, demand, cfg)` --
+   aplicada ao ÚLTIMO passo do episódio em `PPOAgent._rollout` (única
+   mudança) e ao buffer local de transições de `DoubleDQNAgent.train` (que
+   passou a acumular a trajetória inteira antes de gravar no replay memory +
+   chamar `replay()`, em vez de gravar/aprender passo a passo -- mesmo
+   número de chamadas de `replay()` por episódio, só reordenadas).
+   **PPO verificado**: mesma série 75792, NS 0,20→0,902. **DQN não
+   resolvido** apesar da mudança estar no código -- ver Limitação.
+7. **Métrica "custo total ajustado" (CTI_ajustado)**, pedido explícito do
+   usuário -- implementada em `profile_policy_analysis.py`
+   (`_add_adjusted_cost`) e `strategy_cost_comparison.py` (mesma fórmula
+   reimplementada sobre a coluna já renomeada `CTI`, sem dependência
+   cruzada entre os dois scripts):
+
+   ```
+   CTI_ajustado = CTI
+                + deficit_NS * penalty_weight * CTI_ref_serie(FIXO = max
+                  TIC observado entre as 18 políticas da mesma série -- não
+                  o TIC da própria candidata)
+                + excess_weight * max(0, HoldingCost - mediana(HoldingCost
+                  na série))          [estoque excessivo; 0 se a rodada não
+                                       tiver a decomposição de custo do item 1]
+   ```
+
+   `penalty_weight=10.0`, `excess_weight=0.5` (constantes do módulo de
+   relatório, independentes do `penalty_weight=30.0` de treino do item 3 --
+   aqui a régua é o MÁXIMO observado entre políticas da mesma série, não
+   `series_tic_ref`, porque no relatório já se sabe o resultado de todas as
+   18). Passa a ser o critério de seleção em `_dominant_policy_per_profile`
+   (perfil B), `_pick_global_best`/`_dominant_by_profile` (estratégias A1/B
+   de `strategy_cost_comparison.py`) e no oráculo por série (C) -- CTI bruto
+   mantido só como referência lado a lado. Novas colunas/artefatos:
+   `CTI_ajustado_mean`, `score_ajustado`,
+   `profile_policy_heatmap_cti_ajustado.pdf`, colunas `CTI_ajustado_*` em
+   `strategy_cost_comparison.csv`/`table_strategy_comparison.tex`.
+   **Verificado** em cima do `kpis.parquet` atual da Bahia (sem a
+   decomposição de custo do item 1 ainda -- excess_weight fica em 0):
+   PIL/DQN/PPO (TIC_mean≈95, NS≈0,20) passam de `score`≈-571 pra
+   `CTI_ajustado_mean`≈14.146 -- corretamente rebaixados ao fundo do
+   ranking em vez de aparecerem artificialmente competitivos.
+
+**Limitação (não resolvida nesta sessão, documentada em vez de ocultada):**
+1. **DQN standalone continua colapsando** em pelo menos uma série testada,
+   mesmo com a penalidade terminal implementada e testado até 1000 episódios
+   -- é um problema de atribuição de crédito de 1 passo (bootstrap TD) que
+   penalidade de recompensa sozinha não resolve. A arquitetura híbrida
+   GA-DQN (`_worker_proposed`, `prepopulate_from_ga`) já usa exatamente o
+   mecanismo que provavelmente resolveria isso (warm-start do replay buffer
+   com a política do GA) -- o DQN standalone (`_worker_generic`, família
+   "rl") não tem acesso aos parâmetros do GA nessa etapa do pipeline. Aplicar
+   o mesmo warm-start ao DQN standalone é o próximo passo natural, não feito
+   aqui por escopo.
+2. **Duas das quatro séries de teste têm janela de TREINO quase vazia**
+   (soma de demanda ≤5 unidades em 17 ciclos, vs. dezenas na janela de
+   avaliação) -- nenhuma correção de penalidade ajuda aqui, porque o
+   déficit de NS nem aparece DENTRO da janela de treino (a política parece
+   ótima ali). É um problema de não-estacionariedade treino/avaliação do
+   split walk-forward pra séries muito intermitentes, não um bug de fórmula
+   -- possivelmente candidato a um ajuste futuro (ex.: janela de treino
+   maior, ou prior de encolhimento pro nível populacional do perfil).
+3. Nenhuma re-execução completa da Bahia foi feita ainda -- os números
+   verificados são de recalibração isolada de séries específicas. O
+   `kpis.parquet`/`demand_profiles.parquet` atuais ainda refletem a versão
+   ANTERIOR ao fix (exceto onde a análise de relatório reage via
+   `CTI_ajustado`, que já corrige a SELEÇÃO/COMPARAÇÃO mesmo sem re-treinar).
+   Uma nova rodada de `benchmark_final` da Bahia é necessária pra que
+   PIL/CappedBaseStock/PPO reflitam o treino corrigido nos KPIs brutos.
+
+---
+
+## 34. Experimento completo "com perfil" vs "sem perfil" (pooling, Bahia — 145 séries)
+
+**Descrição:** Pedido do usuário ("mate todas as simulações e só deixe a
+bahia com e sem perfil"): encerrada a rodada per-série padrão
+(`benchmark_final`, que já refletiria o fix do item #33 mas não chegou a
+terminar) e lançado em seu lugar o experimento completo de pooling —
+`scratchpad/pooling_full_bahia.py` (elevação do protótipo pequeno
+`pooling_quick_experiment.py`, já validado antes, para as 145 séries
+reais/3 perfis reais/orçamentos de produção completos, lidos via
+`KedroSession` — não hardcoded).
+
+**Motivo:** decisão explícita do usuário de focar exclusivamente na
+comparação com/sem perfil agora, adiando a rodada per-série padrão.
+
+**Objetivo:** responder definitivamente se treinar 1 instância POR PERFIL
+operacional (pooling) supera treinar 1 instância GLOBAL, usando a métrica
+de escolha final corrigida (`CTI_ajustado`, item #33).
+
+**Desenho:**
+- `com_perfil`: 1 instância treinada por perfil (`Sparse_High_Impact` n=116,
+  `Unstable_Trend` n=18, `High_Vol_Seasonal` n=11), pool = janela de TREINO
+  (`demand_train`, walk-forward) de todas as séries do perfil.
+- `sem_perfil`: 1 instância GLOBAL, pool = janela de treino das 145 séries.
+- Ambos avaliados contra `demand_eval` de CADA série, com o **cfg REAL
+  daquela série** (`scaled_params.pkl`, mesmo usado pelo benchmark padrão)
+  -- só o TREINO usa um cfg representativo do grupo (média de mu/sigma via
+  `rop_ref`), porque os otimizadores/agentes não aceitam cfg distinto por
+  membro do pool (mesma limitação do protótipo pequeno).
+- 18 políticas, orçamentos de produção (GA pop=100/gen=50, DQN/PPO 1000
+  episódios cada, penalty_weight=30 -- fix do item #33 já embutido nas
+  bibliotecas centrais, portanto ativo aqui sem mudança adicional).
+
+**Impacto:**
+- Rodou em 1464,7s (~24,4min) -- muito mais rápido que os per-série (~4h),
+  porque treina só 4 instâncias por política (3 perfis + 1 global) em vez
+  de 145. Concluído com exit 0, **5220/5220 linhas íntegras** (18×145×2),
+  **zero falhas de treino/avaliação** no log.
+- **Resultado**: pooling por perfil NÃO supera o treino global para as
+  políticas boas -- pelo contrário, piora:
+
+  | Política | CTI ajustado (sem perfil) | CTI ajustado (com perfil) | Vencedor |
+  |---|---|---|---|
+  | VendorResponsive | **684,30** | 852,35 | sem perfil (-24,6%) |
+  | FixedInterval | **702,79** | 804,74 | sem perfil (-14,5%) |
+  | PPO | **4.768** | 7.516 | sem perfil (-57,6%) |
+  | GA-DQN | **1.739** | 2.204 | sem perfil (-26,7%) |
+
+  Nas políticas mais fracas (CappedBaseStock, SARSA, PIL, DQN), "com
+  perfil" ganha 17-34% -- mas nenhuma fica perto de ser competitiva
+  (CTI_ajustado ainda 5x a 56x pior que a vencedora, VendorResponsive).
+- **Conclusão metodológica**: reforça o achado do item #27 (PSE: perfil
+  como feature só dava +0,2% de acurácia) -- o perfil operacional (POD) não
+  parece uma unidade de agrupamento útil para TREINO neste dataset,
+  provavelmente porque a heterogeneidade DENTRO de cada perfil (sobretudo
+  Sparse_High_Impact, 116 das 145 séries) é grande demais para um modelo
+  compartilhado por perfil ganhar sobre um modelo global ou por série.
+  Decisão sugerida: não adotar pooling por perfil como estratégia de
+  treino padrão; manter o treino por série (arquitetura principal) como
+  referência.
+- `simulation/src/simulation/pipelines/inventory_simulation/nodes.py`
+  (`_kpi_row`) e `core/inventory_env*.py` (decomposição de custo, item #33)
+  reaproveitados sem alteração -- resultado já sai com
+  `HoldingCost`/`StockoutCost`/`OrderCost`/`AvgInventory` por linha.
+- **Dashboard** (`scratchpad/dashboard.py`, porta 8767): `RUNS` esvaziado
+  (per-série/bot/M5 removidos -- pedido do usuário "no dash só deve
+  mostrar simulações rodando"); card dedicado `POOLING_RUN` com parser de
+  log próprio (`get_pooling_status`/`get_pooling_results`, formato de log
+  diferente do kedro) e tabela por (modo × perfil × política) com TODAS as
+  métricas (TIC/NS/TR/BE/FP/HoldingCost/StockoutCost/OrderCost/
+  AvgInventory/CTI_ajustado -- pedido do usuário "mesmo com CTI ajustado
+  quero que mostre todas as métricas"), não só CTI_ajustado.
+  `profile_policy_analysis._aggregate_by_profile` também passou a incluir
+  a decomposição de custo nas métricas agregadas (antes só TIC/NS/TR/BE/
+  FP/CTI_ajustado).
+
+**Limitação:** cfg de TREINO único por grupo (não por série -- ver
+Desenho); resultado válido como resposta à pergunta "pooling por perfil
+ajuda?", mas não substitui uma rodada per-série completa com o fix do item
+#33 (`benchmark_final`, ainda pendente -- ver Pendências).
+
+---
+
 ## Estado no fim desta sessão
 
 Todas as três relançadas mais uma vez após #23 (correção de fidelidade ao
@@ -1122,6 +1358,197 @@ repositório): log viewer (`http://127.0.0.1:8765/`) e dashboard
 (`http://127.0.0.1:8767/`) — etapa atual, duração por etapa, progresso
 série-a-série, parametrização real (via `KedroSession`) e resultados
 parciais lidos dos `kpis_*.parquet`.
+
+---
+
+## 35. Bahia v6 (`benchmark_final` pós-fix #33): resultado verificado em escala completa
+
+**Descrição:** Pedido do usuário ("quero" -- relançar a Bahia per-série
+após o experimento de pooling terminar). Rodou com 14 processos paralelos
+(diferente da v4, que usou 1 worker sequencial) -- 1059,2s (~17,6min),
+exit 0, **2610/2610 linhas íntegras** (18 políticas × 145 séries, sem
+falhas).
+
+**Motivo/Objetivo:** confirmar em escala completa (não só nas poucas
+séries testadas manualmente no item #33) que o fix `tic_ref_fixed` +
+`penalty_weight=30` (PIL/CappedBaseStock) e a penalidade terminal de
+déficit de NS (PPO/DQN) realmente resolvem o colapso "nunca pedir".
+
+**Impacto -- NS médio das 4 políticas antes degeneradas, ANTES vs DEPOIS do fix:**
+
+| Política | NS antes (~) | NS agora (v6) | TIC agora | Situação |
+|---|---|---|---|---|
+| PIL | 0,20 | **0,752** | 853,95 | corrigido -- viável em média |
+| CappedBaseStock | 0,25 | **0,642** | 561,87 | melhora grande, ainda abaixo de alpha_min=0,70 em média |
+| PPO | 0,20 | **0,963** | 5.112,75 | corrigido -- TIC subiu (esperado: agora realmente pede) |
+| DQN | 0,20 | 0,225 | 126,73 | **praticamente inalterado** -- confirma em escala completa a limitação já documentada no item #33 (bootstrap de 1 passo não credita a penalidade terminal às decisões iniciais do episódio) |
+
+Confirma numericamente, na base inteira, o que o item #33 tinha verificado
+só em 3-4 séries manualmente: PIL/CappedBaseStock/PPO respondem bem ao
+fix; DQN precisa de uma correção estrutural diferente (warm-start do
+replay buffer a partir do GA, como já feito na arquitetura híbrida GA-DQN
+-- ver item #33, Limitação #1 -- ainda não implementado para o DQN
+standalone).
+
+**Este é agora o `kpis.parquet` vigente da Bahia** -- reflete o treino
+corrigido; os relatórios (`profile_policy_analysis`/
+`strategy_cost_comparison`, item #33) devem ser regenerados sobre ele pra
+refletir os números atualizados (ainda não refeito nesta sessão).
+
+---
+
+## 36. Experimento completo "com perfil" vs "sem perfil" no M5 (2.408 séries)
+
+**Descrição:** Pedido do usuário ("quando termina esse rode m5 com perfil x
+sem perfil") -- mesma metodologia do item #34 (`pooling_full_bahia.py`),
+adaptada pra M5 (`scratchpad/pooling_full_m5.py`): caminhos isolados
+(`data/*/m5/*`), `KedroSession.create(env="m5")` pros orçamentos reais
+(GA gerações=500 -- item #25 -- em vez de 50; DQN/PPO 1000 episódios;
+penalty_weight=30 herdado do base). `scenarios`/`scenarios_meta`/
+`scaled_params`/`demand_profiles` do M5 já existiam no disco (gerados
+antes da run de produção M5 ter sido encerrada, item #30) -- reaproveitados
+sem re-rodar a preparação de dados.
+
+**Motivo/Objetivo:** mesma pergunta do item #34 (pooling por perfil ajuda?),
+agora no M5 -- dataset de escala e distribuição de perfil muito diferentes
+da Bahia (2.408 séries, 97,6% no perfil Sparse_High_Impact, só 58 nos
+outros dois perfis somados).
+
+**Impacto:**
+- Rodou em 21.040,6s (~5h50min) -- muito mais lento que a Bahia (~24min)
+  por causa do GA com 500 gerações (10x) por grupo, refletido sobretudo em
+  GA-DQN (1461,7s) e GA-PPO (2342,0s), as duas etapas mais lentas.
+  Concluído com exit 0, **86.688/86.688 linhas íntegras**
+  (18 políticas × 2.408 séries × 2 modos), zero falhas.
+- **Resultado, MUITO diferente do padrão da Bahia**:
+  - Vencedora isolada em QUALQUER modo: **BigDataNewsvendor**
+    (NS≈0,82, CTI_ajustado≈5.770-5.928) -- ordens de magnitude melhor que
+    qualquer outra política (as demais ficam na casa de dezenas/centenas
+    de milhares de CTI_ajustado). `com_perfil` levemente melhor aqui
+    (5.770 vs 5.928, +2,7%).
+  - Ao contrário da Bahia (onde só as políticas fracas ganhavam com
+    pooling), no M5 **17 das 18 políticas** melhoram com `com_perfil` --
+    mas a maior parte desse "ganho" é dominada por políticas que colapsam
+    de formas DIFERENTES em cada modo (ex.: PSO NS cai pra 0,28 em
+    `sem_perfil` vs 0,96 em `com_perfil`; MinMax/Newsvendor com NS
+    0,24-0,42 nos dois modos) -- não é um sinal limpo de "perfil ajuda",
+    é mais reflexo de optimização instável em séries muito esparsas.
+  - As duas exceções (pioram com `com_perfil`): FixedInterval (-11,3%) e
+    VendorResponsive (-13,5%) -- coincidentemente as vencedoras da Bahia.
+- **Conclusão metodológica**: a ÚNICA leitura robusta é que
+  BigDataNewsvendor domina o M5 por larga margem, com ou sem perfil --
+  resultado qualitativamente diferente da Bahia (onde VendorResponsive/
+  FixedInterval venciam). Reforça que a política dominante depende
+  fortemente da escala/regime de custo do dataset (M5: alto volume,
+  Bahia: majoritariamente Lumpy/baixo volume) -- não há uma política
+  universal, e o sinal de "pooling por perfil ajuda ou atrapalha" também
+  parece dependente do dataset (Bahia: atrapalha as boas políticas; M5:
+  ambíguo, dominado por instabilidade das políticas fracas). **Não dá pra
+  extrapolar uma recomendação única de "usar ou não pooling por perfil"
+  a partir dos dois experimentos** -- eles discordam.
+- Dashboard (`scratchpad/dashboard.py`): `POOLING_RUN` (singular) virou
+  `POOLING_RUNS` (lista) -- 2 cards agora, Bahia e M5, cada um com seu
+  parser de log e tabela de resultados por (modo × perfil × política) com
+  todas as métricas.
+
+**Limitação:** mesma do item #34 (cfg de treino único por grupo, não por
+série); aqui ainda mais relevante dado o desbalanceamento extremo dos
+perfis do M5 (perfil com 2.350 séries treinado com o mesmo cfg
+representativo de mu/sigma médios, que pode não representar bem a
+heterogeneidade interna desse grupo).
+
+---
+
+## 37. Validação de robustez: com/sem perfil em múltiplos splits temporais (EM ANDAMENTO)
+
+**Descrição:** Usuário perguntou se os itens #34/#36 (com/sem perfil) foram
+validados com leave-one-out -- não foram (LOO só é usado no PSE, item #31,
+pipeline diferente). Os dois experimentos de pooling usaram um ÚNICO split
+walk-forward (Bahia: ciclo 17/38; M5: ciclo 19/93), sem nenhuma checagem de
+robustez sobre esse corte. Pedido do usuário: testar múltiplos splits
+temporais (não LOO -- LOO não se aplica a séries temporais aqui, mudaria a
+ordem causal treino→avaliação).
+
+**Motivo/Objetivo:** verificar se as conclusões dos itens #34 (Bahia:
+sem_perfil vence nas políticas boas) e #36 (M5: sinal ambíguo, dominado
+por BigDataNewsvendor) dependem de qual parte da série foi usada como
+treino, ou se são estáveis.
+
+**Desenho:** `pooling_full_bahia.py`/`pooling_full_m5.py` ganharam
+`--train_split_cycles` (override do corte) e `--out_suffix` (evita
+sobrescrever os resultados principais dos itens #34/#36).
+`pooling_full_m5.py` ganhou também `--reduced_budget` (GA 500→100
+gerações, DQN/PPO 1000→300 episódios, híbridas 50→30 ger./200→60 ep.) --
+decisão do usuário (AskUserQuestion): orçamento de produção completo pro
+M5 custaria ~5h50min × 2 splits ≈ 12h; reduzido cabe em ~1-1,5h por split,
+suficiente pra checar se a DIREÇÃO da conclusão muda (não é o resultado
+"oficial", só validação de robustez). Bahia mantém orçamento de produção
+completo (rápido, ~24min/split, sem necessidade de reduzir).
+
+Splits testados: Bahia 10 e 25 (vs. original 17, de 38 ciclos); M5 10 e 40
+(vs. original 19, de 93 ciclos). Rodados SEQUENCIALMENTE (nunca em
+paralelo -- mesma regra do resto da sessão), via
+`scratchpad/run_robustness_splits.sh`.
+
+**Status:** lançado às 2026-08-19 03:30, ainda em andamento. Resultado
+final e conclusão a registrar aqui quando terminar (Bahia: rápido,
+~1h total pros 2 splits; M5: ~2-3h total pros 2 splits reduzidos).
+
+---
+
+## 38. Análise estatística pareada (com/sem perfil) + extensão pra M5/bot per-série (EM ANDAMENTO)
+
+**Descrição:** Pedido do usuário: (a) análise estatística completa
+com/sem perfil (não só ganho % agregado); (b) revisão de literatura sobre
+pooling vs. treino individual (ver `docs/references/
+pooling_vs_treino_individual.md`); (c) estender o fix #33 + validações às
+rodadas per-série de M5 e "bot" (a Bahia per-série já rodou com o fix,
+item #35).
+
+**Impacto -- (a) `reporting/pooling_statistical_analysis.py` (novo):**
+testes pareados de Wilcoxon (signed-rank, bilateral) + correção de Holm,
+mesmo padrão de `strategy_cost_comparison._strategy_hypothesis_tests`,
+aplicados a com_perfil vs sem_perfil, por política e agregado. Corrigido
+um bug de direção do "vencedor" (a lógica original tratava delta>0 como
+sempre favorecendo sem_perfil, o que inverte a resposta certa pra NS,
+onde maior é melhor -- só CTI_ajustado/TIC têm "menor é melhor").
+
+Resultado (dados já existentes dos itens #34/#36, sem re-treinar):
+- **Bahia** (2610 pares): agregado, CTI_ajustado e TIC favorecem
+  `com_perfil` (p<0,003); NS não difere (p=0,073). Por política: 17/18
+  significativas (Holm) -- `sem_perfil` vence em PPO, GA-DQN,
+  VendorResponsive, FixedInterval; todo o resto favorece `com_perfil`.
+- **M5** (43.344 pares): TODAS as 18 políticas significativas (amostra
+  grande). `sem_perfil` vence só em FixedInterval e VendorResponsive --
+  **as mesmas duas políticas da Bahia**, replicado nos dois datasets.
+- **Achado mais robusto**: FixedInterval/VendorResponsive (limiar
+  Zabraoui ADAPTATIVO, recalculado por ciclo) preferem `sem_perfil` de
+  forma consistente e estatisticamente significativa nos dois datasets --
+  não é ruído de execução única, é um padrão real.
+
+**Revisão de literatura** (`docs/references/pooling_vs_treino_individual.md`):
+principal achado -- a literatura de *global vs. local forecasting models*
+e *validation-driven clustering* explica o padrão observado: pooling só
+ajuda quando o grupo tem dinâmica genuinamente similar; o Perfil
+Operacional (POD) do AIPE é classificação por REGRAS FIXAS (ADI/CV²/
+burstiness), nunca validada contra o alvo de custo (CTI_ajustado) --
+consistente com por que "com_perfil" não vence de forma uniforme.
+Direções de trabalho futuro citáveis: clustering validado por desempenho
+de política (não regras fixas), fallback automático perfil→global por
+política, "meta-modelo" por série (Meisheri et al. 2022, Neural Computing
+and Applications) como terceiro ponto entre perfil e global.
+
+**Extensão pra M5/bot per-série -- QUEUED, ainda não iniciada:**
+`scratchpad/run_m5_bot_perserie.sh` (`kedro run --pipeline benchmark_m5
+--env m5` seguido de `--pipeline benchmark_bot --env bot`, sequencial)
+pronta pra disparar assim que a cadeia de robustez do item #37 terminar
+(nunca em paralelo). M5 per-série (2408 séries, orçamento de produção
+completo) e "bot" (4869 séries, pipeline completo incluindo
+data_ingestion) são MUITO mais lentas que a Bahia per-série (17,6min/145
+séries) -- estimativa grosseira por escala: M5 ~5h, bot ~10h+, total
+~15h+ combinados. "bot" nunca tinha sido concluído nesta sessão (item #30:
+encerrado por evento externo antes de terminar) -- será a primeira vez
+com o fix #33 completo.
 
 ## Pendências / próximos passos
 
