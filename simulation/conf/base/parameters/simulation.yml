@@ -26,6 +26,24 @@ simulation:
     metaheuristics: true
     reinforcement_learning: true
     proposed_architecture: true
+    # 2026-08-19: portfólio final de 12 políticas para a dissertação (ver
+    # docs/master_proposal/PLANO_ENXUGAMENTO_TEXTO.md) -- desabilita SEM
+    # remover implementação/config das 6 políticas fora do corte final:
+    #   PIL, MinMax  -- adicionadas após julho/2026, não entraram na versão
+    #                    final (slot coberto por CappedBaseStock e por
+    #                    FixedInterval+VendorResponsive, respectivamente)
+    #   PSO, DE      -- "sem SOTA em veículo relevante"
+    #                    (docs/references/estado_da_arte_politicas.md);
+    #                    mesmo espaço de parametrização do GA/SA
+    #   SARSA        -- "lacuna real: nenhum trabalho em veículo relevante
+    #                    aplica SARSA a inventário" (idem)
+    #   GA-PPO       -- nenhuma referência publicada como âncora; GA-DQN
+    #                    sozinho já demonstra a arquitetura híbrida GA-RL
+    #                    (é a própria contribuição do artigo-base)
+    # Continuam implementadas em core/*.py e testáveis isoladamente; só não
+    # entram no benchmark de produção. Ver `_is_enabled`/`_filter_specs`
+    # em pipelines/inventory_simulation/nodes.py.
+    disabled_names: ["PIL", "MinMax", "PSO", "DE", "SARSA", "GA-PPO"]
 
   ga:
     # Hiperparametros conforme Zabraoui et al. (2025), Tabela 5.

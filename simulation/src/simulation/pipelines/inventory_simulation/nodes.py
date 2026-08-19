@@ -175,33 +175,35 @@ def _worker_proposed(key, cfg, demand, meta_row, params):
 
     buffer_size = hybrid_params.get("buffer_size", 1000)
 
-    try:
-        rl_cfg = dict(cfg)
-        rl_cfg["DQN"] = dict(cfg["DQN"])
-        rl_cfg["DQN"]["episodes"] = hybrid_params.get("rl_episodes", cfg["DQN"]["episodes"])
-        dqn = DQNPolicy(state_dim, rl_cfg)
-        dqn.prepopulate_from_ga(demand_train, cfg, ga_params, n_transitions=buffer_size)
-        dqn.train(demand_train, rl_cfg, verbose=False)
-        hybrid_dqn = HybridGADQN(ga_params, dqn)
-        policy_fn = hybrid_dqn.make_policy()
-        kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-        rows.append(_kpi_row(w, s, i, "GA-DQN", kpis, meta_row, 0))
-    except Exception as e:
-        logs.append(f"[Proposed] GA-DQN failed for {key}: {e}")
+    if _is_enabled("GA-DQN", params):
+        try:
+            rl_cfg = dict(cfg)
+            rl_cfg["DQN"] = dict(cfg["DQN"])
+            rl_cfg["DQN"]["episodes"] = hybrid_params.get("rl_episodes", cfg["DQN"]["episodes"])
+            dqn = DQNPolicy(state_dim, rl_cfg)
+            dqn.prepopulate_from_ga(demand_train, cfg, ga_params, n_transitions=buffer_size)
+            dqn.train(demand_train, rl_cfg, verbose=False)
+            hybrid_dqn = HybridGADQN(ga_params, dqn)
+            policy_fn = hybrid_dqn.make_policy()
+            kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
+            rows.append(_kpi_row(w, s, i, "GA-DQN", kpis, meta_row, 0))
+        except Exception as e:
+            logs.append(f"[Proposed] GA-DQN failed for {key}: {e}")
 
-    try:
-        rl_cfg = dict(cfg)
-        rl_cfg["PPO"] = dict(cfg["PPO"])
-        rl_cfg["PPO"]["episodes"] = hybrid_params.get("rl_episodes", cfg["PPO"]["episodes"])
-        ppo = PPOPolicy(state_dim, rl_cfg)
-        ppo.warmstart_from_ga(demand_train, cfg, ga_params, n_episodes=20)
-        ppo.train(demand_train, rl_cfg, verbose=False)
-        hybrid_ppo = HybridGAPPO(ga_params, ppo)
-        policy_fn = hybrid_ppo.make_policy()
-        kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
-        rows.append(_kpi_row(w, s, i, "GA-PPO", kpis, meta_row, 0))
-    except Exception as e:
-        logs.append(f"[Proposed] GA-PPO failed for {key}: {e}")
+    if _is_enabled("GA-PPO", params):
+        try:
+            rl_cfg = dict(cfg)
+            rl_cfg["PPO"] = dict(cfg["PPO"])
+            rl_cfg["PPO"]["episodes"] = hybrid_params.get("rl_episodes", cfg["PPO"]["episodes"])
+            ppo = PPOPolicy(state_dim, rl_cfg)
+            ppo.warmstart_from_ga(demand_train, cfg, ga_params, n_episodes=20)
+            ppo.train(demand_train, rl_cfg, verbose=False)
+            hybrid_ppo = HybridGAPPO(ga_params, ppo)
+            policy_fn = hybrid_ppo.make_policy()
+            kpis = _run_episode(demand_eval, cfg, policy_fn, n_reps, seed)
+            rows.append(_kpi_row(w, s, i, "GA-PPO", kpis, meta_row, 0))
+        except Exception as e:
+            logs.append(f"[Proposed] GA-PPO failed for {key}: {e}")
 
     return rows, logs
 
@@ -213,6 +215,24 @@ POLICY_NAMES = {
     "rl":             ["DQN", "PPO", "SARSA"],
     "proposed":       ["GA-DQN", "GA-PPO"],
 }
+
+def _is_enabled(name: str, params: dict) -> bool:
+    """
+    2026-08-19: portfólio final da dissertação fixado em 12 políticas (ver
+    docs/master_proposal/PLANO_ENXUGAMENTO_TEXTO.md) -- as demais (MinMax,
+    PSO, DE, SARSA, PIL, GA-PPO) ficam DESABILITADAS por config, não
+    removidas do código: continuam implementadas e testáveis (scripts de
+    validação, experimentos futuros), só não entram no benchmark de
+    produção. `disabled_names` vazio preserva o comportamento antigo (todas
+    habilitadas).
+    """
+    disabled = set(params.get("policies", {}).get("disabled_names", []) or [])
+    return name not in disabled
+
+
+def _filter_specs(policy_specs: list, params: dict) -> list:
+    return [s for s in policy_specs if _is_enabled(s["name"], params)]
+
 
 # Famílias das políticas, para estratificar relatórios e testes estatísticos
 POLICY_FAMILY = {
@@ -469,11 +489,11 @@ def run_classical_policies(scenarios: pd.DataFrame,
         log.info("Políticas clássicas desativadas — pulando")
         return pd.DataFrame()
 
-    policy_specs = [
+    policy_specs = _filter_specs([
         {"kind": "construct", "cls": EOQPolicy, "name": "EOQ"},
         {"kind": "construct", "cls": SsPolicyClass, "name": "sS"},
         {"kind": "construct", "cls": NewsvendorPolicy, "name": "Newsvendor"},
-    ]
+    ], params)
     return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
                                    _worker_generic, (policy_specs, "Classical"), "Classical")
 
@@ -504,12 +524,12 @@ def run_sota_classical_policies(scenarios: pd.DataFrame,
         return pd.DataFrame()
 
     alpha_min = params.get("alpha_min", 0.70)
-    policy_specs = [
+    policy_specs = _filter_specs([
         {"kind": "construct", "cls": PILPolicy, "name": "PIL", "kw": {"alpha_min": alpha_min}},
         {"kind": "construct", "cls": CappedBaseStockPolicy, "name": "CappedBaseStock",
          "kw": {"alpha_min": alpha_min}},
         {"kind": "construct", "cls": BigDataNewsvendorPolicy, "name": "BigDataNewsvendor"},
-    ]
+    ], params)
     return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
                                    _worker_generic, (policy_specs, "SOTA-Classical"), "SOTA-Classical")
 
@@ -537,11 +557,11 @@ def run_zabraoui_policies(scenarios: pd.DataFrame,
         log.info("Politicas Zabraoui desativadas - pulando")
         return pd.DataFrame()
 
-    policy_specs = [
+    policy_specs = _filter_specs([
         {"kind": "construct", "cls": MinMaxPolicy, "name": "MinMax"},
         {"kind": "construct", "cls": FixedIntervalPolicy, "name": "FixedInterval"},
         {"kind": "construct", "cls": VendorResponsivePolicy, "name": "VendorResponsive"},
-    ]
+    ], params)
     return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
                                    _worker_generic, (policy_specs, "Zabraoui"), "Zabraoui")
 
@@ -559,12 +579,12 @@ def run_metaheuristic_policies(scenarios: pd.DataFrame,
         log.info("Metaheurísticas desativadas — pulando")
         return pd.DataFrame()
 
-    policy_specs = [
+    policy_specs = _filter_specs([
         {"kind": "optimize", "cls": GAPolicyOptimizer, "name": "GA"},
         {"kind": "optimize", "cls": SimulatedAnnealingPolicy, "name": "SA"},
         {"kind": "optimize", "cls": PSOPolicy, "name": "PSO"},
         {"kind": "optimize", "cls": DEPolicy, "name": "DE"},
-    ]
+    ], params)
     return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
                                    _worker_generic, (policy_specs, "Metaheuristic"), "Metaheuristic")
 
@@ -580,11 +600,11 @@ def run_rl_policies(scenarios: pd.DataFrame,
         log.info("Políticas RL desativadas — pulando")
         return pd.DataFrame()
 
-    policy_specs = [
+    policy_specs = _filter_specs([
         {"kind": "rl_train", "cls": DQNPolicy, "name": "DQN"},
         {"kind": "rl_train", "cls": PPOPolicy, "name": "PPO"},
         {"kind": "rl_train", "cls": SARSAPolicy, "name": "SARSA"},
-    ]
+    ], params)
     return _run_parallel_policies(scenarios, scenarios_meta, scaled_params, params,
                                    _worker_generic, (policy_specs, "RL"), "RL")
 

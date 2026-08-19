@@ -131,26 +131,11 @@ SA & iterações máximas & 500 & \\
 SA & minimizador local & Nelder-Mead & \texttt{scipy.optimize.}\newline\texttt{dual\_annealing} \\
 SA & semente & 42 & \\[4pt]
 
-\multicolumn{4}{@{}l}{\textit{PSO (Particle Swarm Optimization)}} \\[2pt]
-PSO & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
-PSO & número de partículas & 40 & \\
-PSO & iterações máximas & 80 & \\
-PSO & peso de inércia $w$ & 0,7 & \\
-PSO & coeficiente cognitivo $c_1$ & 1,5 & \\
-PSO & coeficiente social $c_2$ & 1,5 & \\
-PSO & semente & 42 & \\[4pt]
-
-\multicolumn{4}{@{}l}{\textit{DE (Differential Evolution)}} \\[2pt]
-DE & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
-DE & estratégia & \texttt{rand1bin} & mutação + cruzamento binomial \\
-DE & fator diferencial $F$ & 0,8 & \\
-DE & taxa de cruzamento CR & 0,9 & \\
-DE & iterações máximas & 100 & \\
-DE & tamanho da população & 15 & \\
-DE & polimento local & ativo & \texttt{scipy.optimize.}\newline\texttt{differential\_evolution} \\
-DE & tolerância & $10^{-6}$ & critério de parada \\
-DE & semente & 42 & \\
 \end{longtable}
+
+\begin{quote}
+\small \textit{PSO e DE foram testados preliminarmente sobre o mesmo espaço de parametrização do GA/SA (Seção~\ref{sec:portfolio_ampliado}) e permanecem implementados, mas não compõem o portfólio final avaliado nesta dissertação; seus parâmetros de configuração não são reportados aqui por não integrarem os resultados reportados no Capítulo~\ref{cap:results}.}
+\end{quote}
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -210,33 +195,18 @@ PPO & arquitetura do crítico & $[6] \to [64, 32] \to [1]$ & saída em valor esc
 PPO & estimativa de vantagem & $A_t = G_t - V(s_t)$, normalizada & $(G - \bar{G})/(\sigma_G + 10^{-8})$ \\
 PPO & semente & 42 & \\[4pt]
 
-\multicolumn{4}{@{}l}{\textit{SARSA}} \\[2pt]
-SARSA & discretização do estado & $\lfloor \mathrm{clip}(I_t/I_0,\, 0,\, 1) \times 5 \rfloor$ & bin único baseado no nível de estoque \\
-SARSA & número de estados & 5 & \\
-SARSA & espaço de ações & 10 ações discretas & \\
-SARSA & política de exploração & $\varepsilon$-greedy & \\
-SARSA & número de episódios & 500 & \\
-SARSA & fator de desconto $\gamma$ & 0,99 & \\
-SARSA & taxa de aprendizado $\alpha$ & 0,1 & \\
-SARSA & $\varepsilon$ & 0,1 & constante; sem decaimento identificado \\
-SARSA & semente & 42 & \\[4pt]
-
 \multicolumn{4}{@{}l}{\textit{GA-DQN}} \\[2pt]
 GA-DQN & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
 GA-DQN & parâmetros do DQN & herdados (ver acima) & \\
 GA-DQN & tamanho do \textit{replay buffer} pré-populado & 1\,000 & trajetórias geradas pelo GA \\
 GA-DQN & episódios de refinamento RL & 200 & \\
 GA-DQN & regra de integração GA~$\to$~DQN & se $(I_t + \mathrm{OP}) \leq s + \mathrm{SS}$:\newline $Q = \max(Q_{\mathrm{DQN}},\; 0{,}5 \cdot Q_{\mathrm{GA}})$;\newline caso contrário: $Q = 0$ & \\
-GA-DQN & semente & 42 & \\[4pt]
-
-\multicolumn{4}{@{}l}{\textit{GA-PPO}} \\[2pt]
-GA-PPO & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
-GA-PPO & parâmetros do PPO & herdados (ver acima) & \\
-GA-PPO & episódios de aquecimento com trajetórias GA & 20 & log-prob uniforme \\
-GA-PPO & episódios de refinamento PPO & 200 & \\
-GA-PPO & forma de integração GA~$\to$~PPO & inicialização por rollouts GA; refinamento PPO & warm-start antes do treinamento RL \\
-GA-PPO & semente & 42 & \\
+GA-DQN & semente & 42 & \\
 \end{longtable}
+
+\begin{quote}
+\small \textit{SARSA e GA-PPO foram testados preliminarmente (parâmetros análogos aos de DQN/GA-DQN acima) e permanecem implementados, mas não compõem o portfólio final avaliado nesta dissertação (Seção~\ref{sec:portfolio_ampliado}): SARSA por não ter estado da arte identificável em veículo relevante para inventário, e GA-PPO por não ter referência publicada como âncora.}
+\end{quote}
 \endgroup
 
 % ─────────────────────────────────────────────────────────────────────────────

@@ -73,7 +73,7 @@ Determina o pedido ótimo de período único como um quantil da distribuição d
 
 \subsection{Parametrização de Políticas via Meta-Heurísticas}
 
-Nesta dissertação, GA, SA, PSO e DE não são tratados como políticas de reposição independentes. Eles são métodos de busca/otimização usados para parametrizar uma regra de reposição, principalmente por meio de vetores como $(s,Q)$, em que $s$ é o ponto de reposição e $Q$ é o lote solicitado. Eles buscam parametrizações que minimizem a função objetivo definida na Seção~\ref{sec:funcao_objetivo}, avaliada por simulação: para cada vetor candidato, a política parametrizada é executada no ambiente de simulação e recebe uma avaliação baseada no custo total e nos critérios de viabilidade operacional.
+Meta-heurísticas como GA, SA, PSO e DE não são tratadas como políticas de reposição independentes. Eles são métodos de busca/otimização usados para parametrizar uma regra de reposição, principalmente por meio de vetores como $(s,Q)$, em que $s$ é o ponto de reposição e $Q$ é o lote solicitado. Eles buscam parametrizações que minimizem a função objetivo definida na Seção~\ref{sec:funcao_objetivo}, avaliada por simulação: para cada vetor candidato, a política parametrizada é executada no ambiente de simulação e recebe uma avaliação baseada no custo total e nos critérios de viabilidade operacional.
 
 Essa abordagem é útil em demanda intermitente porque não exige pressupor uma distribuição paramétrica para a demanda. Em vez disso, a busca avalia diretamente como cada parametrização se comporta sobre o histórico observado, incluindo períodos de demanda nula e picos esporádicos.
 
@@ -94,7 +94,7 @@ Meta-heurísticas tratam o problema de \textit{como} otimizar os parâmetros de 
 
 \subsection{Políticas de Reposição via Aprendizado por Reforço}
 
-O aprendizado por reforço (RL) representa uma família de políticas adaptativas incluída no portfólio avaliado pelo AIPE. Nesta dissertação, DQN, PPO e SARSA são formas de aprender políticas de reposição a partir da interação com um ambiente simulado, e não apenas algoritmos abstratos avaliados fora do problema operacional.
+O aprendizado por reforço (RL) representa uma família de políticas adaptativas incluída no portfólio avaliado pelo AIPE. DQN, PPO e SARSA (e variantes) são formas de aprender políticas de reposição a partir da interação com um ambiente simulado, e não apenas algoritmos abstratos avaliados fora do problema operacional.
 
 No contexto de reposição, o problema pode ser modelado como um Processo de Decisão de Markov (MDP) $\langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$. O estado resume a situação do sistema em determinado ciclo, incluindo estoque disponível, pedidos em trânsito, demanda recente ou prevista e variáveis temporais. A ação corresponde à decisão de reposição, como pedir determinada quantidade ou não emitir pedido. A recompensa é definida como o negativo do custo operacional, penalizando excesso de estoque, ruptura, frequência inadequada de pedidos e instabilidade. A transição atualiza o ambiente após demanda observada, chegada de pedidos e nova decisão. Assim, o agente aprende uma política que mapeia estados em ações de reposição \citep{SuttonBarto2018RL}.
 
@@ -118,7 +118,7 @@ Arquiteturas híbridas GA-RL combinam dois mecanismos complementares. O Algoritm
 
 Essa combinação é particularmente relevante quando a série histórica disponível é curta ou irregular. Nesses casos, agentes de RL isolados tendem a exigir muitas interações para aprender políticas estáveis, enquanto meta-heurísticas isoladas podem produzir parâmetros bons para o histórico observado, mas pouco reativos a mudanças de estado. Métodos GA-RL procuram reduzir essa tensão: usam busca global para evitar exploração inicial pouco informativa e aprendizado sequencial para ajustar a decisão ao estado corrente.
 
-Nesta dissertação, GA-DQN e GA-PPO são avaliados como políticas especialistas dentro do \textit{benchmark}. A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho. A Figura~\ref{fig:ga_rl_arch} sintetiza essa relação entre busca evolutiva, inicialização informativa e refinamento sequencial por RL.
+Nesta dissertação, GA-DQN é avaliada como política especialista dentro do \textit{benchmark} (Seção~\ref{sec:portfolio_ampliado} justifica a exclusão de GA-PPO do portfólio final). A contribuição central, entretanto, permanece na seleção contextual entre políticas candidatas, isto é, em identificar sob quais condições cada política do portfólio tende a apresentar melhor desempenho. A Figura~\ref{fig:ga_rl_arch} sintetiza essa relação entre busca evolutiva, inicialização informativa e refinamento sequencial por RL.
 
 \begin{figure}[htbp]
 \centering

@@ -1,5 +1,5 @@
-estrategia,descricao,regra,politica_repr,CTI_total,CTI_medio,NS_medio,TR_medio,BE_medio,FP_medio,red_abs_vs_A1,red_pct_vs_A1,red_abs_vs_A2,red_pct_vs_A2
-A1,Política única global (melhor viável),Política única: EOQ (menor CTI global viável),EOQ,91120.69,628.42,0.942,0.046,55.43,0.049,0.0,0.0,0.0,0.0
-A2,Política baseline (EOQ),Política única: EOQ (baseline operacional),EOQ,91120.69,628.42,0.942,0.046,55.43,0.049,0.0,0.0,0.0,0.0
-B,Seleção por perfil operacional,Política dominante por perfil operacional (menor CTI viável no perfil),Sparse High Impact: SA; Unstable Trend: EOQ; High Vol. Seasonal: EOQ,85495.48,589.62,0.883,0.083,12.51,0.326,5625.21,6.17,5625.21,6.17
-C,Oráculo por série (exploratório),Melhor política viável por série (referência exploratória),Variável por série,50433.59,347.82,0.7,,,,40687.1,44.65,40687.1,44.65
+estrategia,descricao,regra,politica_repr,CTI_total,CTI_medio,CTI_ajustado_total,CTI_ajustado_medio,NS_medio,TR_medio,BE_medio,FP_medio,red_abs_vs_A1,red_pct_vs_A1,red_abs_vs_A2,red_pct_vs_A2
+A1,Política única global (melhor viável),Política única: EOQ (menor CTI ajustado global viável),EOQ,91120.69,628.42,129791.42,895.11,0.942,0.046,55.43,0.049,0.0,0.0,0.0,0.0
+A2,Política baseline (EOQ),Política única: EOQ (baseline operacional),EOQ,91120.69,628.42,129791.42,895.11,0.942,0.046,55.43,0.049,0.0,0.0,0.0,0.0
+B,Seleção por perfil operacional,Política dominante por perfil operacional (menor CTI ajustado viável no perfil),High Vol. Seasonal: FixedInterval; Unstable Trend: EOQ; Sparse High Impact: EOQ,88966.2,613.56,125082.77,862.64,0.938,0.048,51.034,0.07,4708.65,3.63,4708.65,3.63
+C,Oráculo por série (exploratório),"Melhor política viável por série, por CTI ajustado (referência exploratória)",Variável por série,59386.01,409.56,64007.39,441.43,0.7,,,,65784.03,50.68,65784.03,50.68

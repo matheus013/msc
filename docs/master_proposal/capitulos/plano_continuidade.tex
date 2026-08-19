@@ -29,9 +29,9 @@ Dois estudos de caso adicionais estão em andamento, ambos subordinados ao mesmo
 
 \subsection{Estudo de Caso 3: Benchmark Público M5 (Walmart)}
 
-O terceiro estudo de caso aplica o portfólio completo de políticas ao conjunto público M5 (Walmart), a mesma base usada por \citet{Zabraoui2025GaDQN} para validar a arquitetura GA-DQN que fundamenta parte do portfólio desta dissertação. O recorte segue o filtro de \citet{Zabraoui2025GaDQN}: categoria \textit{FOODS} e coeficiente de variação $\text{CV} \geq 1{,}5$, reduzindo o total de 30.490 séries do M5 para 2.408 séries de alta intermitência, comparáveis em regime ao recorte \textit{Lumpy} avaliado na Bahia.
+O M5 é o estudo de caso metodologicamente mais forte entre os dois em andamento, precisamente porque não é uma base escolhida por conveniência: é a mesma base usada por \citet{Zabraoui2025GaDQN} para validar a arquitetura GA-DQN que fundamenta parte do portfólio desta dissertação, e uma das bases de referência mais usadas na literatura de previsão de demanda e otimização de estoque em geral (competição M5, milhares de séries reais de varejo). Adotá-la como estudo de caso empresta ao AIPE a força de ancoragem bibliográfica que a própria base já tem, em vez de depender só da originalidade do recorte brasileiro. O recorte segue o filtro de \citet{Zabraoui2025GaDQN}: categoria \textit{FOODS} e coeficiente de variação $\text{CV} \geq 1{,}5$, reduzindo o total de 30.490 séries do M5 para 2.408 séries de alta intermitência, comparáveis em regime ao recorte \textit{Lumpy} avaliado na Bahia.
 
-O valor metodológico desse estudo de caso é duplo. Primeiro, permite comparar o portfólio ampliado desta dissertação diretamente contra o artigo-base, em sua própria base de validação, isolando o efeito da ampliação do portfólio (Seção~\ref{sec:portfolio_ampliado}) e das correções de fidelidade de hiperparâmetros do efeito da base de dados. Segundo, testa a robustez do achado central do AIPE (heterogeneidade regime$\rightarrow$política) fora do contexto de varejo brasileiro, numa base de demanda de alto volume e escala muito distinta da Bahia.
+O valor metodológico desse estudo de caso é duplo. Primeiro, permite comparar o portfólio final desta dissertação diretamente contra o artigo-base, em sua própria base de validação, isolando o efeito da ampliação do portfólio (Seção~\ref{sec:portfolio_ampliado}) e das correções de fidelidade de hiperparâmetros do efeito da base de dados. Segundo, testa a robustez do achado central do AIPE (heterogeneidade regime$\rightarrow$política) fora do contexto de varejo brasileiro, numa base de demanda de alto volume e escala muito distinta da Bahia. Com o M5, a dissertação passa a se apoiar em \textbf{duas bases de dados reais} como estudo de caso -- a rede varejista brasileira (Experimento~2) e o M5 (Walmart) --, não numa única fonte: um achado que se sustenta nas duas é evidência de validade externa muito mais forte do que o mesmo achado replicado só dentro da mesma base, com o mesmo viés de coleta e o mesmo contexto de mercado.
 
 \subsection{Estudo de Caso 4: Expansão Multiestado (Base Nacional)}
 
@@ -82,7 +82,7 @@ Pipeline Kedro e módulo de previsão de demanda              & & \checkmark & \
 Simulação Experimento~2 (145 séries, BA, 5 replicações)     & & & \checkmark & \\
 Validação estatística (Wilcoxon, Friedman, Cohen's $d$)     & & & \checkmark & \\
 Módulo \texttt{demand\_profiling} e PODs                    & & & \checkmark & \\
-Ampliação do portfólio (12$\to$18 políticas) e correções de fidelidade & & & & \checkmark \\
+Revisão do portfólio (Seção~\ref{sec:portfolio_ampliado}) e correções de fidelidade & & & & \checkmark \\
 Estudo de Caso 3: benchmark M5 (Walmart, vs. artigo-base)    & & & & $\bullet$ \\
 Estudo de Caso 4: expansão multiestado (base nacional)       & & & & $\bullet$ \\
 Treinamento e avaliação do PSE                              & & & & $\bullet$ \\

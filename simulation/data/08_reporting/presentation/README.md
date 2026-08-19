@@ -28,6 +28,7 @@ kedro run --pipeline reporting --nodes generate_presentation_visuals
 
 - ALERTA: a Tabela 'Características do dataset por experimento' (docs/master_proposal/capitulos/resultados.tex, Seção 'Visão Geral') reporta 71% de séries Lumpy para o Experimento 2 (BA). Os artefatos atuais (demand_profiles.parquet e scenarios_meta.parquet, ambos com 145 séries) mostram 100.0% (coluna 'group' e quadrante recomputado de ADI/CV² concordam). Não foi encontrada nenhuma fonte de dados atual que sustente 71%. A própria Seção 'Experimento 2' do Capítulo de Resultados afirma que as 145 séries foram 'classificadas no quadrante Lumpy' (ou seja, 100%), o que é consistente com os dados, mas contradiz a tabela-resumo da Seção 'Visão Geral'. Recomenda-se revisar/corrigir essa tabela na dissertação; nenhuma alteração foi feita na dissertação ou na apresentação nesta tarefa.
 - ALERTA (uso indevido evitado): a coluna 'dominant_policy' em demand_profiles.parquet é idêntica, por POD, à 'política de referência inicial' heurística da Tabela 4.1 da dissertação (GA-DQN/GA-PPO/PPO), e NÃO ao resultado empírico do benchmark (SA/EOQ/EOQ, ver profiles/dominant_policy_by_profile.csv). Esta coluna NÃO foi usada em nenhuma das novas visualizações; o 'oráculo por série' usado no gráfico de trade-off vem de strategy/strategy_cost_comparison.csv (estratégia C), que aplica corretamente a restrição NS≥0,70 por série.
+- Redução de CTI da estratégia B = 3.63%, diverge de ≈6,2% citado na dissertação.
 
 ## Integração com a apresentação (etapa futura)
 

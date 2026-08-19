@@ -1,0 +1,228 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,landscape,margin=1.1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds,decorations.pathreplacing}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\pagestyle{empty}
+
+% ── paleta ──────────────────────────────────────────────────────
+\definecolor{inkc}{HTML}{16232E}
+\definecolor{dimc}{HTML}{4A5C6B}
+\definecolor{gridc}{HTML}{B9C8CC}
+\definecolor{accentc}{HTML}{1E5F8C}
+\definecolor{classic}{HTML}{5B7183}
+\definecolor{sota}{HTML}{237E72}
+\definecolor{zab}{HTML}{A86A1C}
+\definecolor{meta}{HTML}{6C4C96}
+\definecolor{rl}{HTML}{B8532F}
+\definecolor{hyb}{HTML}{3D4291}
+\definecolor{phase1}{HTML}{E6EDF0}
+\definecolor{phase2}{HTML}{E9E5F2}
+\definecolor{phase3}{HTML}{FAEEDE}
+\definecolor{phase4}{HTML}{E0F0EC}
+
+\begin{document}
+\color{inkc}
+
+% ════════════════════════════════════════════════════════════════
+% PÁGINA 1 — DIAGRAMA DE ARQUITETURA (CAMADAS)
+% ════════════════════════════════════════════════════════════════
+\begin{center}
+{\Large\bfseries AIPE --- Diagrama de Arquitetura}\\[2pt]
+{\small\color{dimc} Camadas, portf\'olio de pol\'iticas por fam\'ilia e n\'ucleo do PSE}
+\end{center}
+\vspace{6pt}
+
+\begin{center}
+\resizebox{!}{0.72\textheight}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    every node/.style={font=\scriptsize\sffamily},
+    layer/.style={rectangle, draw=gridc, rounded corners=3pt, fill=white, inner sep=8pt, line width=0.8pt},
+    title/.style={font=\bfseries\small\sffamily, align=center, text=inkc},
+    box/.style={rectangle, draw=gridc, rounded corners=2pt, align=center, fill=white, text width=3.2cm, minimum height=1.15cm, inner sep=4pt},
+    fambox/.style={rectangle, draw=gridc, rounded corners=1pt, align=left, fill=white, text width=3.35cm, minimum height=1.9cm, inner sep=5pt, line width=1.4pt},
+    core/.style={rectangle, draw=accentc, line width=1.2pt, rounded corners=3pt, align=center, fill=accentc!6, text width=5.6cm, minimum height=1.3cm, inner sep=5pt},
+    flow/.style={->, thick, dimc},
+    mainflow/.style={-{Stealth[length=8pt]}, ultra thick, accentc},
+    subflow/.style={->, gridc, line width=0.55pt},
+    feedback/.style={-{Stealth[length=7pt]}, thick, dashed, accentc}
+]
+
+% ── camada de dados ──────────────────────────────────────────
+\node[title] (t0) at (0,0) {00 --- Bases e estudos de caso};
+\node[box, text width=2.7cm] (pb) at (-6.3,-0.95) {\textbf{Exp.~1}\\Para\'iba};
+\node[box, text width=2.7cm, draw=accentc, line width=1.2pt] (ba) at (-2.1,-0.95) {\textbf{Exp.~2 (central)}\\Bahia --- 145 s\'eries};
+\node[box, text width=2.7cm] (m5) at (2.1,-0.95) {\textbf{E.Caso~3}\\M5 (Walmart)};
+\node[box, text width=2.7cm] (nac) at (6.3,-0.95) {\textbf{E.Caso~4}\\Base nacional};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(t0)(pb)(ba)(m5)(nac)] (l0) {};
+\end{pgfonlayer}
+
+\node[title, below=1.2cm of ba, xshift=0cm] (t1) {01 --- Prepara\c{c}\~ao e caracteriza\c{c}\~ao};
+\node[box, below=0.4cm of t1, xshift=-6.0cm] (prep) {Limpeza, dedup,\\filtro de produto ativo};
+\node[box, below=0.4cm of t1, xshift=-2.0cm] (feat) {17 caracter\'isticas\\ADI, CV$^2$, \emph{burstiness}...};
+\node[box, below=0.4cm of t1, xshift=2.0cm] (pod) {5 PODs\\(classifica\c{c}\~ao por regras)};
+\node[box, below=0.4cm of t1, xshift=6.0cm] (fcst) {Sinais de previs\~ao\\LSTM/XGB/ANN/Croston};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(t1)(prep)(feat)(pod)(fcst)] (l1) {};
+\end{pgfonlayer}
+
+\draw[mainflow] (l0.south) -- (l1.north);
+\draw[subflow] (prep) -- (feat);
+\draw[subflow] (feat) -- (pod);
+\draw[subflow] (pod.east) to[out=0,in=180] (fcst.west);
+
+% ── portfólio ──────────────────────────────────────────
+\node[title, below=1.25cm of feat, xshift=0.4cm] (t2) {02 --- Portf\'olio de pol\'iticas (12, seis fam\'ilias) + ambiente de simula\c{c}\~ao};
+
+\node[fambox, draw=classic, below=0.4cm of t2, xshift=-9.4cm] (f1) {
+  \textbf{\textcolor{classic}{Cl\'assicas}}\\
+  EOQ\\ $(s,S)$\\ Jornaleiro
+};
+\node[fambox, draw=sota, below=0.4cm of t2, xshift=-5.6cm] (f2) {
+  \textbf{\textcolor{sota}{SOTA cl\'assicas}}\\
+  Capped Base-Stock\\ Jornaleiro \emph{Big Data}
+};
+\node[fambox, draw=zab, below=0.4cm of t2, xshift=-1.87cm] (f3) {
+  \textbf{\textcolor{zab}{Artigo-base}}\\
+  Fixed Interval\\ Vendor-Responsive
+};
+\node[fambox, draw=meta, below=0.4cm of t2, xshift=1.87cm] (f4) {
+  \textbf{\textcolor{meta}{Meta-heur\'istica}}\\
+  GA (torneio+uniforme)\\ SA (\emph{annealing})
+};
+\node[fambox, draw=rl, below=0.4cm of t2, xshift=5.6cm] (f5) {
+  \textbf{\textcolor{rl}{RL}}\\
+  DQN (\emph{dueling})$^\dagger$\\ PPO (GAE)
+};
+\node[fambox, draw=hyb, below=0.4cm of t2, xshift=9.4cm] (f6) {
+  \textbf{\textcolor{hyb}{H\'ibrida GA-RL}}\\
+  GA-DQN\\ (GA inicializa,\\ DQN refina)
+};
+\node[box, text width=15.5cm, below=0.35cm of f1, xshift=6.85cm, minimum height=0.85cm] (env) {
+  \footnotesize \textbf{Ambiente compartilhado:} \emph{lead time}=2 · estoque inicial escalonado por s\'erie · venda perdida · \emph{split walk-forward} (17 treino / restante avalia\c{c}\~ao) · custos $h{=}1$, $c_s{=}5$, $K{=}50$
+};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(t2)(f1)(f2)(f3)(f4)(f5)(f6)(env)] (l2) {};
+\end{pgfonlayer}
+
+\draw[mainflow] (l1.south) -- (l2.north);
+
+% ── avaliação + PSE ──────────────────────────────────────────
+\node[title, below=1.1cm of env, xshift=0cm] (t3) {03 --- Avalia\c{c}\~ao \& r\'otulos};
+\node[box, below=0.4cm of t3, xshift=-6.0cm] (kpi) {CTI, NS, TR, BE, FP\\ + CTI ajustado};
+\node[box, below=0.4cm of t3, xshift=-2.0cm] (stat) {Valida\c{c}\~ao estat\'istica\\Wilcoxon, Friedman, $d$};
+\node[box, below=0.4cm of t3, xshift=2.0cm] (red) {Redund\^ancia\\Spearman $\rho{>}0{,}98$};
+\node[box, below=0.4cm of t3, xshift=6.0cm] (lab) {R\'otulo dominante\\argmin CTI\_ajust. s.a. NS$\geq$0,70};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(t3)(kpi)(stat)(red)(lab)] (l3) {};
+\end{pgfonlayer}
+\draw[mainflow] (l2.south) -- (l3.north);
+\draw[subflow] (kpi) -- (stat);
+\draw[subflow] (stat) -- (red);
+\draw[subflow] (red) -- (lab);
+
+\node[core, below=1.05cm of red, xshift=0cm] (pse) {
+  \textbf{Policy Selection Engine (PSE)}\\
+  XGBoost \textbullet\ valida\c{c}\~ao Leave-One-Out\\
+  entrada: caracter\'isticas + POD \ \ \textrightarrow\ \ sa\'ida: pol\'itica + confian\c{c}a
+};
+\draw[mainflow] (l3.south) -- (pse.north);
+
+\node[title, below=1.15cm of pse] (t4) {05 --- Aplica\c{c}\~ao \& ciclo adaptativo};
+\node[box, below=0.4cm of t4, xshift=-4.5cm] (news) {Nova s\'erie\\loja-produto};
+\node[box, below=0.4cm of t4, xshift=0cm] (rec) {Recomenda\c{c}\~ao do PSE\\pol\'itica + \emph{ranking}};
+\node[box, below=0.4cm of t4, xshift=4.5cm] (reev) {Reavalia\c{c}\~ao a cada\\$\Delta t$ ciclos};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(t4)(news)(rec)(reev)] (l5) {};
+\end{pgfonlayer}
+\draw[mainflow] (pse.south) -- (l5.north);
+\draw[subflow] (news) -- (rec);
+\draw[subflow] (rec) -- (reev);
+\coordinate (fbtop) at ($(t1.north)+(0,0.4)$);
+\coordinate (fbright) at (12.0,0);
+\draw[feedback] (reev.east) to[out=15,in=-90] (fbright|-reev.east)
+  -- (fbright|-fbtop)
+  -- node[midway, above, font=\scriptsize\sffamily, color=accentc] {ciclo adaptativo}
+  (prep|-fbtop) to[out=-90,in=100] (prep.north);
+
+\end{tikzpicture}%
+}
+\end{center}
+
+\vspace{4pt}
+{\footnotesize\color{dimc}\noindent $^\dagger$O DQN mant\'em n\'ivel de servi\c{c}o baixo mesmo ap\'os a corre\c{c}\~ao da fun\c{c}\~ao objetivo --- atribu\'ido a limita\c{c}\~ao de atribui\c{c}\~ao de cr\'edito do \emph{bootstrap} de 1 passo. PSO, DE, SARSA, GA-PPO, PIL e MinMax permanecem implementados (n\~ao exclu\'idos do c\'odigo), fora do portf\'olio final de produ\c{c}\~ao.}
+
+\newpage
+
+% ════════════════════════════════════════════════════════════════
+% PÁGINA 2 — DIAGRAMA DE FLUXO DE DADOS (DFD nível 1)
+% ════════════════════════════════════════════════════════════════
+\begin{center}
+{\Large\bfseries AIPE --- Diagrama de Fluxo de Dados}\\[2pt]
+{\small\color{dimc} N\'ivel~1: entidades externas, processos e reposit\'orios de dados}
+\end{center}
+\vspace{10pt}
+
+\begin{center}
+\begin{tikzpicture}[
+    >=Stealth,
+    every node/.style={font=\scriptsize\sffamily},
+    ext/.style={rectangle, draw=inkc, line width=1pt, align=center, fill=gray!8, text width=3.0cm, minimum height=1.3cm, inner sep=5pt},
+    proc/.style={circle, draw=accentc, line width=1.2pt, align=center, fill=accentc!6, minimum size=2.6cm, inner sep=3pt, font=\scriptsize\sffamily},
+    store/.style={rectangle, draw=inkc, line width=0.9pt, align=center, fill=white, text width=2.9cm, minimum height=1.0cm, inner sep=4pt,
+                  path picture={
+                    \draw[line width=0.9pt] (path picture bounding box.north west) -- (path picture bounding box.north east);
+                    \draw[line width=0.9pt] (path picture bounding box.south west) -- (path picture bounding box.south east);
+                  }},
+    flowlbl/.style={font=\scriptsize\sffamily, align=center, fill=white, inner sep=1pt},
+    flow/.style={->, thick, dimc}
+]
+
+% entidades externas
+\node[ext] (rede) at (-9.3, 5.4) {\textbf{Rede varejista}\\(entidade externa)\\hist\'orico transacional};
+\node[ext] (gestor) at (9.3, -5.4) {\textbf{Gestor de estoque}\\(entidade externa)\\recebe recomenda\c{c}\~ao};
+
+% processos (numerados, bolhas DFD)
+\node[proc] (p1) at (-5.3, 3.0) {\textbf{1}\\Preparar \&\\caracterizar};
+\node[proc] (p2) at (-1.2, 3.0) {\textbf{2}\\Simular\\pol\'iticas};
+\node[proc] (p3) at (2.6, 3.0)  {\textbf{3}\\Avaliar \&\\rotular};
+\node[proc] (p4) at (2.6, -3.0) {\textbf{4}\\Treinar\\PSE};
+\node[proc] (p5) at (-1.2, -3.0) {\textbf{5}\\Recomendar\\pol\'itica};
+
+% repositórios (data stores)
+\node[store] (d1) at (-5.3, -1.1) {D1 \quad S\'eries preparadas\\+ caracter\'isticas};
+\node[store] (d2) at (-1.2, -0.1) {D2 \quad KPIs por\\(s\'erie, pol\'itica)};
+\node[store] (d3) at (2.6, -0.1) {D3 \quad R\'otulos de\\pol\'itica dominante};
+\node[store] (d4) at (5.9, -3.0) {D4 \quad Modelo PSE\\treinado};
+\node[store] (d5) at (-5.3, -4.9) {D5 \quad Hist\'orico de\\recomenda\c{c}\~oes};
+
+% fluxos
+\draw[flow] (rede) -- node[flowlbl] {vendas, lojas,\\produtos} (p1);
+\draw[flow] (p1) -- node[flowlbl] {grava} (d1);
+\draw[flow] (d1) -- node[flowlbl] {l\^e (17 feat.\\+ POD)} (p2);
+\draw[flow] (p2) -- node[flowlbl] {grava (CTI, NS,\\TR, BE, FP)} (d2);
+\draw[flow] (d2) -- node[flowlbl] {l\^e} (p3);
+\draw[flow] (p3) -- node[flowlbl] {grava} (d3);
+\draw[flow] (d1) to[out=-90,in=180] node[flowlbl, pos=0.15] {l\^e} (p4);
+\draw[flow] (d3.south) -- node[flowlbl, pos=0.5, xshift=14pt] {l\^e (treino)} (p4.north);
+\draw[flow] (p4) -- node[flowlbl] {grava} (d4);
+\draw[flow] (d4.south) |- node[flowlbl, pos=0.15] {l\^e} ($(p4.south)+(0,-0.7)$) -| (p5.south);
+\draw[flow] (p5) -- node[flowlbl] {grava} (d5);
+\draw[flow] (p5) -- node[flowlbl] {pol\'itica +\\confian\c{c}a} (gestor);
+\draw[flow] (gestor.north) to[out=90,in=-20] node[flowlbl, pos=0.5, xshift=6pt] {nova s\'erie /\\reavalia\c{c}\~ao} (p1.east);
+
+\end{tikzpicture}
+\end{center}
+
+\vspace{6pt}
+{\footnotesize\color{dimc}\noindent
+\textbf{Nota de nota\c{c}\~ao:} processos (c\'irculos) transformam dados; reposit\'orios (retangulos com bordas horizontais) persistem dados entre processos; entidades externas (retangulos s\'olidos) est\~ao fora da fronteira do sistema. O fluxo de retorno do Gestor de Estoque (nova s\'erie / reavalia\c{c}\~ao peri\'odica) fecha o mesmo ciclo adaptativo mostrado no diagrama de arquitetura.}
+
+\end{document}

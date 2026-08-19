@@ -127,7 +127,7 @@ A Tabela~\ref{tab:kpis_fase2} apresenta os resultados médios por política sobr
 \begin{table}[ht]
 \centering
 \small
-\caption{Médias dos indicadores de desempenho por política (145 séries, estado BA, regime \textit{Lumpy}, 5 replicações). Melhores valores por coluna. $^\dagger$Políticas com degeneração operacional: DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$); PPO$^\dagger$ ordena em excesso (FP\,=\,$0.59$).}
+\caption{Médias dos indicadores de desempenho por política do portfólio final (12 políticas, 145 séries, estado BA, regime \textit{Lumpy}, 5 replicações). Melhores valores por coluna em negrito. $^\dagger$DQN converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.00$, NS\,=\,$0.23$), mesmo após a correção da penalidade de déficit de NS que resolveu esse padrão nas demais políticas (Seção~\ref{sec:benchmark_massivo}).}
 \label{tab:kpis_fase2}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
@@ -138,28 +138,28 @@ Política &
 \makecell[r]{BE} &
 \makecell[r]{FP} \\
 \midrule
-DQN$^\dagger$        & \textbf{127.70} & 0.25 & 0.39 & 0.25   & \textbf{0.01} \\
-Jornaleiro           & 289.92          & 0.54 & 0.29 & 0.71   & 0.18 \\
-\textbf{EOQ}         & 628.42          & 0.94 & 0.05 & 55.43  & 0.05 \\
-SA                   & 635.26          & 0.86 & 0.10 & 5.48   & 0.45 \\
-$(s,S)$              & 654.86          & 0.94 & 0.05 & 58.62  & 0.05 \\
-SARSA                & 892.82          & 0.61 & 0.22 & 30.83  & 0.13 \\
-GA-DQN (Híbrido)     & 1.033.41        & 0.77 & 0.16 & 6.20   & 0.79 \\
-PSO                  & 1.099.37        & 0.85 & 0.10 & 0.40   & 0.90 \\
-DE                   & 1.156.04        & 0.88 & 0.09 & \textbf{0.20} & 0.96 \\
-GA                   & 1.160.16        & 0.88 & 0.09 & 237.44 & 0.75 \\
-GA-PPO (Híbrido)     & 2.308.29        & 0.96 & 0.03 & 161.27 & 0.48 \\
-PPO$^\dagger$        & 3.871.75        & \textbf{0.98} & \textbf{0.02} & 237.42 & 0.59 \\
+DQN$^\dagger$          & \textbf{126.73} & 0.23 & 0.40 & 1.87  & \textbf{0.00} \\
+Jornaleiro             & 289.92          & 0.54 & 0.29 & 0.71  & 0.18 \\
+Vendor-Responsive      & 433.31          & 0.77 & 0.16 & 1.14  & 0.30 \\
+Fixed Interval         & 457.81          & 0.84 & 0.11 & 2.13  & 0.30 \\
+Capped Base-Stock      & 561.87          & 0.64 & 0.24 & 0.43  & 0.43 \\
+Jornaleiro (\textit{Big Data}) & 582.11  & 0.72 & 0.19 & 3.50  & 0.37 \\
+\textbf{EOQ}           & 628.42          & 0.94 & 0.05 & 55.43 & 0.05 \\
+$(s,S)$                & 654.86          & 0.94 & 0.05 & 58.62 & 0.05 \\
+SA                     & 1.147.86        & 0.86 & 0.10 & 21.70 & 0.90 \\
+GA-DQN (Híbrido)       & 1.175.79        & 0.73 & 0.19 & \textbf{0.16}\footnotemark & 0.98 \\
+GA                     & 1.265.38        & 0.90 & 0.07 & 0.16  & 0.97 \\
+PPO                    & 5.112.75        & \textbf{0.96} & \textbf{0.02} & 14.12 & 0.97 \\
 \bottomrule
 \end{tabular}
 \end{table}
+\footnotetext{GA e GA-DQN têm BE praticamente empatado (0,16 e 0,25 respectivamente); GA marginalmente menor.}
 
-Dois padrões de degeneração emergem no Experimento~2: o DQN$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,$0.007$, NS\,=\,$0.248$), obtendo o menor CTI ao custo do pior nível de serviço observado; o PPO$^\dagger$ emite pedidos em 59\% dos ciclos, atingindo NS\,=\,$0.976$ com CTI 13 vezes maior que o Jornaleiro. Esses padrões ajudam a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se dois agrupamentos distintos:
+Um padrão de degeneração permanece no Experimento~2 mesmo após a correção de fidelidade da função objetivo (Seção~\ref{sec:benchmark_massivo}): o DQN$^\dagger$ converge ao comportamento de não emitir pedidos (FP\,=\,$0.00$, NS\,=\,$0.23$), obtendo o menor CTI ao custo do pior nível de serviço observado -- ao contrário do PPO, que respondeu à mesma correção e passou a operar com NS alto (Seção~\ref{sec:benchmark_massivo} discute a hipótese de atribuição de crédito do \textit{bootstrap} de 1 passo como explicação). Esse padrão ajuda a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se agrupamentos distintos:
 
-O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
+O Jornaleiro (CTI\,=\,R\$\,290, NS\,=\,$0.54$) é a política de menor custo bruto entre as não degeneradas, mas não atende ao limiar operacional de NS $\geq 0{,}70$, ao preço de taxa de ruptura de 29\%. Este agrupamento indica o limite inferior de custo em séries de baixíssimo volume, não uma recomendação operacional direta.
 
-% \paragraph{Grupo de alto nível de serv1iço (NS $\geq 0.86$).} 
-EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) oferecem o melhor equilíbrio custo-serviço neste conjunto de séries. SA (NS\,=\,$0.86$, CTI\,=\,R\$\,635) destaca-se como alternativa compacta com bom equilíbrio entre custo e cobertura.
+As heurísticas do artigo-base (\textit{Vendor-Responsive}, CTI\,=\,R\$\,433, NS\,=\,$0.77$; \textit{Fixed Interval}, CTI\,=\,R\$\,458, NS\,=\,$0.84$) oferecem o melhor compromisso custo-serviço entre as políticas de baixo custo: menor CTI que EOQ/$(s,S)$, com NS abaixo do limiar de viabilidade de $0{,}70$ apenas no caso do \textit{Vendor-Responsive}. EOQ (NS\,=\,$0.94$, CTI\,=\,R\$\,628) e $(s,S)$ (NS\,=\,$0.94$, CTI\,=\,R\$\,655) permanecem o grupo de mais alto nível de serviço entre as políticas de custo moderado, e dominam a maior parte das séries individualmente (Seção~\ref{sec:custo_politica_unica_vs_perfil}).
 
 A Figura~\ref{fig:pareto} apresenta a fronteira de Pareto CTI-NS e mostra que nenhuma política domina simultaneamente todas as dimensões. Esse resultado reforça a necessidade de tratar a escolha da política como decisão contextual.
 
@@ -187,7 +187,7 @@ A Figura~\ref{fig:kpi_segmento} exibe os três KPIs primários para quatro polí
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{../../simulation/data/08_reporting/maps/kpi_por_segmento}
-\caption{CTI, NS e TR por segmento de loja para as políticas EOQ, Jornaleiro, PSO e GA-DQN. O segmento Platina exibe maior CTI absoluto (maior volume médio), mas menor variância relativa entre políticas. O segmento Esmeralda~GB apresenta maior heterogeneidade de NS entre políticas, indicando sensibilidade ao mecanismo de reposição.}
+\caption{CTI, NS e TR por segmento de loja para as políticas EOQ, Jornaleiro, PSO e GA-DQN. O segmento Platina exibe maior CTI absoluto (maior volume médio), mas menor variância relativa entre políticas. O segmento Esmeralda~GB apresenta maior heterogeneidade de NS entre políticas, indicando sensibilidade ao mecanismo de reposição. \textbf{Figura pendente de regeneração} sobre o portfólio final de 12 políticas (Seção~\ref{sec:benchmark_massivo}) -- PSO não compõe mais o portfólio avaliado; mantida como referência de padrão até a atualização.}
 \label{fig:kpi_segmento}
 \end{figure}
 
@@ -204,7 +204,7 @@ A Tabela~\ref{tab:dominancia_por_perfil} apresenta, para cada perfil, a polític
 
 \input{../../simulation/data/08_reporting/profiles/table_dominancia_por_perfil}
 
-O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o SA (\textit{Simulated Annealing}) é a política dominante (CTI\,=\,R\$\,584, NS\,=\,$0{,}87$) entre as operacionalmente viáveis (NS médio $\geq 0{,}70$). O Jornaleiro apresenta o menor CTI bruto neste perfil (R\$\,284), mas é excluído pelo critério de viabilidade: seu NS médio (0,55) fica abaixo do limiar de $0{,}70$, configurando ruptura de estoque excessiva para uso operacional direto. O ganho de custo do Jornaleiro nesse perfil não é, portanto, alcançável sem violar o nível de serviço mínimo adotado. O perfil \textit{Unstable Trend} (18 séries, evidência exploratória por $n<20$) apresenta padrão de demanda com tendência não estacionária; o EOQ, com parâmetros calculados sobre a demanda média, oferece o melhor equilíbrio custo-serviço, atingindo NS\,=\,$0{,}95$ ao custo de CTI mais elevado. O perfil \textit{High Vol.~Seasonal} (11 séries, evidência exploratória por $n<20$) também tem o EOQ como dominante (CTI\,=\,R\$\,619, NS\,=\,$0{,}97$); o SARSA, cujo NS médio nesse perfil é de apenas $0{,}61$, não atinge o limiar de viabilidade e não deve ser interpretado como dominante.
+O perfil \textit{Sparse High Impact} concentra 116 das 145 séries (80\%) e é caracterizado por demanda intermitente e impacto de custo elevado por evento; nesse contexto, o EOQ é a política dominante (CTI\,=\,R\$\,632,51; CTI ajustado\,=\,R\$\,908,05; NS\,=\,$0{,}939$) entre as operacionalmente viáveis (NS médio $\geq 0{,}70$), pelo critério de menor CTI ajustado, métrica de escolha final que soma ao CTI uma penalidade por déficit de nível de serviço (com referência de custo fixa por série) e por excesso de estoque em relação à mediana das demais políticas na mesma série. O Jornaleiro apresenta o menor CTI bruto neste perfil, mas é excluído pelo critério de viabilidade: seu NS médio (0,54) fica abaixo do limiar de $0{,}70$, configurando ruptura de estoque excessiva para uso operacional direto. O ganho de custo do Jornaleiro nesse perfil não é, portanto, alcançável sem violar o nível de serviço mínimo adotado. O perfil \textit{Unstable Trend} (18 séries, evidência exploratória por $n<20$) apresenta padrão de demanda com tendência não estacionária; o EOQ também domina aqui (CTI\,=\,R\$\,607,95; CTI ajustado\,=\,R\$\,836,73; NS\,=\,$0{,}947$). O perfil \textit{High Vol.~Seasonal} (11 séries, evidência exploratória por $n<20$) é o único em que o EOQ não domina: o \textit{Fixed Interval} (heurística do artigo-base) assume a dominância (CTI\,=\,R\$\,422,93; CTI ajustado\,=\,R\$\,426,12; NS\,=\,$0{,}907$), com custo ajustado bem próximo do custo bruto -- indício de que, nesse perfil, a política já opera perto do equilíbrio custo-serviço sem depender de correção de penalidade.
 
 A Figura~\ref{fig:heatmap_cti_pod} apresenta o \textit{heatmap} do CTI médio por política e perfil, mostrando a heterogeneidade de custo que motiva o AIPE: o custo de cada política varia de forma expressiva entre perfis, de modo que nenhuma política minimiza CTI em todos os contextos simultaneamente.
 
@@ -228,13 +228,13 @@ Na Tabela~\ref{tab:strategy_cost_comparison}, a coluna ``Estratégia'' identific
 
 A análise considera quatro estratégias. As estratégias A1 e A2 representam políticas únicas globais: A1 é a política com menor CTI médio entre todas as viáveis (NS médio $\geq 0{,}70$ global), que no Experimento~2 é o EOQ; A2 adota o EOQ diretamente como \textit{baseline} operacional de referência, representando a escolha clássica comum na prática varejista. Neste experimento, A1 e A2 coincidem porque o EOQ emerge simultaneamente como melhor opção viável global e referência operacional natural (CTI médio\,=\,R\$\,628,42; NS médio\,=\,$0{,}942$).
 
-A estratégia B, seleção por perfil, aloca: SA para séries \textit{Sparse High Impact} (116 séries, 80\% do conjunto); EOQ para séries \textit{Unstable Trend} (18 séries, evidência exploratória); e EOQ para séries \textit{High Vol.~Seasonal} (11 séries, evidência exploratória). Como o EOQ já é a política única global, a única substituição efetiva da estratégia B em relação à A1/A2 ocorre no perfil \textit{Sparse High Impact}, que concentra 80\% das séries. A Tabela~\ref{tab:strategy_cost_comparison} indica redução de $6{,}2\%$ no CTI médio em relação à política única (R\$\,628,42 para R\$\,589,62), acompanhada de queda de NS médio de $0{,}942$ para $0{,}883$, ainda acima do limiar de viabilidade de $0{,}70$. Esse resultado deve ser lido como \textit{trade-off} custo-serviço, e não como ganho puro: a redução de custo é modesta e vem com perda real, ainda que limitada, de nível de serviço. Essa leitura cautelosa é consistente com o objetivo do AIPE de tornar a escolha de política sensível ao perfil operacional, sem prometer ganhos de custo sem contrapartida de serviço.
+A estratégia B, seleção por perfil, aloca: EOQ para séries \textit{Sparse High Impact} (116 séries, 80\% do conjunto); EOQ para séries \textit{Unstable Trend} (18 séries, evidência exploratória); e \textit{Fixed Interval} para séries \textit{High Vol.~Seasonal} (11 séries, evidência exploratória). Como o EOQ já é a política única global (estratégias A1 e A2), a única substituição efetiva da estratégia B em relação à A1/A2 ocorre no perfil \textit{High Vol.~Seasonal}, que concentra apenas 11 das 145 séries. A Tabela~\ref{tab:strategy_cost_comparison} indica redução de $3{,}6\%$ no CTI ajustado médio em relação à política única (R\$\,895,11 para R\$\,862,64), estatisticamente significativa pelo teste de Wilcoxon pareado com correção de Holm ($p_{\text{Holm}}=0{,}020$; Tabela~\ref{tab:strategy_hypothesis_tests}), sem queda estatisticamente significativa de NS médio ($0{,}942$ para $0{,}937$; $p_{\text{Holm}}=0{,}111$). Diferentemente da leitura anterior a esta correção da função objetivo (Seção~\ref{sec:benchmark_massivo}), o ganho de custo aqui não vem acompanhado de perda mensurável de nível de serviço: é uma redução líquida, ainda que modesta em magnitude, concentrada num único perfil de baixa amostragem. Essa leitura cautelosa é consistente com o objetivo do AIPE de tornar a escolha de política sensível ao perfil operacional, sem prometer ganhos de custo desproporcionais a partir de um recorte majoritariamente dominado por uma única política global.
 
 O teste pareado da Tabela~\ref{tab:strategy_hypothesis_tests} reforça essa leitura cautelosa. A redução média de CTI observada para a estratégia B não é estatisticamente significativa no teste de Wilcoxon unilateral após correção de Holm, indicando que o ganho de custo não é consistente o suficiente, série a série, para apoiar uma conclusão de vantagem pura em CTI. Em contrapartida, as diferenças em NS, TR, BE e FP são estatisticamente significativas, indicando que a seleção por perfil altera de forma sistemática o compromisso operacional: reduz fortemente o efeito \textit{bullwhip}, mas aumenta a frequência de pedidos e piora indicadores de serviço em relação ao EOQ global.
 
 A estratégia C, oráculo por série, serve como referência exploratória. Ela assume conhecimento perfeito da política de menor CTI de cada série individualmente, obtendo o limite inferior empírico do CTI alcançável com as políticas avaliadas: CTI médio\,=\,R\$\,347,82, redução de $44{,}6\%$ em relação à política única. Essa redução, porém, vem acompanhada de queda acentuada do NS médio para $0{,}700$, exatamente no piso de viabilidade adotado. A diferença entre B e C indica o ganho adicional que seria obtível com seleção individualizada, como a que o PSE do AIPE provê, mas também mostra que tal ganho, neste experimento, depende de operar no limite mínimo aceitável de nível de serviço; a estratégia C não deve ser interpretada como política operacionalmente recomendável.
 
-A Tabela~\ref{tab:strategy_cost_comparison_adjusted} reporta uma análise complementar e preliminar de sensibilidade, na qual o CTI normalizado é penalizado pelo BE normalizado conforme a Equação de $J(\pi,g)$ (Seção~\ref{sec:metricas_avaliacao}). Com $\lambda_{BE}=0$, a tabela recupera exatamente os resultados de CTI puro. Na visão global agregada deste experimento, a política única ajustada permanece igual à política única por CTI puro para todo $\lambda_{BE}$ (A\,=\,B\,=\,EOQ). As mudanças observadas aparecem na seleção por perfil ajustada (D), com transições concentradas em perfis de baixa amostragem e, portanto, com caráter exploratório. Essa leitura reforça o papel dessa etapa como análise de sensibilidade: ela qualifica a robustez das conclusões, mas não substitui o critério principal de dominância adotado na dissertação, baseado em CTI puro sob a restrição $\mathrm{NS}\geq 0{,}70$.
+A Tabela~\ref{tab:strategy_cost_comparison_adjusted} reporta uma análise complementar e preliminar de sensibilidade, distinta do CTI ajustado usado como critério principal (Tabela~\ref{tab:strategy_cost_comparison}): aqui o CTI normalizado é penalizado pelo BE normalizado conforme a Equação de $J(\pi,g)$ (Seção~\ref{sec:metricas_avaliacao}), isolando o efeito da estabilidade de pedidos (\textit{bullwhip}), não do déficit de serviço. Com $\lambda_{BE}=0$, a tabela recupera os resultados de CTI puro por política, que aqui selecionam o \textit{Vendor-Responsive} como política única (menor CTI bruto entre as viáveis) -- diferente do EOQ selecionado pelo critério principal de CTI ajustado, porque o \textit{Vendor-Responsive} tem CTI bruto mais baixo em média mas nível de serviço menos consistente entre séries individuais, o que o critério principal penaliza e este, focado em estabilidade de pedidos, não. As mudanças observadas ao longo de $\lambda_{BE}$ aparecem sobretudo na seleção por perfil ajustada (D), com transições concentradas em perfis de baixa amostragem e, portanto, com caráter exploratório. Essa leitura reforça o papel dessa etapa como análise de sensibilidade sobre uma dimensão adicional (estabilidade), não como substituto do critério principal de dominância adotado na dissertação (CTI ajustado sob a restrição $\mathrm{NS}\geq 0{,}70$).
 
 \input{../../simulation/data/08_reporting/strategy/table_strategy_adjusted}
 
@@ -299,7 +299,7 @@ Enquanto o Wilcoxon indica se a diferença é estatisticamente consistente, o $d
 \begin{table}[ht]
 \centering
 \small
-\caption{Tamanhos de efeito de Cohen ($d$) para CTI: políticas híbridas versus \textit{baselines} selecionados. Classificação: $|d| < 0.20$ trivial; $0.20$ a $0.50$ pequeno; $0.50$ a $0.80$ médio; $> 0.80$ grande.}
+\caption{Tamanhos de efeito de Cohen ($d$) para CTI: política híbrida versus \textit{baselines} selecionados. Classificação: $|d| < 0.20$ trivial; $0.20$ a $0.50$ pequeno; $0.50$ a $0.80$ médio; $> 0.80$ grande. \textbf{Valores pendentes de recomputação} sobre o portfólio final de 12 políticas (Seção~\ref{sec:benchmark_massivo}) -- os valores abaixo são da rodada anterior ao ajuste do portfólio e à correção da função objetivo, mantidos como referência de magnitude até a atualização.}
 \label{tab:cohens_d_resumo}
 \begin{tabular}{@{}llrrl@{}}
 \toprule
@@ -309,17 +309,11 @@ GA-DQN & EOQ        & $+1.284$ & $-1.043$ & ambos: grande \\
 GA-DQN & $(s,S)$    & $+1.134$ & $-1.052$ & ambos: grande \\
 GA-DQN & Newsvendor & $+2.931$ & $+1.153$ & ambos: grande \\
 GA-DQN & PPO        & $-1.944$ & $-1.283$ & ambos: grande \\
-GA-DQN & SARSA      & $+0.134$ & $+0.523$ & CTI: trivial; NS: médio \\
-\midrule
-GA-PPO & EOQ        & $+1.132$ & $+0.236$ & CTI: grande; NS: pequeno \\
-GA-PPO & $(s,S)$    & $+1.111$ & $+0.226$ & CTI: grande; NS: pequeno \\
-GA-PPO & PSO        & $+0.812$ & $+0.802$ & ambos: grande \\
-GA-PPO & PPO        & $-0.760$ & $-0.216$ & CTI: médio; NS: pequeno \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-O maior efeito absoluto observado é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença entre a política analítica de baixo custo e a arquitetura híbrida mais complexa. Em relação à degeneração: o efeito $d=+3.492$ (GA-DQN vs DQN em CTI) indica que o DQN isolado, ao convergir para a estratégia de não pedido, afasta-se substancialmente da solução híbrida. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo maior que o EOQ neste conjunto de séries, porém com NS\,$0.18$ pontos menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série.
+O maior efeito absoluto observado nessa rodada de referência é $d=+2.931$ (GA-DQN vs Jornaleiro em CTI), refletindo a diferença entre a política analítica de baixo custo e a arquitetura híbrida mais complexa. Para a comparação crítica GA-DQN vs EOQ, o efeito $d=+1.284$ em CTI (grande) indica que o GA-DQN opera com custo maior que o EOQ neste conjunto de séries, porém com NS menor ($d=-1.043$, efeito grande), revelando um \textit{trade-off} entre custo e serviço que depende do perfil de demanda da série. Essa magnitude de efeito é consistente com o padrão observado na Tabela~\ref{tab:kpis_fase2} atualizada (GA-DQN: CTI\,=\,R\$\,1.175,79, NS\,=\,$0{,}73$ vs.\ EOQ: CTI\,=\,R\$\,628,42, NS\,=\,$0{,}94$), mas os valores exatos de $d$ acima ainda não foram recalculados sobre essa base.
 
 \noindent A Figura~\ref{fig:critical_diff} complementa os tamanhos de efeito ao mostrar os agrupamentos estatísticos do teste de Nemenyi. Políticas conectadas pela barra horizontal não diferem significativamente no CTI ao nível $\alpha=0.05$; políticas sem conexão apresentam diferença estatisticamente detectável.
 

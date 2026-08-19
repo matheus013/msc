@@ -4,9 +4,9 @@
 \label{ap:representacoes_politicas}
 \lhead{APÊNDICE B}
 
-Este apêndice reúne representações visuais complementares das políticas avaliadas no portfólio experimental. As figuras têm caráter explicativo e servem para detalhar a lógica operacional de políticas clássicas, meta-heurísticas, agentes de aprendizado por reforço e políticas híbridas, sem alterar a formulação metodológica apresentada no Capítulo~\ref{cap:metod}. As representações incluem EOQ (Figura~\ref{fig:ap_eoq}), $(s,S)$ (Figura~\ref{fig:ap_ss}), Jornaleiro (Figura~\ref{fig:ap_jornaleiro}), Algoritmo Genético (Figura~\ref{fig:ap_ga_cromossomo}), PSO (Figura~\ref{fig:ap_pso}), Evolução Diferencial (Figura~\ref{fig:ap_de}), DQN (Figura~\ref{fig:ap_dqn}), SARSA (Figura~\ref{fig:ap_sarsa}), PPO (Figura~\ref{fig:ap_ppo}), GA-DQN (Figura~\ref{fig:ap_ga_dqn}) e GA-PPO (Figura~\ref{fig:ap_ga_ppo}).
+Este apêndice reúne representações visuais complementares das políticas do portfólio final avaliadas no experimento (Seção~\ref{sec:benchmark_massivo}). As figuras têm caráter explicativo e servem para detalhar a lógica operacional de políticas clássicas, meta-heurística, agente de aprendizado por reforço e política híbrida, sem alterar a formulação metodológica apresentada no Capítulo~\ref{cap:metod}. As representações incluem EOQ (Figura~\ref{fig:ap_eoq}), $(s,S)$ (Figura~\ref{fig:ap_ss}), Jornaleiro (Figura~\ref{fig:ap_jornaleiro}), Algoritmo Genético (Figura~\ref{fig:ap_ga_cromossomo}), DQN (Figura~\ref{fig:ap_dqn}), PPO (Figura~\ref{fig:ap_ppo}) e GA-DQN (Figura~\ref{fig:ap_ga_dqn}).
 
-A organização deste apêndice acompanha as famílias de métodos avaliadas na dissertação. Primeiro são apresentadas políticas clássicas, em seguida meta-heurísticas, depois agentes de aprendizado por reforço e, por fim, uma representação complementar de política híbrida GA-RL.
+A organização deste apêndice acompanha as famílias de métodos avaliadas na dissertação. Primeiro são apresentadas políticas clássicas, em seguida a meta-heurística, depois os agentes de aprendizado por reforço e, por fim, uma representação complementar de política híbrida GA-RL.
 
 \begin{figure}[htbp]
     \centering
@@ -33,31 +33,13 @@ A política do jornaleiro considera explicitamente o equilíbrio entre risco de 
     \label{fig:ap_jornaleiro}
 \end{figure}
 
-As meta-heurísticas avaliadas usam representações contínuas para buscar parâmetros de reposição com bom desempenho operacional. No Algoritmo Genético, cada cromossomo codifica uma parametrização candidata da política de reposição, como mostra a Figura~\ref{fig:ap_ga_cromossomo}.
+A meta-heurística do portfólio final usa uma representação contínua para buscar parâmetros de reposição com bom desempenho operacional. No Algoritmo Genético, cada cromossomo codifica uma parametrização candidata da política de reposição, como mostra a Figura~\ref{fig:ap_ga_cromossomo}. SA compartilha a mesma representação de solução $(s,Q)$ e a mesma função de avaliação, diferindo apenas no mecanismo de busca (vizinhança com aceitação probabilística, em vez de população evolutiva).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.86\textwidth]{img/representação_do_cromossomo_no_ag.pdf}
     \caption{Representação do cromossomo no Algoritmo Genético para parametrização de políticas de reposição.}
     \label{fig:ap_ga_cromossomo}
-\end{figure}
-
-A Figura~\ref{fig:ap_pso} apresenta a representação complementar do PSO, em que cada partícula corresponde a uma solução candidata no espaço de busca.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.86\textwidth]{img/representação_da_partícula_no_pso.pdf}
-    \caption{Representação de uma partícula no Particle Swarm Optimization aplicada à parametrização de políticas de reposição.}
-    \label{fig:ap_pso}
-\end{figure}
-
-Diferentemente do PSO, que atualiza partículas a partir de memória individual e coletiva, a Evolução Diferencial gera novos candidatos por combinações diferenciais entre vetores da população. Ambas as abordagens são usadas como mecanismos de busca em espaços contínuos de parametrização.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.86\textwidth]{img/representação_do_vetor_na_evolução_diferencial.pdf}
-    \caption{Representação de um vetor-solução na Evolução Diferencial aplicada ao problema de reposição.}
-    \label{fig:ap_de}
 \end{figure}
 
 Nos agentes de aprendizado por reforço, a decisão de reposição é tratada como interação sequencial entre agente e ambiente. A Figura~\ref{fig:ap_dqn} resume a lógica do DQN, no qual o estado observado é usado para estimar valores associados a ações candidatas de reposição.
@@ -69,18 +51,7 @@ Nos agentes de aprendizado por reforço, a decisão de reposição é tratada co
     \label{fig:ap_dqn}
 \end{figure}
 
-A Figura~\ref{fig:ap_sarsa} detalha a estrutura do SARSA, que atualiza sua política com base na trajetória efetivamente seguida.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.86\textwidth]{img/representação_do_agente_sarsa_detalhada.pdf}
-    \caption{Representação do agente SARSA no problema de controle de inventário.}
-    \label{fig:ap_sarsa}
-\end{figure}
-
-Na política \(\epsilon\)-greedy, a escolha aleatória de uma ação corresponde à etapa de exploração, enquanto a seleção da ação com maior valor \(Q(s,a)\) corresponde ao aproveitamento da melhor ação estimada. Essa distinção é importante para interpretar corretamente o mecanismo de escolha de ações no agente SARSA.
-
-Os agentes SARSA e PPO compartilham a abstração de interação sequencial com o ambiente, mas diferem na forma de atualização da política. Enquanto o SARSA atualiza valores de ação de forma \textit{on-policy}, o PPO utiliza uma estrutura ator-crítico com atualização controlada da política.
+Na política \(\epsilon\)-greedy, a escolha aleatória de uma ação corresponde à etapa de exploração, enquanto a seleção da ação com maior valor \(Q(s,a)\) corresponde ao aproveitamento da melhor ação estimada. O DQN e o PPO compartilham a abstração de interação sequencial com o ambiente, mas diferem na forma de atualização da política: enquanto o DQN estima valores de ação por \textit{bootstrap} de 1 passo, o PPO utiliza uma estrutura ator-crítico com atualização controlada da política e retorno multi-passo (GAE).
 
 \begin{figure}[htbp]
     \centering
@@ -89,20 +60,11 @@ Os agentes SARSA e PPO compartilham a abstração de interação sequencial com 
     \label{fig:ap_ppo}
 \end{figure}
 
-Por fim, as políticas híbridas GA-DQN e GA-PPO complementam a família GA-RL ao combinar busca evolutiva com refinamento por aprendizado por reforço. A Figura~\ref{fig:ap_ga_dqn} ilustra a lógica de inicialização evolutiva e refinamento por DQN.
+Por fim, a política híbrida GA-DQN complementa a família GA-RL ao combinar busca evolutiva com refinamento por aprendizado por reforço. A Figura~\ref{fig:ap_ga_dqn} ilustra a lógica de inicialização evolutiva e refinamento por DQN. Essa representação reforça que a política híbrida é tratada como especialista do portfólio avaliado, mantendo o AIPE e o PSE como contribuição metodológica central.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.86\textwidth]{img/representação_da_política_híbrida_ga_dqn.pdf}
     \caption{Representação da política híbrida GA-DQN no portfólio avaliado.}
     \label{fig:ap_ga_dqn}
-\end{figure}
-
-A Figura~\ref{fig:ap_ga_ppo} apresenta a variante GA-PPO. Essa representação reforça que as políticas híbridas são tratadas como especialistas do portfólio avaliado, mantendo o AIPE e o PSE como contribuição metodológica central.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.86\textwidth]{img/fluxo_da_política_híbrida_ga_ppo.pdf}
-    \caption{Fluxo da política híbrida GA-PPO no contexto do controle de inventário.}
-    \label{fig:ap_ga_ppo}
 \end{figure}

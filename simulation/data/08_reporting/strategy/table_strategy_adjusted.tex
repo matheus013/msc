@@ -2,7 +2,7 @@
 \centering
 \small
 \setlength{\tabcolsep}{3pt}
-\caption{Comparação \textbf{global} de custo entre estratégias de seleção de política com CTI ajustado por estabilidade operacional (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). CTI~Adj. $= \mathrm{CTI_{norm}} + \lambda_{BE} \cdot \mathrm{BE_{norm}}$, normalizado por escopo global. Redução\% calculada contra estratégia~A (política única, CTI puro). $^\dagger$Oráculo por série: referência exploratória, não estratégia operacional.}
+\caption{Comparação de custo entre estratégias de seleção de política com CTI ajustado por estabilidade operacional (Experimento~2, BA, 145 séries, regime \textit{Lumpy}). CTI~Adj. $= \mathrm{CTI_{norm}} + \lambda_{BE} \cdot \mathrm{BE_{norm}}$, normalizado por escopo global. Redução\% calculada contra estratégia~A (política única, CTI puro). $^\dagger$Oráculo por série: referência exploratória, não estratégia operacional.}
 \label{tab:strategy_cost_comparison_adjusted}
 \begin{tabular}{@{}p{3.4cm}crrrrcc@{}}
 \toprule
@@ -15,29 +15,29 @@
 \makecell[c]{Red. CTI\\vs~A (\%)} &
 \makecell[c]{Red. Adj.\\vs~A (\%)} \\
 \midrule
-A: pol. única (CTI puro) & $0.00$ & 512.21 & 52.8 & 0.954 & 0.047 & $0.0$ & $0.0$ \\
-B: pol. única (CTI ajustado) & $0.00$ & 512.21 & 52.8 & 0.954 & 0.047 & $0.0$ & $0.0$ \\
-C: por perfil (CTI puro) & $0.00$ & 321.33 & 4.3 & 0.742 & 0.006 & $+37.3$ & $+86.9$ \\
-D: por perfil (CTI ajustado) & $0.00$ & 321.33 & 4.3 & 0.742 & 0.006 & $+37.3$ & $+86.9$ \\
-E: oráculo por série$^\dagger$ & $0.00$ & 302.60 & \textemdash{} & \textemdash{} & \textemdash{} & $+40.9$ & $\textemdash{}$ \\
+A: pol. única (CTI puro) & $0.00$ & 433.31 & 1.1 & 0.774 & 0.061 & $0.0$ & $0.0$ \\
+B: pol. única (CTI ajustado) & $0.00$ & 433.31 & 1.1 & 0.774 & 0.061 & $0.0$ & $0.0$ \\
+C: por perfil (CTI puro) & $0.00$ & 432.46 & 1.2 & 0.782 & 0.062 & $+0.2$ & $-1.0$ \\
+D: por perfil (CTI ajustado) & $0.00$ & 432.46 & 1.2 & 0.782 & 0.062 & $+0.2$ & $-1.0$ \\
+E: oráculo por série$^\dagger$ & $0.00$ & 419.29 & \textemdash{} & \textemdash{} & \textemdash{} & $+3.2$ & $\textemdash{}$ \\
 \midrule
-A: pol. única (CTI puro) & $0.25$ & 512.21 & 52.8 & 0.954 & 0.052 & $0.0$ & $0.0$ \\
-B: pol. única (CTI ajustado) & $0.25$ & 512.21 & 52.8 & 0.954 & 0.052 & $0.0$ & $0.0$ \\
-C: por perfil (CTI puro) & $0.25$ & 321.33 & 4.3 & 0.742 & 0.007 & $+37.3$ & $+86.9$ \\
-D: por perfil (CTI ajustado) & $0.25$ & 324.25 & 3.2 & 0.737 & 0.007 & $+36.7$ & $+86.9$ \\
-E: oráculo por série$^\dagger$ & $0.25$ & 302.60 & \textemdash{} & \textemdash{} & \textemdash{} & $+40.9$ & $\textemdash{}$ \\
+A: pol. única (CTI puro) & $0.25$ & 433.31 & 1.1 & 0.774 & 0.066 & $0.0$ & $0.0$ \\
+B: pol. única (CTI ajustado) & $0.25$ & 433.31 & 1.1 & 0.774 & 0.066 & $0.0$ & $0.0$ \\
+C: por perfil (CTI puro) & $0.25$ & 432.46 & 1.2 & 0.782 & 0.067 & $+0.2$ & $-1.7$ \\
+D: por perfil (CTI ajustado) & $0.25$ & 433.31 & 1.1 & 0.774 & 0.066 & $0.0$ & $0.0$ \\
+E: oráculo por série$^\dagger$ & $0.25$ & 419.29 & \textemdash{} & \textemdash{} & \textemdash{} & $+3.2$ & $\textemdash{}$ \\
 \midrule
-A: pol. única (CTI puro) & $0.50$ & 512.21 & 52.8 & 0.954 & 0.057 & $0.0$ & $0.0$ \\
-B: pol. única (CTI ajustado) & $0.50$ & 512.21 & 52.8 & 0.954 & 0.057 & $0.0$ & $0.0$ \\
-C: por perfil (CTI puro) & $0.50$ & 321.33 & 4.3 & 0.742 & 0.008 & $+37.3$ & $+86.7$ \\
-D: por perfil (CTI ajustado) & $0.50$ & 324.25 & 3.2 & 0.737 & 0.007 & $+36.7$ & $+86.9$ \\
-E: oráculo por série$^\dagger$ & $0.50$ & 302.60 & \textemdash{} & \textemdash{} & \textemdash{} & $+40.9$ & $\textemdash{}$ \\
+A: pol. única (CTI puro) & $0.50$ & 433.31 & 1.1 & 0.774 & 0.070 & $0.0$ & $0.0$ \\
+B: pol. única (CTI ajustado) & $0.50$ & 433.31 & 1.1 & 0.774 & 0.070 & $0.0$ & $0.0$ \\
+C: por perfil (CTI puro) & $0.50$ & 432.46 & 1.2 & 0.782 & 0.071 & $+0.2$ & $-2.3$ \\
+D: por perfil (CTI ajustado) & $0.50$ & 433.31 & 1.1 & 0.774 & 0.070 & $0.0$ & $0.0$ \\
+E: oráculo por série$^\dagger$ & $0.50$ & 419.29 & \textemdash{} & \textemdash{} & \textemdash{} & $+3.2$ & $\textemdash{}$ \\
 \midrule
-A: pol. única (CTI puro) & $1.00$ & 512.21 & 52.8 & 0.954 & 0.068 & $0.0$ & $0.0$ \\
-B: pol. única (CTI ajustado) & $1.00$ & 512.21 & 52.8 & 0.954 & 0.068 & $0.0$ & $0.0$ \\
-C: por perfil (CTI puro) & $1.00$ & 321.33 & 4.3 & 0.742 & 0.009 & $+37.3$ & $+86.6$ \\
-D: por perfil (CTI ajustado) & $1.00$ & 364.10 & 0.3 & 0.707 & 0.011 & $+28.9$ & $+83.4$ \\
-E: oráculo por série$^\dagger$ & $1.00$ & 302.60 & \textemdash{} & \textemdash{} & \textemdash{} & $+40.9$ & $\textemdash{}$ \\
+A: pol. única (CTI puro) & $1.00$ & 433.31 & 1.1 & 0.774 & 0.078 & $0.0$ & $0.0$ \\
+B: pol. única (CTI ajustado) & $1.00$ & 433.31 & 1.1 & 0.774 & 0.078 & $0.0$ & $0.0$ \\
+C: por perfil (CTI puro) & $1.00$ & 432.46 & 1.2 & 0.782 & 0.081 & $+0.2$ & $-3.4$ \\
+D: por perfil (CTI ajustado) & $1.00$ & 433.31 & 1.1 & 0.774 & 0.078 & $0.0$ & $0.0$ \\
+E: oráculo por série$^\dagger$ & $1.00$ & 419.29 & \textemdash{} & \textemdash{} & \textemdash{} & $+3.2$ & $\textemdash{}$ \\
 \bottomrule
 \multicolumn{8}{l}{\scriptsize CTI~Adj. usa normalização global min-max sobre todas as 12~políticas; $\lambda_{BE}=0$ recupera seleção por CTI puro; A~$=$~B~$=$~EOQ para todo~$\lambda$.} \\
 \end{tabular}

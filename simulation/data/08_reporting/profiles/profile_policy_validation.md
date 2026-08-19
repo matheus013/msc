@@ -1,6 +1,6 @@
 # Validação — Avaliação por Perfil Operacional
 
-Gerado em: 2026-08-18 19:40
+Gerado em: 2026-08-19 05:00
 
 ## Fonte dos dados
 - KPIs: `data\07_model_output\kpis.parquet`
@@ -12,7 +12,7 @@ Gerado em: 2026-08-18 19:40
 
 ## Cobertura
 - Séries (loja, produto): **145** (Experimento 2, BA)
-- Políticas avaliadas: **18**
+- Políticas avaliadas: **12**
 - Perfis operacionais presentes: **3** de 5 definidos
 
 ## Distribuição por perfil
@@ -32,21 +32,15 @@ Gerado em: 2026-08-18 19:40
 | EOQ | 628.42 |
 | (s,S) | 654.86 |
 | Jornaleiro | 289.92 |
-| PIL | 178.32 |
-| Capped Base-Stock | 221.33 |
+| Capped Base-Stock | 561.87 |
 | Big Data Newsvendor | 582.11 |
-| Min-Max | 261.94 |
 | Fixed Interval | 457.81 |
 | Vendor-Responsive | 433.31 |
-| GA | 1269.59 |
-| SA | 1165.35 |
-| PSO | 1209.36 |
-| DE | 1049.18 |
-| DQN | 116.58 |
-| PPO | 221.54 |
-| SARSA | 358.06 |
-| GA-DQN | 1183.85 |
-| GA-PPO | 3189.22 |
+| GA | 1265.38 |
+| SA | 1147.86 |
+| DQN | 126.73 |
+| PPO | 5112.75 |
+| GA-DQN | 1175.79 |
 
 ## Limitações
 - Análise concentrada no regime *Lumpy* (Experimentos 1 e 2).

@@ -228,19 +228,53 @@ def plot_heatmap_service_level(kpis_df, out_dir, params):
     return _save(fig, "heatmap_service_level", out_dir, fmt, params.get("figure_dpi", 150))
 
 
+def _remove_extreme_outliers(values: np.ndarray, k: float = 3.0):
+    """
+    2026-08-19: pedido do usuario -- graficos de distribuicao (boxplot,
+    violin) ficavam ilegiveis quando 1-2 series com valor extremo (ex.:
+    BE>1000 numa politica degenerada de "nunca pedir", TIC de uma grade de
+    busca ruim) esticavam o eixo Y, comprimindo a caixa/violino de todas as
+    demais series numa faixa minuscula. Remove (nao so oculta) pontos fora
+    de [Q1 - k*IQR, Q3 + k*IQR] ANTES do plot -- k=3.0 e o limiar de outlier
+    "extremo" de Tukey (k=1.5 e o limiar "moderado", usado so pelo proprio
+    boxplot pra desenhar os bigodes; k=3.0 remove so os casos realmente
+    destoantes, preservando a variabilidade legitima da distribuicao).
+    Retorna (valores_filtrados, n_removidos).
+    """
+    values = np.asarray(values, dtype=float)
+    values = values[~np.isnan(values)]
+    if len(values) < 4:
+        return values, 0
+    q1, q3 = np.percentile(values, [25, 75])
+    iqr = q3 - q1
+    if iqr <= 0:
+        return values, 0
+    lo, hi = q1 - k * iqr, q3 + k * iqr
+    mask = (values >= lo) & (values <= hi)
+    return values[mask], int((~mask).sum())
+
+
 def plot_boxplot_tic(kpis_df, out_dir, params):
     """Boxplot of TIC distribution per policy."""
     policies = _ordered_policies(kpis_df)
     pcolors = _policy_colors()
-    data = [kpis_df[kpis_df["policy"] == p]["TIC"].dropna().values for p in policies]
+    raw = [kpis_df[kpis_df["policy"] == p]["TIC"].dropna().values for p in policies]
+    data, n_removed = [], 0
+    for d in raw:
+        clean, removed = _remove_extreme_outliers(d)
+        data.append(clean if len(clean) else d)
+        n_removed += removed
     fig, ax = plt.subplots(figsize=(max(10, len(policies) * 0.9), 5))
     display_labels = [_display_name(p) for p in policies]
-    bp = ax.boxplot(data, labels=display_labels, patch_artist=True,
+    bp = ax.boxplot(data, tick_labels=display_labels, patch_artist=True,
                     medianprops={"color": "black", "lw": 1.5})
     for patch, pol in zip(bp["boxes"], policies):
         patch.set_facecolor(pcolors.get(pol, "#888"))
         patch.set_alpha(0.7)
-    ax.set_title("Distribuição do CTI por Política (todas as lojas × replicações)")
+    title = "Distribuição do CTI por Política (todas as lojas × replicações)"
+    if n_removed:
+        title += f"\n({n_removed} outlier(s) extremo(s) excluído(s), |valor−Q1/Q3| > 3×IQR)"
+    ax.set_title(title, fontsize=10)
     ax.set_ylabel("CTI (R$)")
     ax.tick_params(axis="x", rotation=30, labelsize=8)
     ax.legend(handles=_category_legend_handles(), fontsize=7)
@@ -253,8 +287,13 @@ def plot_violin_bullwhip(kpis_df, out_dir, params):
     """Violin plot of Bullwhip Effect per policy."""
     policies = _ordered_policies(kpis_df)
     pcolors = _policy_colors()
-    data = [kpis_df[kpis_df["policy"] == p]["BE"].dropna().values for p in policies]
-    data = [d if len(d) > 1 else np.concatenate([d, d]) for d in data]
+    raw = [kpis_df[kpis_df["policy"] == p]["BE"].dropna().values for p in policies]
+    data, n_removed = [], 0
+    for d in raw:
+        clean, removed = _remove_extreme_outliers(d)
+        n_removed += removed
+        clean = clean if len(clean) else d
+        data.append(clean if len(clean) > 1 else np.concatenate([clean, clean]))
     fig, ax = plt.subplots(figsize=(max(10, len(policies) * 0.9), 5))
     parts = ax.violinplot(data, positions=range(len(policies)), showmedians=True)
     for i, pc in enumerate(parts["bodies"]):
@@ -262,7 +301,10 @@ def plot_violin_bullwhip(kpis_df, out_dir, params):
         pc.set_alpha(0.7)
     ax.set_xticks(range(len(policies)))
     ax.set_xticklabels(policies, rotation=30, fontsize=8)
-    ax.set_title("Distribuição do Efeito Bullwhip por Política")
+    title = "Distribuição do Efeito Bullwhip por Política"
+    if n_removed:
+        title += f"\n({n_removed} outlier(s) extremo(s) excluído(s), |valor−Q1/Q3| > 3×IQR)"
+    ax.set_title(title, fontsize=10)
     ax.set_ylabel("Bullwhip Effect")
     ax.legend(handles=_category_legend_handles(), fontsize=7)
     fig.tight_layout()
@@ -1028,7 +1070,7 @@ def plot_forecast_metrics_distribution(forecast_metrics: pd.DataFrame,
     for ax, metric in zip(axes, metrics_to_plot):
         data  = [agg[agg["model"] == m][metric].dropna().values for m in models]
         colors = [MODEL_COLORS.get(m, "#888") for m in models]
-        bp = ax.boxplot(data, labels=models, patch_artist=True,
+        bp = ax.boxplot(data, tick_labels=models, patch_artist=True,
                         medianprops={"color": "black", "lw": 1.5},
                         flierprops={"marker": ".", "ms": 3, "alpha": 0.4})
         for patch, color in zip(bp["boxes"], colors):
