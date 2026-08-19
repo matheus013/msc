@@ -107,15 +107,9 @@ A base de dados utilizada nesta proposta é composta por registros transacionais
 
 Detalhes sobre o recorte efetivamente usado em cada experimento, incluindo estados, número de séries, distribuição geográfica e predominância de regimes de demanda, são apresentados no Capítulo~\ref{cap:results} (Seções~\ref{sec:experimento1} e~\ref{sec:dataset_distribuicao_geografica}).
 
-\subsection{Estrutura Temporal}
+\paragraph{Estrutura temporal.} A base registra vendas por \textit{ciclo comercial} (17 ciclos por ano, $\approx$21 dias corridos cada). Essa granularidade reflete a política operacional real: pedidos são consolidados e processados por ciclo, justificando o prazo $L=2$ ciclos ($\approx$42 dias). Um horizonte de 38 ciclos (janeiro/2023 a abril/2025) captura sazonalidade anual completa, múltiplos padrões de intermitência (ciclos com venda zero e picos concentrados) e estabilização de parâmetros de estimação, crucial para validação confiável.
 
-A base registra vendas por \textit{ciclo comercial} (17 ciclos por ano, $\approx$21 dias corridos cada). Essa granularidade reflete a política operacional real: pedidos são consolidados e processados por ciclo, justificando o prazo $L=2$ ciclos ($\approx$42 dias). Com essa granularidade, um horizonte de 38 ciclos (janeiro/2023 a abril/2025) captura: (i) sazonalidade anual completa (variações de demanda por mês/período), (ii) múltiplos padrões de intermitência (ciclos com venda zero e picos concentrados), e (iii) estabilização de parâmetros de estimação, crucial para validação confiável.
-
-\subsection{Regimes de Demanda}
-
-A classificação por regime de demanda é aplicada após a agregação das vendas em ciclos comerciais. Para cada série loja-produto, calculam-se ADI e CV$^2$ conforme a taxonomia de Syntetos-Boylan apresentada na Seção~\ref{sec:sb_taxa}. O regime resultante é usado como característica operacional da série e como apoio à estratificação das análises; a Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório geral do AIPE. Nesta metodologia, a classificação não é tratada como resultado em si, mas como uma etapa de preparação das entradas usadas pelo AIPE.
-
-A distribuição efetiva dos regimes nos recortes experimentais, incluindo a predominância de séries \textit{Lumpy}, é discutida no Capítulo~\ref{cap:results} (Seção~\ref{sec:threats}).
+\paragraph{Regimes de demanda.} A classificação por regime é aplicada após a agregação das vendas em ciclos comerciais: para cada série loja-produto, calculam-se ADI e CV$^2$ conforme a taxonomia de Syntetos-Boylan (Seção~\ref{sec:sb_taxa}), usada como característica operacional e apoio à estratificação das análises (a Figura~\ref{fig:aipe_decision_flow} integra essa classificação ao fluxo decisório do AIPE), não como resultado em si. A distribuição efetiva dos regimes nos recortes experimentais, incluindo a predominância de séries \textit{Lumpy}, é discutida no Capítulo~\ref{cap:results} (Seção~\ref{sec:threats}).
 
 \subsection{Pipeline Experimental}
 \label{sec:pipeline_experimental}
@@ -377,9 +371,7 @@ Ao final da simulação, são produzidas a trajetória de estoque, os pedidos em
   \item Uso de \textit{common random numbers} quando há aleatoriedade na política ou no treinamento.
 \end{itemize}
 
-\subsection{Custos de Simulação}
-
-Os parâmetros de custo são uniformes: $h = 1.0$, $c_s = 5.0$, $c_o^{\text{fix}} = 50.0$ e $c_o^{\text{var}} = 0.5$. Esses parâmetros locais, juntamente com o prazo de entrega $L=2$ ciclos e as regras de falta de estoque, compõem a camada de parâmetros operacionais indicada na arquitetura do AIPE. A penalidade de ruptura ($c_s = 5h$) reflete o custo de capital perdido e venda não realizada típico do varejo regional.
+\paragraph{Custos de simulação.} Os parâmetros de custo são uniformes: $h = 1.0$, $c_s = 5.0$, $c_o^{\text{fix}} = 50.0$ e $c_o^{\text{var}} = 0.5$, compondo, junto do prazo de entrega $L=2$ ciclos e das regras de falta de estoque, a camada de parâmetros operacionais da arquitetura do AIPE. A penalidade de ruptura ($c_s = 5h$) reflete o custo de capital perdido e venda não realizada típico do varejo regional.
 
 \section{Validação Temporal e Estatística}
 \label{sec:wf_protocol}
@@ -429,11 +421,7 @@ Seja $\mathbf{x} = (x_1, x_2, \ldots, x_T)$ uma série temporal de comprimento $
 \label{fig:walkforward}
 \end{figure}
 
-\subsection{Aplicação Temporal do Protocolo}
-
-Nesta dissertação, o protocolo é parametrizado com $T_{\min} = 12$ ciclos de reposição, resultando em $T - T_{\min} = 26$ pontos de avaliação por série (horizonte total $T = 38$ ciclos). Os modelos de previsão (LSTM, XGBoost, ANN, Croston) são avaliados pelas métricas MASE, sMAPE e RMSSE computadas sobre esses 26 pontos de teste. O mesmo protocolo é aplicado à simulação das políticas de controle de inventário: cada política é executada nos 26 ciclos de avaliação com parâmetros calibrados exclusivamente na janela de treinamento.
-
-A validação \textit{walk-forward} produz estimativas de generalização temporal não viesadas. No processo de seleção contextual, isso é essencial porque as métricas de previsão por série (MASE, sMAPE) alimentam o vetor de entrada do PSE; avaliações apenas \textit{in-sample} tenderiam a inflar artificialmente a acurácia e a distorcer os rótulos de treinamento do meta-modelo.
+\paragraph{Aplicação temporal do protocolo.} Nesta dissertação, o protocolo é parametrizado com $T_{\min} = 12$ ciclos de reposição, resultando em $T - T_{\min} = 26$ pontos de avaliação por série (horizonte total $T = 38$ ciclos). Os modelos de previsão (LSTM, XGBoost, ANN, Croston) são avaliados pelas métricas MASE, sMAPE e RMSSE computadas sobre esses 26 pontos de teste, e o mesmo protocolo é aplicado à simulação das políticas de controle de inventário, cada uma executada nos 26 ciclos de avaliação com parâmetros calibrados exclusivamente na janela de treinamento. Essa validação produz estimativas de generalização temporal não viesadas, essenciais porque as métricas de previsão por série (MASE, sMAPE) alimentam o vetor de entrada do PSE -- avaliações apenas \textit{in-sample} tenderiam a inflar artificialmente a acurácia e a distorcer os rótulos de treinamento do meta-modelo.
 
 \subsection{Validação Estatística das Políticas}
 
@@ -577,9 +565,7 @@ A avaliação do segundo experimento segue um protocolo de validação temporal 
 
 \paragraph{Adaptação periódica.} A cada $\Delta t = 6$ ciclos (configurável): (a) recalcula-se $\phi(\mathbf{x}_i)$; (b) reclassifica-se o POD; (c) consulta-se o PSE, $\hat{\pi}^*(i) \leftarrow f(\phi(\mathbf{x}_i))$; (d) aplica-se a recomendação. Se a série migrar entre quadrantes Syntetos-Boylan, o PSE emite nova recomendação sem exigir reaprendizado do meta-modelo -- apenas recálculo das características e consulta ao classificador já treinado. Com isso, o AIPE trata a relação regime$\rightarrow$política como associação aprendida e reavaliável conforme o padrão operacional evolui.
 
-\subsection{Síntese do Protocolo}
-
-O \textit{pipeline} experimental é implementado com rastreabilidade de insumos, configurações e artefatos. A reprodutibilidade é apoiada por versionamento Git de código e parâmetros, sementes aleatórias fixas por experimento, hashes de \textit{datasets} de entrada e documentação de dependências de software. Dados, scripts e resultados são versionados e verificáveis, permitindo reconstruir os experimentos a partir dos mesmos parâmetros. A matriz completa dos parâmetros experimentais, configurações e artefatos necessários à reprodução das políticas avaliadas é apresentada no Apêndice~\ref{app:reproducibility}.
+\paragraph{Síntese do protocolo.} O \textit{pipeline} experimental é implementado com rastreabilidade de insumos, configurações e artefatos: versionamento Git de código e parâmetros, sementes aleatórias fixas por experimento, hashes de \textit{datasets} de entrada e documentação de dependências de software, permitindo reconstruir os experimentos a partir dos mesmos parâmetros. A matriz completa dos parâmetros experimentais, configurações e artefatos necessários à reprodução das políticas avaliadas é apresentada no Apêndice~\ref{app:reproducibility}.
 
 A Tabela~\ref{tab:met_comp_proposta} resume o papel relativo das principais famílias de métodos no contexto MEIO, destacando que a escolha metodológica envolve compromisso entre escalabilidade, interpretabilidade, custo computacional e forma de tratamento das restrições.
 
