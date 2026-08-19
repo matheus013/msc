@@ -151,7 +151,7 @@ PPO                    & 5.112.75        & \textbf{0.96} & \textbf{0.02} & 14.12
 \bottomrule
 \end{tabular}
 \end{table}
-\footnotetext{GA e GA-DQN têm BE praticamente empatado (0,16 e 0,25 respectivamente); GA marginalmente menor.}
+\footnotetext{GA e GA-DQN têm BE praticamente empatado (0,16 em ambos, na precisão reportada).}
 
 Um padrão de degeneração permanece no Experimento~2 mesmo após a correção de fidelidade da função objetivo (Seção~\ref{sec:benchmark_massivo}): o DQN$^\dagger$ converge ao comportamento de não emitir pedidos (FP\,=\,$0.00$, NS\,=\,$0.23$), obtendo o menor CTI ao custo do pior nível de serviço observado -- ao contrário do PPO, que respondeu à mesma correção e passou a operar com NS alto (Seção~\ref{sec:benchmark_massivo} discute a hipótese de atribuição de crédito do \textit{bootstrap} de 1 passo como explicação). Esse padrão ajuda a separar políticas estatisticamente interessantes de alternativas operacionalmente viáveis. Entre as políticas operacionalmente viáveis, destacam-se agrupamentos distintos:
 
