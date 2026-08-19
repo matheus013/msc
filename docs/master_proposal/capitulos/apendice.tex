@@ -77,7 +77,7 @@ Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do li
 
 Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas, por sua vez, cada candidato é uma parametrização da política $(s,Q)$, em que $s$ representa o ponto de reposição e $Q$ representa a quantidade de pedido. A avaliação de cada candidato ocorre pela execução da política correspondente no ambiente de simulação, retornando os indicadores de custo total de inventário, nível de serviço, ruptura, efeito chicote e frequência de pedidos.
 
-Para o Algoritmo Genético, cada indivíduo da população é codificado como um vetor contínuo $(s,Q)$. A população inicial é amostrada dentro dos limites operacionais admissíveis para a série avaliada. A seleção é realizada por torneio, favorecendo indivíduos com melhor avaliação; o cruzamento combina os parâmetros de dois indivíduos pais por meio de cruzamento do tipo \textit{Blend}; e a mutação aplica perturbação gaussiana aos genes, seguida de ajuste aos limites admissíveis. Dessa forma, o GA busca combinações de $(s,Q)$ que reduzam o custo simulado sem perder viabilidade de serviço.
+Para o Algoritmo Genético, cada indivíduo da população é codificado como um vetor contínuo $(s,Q)$. A população inicial é amostrada dentro dos limites operacionais admissíveis para a série avaliada. A seleção é realizada por torneio, favorecendo indivíduos com melhor avaliação; o cruzamento é uniforme, em que cada gene do filho herda do pai A ou do pai B com probabilidade $0{,}5$; e a mutação é adaptativa, com taxa decaindo linearmente ao longo das gerações, seguida de ajuste aos limites admissíveis. Dessa forma, o GA busca combinações de $(s,Q)$ que reduzam o custo simulado sem perder viabilidade de serviço.
 
 As demais meta-heurísticas usam a mesma representação de solução e a mesma função de avaliação. No SA, uma solução inicial $(s,Q)$ é iterativamente perturbada por movimentos de vizinhança, aceitando pioras de custo com probabilidade controlada pela temperatura e pelo cronograma de resfriamento. No PSO, cada partícula representa um par $(s,Q)$ com velocidade própria, sendo atualizada por termos de inércia, atração ao melhor ponto individual e atração ao melhor ponto global do enxame. No DE, cada vetor $(s,Q)$ é atualizado por mutação diferencial e cruzamento binomial, preservando apenas candidatos que melhoram a função objetivo.
 
@@ -117,8 +117,8 @@ Jornaleiro & nível ótimo $y^*$ & quantil(0,833) da previsão & via distribuiç
 GA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
 GA & tamanho da população & 100 & \\
 GA & número de gerações & 50 & \\
-GA & taxa de crossover & 0,9 & operador Blend, $\alpha{=}0{,}5$ \\
-GA & taxa de mutação & 0,05 & gaussiana, $\sigma{=}\mathrm{range}/10$ \\
+GA & taxa de crossover & 0,8 & uniforme (cada gene herda do pai A ou B, $p{=}0{,}5$) \\
+GA & taxa de mutação & 0,05 (inicial) & adaptativa: decai linearmente até $0,05\times0{,}2$ na última geração \\
 GA & método de seleção & torneio de tamanho 3 & \\
 GA & função de avaliação & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & aptidão escalar; rótulos finais usam menor CTI viável \\
 GA & semente & 42 & \\[4pt]
@@ -187,11 +187,9 @@ Ambiente & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v
 
 \multicolumn{4}{@{}l}{\textit{DQN}} \\[2pt]
 DQN & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
-DQN & número de episódios & 500 & \\
+DQN & número de episódios & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\
 DQN & fator de desconto $\gamma$ & 0,95 & \\
-DQN & $\varepsilon$ inicial & 1,0 & exploração total no início \\
-DQN & $\varepsilon$ mínimo & 0,01 & \\
-DQN & decaimento de $\varepsilon$ & 0,995 por episódio & geométrico \\
+DQN & $\varepsilon$ & 0,2 & fixo, sem decaimento (Tab.~4 do artigo-base) \\
 DQN & tamanho do batch & 64 & \\
 DQN & tamanho do \textit{replay buffer} & 10\,000 & \\
 DQN & frequência de atualização da rede-alvo & 10 episódios & \\
@@ -202,7 +200,7 @@ DQN & semente & 42 & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{PPO}} \\[2pt]
 PPO & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
-PPO & número de episódios & 500 & \\
+PPO & número de episódios & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\
 PPO & fator de desconto $\gamma$ & 0,99 & \\
 PPO & epsilon de recorte & 0,2 & razão de probabilidade recortada em $[1{-}\varepsilon,\, 1{+}\varepsilon]$ \\
 PPO & épocas de otimização por rollout & 4 & \\

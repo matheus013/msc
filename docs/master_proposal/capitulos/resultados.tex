@@ -6,7 +6,7 @@ Este capítulo apresenta os resultados dos dois experimentos executados. O Exper
 
 \section{Visão Geral}
 
-O Experimento~1 avalia 15 lojas da Paraíba para o produto~48130, em regime \textit{Lumpy}, e fornece a primeira evidência empírica de que diferentes políticas de reposição apresentam vantagens relativas conforme o perfil operacional da série. O Experimento~2 amplia essa análise para 145 combinações loja-produto do estado da Bahia, preservando o mesmo horizonte de simulação e incorporando cinco replicações experimentais por série. Em conjunto, os dois experimentos permitem avaliar a heterogeneidade de desempenho entre políticas antes da expansão nacional prevista.
+O Experimento~1 avalia 15 lojas da Paraíba para o produto~48130, em regime \textit{Lumpy}, e fornece a primeira evidência empírica de que diferentes políticas de reposição apresentam vantagens relativas conforme o perfil operacional da série. O Experimento~2 amplia essa análise para 145 combinações loja-produto do estado da Bahia, preservando o mesmo horizonte de simulação e incorporando cinco replicações experimentais por série. Em conjunto, os dois experimentos permitem avaliar a heterogeneidade de desempenho entre políticas antes dos estudos de caso adicionais em andamento (M5 e expansão multiestado, Capítulo~\ref{cap:plano_continuidade}).
 
 A Tabela~\ref{tab:dataset_stats} resume as principais características do \textit{dataset} nos dois experimentos executados, delimitando o escopo empírico retomado em detalhe nas seções seguintes.
 
@@ -109,12 +109,12 @@ A Figura~\ref{fig:lojas_segmento} complementa essa leitura ao mostrar a concentr
 \label{fig:lojas_segmento}
 \end{figure}
 
-A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura do Experimento~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo da expansão nacional.
+A Figura~\ref{fig:nacional_mapa_lojas_receita} contextualiza geograficamente a abrangência atual do \textit{pipeline}, mostrando a distribuição das lojas da rede no território nacional com receita esperada por ciclo comercial. O estado da Bahia concentra a cobertura do Experimento~2; a extensão às demais regiões (Nordeste e Centro-Oeste) constitui o escopo do Estudo de Caso 4 (expansão multiestado, Capítulo~\ref{cap:plano_continuidade}).
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.70\textwidth]{../../simulation/data/08_reporting/maps/nacional_mapa_lojas_receita}
-\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo comercial (R\$). O estado da Bahia (BA) representa a cobertura atual do Experimento~2; demais regiões serão incorporadas na expansão nacional.}
+\caption{Distribuição geográfica das lojas da rede varejista no Brasil, coloridas por receita esperada por ciclo comercial (R\$). O estado da Bahia (BA) representa a cobertura atual do Experimento~2; demais regiões serão incorporadas no Estudo de Caso 4 (expansão multiestado).}
 \label{fig:nacional_mapa_lojas_receita}
 \end{figure}
 
@@ -238,7 +238,7 @@ A Tabela~\ref{tab:strategy_cost_comparison_adjusted} reporta uma análise comple
 
 \input{../../simulation/data/08_reporting/strategy/table_strategy_adjusted}
 
-Essa comparação fornece suporte empírico à motivação do AIPE: a heterogeneidade de demanda observada dentro do regime \textit{Lumpy} do Experimento~2 já produz diferença econômica mensurável entre as estratégias, mesmo quando essa diferença é modesta em magnitude. A análise permanece concentrada nas séries \textit{Lumpy} do Experimento~2; a extensão a outros regimes é objetivo da expansão nacional.
+Essa comparação fornece suporte empírico à motivação do AIPE: a heterogeneidade de demanda observada dentro do regime \textit{Lumpy} do Experimento~2 já produz diferença econômica mensurável entre as estratégias, mesmo quando essa diferença é modesta em magnitude. A análise permanece concentrada nas séries \textit{Lumpy} do Experimento~2; a extensão a outros regimes é objetivo dos estudos de caso adicionais em andamento.
 
 \subsection{Heterogeneidade e Evidência para o AIPE}
 
@@ -384,15 +384,15 @@ A Figura~\ref{fig:forecast_boxplot} complementa a Tabela~\ref{tab:forecast_metri
 
 Os resultados apresentados neste capítulo devem ser interpretados considerando o escopo experimental dos dois experimentos executados. O Experimento~2 ampliou a avaliação inicial ao incorporar 145~séries do estado da Bahia, cinco replicações experimentais, testes estatísticos formais e resultados auxiliares de previsão. Esses avanços fortalecem a análise em relação ao Experimento~1, especialmente por permitirem comparar políticas sob maior diversidade de séries e com suporte estatístico mais consistente.
 
-Ainda assim, a avaliação atual permanece concentrada em séries classificadas no regime \textit{Lumpy}. Essa concentração é relevante porque permite analisar o AIPE em um regime de alta complexidade operacional, caracterizado por baixa frequência e alta variabilidade da demanda. Por outro lado, a generalização para os regimes \textit{Smooth}, \textit{Erratic} e \textit{Intermittent}, bem como para outras regiões da rede varejista, depende da expansão nacional prevista.
+Ainda assim, a avaliação atual permanece concentrada em séries classificadas no regime \textit{Lumpy}. Essa concentração é relevante porque permite analisar o AIPE em um regime de alta complexidade operacional, caracterizado por baixa frequência e alta variabilidade da demanda. Por outro lado, a generalização para os regimes \textit{Smooth}, \textit{Erratic} e \textit{Intermittent}, bem como para outras regiões da rede varejista e outras bases de dados, depende dos estudos de caso adicionais em andamento (M5 e expansão multiestado).
 
 Algumas escolhas experimentais também delimitam a interpretação dos resultados. O horizonte disponível de 38~ciclos comerciais restringe a observação de mudanças estruturais de longo prazo. Os custos de manutenção, ruptura e pedido foram parametrizados a partir de valores compatíveis com o varejo regional, e diferentes relações entre esses custos podem alterar o desempenho relativo das políticas. Além disso, o prazo de entrega foi mantido fixo em dois ciclos, o que favorece a comparação controlada entre políticas, mas não captura variações operacionais de \textit{lead time}.
 
 De forma semelhante, as políticas aprendidas por reforço são avaliadas como candidatas dentro do \textit{benchmark}, não como evidência direta de desempenho em ambiente de produção.
 
-A etapa de expansão nacional dará continuidade a essa avaliação ao ampliar o conjunto de produtos, lojas, regiões e regimes de demanda. Essa expansão permitirá avaliar a generalização do AIPE, consolidar a geração de rótulos de política dominante e testar o \textit{Policy Selection Engine} em séries não observadas durante o treinamento.
+Os estudos de caso adicionais em andamento (M5 e expansão multiestado, Capítulo~\ref{cap:plano_continuidade}) darão continuidade a essa avaliação ao ampliar o conjunto de bases de dados, produtos, lojas, regiões e regimes de demanda. Essa ampliação permitirá avaliar a generalização do AIPE, consolidar a geração de rótulos de política dominante e testar o \textit{Policy Selection Engine} em séries não observadas durante o treinamento.
 \section{Discussão dos Resultados}
 
 Os resultados preliminares dos dois experimentos executados apoiam a premissa central desta dissertação: o desempenho das políticas de reposição depende do perfil operacional da série analisada. Nenhuma política avaliada domina simultaneamente as demais em custo total de inventário, nível de serviço, ruptura, estabilidade dos pedidos e frequência de reposição. A ampliação de 15~séries na Paraíba para 145~séries na Bahia preservou essa heterogeneidade e permitiu aplicar validação estatística formal às comparações.
 
-Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados reforçam a relevância de abordagens que não assumem uma política única como solução universal. Políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos, apoiando o posicionamento do AIPE como \textit{framework} de seleção contextual. A expansão nacional dará continuidade a essa avaliação ao ampliar o \textit{benchmark} para outros estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.
+Em relação à literatura analisada no Capítulo~\ref{cap:rel}, os resultados reforçam a relevância de abordagens que não assumem uma política única como solução universal. Políticas clássicas, políticas parametrizadas por meta-heurísticas, políticas aprendidas por reforço e políticas híbridas apresentam vantagens relativas em contextos distintos, apoiando o posicionamento do AIPE como \textit{framework} de seleção contextual. Os estudos de caso adicionais darão continuidade a essa avaliação ao ampliar o \textit{benchmark} para outras bases de dados, estados, produtos e regimes de demanda, permitindo avaliar a capacidade de generalização do AIPE e consolidar o treinamento do PSE.

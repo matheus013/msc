@@ -52,7 +52,7 @@ Com base nesse ciclo, a dissertação investiga se históricos de venda podem se
 
 \paragraph{Hipótese 3: Generalização operacional.} Como consequência esperada dessa aprendizagem, a terceira premissa é que um modelo treinado dessa forma possa generalizar para novas séries. Com isso, reduz-se a necessidade de testar manualmente cada novo produto; a abordagem utiliza o padrão de venda observado para produzir uma recomendação empiricamente fundamentada.
 
-Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. Se encontrarem apoio empírico nos dados, a seleção contextual torna-se uma abordagem operacionalmente plausível. Os resultados preliminares sustentam parcialmente essas hipóteses, especialmente quanto às diferenças entre políticas e à viabilidade do meta-modelo de seleção. A validação da generalização do PSE para novas séries dentro dos regimes observados será aprofundada na etapa futura de expansão nacional.
+Em conjunto, essas três premissas definem o critério de viabilidade do AIPE. Se encontrarem apoio empírico nos dados, a seleção contextual torna-se uma abordagem operacionalmente plausível. Os resultados preliminares sustentam parcialmente essas hipóteses, especialmente quanto às diferenças entre políticas e à viabilidade do meta-modelo de seleção. A validação da generalização do PSE para novas séries dentro dos regimes observados será aprofundada nos estudos de caso adicionais em andamento (M5 e expansão multiestado).
 
 \section{Objetivos}
 
@@ -64,7 +64,7 @@ O objetivo geral é propor, implementar e avaliar o \textit{Adaptive Inventory P
 
 \subsection*{Objetivos específicos}
 
-Os objetivos específicos são organizados em dois experimentos já executados e uma etapa futura. O Experimento 1 corresponde ao estudo piloto na Paraíba, usado para validar o ambiente de simulação e o protocolo inicial de comparação entre políticas. O Experimento 2 corresponde à expansão experimental para 145 séries da Bahia, usada para avaliar diferenças de desempenho por perfil e comparar política única global com seleção contextual. A etapa seguinte corresponde à expansão nacional, voltada à generalização dos resultados e ao treinamento e avaliação ampliada do PSE.
+Os objetivos específicos são organizados em dois experimentos já executados e dois estudos de caso adicionais em andamento. O Experimento 1 corresponde ao estudo piloto na Paraíba, usado para validar o ambiente de simulação e o protocolo inicial de comparação entre políticas. O Experimento 2 corresponde à expansão experimental para 145 séries da Bahia, usada para avaliar diferenças de desempenho por perfil e comparar política única global com seleção contextual. Esses dois experimentos permanecem a referência central de resultados da dissertação. Os estudos de caso adicionais (M5, benchmark público internacional usado por \citet{Zabraoui2025GaDQN}; e a expansão multiestado da base nacional) não substituem essa referência: servem para testar se a heterogeneidade regime$\rightarrow$política observada na Bahia se replica sob condições estruturalmente diferentes de demanda, escala e origem de dados, fortalecendo (ou revelando os limites de) a validade externa do AIPE.
 
 \begin{enumerate}
   \item \textbf{[Experimento 1: estudo piloto na Paraíba, concluído]} Construir e validar um ambiente de simulação para avaliar políticas de reposição em séries loja-produto reais, considerando dinâmica de estoque, prazo de entrega e indicadores operacionais de custo, serviço, ruptura, estabilidade e frequência de pedidos \citep{Law2015SimulationModeling,Axsater2006InventoryControl};
@@ -77,10 +77,14 @@ Os objetivos específicos são organizados em dois experimentos já executados e
 
   \item \textbf{[Experimento 2: expansão experimental na Bahia, concluído]} Avaliar estatisticamente os resultados obtidos, verificando a consistência das diferenças observadas entre políticas no recorte analisado;
 
-  \item \textbf{[Etapa futura: expansão nacional e generalização, em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante, definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
+  \item \textbf{[Estudos de caso adicionais, em andamento]} Treinar e avaliar o \textit{Policy Selection Engine} (PSE), responsável por associar características operacionais das séries à política dominante, definida como a política de menor custo total de inventário entre aquelas que atendem ao limiar mínimo de nível de serviço, com validação cruzada estratificada e análise de interpretabilidade \citep{Lundberg2017UnifiedApproach,Lundberg2018ConsistentIndividually};
 
-  \item \textbf{[Etapa futura: expansão nacional e generalização, planejado]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
+  \item \textbf{[Estudo de Caso 3: benchmark M5, em andamento]} Avaliar o portfólio completo de políticas sobre o conjunto público M5 (Walmart), a mesma base de validação do artigo-base \citep{Zabraoui2025GaDQN}, testando se a heterogeneidade regime$\rightarrow$política observada na Bahia se replica numa base de demanda de alto volume, escala e proveniência distintas do varejo brasileiro;
+
+  \item \textbf{[Estudo de Caso 4: expansão multiestado, em andamento]} Estender a avaliação do AIPE para um conjunto mais amplo de produtos, lojas e regiões da base nacional, analisando sua capacidade de generalização para diferentes regimes operacionais de demanda \citep{Axsater2006InventoryControl}.
 \end{enumerate}
+
+Em todos os casos, o papel desses estudos de caso é fortalecer e delimitar a validade do AIPE como \textit{framework}, não substituí-lo: a contribuição central da dissertação permanece a formulação metodológica da seleção contextual, não a cobertura geográfica ou de proveniência dos dados usados para testá-la.
 
 \section{Contribuições da dissertação}
 
