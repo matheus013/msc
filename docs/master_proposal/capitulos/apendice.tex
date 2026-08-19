@@ -8,7 +8,7 @@
 \renewcommand{\thetable}{A.\arabic{table}}
 \setcounter{table}{0}
 
-Este apêndice consolida os parâmetros utilizados nos experimentos reportados, organizados por camada experimental. A formulação conceitual de cada política permanece no Capítulo~2, enquanto sua instanciação experimental é descrita no Capítulo~4; o registro aqui serve para auditoria e reprodução. Os valores foram obtidos a partir das configurações, scripts e artefatos versionados do projeto. A organização segue a sequência experimental: parâmetros globais (Tabela~\ref{tab:global_params}), políticas clássicas e meta-heurísticas (Tabela~\ref{tab:classic_meta_params}), agentes de aprendizado por reforço e políticas híbridas (Tabela~\ref{tab:rl_params}), previsão e geração de rótulos (Tabela~\ref{tab:forecast_label_params}) e ambiente de validação e reprodução (Tabela~\ref{tab:validation_env}).
+Este apêndice consolida os parâmetros utilizados nos experimentos reportados, organizados por camada experimental. A formulação conceitual de cada política permanece no Capítulo~2, enquanto sua instanciação experimental é descrita no Capítulo~4; o registro aqui serve para auditoria e reprodução. Os valores foram obtidos a partir das configurações, scripts e artefatos versionados do projeto. A organização segue a sequência experimental: parâmetros globais (Tabela~\ref{tab:global_params}), políticas clássicas e meta-heurísticas (Tabela~\ref{tab:classic_meta_params}), agentes de aprendizado por reforço e políticas híbridas (Tabela~\ref{tab:rl_params}), previsão e geração de rótulos (Tabela~\ref{tab:forecast_label_params}) e ambiente de validação e reprodução (Tabela~\ref{tab:validation_env}). \textbf{Nota geral:} salvo indicação contrária nas tabelas, todo componente estocástico (meta-heurísticas, agentes de RL, PSE) usa semente fixa $=42$; essa linha não é repetida individualmente em cada tabela.
 
 % ─────────────────────────────────────────────────────────────────────────────
 % TABELA A.1: Parâmetros globais do experimento
@@ -120,16 +120,14 @@ GA & número de gerações & 50 & \\
 GA & taxa de crossover & 0,8 & uniforme (cada gene herda do pai A ou B, $p{=}0{,}5$) \\
 GA & taxa de mutação & 0,05 (inicial) & adaptativa: decai linearmente até $0,05\times0{,}2$ na última geração \\
 GA & método de seleção & torneio de tamanho 3 & \\
-GA & função de avaliação & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & aptidão escalar; rótulos finais usam menor CTI viável \\
-GA & semente & 42 & \\[4pt]
+GA & função de avaliação & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & aptidão escalar; rótulos finais usam menor CTI viável \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{SA (Simulated Annealing)}} \\[2pt]
 SA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
 SA & temperatura inicial & 1000,0 & \\
 SA & fator de resfriamento & 0,95 & geométrico por iteração \\
 SA & iterações máximas & 500 & \\
-SA & minimizador local & Nelder-Mead & \texttt{scipy.optimize.}\newline\texttt{dual\_annealing} \\
-SA & semente & 42 & \\[4pt]
+SA & minimizador local & Nelder-Mead & \texttt{scipy.optimize.}\newline\texttt{dual\_annealing} \\[4pt]
 
 \end{longtable}
 
@@ -168,11 +166,11 @@ Nas políticas híbridas GA-DQN e GA-PPO, o GA fornece uma política inicial de 
 \multicolumn{4}{@{}l}{\textit{Ambiente compartilhado (todos os agentes)}} \\[2pt]
 Ambiente & vetor de estado (dim.\ 1 a 3) & $I_t/I_0$,\; $\hat{D}/\mu$,\; $\mathrm{OP}/I_0$ & nível de estoque, previsão, pedido aberto \\
 Ambiente & vetor de estado (dim.\ 4 a 6) & $\mu_6/\mu$,\; $\sigma_6/\sigma$,\; $t/T$ & tendências de curto prazo e posição no horizonte \\
-Ambiente & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\[4pt]
+Ambiente & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\
+Ambiente & espaço de ações (DQN/PPO) & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
+Ambiente & número de episódios (DQN/PPO) & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{DQN}} \\[2pt]
-DQN & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
-DQN & número de episódios & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\
 DQN & fator de desconto $\gamma$ & 0,95 & \\
 DQN & $\varepsilon$ & 0,2 & fixo, sem decaimento (Tab.~4 do artigo-base) \\
 DQN & tamanho do batch & 64 & \\
@@ -180,20 +178,16 @@ DQN & tamanho do \textit{replay buffer} & 10\,000 & \\
 DQN & frequência de atualização da rede-alvo & 10 episódios & \\
 DQN & arquitetura da Q-network & $[6] \to [64, 64] \to [20]$ & duas camadas ocultas \\
 DQN & taxa de aprendizado & 0,001 & padrão do código; não exposto no YAML \\
-DQN & recorte de gradiente & $[-1{,}0,\; 1{,}0]$ & \\
-DQN & semente & 42 & \\[4pt]
+DQN & recorte de gradiente & $[-1{,}0,\; 1{,}0]$ & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{PPO}} \\[2pt]
-PPO & espaço de ações & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
-PPO & número de episódios & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\
 PPO & fator de desconto $\gamma$ & 0,99 & \\
 PPO & epsilon de recorte & 0,2 & razão de probabilidade recortada em $[1{-}\varepsilon,\, 1{+}\varepsilon]$ \\
 PPO & épocas de otimização por rollout & 4 & \\
 PPO & taxa de aprendizado & 0,0003 & \\
 PPO & arquitetura do ator & $[6] \to [64, 32] \to [20]$ & saída em logits \\
 PPO & arquitetura do crítico & $[6] \to [64, 32] \to [1]$ & saída em valor escalar \\
-PPO & estimativa de vantagem & $A_t = G_t - V(s_t)$, normalizada & $(G - \bar{G})/(\sigma_G + 10^{-8})$ \\
-PPO & semente & 42 & \\[4pt]
+PPO & estimativa de vantagem & $A_t = G_t - V(s_t)$, normalizada & $(G - \bar{G})/(\sigma_G + 10^{-8})$ \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{GA-DQN}} \\[2pt]
 GA-DQN & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
@@ -201,7 +195,6 @@ GA-DQN & parâmetros do DQN & herdados (ver acima) & \\
 GA-DQN & tamanho do \textit{replay buffer} pré-populado & 1\,000 & trajetórias geradas pelo GA \\
 GA-DQN & episódios de refinamento RL & 200 & \\
 GA-DQN & regra de integração GA~$\to$~DQN & se $(I_t + \mathrm{OP}) \leq s + \mathrm{SS}$:\newline $Q = \max(Q_{\mathrm{DQN}},\; 0{,}5 \cdot Q_{\mathrm{GA}})$;\newline caso contrário: $Q = 0$ & \\
-GA-DQN & semente & 42 & \\
 \end{longtable}
 
 \begin{quote}
@@ -259,13 +252,7 @@ Croston & alpha (suavização) & 0,1 & suavização exponencial \\[3pt]
 ARIMA & ordem $(p,d,q)$ & $(1,1,1)$ & \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Características operacionais e classificação POD}} \\[2pt]
-POD / ADI $\times$ CV$^2$ & limiar ADI & 1,32 & classif.\ Syntetos-Boylan \\
-POD / ADI $\times$ CV$^2$ & limiar CV$^2$ & 0,49 & classif.\ Syntetos-Boylan \\
-POD / ADI $\times$ CV$^2$ & limiar de zeros consecutivos & 5 & \\
-POD / ADI $\times$ CV$^2$ & limiar de burstiness & 0,30 & \\
-POD / ADI $\times$ CV$^2$ & limiar ACF (sazonalidade) & 0,25 & \\
-POD / ADI $\times$ CV$^2$ & coeficiente mínimo de tendência & 0,05 & \\
-POD / ADI $\times$ CV$^2$ & limiar de entropia & 2,0 & \\
+POD / ADI $\times$ CV$^2$ & limiares de classificação & ADI${\geq}1{,}32$; CV$^2{\geq}0{,}49$; zeros consec.${\geq}5$; \textit{burstiness}${\geq}0{,}30$; ACF${\geq}0{,}25$; tendência${\geq}0{,}05$; entropia${\geq}2{,}0$ & Syntetos-Boylan + regras POD (Tabela~\ref{tab:pod}) \\
 POD / ADI $\times$ CV$^2$ & média mínima de demanda & 2,0 & séries abaixo são excluídas \\
 POD / ADI $\times$ CV$^2$ & limiar CV para segmentação & 1,5 & segmentação adicional por variabilidade \\[4pt]
 
@@ -273,7 +260,6 @@ POD / ADI $\times$ CV$^2$ & limiar CV para segmentação & 1,5 & segmentação a
 Rótulos & limiar mínimo de NS para rótulo & 0,70 & política abaixo é excluída do \textit{ranking} \\
 Rótulos & modelo PSE & XGBoost & classificador treinado sobre perfis de séries \\
 Rótulos & validação cruzada & 5 folds & \\
-Rótulos & semente PSE & 42 & \\
 Rótulos & n\_estimators (PSE) & 300 & \\
 Rótulos & max\_depth (PSE) & 6 & \\
 Rótulos & taxa de aprendizado (PSE) & 0,05 & \\
@@ -310,22 +296,11 @@ Estatística & teste par a par & Wilcoxon signed-rank & comparação de pares de
 Estatística & teste global & Friedman & hipótese nula de igualdade entre múltiplas políticas \\
 Estatística & \textit{post-hoc} & Nemenyi & comparações múltiplas após rejeição de Friedman \\[4pt]
 
-\multicolumn{4}{@{}l}{\textit{Ambiente computacional}} \\[2pt]
-Python & versão mínima & 3.9 & \\
-Kedro & versão mínima & 0.19.0 & orquestração do \textit{pipeline} \\
-kedro-datasets & versão mínima & 2.0.0 & \\
-pandas & versão mínima & 2.0 & \\
-NumPy & versão mínima & 1.24 & \\
-scikit-learn & versão mínima & 1.3 & \\
-XGBoost & versão mínima & 2.0 & \\
-DEAP & versão mínima & 1.4 & GA e DE \\
-SciPy & versão mínima & 1.11 & SA e DE \\
-PyArrow & versão mínima & 14.0 & \\
-Matplotlib & versão mínima & 3.7 & \\
-scikit-posthocs & versão mínima & 0.8 & testes de Nemenyi \\
-GeoPandas & versão mínima & 0.14 & \\
-geobr & versão mínima & 0.4 & malhas geográficas \\
-PyYAML & versão mínima & 6.0 & \\[4pt]
+\multicolumn{4}{@{}l}{\textit{Ambiente computacional (versões mínimas)}} \\[2pt]
+Linguagem/orquestração & versões mínimas & Python 3.9; Kedro 0.19.0; kedro-datasets 2.0.0 & orquestração do \textit{pipeline} \\
+Dados/ML & versões mínimas & pandas 2.0; NumPy 1.24; scikit-learn 1.3; XGBoost 2.0; PyArrow 14.0 & \\
+Otimização/estatística & versões mínimas & DEAP 1.4 (GA/DE); SciPy 1.11 (SA/DE); scikit-posthocs 0.8 (Nemenyi) & \\
+Visualização/geo & versões mínimas & Matplotlib 3.7; GeoPandas 0.14; geobr 0.4; PyYAML 6.0 & geobr: malhas geográficas \\[4pt]
 
 \multicolumn{4}{@{}l}{\textit{Artefatos de reprodução}} \\[2pt]
 dados processados & \nolinkurl{simulation/data/03_primary/} & & snapshot dos dados usados nas simulações \\
