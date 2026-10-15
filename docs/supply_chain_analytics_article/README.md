@@ -1,6 +1,6 @@
 # Artigo para Supply Chain Analytics
 
-Manuscrito de trabalho em português, 15 páginas, sem apêndice. Nenhuma submissão foi realizada.
+Manuscrito de trabalho em português, 19 páginas, sem apêndice. Nenhuma submissão foi realizada.
 
 **Pergunta central:** selecionar a política por perfil melhora o compromisso entre custo e atendimento frente à seleção global, usando a mesma informação passada?
 
@@ -21,6 +21,8 @@ Compilação a partir da raiz:
 ```powershell
 & experiment/.venv/Scripts/python.exe experiment/scripts/literature/build_sca_article.py --ptbr
 ```
+
+A revisão fina, a auditoria de 2.900 escolhas e os itens pendentes para submissão estão em [PARECER_E_ALTERACOES.md](reviews/fine_review_2026-10-15/PARECER_E_ALTERACOES.md). O manuscrito tem quatro figuras vetoriais, doze referências citadas e sensibilidade aos cinco limiares.
 
 As figuras são reproduzidas por `experiment/scripts/documents/article_research_figures.py`, com a matriz completa e as escolhas auditadas na validação. A rotina não treina políticas nem altera a execução M5.
 

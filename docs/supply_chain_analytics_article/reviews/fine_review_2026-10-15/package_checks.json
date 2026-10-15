@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "pages": 19,
+  "abstract_whitespace_words": 192,
+  "cited_references": 12,
+  "highlight_characters": [
+    70,
+    67,
+    67,
+    64
+  ],
+  "figures": [
+    "figures/fluxo_experimental.pdf",
+    "figures/custo_servico.pdf",
+    "figures/distribuicao_atendimento.pdf",
+    "figures/escolhas_perfil.pdf"
+  ],
+  "figure_fonts": {
+    "figures/fluxo_experimental.pdf": [
+      "PGAVPN+NimbusRomNo9L-Medi            Type 1            Custom           yes yes yes     10  0",
+      "XZQMKH+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     11  0"
+    ],
+    "figures/custo_servico.pdf": [
+      "HZCAFW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/distribuicao_atendimento.pdf": [
+      "YEIZNG+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/escolhas_perfil.pdf": [
+      "TCOYEX+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ]
+  },
+  "portable_source_archive": true,
+  "no_undefined_references_or_overfull_boxes": true,
+  "manuscript_sha256": "850a124f77fad6e4d58b2533e88d0b7531f35aa6988c7441e2615e13ea3a6747",
+  "note": "Structural and artifact checks; scientific audit is recorded separately."
+}

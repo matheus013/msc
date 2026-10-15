@@ -48,7 +48,7 @@ def main():
     files+=['highlights_ptbr.txt'] if args.ptbr else ['Figure_1.png','Figure_2.png','highlights.txt']
     if args.ptbr:
         files.extend(['bahia_20261015.tex','protocolo_bahia_20261015.tex'])
-        files.extend('figures/'+name+'.png' for name in [
+        files.extend('figures/'+name+'.pdf' for name in [
             'fluxo_experimental','custo_servico','escolhas_perfil','distribuicao_atendimento'])
     zip_name='article_sources_ptbr_draft.zip' if args.ptbr else 'article_sources_draft.zip'
     with zipfile.ZipFile(DOC/zip_name,'w',zipfile.ZIP_DEFLATED) as archive:

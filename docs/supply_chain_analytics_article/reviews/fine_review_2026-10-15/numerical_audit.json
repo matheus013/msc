@@ -1,0 +1,128 @@
+{
+  "audit": "independent explicit-filter selection recomputation",
+  "scientific_dependencies_match_run_manifest": [
+    "experiment/src/simulation/core/policies_sota.py",
+    "experiment/src/simulation/core/inventory_env_torch.py",
+    "experiment/src/simulation/core/metaheuristics_torch.py",
+    "experiment/src/simulation/research/protocol.py",
+    "experiment/src/simulation/research/production.py",
+    "experiment/src/simulation/research/hybrid.py"
+  ],
+  "matched_decisions": 2900,
+  "fits": 4350,
+  "test_cases": 290,
+  "defined_test_service": 283,
+  "undefined_test_service": 7,
+  "zero_demand_validation_cases": 0,
+  "cost_increase_percent": 1.9259705457970908,
+  "cost_increase_CI95_conditional": [
+    -0.3219943411962669,
+    4.161022781694611
+  ],
+  "service_change_pp": 3.8869702985026677,
+  "service_change_CI95_conditional_pp": [
+    2.784172694532138,
+    5.070020352052106
+  ],
+  "bootstrap": {
+    "draws": 5000,
+    "seed": 20261015,
+    "clusters": "115 stores; fitted controllers and choices fixed"
+  },
+  "source_sha256": {
+    "experiment\\data\\08_reporting\\research_v2\\bahia145_cpu16_2026-10-15\\kpis.csv": "2415afc8149f0d76d3d5dc62e00efca84b4da770a0572d875474932e4e3c09a2",
+    "experiment\\data\\08_reporting\\research_v2\\bahia145_cpu16_2026-10-15\\manifest.json": "5af144eec99c018e05882735e6a980d895c2b2c0fa7782dba166e06c0d6cf0d4"
+  },
+  "threshold_sensitivity": [
+    {
+      "alpha": 0.7,
+      "strategy": "global",
+      "cost": 161.30680229433332,
+      "service": 0.7362269776128213,
+      "weighted_service": 0.5750370030319324,
+      "fallback_cases": 0,
+      "below_070": 119
+    },
+    {
+      "alpha": 0.7,
+      "strategy": "perfil",
+      "cost": 164.41352379488933,
+      "service": 0.775096680597848,
+      "weighted_service": 0.6394708553668695,
+      "fallback_cases": 0,
+      "below_070": 100
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "global",
+      "cost": 164.3252505631923,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 145,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "perfil",
+      "cost": 164.53230901303854,
+      "service": 0.802527176005282,
+      "weighted_service": 0.6763861367461929,
+      "fallback_cases": 223,
+      "below_070": 91
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "global",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 290,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "perfil",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 225,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "global",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 290,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "perfil",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 290,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "global",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 290,
+      "below_070": 90
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "perfil",
+      "cost": 164.2298579058256,
+      "service": 0.803737163340726,
+      "weighted_service": 0.680194353073043,
+      "fallback_cases": 290,
+      "below_070": 90
+    }
+  ]
+}

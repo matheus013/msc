@@ -29,33 +29,38 @@ selection_path = ROOT/'docs/scientific_writing_review_2026-10-15/bahia_completed
 sel = pd.read_csv(selection_path)
 sel = sel[np.isclose(sel.alpha,.7)].copy()
 assert len(sel) == 580
-plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,
-                     'figure.facecolor':'white','axes.labelsize':10,'savefig.dpi':250})
+plt.rcParams.update({'font.size':11,'axes.spines.top':False,'axes.spines.right':False,
+                     'figure.facecolor':'white','axes.labelsize':11,'savefig.dpi':300,
+                     'font.family':'serif','pgf.texsystem':'pdflatex','pgf.rcfonts':False,
+                     'pgf.preamble':r'\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage{mathptmx}'})
 blue, orange, gray = '#176B87', '#BE5727', '#89939A'
 
 def save(fig, name):
     fig.savefig(OUT/f'{name}.png', bbox_inches='tight', facecolor='white')
+    # PGF uses the installed TeX engine and embeds fonts in a vector PDF.
+    # This avoids dependence on the unavailable fontTools PDF embedding DLL.
+    fig.savefig(OUT/f'{name}.pdf', backend='pgf', bbox_inches='tight')
     plt.close(fig)
 
 # An explicit information path prevents confusion between fitting and selection.
-fig, ax = plt.subplots(figsize=(8.2,4.8))
+fig, ax = plt.subplots(figsize=(6.5,3.8))
 ax.set(xlim=(0,1), ylim=(0,1)); ax.axis('off')
-boxes = [(.02,.60,'1. Séries e origens','145 séries loja–produto\nTreino: 17 ou 23 ciclos'),
-         (.36,.60,'2. Ajuste no passado','Perfis e parâmetros no treino\n7 políticas; 3 sementes*'),
-         (.70,.60,'3. Escolha na validação','7 ciclos; demais lojas\nGlobal ou por perfil; meta 0,70'),
-         (.70,.12,'4. Teste reservado','7 ciclos; loja reservada\nMesma condição inicial'),
-         (.36,.12,'5. Comparação pareada','Custo, serviço e violações\nDuas origens temporais'),
-         (.02,.12,'6. Decisão de pesquisa','O serviço adicional justifica\no custo e a diferenciação?')]
+boxes = [(.02,.60,'1. Séries\ne origens','145 séries\nTreino: 17/23 ciclos'),
+         (.36,.60,'2. Ajuste\nno treino','Perfis e parâmetros\n7 políticas\n3 sementes*'),
+         (.70,.60,'3. Seleção\nna validação','7 ciclos; outras lojas\nGlobal ou por perfil\nReferência: 0,70'),
+         (.70,.12,'4. Teste\nreservado','7 ciclos de teste\nEstado inicial comum'),
+         (.36,.12,'5. Comparação\npareada','Custo e atendimento\nDistribuição por série'),
+         (.02,.12,'6. Decisão\nde pesquisa','Serviço adicional\njustifica o custo?')]
 for x,y,title,body in boxes:
     ax.add_patch(FancyBboxPatch((x,y),.28,.27,boxstyle='round,pad=0.012',
                                 facecolor='#F1F6F8',edgecolor=blue,linewidth=1.2))
     ax.text(x+.14,y+.205,title,ha='center',va='center',fontsize=10,weight='bold',color=blue)
-    ax.text(x+.14,y+.105,body,ha='center',va='center',fontsize=8.5,linespacing=1.6)
+    ax.text(x+.14,y+.08,body,ha='center',va='center',fontsize=9.5,linespacing=1.2)
 for start,end in [((.31,.735),(.345,.735)),((.65,.735),(.685,.735)),
                   ((.84,.58),(.84,.41)),((.685,.255),(.65,.255)),((.345,.255),(.31,.255))]:
     ax.annotate('',xy=end,xytext=start,arrowprops={'arrowstyle':'->','color':blue,'lw':1.8})
-ax.text(.02,.005,'* Três sementes nos métodos estocásticos; um ajuste nas políticas determinísticas.\n'
-        'O teste não participa do ajuste nem da escolha. As origens compartilham um ciclo de teste.',fontsize=8.5)
+ax.text(.02,.005,'* Estocásticos: sementes 11, 29 e 47; determinísticos: um ajuste.\n'
+        'Teste reservado; origens com um ciclo de teste compartilhado.',fontsize=9)
 save(fig,'fluxo_experimental')
 
 summary = test.groupby('policy')[['TIC','NS']].mean().sort_values('TIC')
@@ -64,24 +69,24 @@ for p,r in summary.iterrows():
     dominated = ((summary.TIC <= r.TIC) & (summary.NS >= r.NS) &
                  ((summary.TIC < r.TIC) | (summary.NS > r.NS))).any()
     if not dominated: efficient.append(p)
-fig,ax = plt.subplots(figsize=(7.5,4.2))
+fig,ax = plt.subplots(figsize=(7,3.92))
 front = summary.loc[efficient].sort_values('TIC')
 ax.plot(front.TIC,front.NS,color=blue,lw=1.4,label='Fronteira descritiva')
 offsets={'PPO':(8,-15),'GA':(-28,10),'GA-DQN':(10,-12),'DQN':(8,0),
          'EOQCycle':(10,-10),'sSCycle':(8,10),'CappedBaseStock':(-110,8)}
 for p,r in summary.iterrows():
     ax.scatter(r.TIC,r.NS,s=65,color=blue if p in efficient else gray,zorder=3)
-    ax.annotate(p,(r.TIC,r.NS),xytext=offsets[p],textcoords='offset points',fontsize=9)
+    ax.annotate(p,(r.TIC,r.NS),xytext=offsets[p],textcoords='offset points',fontsize=10.5)
 ax.axhline(.7,color=orange,ls='--',lw=1,label='Referência de atendimento: 0,70')
 ax.set(xlabel='Custo médio no teste (unidades do cenário)',ylabel='Atendimento médio por caso',ylim=(.49,.87))
-ax.grid(alpha=.15);ax.legend(loc='lower right',fontsize=8)
+ax.grid(alpha=.15);ax.legend(loc='lower right',fontsize=9.5)
 save(fig,'custo_servico')
 
 colors={'GA':orange,'sSCycle':blue,'EOQCycle':'#58A596'}
 names={'Sparse_High_Impact':'Demanda esparsa','Unstable_Trend':'Tendência instável',
        'High_Volatility_Seasonal':'Volatilidade/sazonalidade',
        'High_Vol_Seasonal':'Volatilidade/\nsazonalidade'}
-fig,axs=plt.subplots(1,2,figsize=(8,3.7),sharex=True)
+fig,axs=plt.subplots(1,2,figsize=(7.2,3.33),sharex=True)
 for ax,origin in zip(axs,[17,23]):
     g=sel[(sel.origin.eq(origin)) & sel.strategy.eq('perfil')]
     counts=pd.crosstab(g.profile,g.policy)
@@ -91,17 +96,17 @@ for ax,origin in zip(axs,[17,23]):
         values=counts[policy].to_numpy()
         ax.barh(np.arange(len(counts)),values,left=left,color=colors[policy],label=policy,height=.58)
         for y,v,l in zip(range(len(counts)),values,left):
-            if v: ax.text(l+v/2,y,str(v),ha='center',va='center',color='white',fontsize=9)
+            if v: ax.text(l+v/2,y,str(v),ha='center',va='center',color='white',fontsize=11)
         left+=values
-    ax.set_yticks(range(len(counts)),[names.get(p,p) for p in counts.index],fontsize=8)
+    ax.set_yticks(range(len(counts)),[names.get(p,p) for p in counts.index],fontsize=10.5)
     ax.set(title=f'Treino: {origin} ciclos',xlabel='Número de séries',xlim=(0,90))
     ax.invert_yaxis()
 handles, labels=axs[1].get_legend_handles_labels()
-fig.legend(handles, labels,loc='lower center',ncol=3,fontsize=9,frameon=False)
+fig.legend(handles, labels,loc='lower center',ncol=3,fontsize=10,frameon=False)
 fig.tight_layout(w_pad=2,rect=(0,.12,1,1))
 save(fig,'escolhas_perfil')
 
-fig,axs=plt.subplots(1,2,figsize=(7.5,3.5),sharey=True)
+fig,axs=plt.subplots(1,2,figsize=(7,3.27),sharey=True)
 for ax,origin in zip(axs,[17,23]):
     g=sel[sel.origin.eq(origin)]
     vals=[g.loc[g.strategy.eq(s),'NS'].dropna().to_numpy() for s in ['global','perfil']]
@@ -110,7 +115,7 @@ for ax,origin in zip(axs,[17,23]):
     for patch,c in zip(b['boxes'],[blue,orange]): patch.set_facecolor(c);patch.set_alpha(.65)
     ax.axhline(.7,color=orange,ls='--',lw=1)
     ax.set(title=f'Treino: {origin} ciclos',ylim=(-.03,1.06))
-    ax.text(.03,.05,f'n = {len(vals[0])} por estratégia',transform=ax.transAxes,fontsize=8)
+    ax.text(.03,.05,f'n = {len(vals[0])} por estratégia',transform=ax.transAxes,fontsize=9.5)
     ax.grid(axis='y',alpha=.15)
 axs[0].set_ylabel('Atendimento por série no teste')
 fig.tight_layout()
@@ -123,4 +128,4 @@ save(fig,'distribuicao_atendimento')
     'selection':'Other-store validation; held-store test; alpha=0.70',
     'frontier':'Descriptive test means; not prospective selection or uncertainty inference'
 },indent=2),encoding='utf-8')
-print('Four manuscript figures generated from complete Bahia results.')
+print('Four manuscript figures generated from complete Bahia results (PNG and vector PDF).')
