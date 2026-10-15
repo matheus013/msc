@@ -1,0 +1,1220 @@
+{
+  "date": "2026-10-14",
+  "cohorts": [
+    {
+      "dataset": "real_BA",
+      "n_series": 145,
+      "n_stores": 115,
+      "n_items": 9,
+      "warehouses": [
+        "BA"
+      ],
+      "n_policies": 12,
+      "rows": 1740,
+      "cycles_min": 38,
+      "cycles_max": 38,
+      "configured_prefix_cycles": 17,
+      "zero_demand_prefix_series": 0,
+      "fewer_than_three_positive_prefix_cycles": 0,
+      "zero_demand_eval_series": 0,
+      "profile_counts": {
+        "Sparse_High_Impact": 116,
+        "Unstable_Trend": 18,
+        "High_Vol_Seasonal": 11
+      },
+      "group_counts": {
+        "Lumpy": 145
+      },
+      "maximum_TIC_std": 9.094947017729282e-13,
+      "missing_by_column": {},
+      "input_sha256": {
+        "kpis": "b0355dbe3939911832e5159974c960364452f4f5567fdb300825ed24f7794de5",
+        "profiles": "9b09d9a0e776bbb4bcd275cf852ed64bc8c3858b0617dddf1bfe8d3582e3a629",
+        "scenarios": "78e4f119fa258639ab4f778bb49223d23543a4302c7642a26c2cea4563244596"
+      },
+      "summaries": [
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "strategy": "global_in_sample",
+          "TIC_mean": 433.3050551579248,
+          "NS_mean": 0.773816366143987,
+          "TR_mean": 0.16321839080459769,
+          "BE_mean": 1.1445860411434983,
+          "FP_mean": 0.3004926108374384,
+          "below_alpha": 40,
+          "fallback_count": 0,
+          "policy_counts": {
+            "VendorResponsive": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "strategy": "global_store_out",
+          "TIC_mean": 433.3050551579248,
+          "NS_mean": 0.773816366143987,
+          "TR_mean": 0.16321839080459769,
+          "BE_mean": 1.1445860411434983,
+          "FP_mean": 0.3004926108374384,
+          "below_alpha": 40,
+          "fallback_count": 0,
+          "policy_counts": {
+            "VendorResponsive": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 2,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 432.459764607693,
+          "NS_mean": 0.7817584104083568,
+          "TR_mean": 0.15796387520525448,
+          "BE_mean": 1.1975927268873647,
+          "FP_mean": 0.2975369458128079,
+          "below_alpha": 38,
+          "fallback_count": 0,
+          "policy_counts": {
+            "VendorResponsive": 127,
+            "FixedInterval": 18
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "strategy": "profile_store_out",
+          "TIC_mean": 435.8007280535614,
+          "NS_mean": 0.7816077877660301,
+          "TR_mean": 0.1573070607553366,
+          "BE_mean": 1.1902455791046604,
+          "FP_mean": 0.30082101806239736,
+          "below_alpha": 39,
+          "fallback_count": 0,
+          "policy_counts": {
+            "VendorResponsive": 130,
+            "FixedInterval": 15
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "strategy": "global_in_sample",
+          "TIC_mean": 457.8116891935556,
+          "NS_mean": 0.8441427275790302,
+          "TR_mean": 0.11198686371100164,
+          "BE_mean": 2.1337748629430657,
+          "FP_mean": 0.2981937602627258,
+          "below_alpha": 45,
+          "fallback_count": 0,
+          "policy_counts": {
+            "FixedInterval": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "strategy": "global_store_out",
+          "TIC_mean": 457.8116891935556,
+          "NS_mean": 0.8441427275790302,
+          "TR_mean": 0.11198686371100164,
+          "BE_mean": 2.1337748629430657,
+          "FP_mean": 0.2981937602627258,
+          "below_alpha": 45,
+          "fallback_count": 0,
+          "policy_counts": {
+            "FixedInterval": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 7,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 477.02036641196923,
+          "NS_mean": 0.8635781998616063,
+          "TR_mean": 0.09786535303776682,
+          "BE_mean": 4.99097064428564,
+          "FP_mean": 0.2669950738916256,
+          "below_alpha": 38,
+          "fallback_count": 0,
+          "policy_counts": {
+            "FixedInterval": 127,
+            "EOQ": 18
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "strategy": "profile_store_out",
+          "TIC_mean": 476.9397433484685,
+          "NS_mean": 0.850288919148881,
+          "TR_mean": 0.10738916256157637,
+          "BE_mean": 4.619757146165378,
+          "FP_mean": 0.2722495894909687,
+          "below_alpha": 45,
+          "fallback_count": 0,
+          "policy_counts": {
+            "FixedInterval": 127,
+            "EOQ": 14,
+            "VendorResponsive": 4
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "strategy": "global_in_sample",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 18,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "strategy": "global_store_out",
+          "TIC_mean": 630.0753358102644,
+          "NS_mean": 0.9316540093442532,
+          "TR_mean": 0.051888341543513954,
+          "BE_mean": 55.04433933986985,
+          "FP_mean": 0.05385878489326765,
+          "below_alpha": 19,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 141,
+            "FixedInterval": 4
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 18,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 613.5600138292981,
+          "NS_mean": 0.9374772989839938,
+          "TR_mean": 0.04761904761904761,
+          "BE_mean": 51.03337690629372,
+          "FP_mean": 0.06995073891625617,
+          "below_alpha": 22,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 134,
+            "FixedInterval": 11
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "strategy": "profile_store_out",
+          "TIC_mean": 616.0060513391451,
+          "NS_mean": 0.9265062770469309,
+          "TR_mean": 0.05385878489326765,
+          "BE_mean": 50.69639288719198,
+          "FP_mean": 0.0742200328407225,
+          "below_alpha": 24,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 130,
+            "FixedInterval": 15
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "strategy": "global_in_sample",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 36,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "strategy": "global_store_out",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 36,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 36,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 613.5600138292981,
+          "NS_mean": 0.9374772989839938,
+          "TR_mean": 0.04761904761904761,
+          "BE_mean": 51.03337690629372,
+          "FP_mean": 0.06995073891625617,
+          "below_alpha": 40,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 134,
+            "FixedInterval": 11
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "strategy": "profile_store_out",
+          "TIC_mean": 619.5412782214087,
+          "NS_mean": 0.9374772989839938,
+          "TR_mean": 0.04761904761904761,
+          "BE_mean": 53.65880936917307,
+          "FP_mean": 0.06239737274220033,
+          "below_alpha": 40,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 138,
+            "FixedInterval": 7
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "strategy": "global_in_sample",
+          "TIC_mean": 5112.752466183235,
+          "NS_mean": 0.9627226795465935,
+          "TR_mean": 0.02495894909688013,
+          "BE_mean": 14.123805505756183,
+          "FP_mean": 0.9665024630541872,
+          "below_alpha": 31,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "strategy": "global_store_out",
+          "TIC_mean": 5112.752466183235,
+          "NS_mean": 0.9627226795465935,
+          "TR_mean": 0.02495894909688013,
+          "BE_mean": 14.123805505756183,
+          "FP_mean": 0.9665024630541872,
+          "below_alpha": 31,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 628.4185543881599,
+          "NS_mean": 0.9421912556075419,
+          "TR_mean": 0.04564860426929392,
+          "BE_mean": 55.4298974614049,
+          "FP_mean": 0.04926108374384236,
+          "below_alpha": 60,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 145
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 4235.6371820872855,
+          "NS_mean": 0.9619436883508201,
+          "TR_mean": 0.02889983579638752,
+          "BE_mean": 19.79892454185743,
+          "FP_mean": 0.7881773399014778,
+          "below_alpha": 36,
+          "fallback_count": 18,
+          "policy_counts": {
+            "PPO": 116,
+            "sS": 18,
+            "EOQ": 11
+          }
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "strategy": "profile_store_out",
+          "TIC_mean": 4231.005458101297,
+          "NS_mean": 0.9563187120905401,
+          "TR_mean": 0.03185550082101806,
+          "BE_mean": 19.54868045210979,
+          "FP_mean": 0.7878489326765189,
+          "below_alpha": 37,
+          "fallback_count": 11,
+          "policy_counts": {
+            "PPO": 117,
+            "sS": 15,
+            "EOQ": 13
+          }
+        }
+      ],
+      "selection_rules": [
+        {
+          "alpha": 0.7,
+          "global": "VendorResponsive",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "VendorResponsive",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "VendorResponsive",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "FixedInterval",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.8,
+          "global": "FixedInterval",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "FixedInterval",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "FixedInterval",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "EOQ",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.85,
+          "global": "EOQ",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "FixedInterval",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "EOQ",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "EOQ",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.9,
+          "global": "EOQ",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "FixedInterval",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "EOQ",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "EOQ",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.95,
+          "global": "PPO",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "EOQ",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "sS",
+              "fallback": true
+            }
+          }
+        }
+      ],
+      "contrasts": [
+        {
+          "dataset": "real_BA",
+          "alpha": 0.7,
+          "cost_reduction_percent": -0.5759621001252729,
+          "cost_reduction_ci": [
+            -1.4421282320657118,
+            0.15258556444722163
+          ],
+          "fill_difference_pp": 0.7791421622043172,
+          "fill_difference_ci_pp": [
+            0.3491774003140756,
+            1.2950201232223115
+          ],
+          "cluster_stores": 115,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.8,
+          "cost_reduction_percent": -4.178148921581123,
+          "cost_reduction_ci": [
+            -7.087827031494079,
+            -1.859599983404685
+          ],
+          "fill_difference_pp": 0.6146191569850817,
+          "fill_difference_ci_pp": [
+            -0.1570345949817439,
+            1.5520783121197754
+          ],
+          "cluster_stores": 115,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.85,
+          "cost_reduction_percent": 2.232952739377835,
+          "cost_reduction_ci": [
+            0.9142844948817256,
+            3.8293240322341493
+          ],
+          "fill_difference_pp": -0.5147732297322175,
+          "fill_difference_ci_pp": [
+            -1.4782565007034776,
+            0.3168390003556943
+          ],
+          "cluster_stores": 115,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.9,
+          "cost_reduction_percent": 1.4126375016718342,
+          "cost_reduction_ci": [
+            0.4013486086202127,
+            2.713715079976877
+          ],
+          "fill_difference_pp": -0.4713956623548059,
+          "fill_difference_ci_pp": [
+            -0.9343641114829815,
+            -0.1132476428333325
+          ],
+          "cluster_stores": 115,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "real_BA",
+          "alpha": 0.95,
+          "cost_reduction_percent": 17.246033597636266,
+          "cost_reduction_ci": [
+            12.090573312354808,
+            22.94764755179121
+          ],
+          "fill_difference_pp": -0.6403967456053502,
+          "fill_difference_ci_pp": [
+            -1.0934648418224742,
+            -0.25727578761869757
+          ],
+          "cluster_stores": 115,
+          "conditional_bootstrap_draws": 5000
+        }
+      ]
+    },
+    {
+      "dataset": "M5",
+      "n_series": 2408,
+      "n_stores": 10,
+      "n_items": 287,
+      "warehouses": [
+        "CA",
+        "TX",
+        "WI"
+      ],
+      "n_policies": 12,
+      "rows": 28896,
+      "cycles_min": 93,
+      "cycles_max": 93,
+      "configured_prefix_cycles": 19,
+      "zero_demand_prefix_series": 2213,
+      "fewer_than_three_positive_prefix_cycles": 2237,
+      "zero_demand_eval_series": 0,
+      "profile_counts": {
+        "Sparse_High_Impact": 2350,
+        "Unstable_Trend": 40,
+        "High_Vol_Seasonal": 18
+      },
+      "group_counts": {
+        "Lumpy": 2350,
+        "Erratic": 33,
+        "Smooth": 24,
+        "Intermittent": 1
+      },
+      "maximum_TIC_std": 5.820766091346741e-11,
+      "missing_by_column": {
+        "genero": 28896,
+        "gerente_regional": 28896,
+        "ci_status": 28896
+      },
+      "input_sha256": {
+        "kpis": "50b901f536171a77b453b0deb454bf85b7b2688d6dbafca84a608fa6f1f669c7",
+        "profiles": "2ec4e7adf83bf53d19d3d50c42429dc90e398482c126d607268f560a68a900bf",
+        "scenarios": "9844619fa161b610dd42e927bef73beb9161af4a50dc1970624f69bf3f382fc5"
+      },
+      "summaries": [
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "strategy": "global_in_sample",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 270,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "strategy": "global_store_out",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 270,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 6235.815505161368,
+          "NS_mean": 0.1331604739237516,
+          "TR_mean": 0.4314054503007991,
+          "BE_mean": 1.072438827138658,
+          "FP_mean": 0.12210985902846369,
+          "below_alpha": 2276,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 19375.353393600097,
+          "NS_mean": 0.8502791506862648,
+          "TR_mean": 0.08416202747598096,
+          "BE_mean": 410.0215296538583,
+          "FP_mean": 0.07675989943431805,
+          "below_alpha": 277,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2350,
+            "CappedBaseStock": 40,
+            "GA-DQN": 18
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "strategy": "profile_store_out",
+          "TIC_mean": 19367.73119546702,
+          "NS_mean": 0.8509163386377946,
+          "TR_mean": 0.08284322528508577,
+          "BE_mean": 410.23832025394967,
+          "FP_mean": 0.0689256532279788,
+          "below_alpha": 274,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2350,
+            "VendorResponsive": 19,
+            "GA-DQN": 18,
+            "EOQ": 11,
+            "FixedInterval": 9,
+            "CappedBaseStock": 1
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "strategy": "global_in_sample",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 352,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "strategy": "global_store_out",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 352,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 6235.815505161368,
+          "NS_mean": 0.1331604739237516,
+          "TR_mean": 0.4314054503007991,
+          "BE_mean": 1.072438827138658,
+          "FP_mean": 0.12210985902846369,
+          "below_alpha": 2302,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 20013.536388783807,
+          "NS_mean": 0.8538249201054529,
+          "TR_mean": 0.08003165125258149,
+          "BE_mean": 409.98287881250513,
+          "FP_mean": 0.08181624315345247,
+          "below_alpha": 342,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2350,
+            "GA": 40,
+            "PPO": 18
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "strategy": "profile_store_out",
+          "TIC_mean": 19955.410098452685,
+          "NS_mean": 0.8530914761358532,
+          "TR_mean": 0.080553560204723,
+          "BE_mean": 410.04580886720174,
+          "FP_mean": 0.07880263984915148,
+          "below_alpha": 345,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2350,
+            "GA": 26,
+            "PPO": 18,
+            "EOQ": 14
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "strategy": "global_in_sample",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 721,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "strategy": "global_store_out",
+          "TIC_mean": 19500.540530938546,
+          "NS_mean": 0.8521325203606505,
+          "TR_mean": 0.08187797431983479,
+          "BE_mean": 410.3931434563188,
+          "FP_mean": 0.08016072550956273,
+          "below_alpha": 721,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 6235.815505161368,
+          "NS_mean": 0.1331604739237516,
+          "TR_mean": 0.4314054503007991,
+          "BE_mean": 1.072438827138658,
+          "FP_mean": 0.12210985902846369,
+          "below_alpha": 2319,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 20095.454937506423,
+          "NS_mean": 0.8544611999542443,
+          "TR_mean": 0.0794143395887582,
+          "BE_mean": 410.1586804393638,
+          "FP_mean": 0.08266364371015536,
+          "below_alpha": 711,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2390,
+            "PPO": 18
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "strategy": "profile_store_out",
+          "TIC_mean": 20088.170084857138,
+          "NS_mean": 0.8541142278096319,
+          "TR_mean": 0.0797566669659693,
+          "BE_mean": 410.0780076536235,
+          "FP_mean": 0.08275343449762056,
+          "below_alpha": 712,
+          "fallback_count": 0,
+          "policy_counts": {
+            "SA": 2387,
+            "PPO": 18,
+            "GA": 3
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "strategy": "global_in_sample",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 109,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "strategy": "global_store_out",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 109,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 6235.815505161368,
+          "NS_mean": 0.1331604739237516,
+          "TR_mean": 0.4314054503007991,
+          "BE_mean": 1.072438827138658,
+          "FP_mean": 0.12210985902846369,
+          "below_alpha": 2351,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 109,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "strategy": "profile_store_out",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 109,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "strategy": "global_in_sample",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 203,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "strategy": "global_store_out",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 203,
+          "fallback_count": 0,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "strategy": "legacy_EOQ",
+          "TIC_mean": 6235.815505161368,
+          "NS_mean": 0.1331604739237516,
+          "TR_mean": 0.4314054503007991,
+          "BE_mean": 1.072438827138658,
+          "FP_mean": 0.12210985902846369,
+          "below_alpha": 2373,
+          "fallback_count": 0,
+          "policy_counts": {
+            "EOQ": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "strategy": "profile_in_sample",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 203,
+          "fallback_count": 40,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "strategy": "profile_store_out",
+          "TIC_mean": 22220.645698401848,
+          "NS_mean": 0.9853098856133661,
+          "TR_mean": 0.014243063661668312,
+          "BE_mean": 0.08034305982827723,
+          "FP_mean": 0.9931141689862619,
+          "below_alpha": 203,
+          "fallback_count": 40,
+          "policy_counts": {
+            "PPO": 2408
+          }
+        }
+      ],
+      "selection_rules": [
+        {
+          "alpha": 0.7,
+          "global": "SA",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "GA-DQN",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "SA",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "CappedBaseStock",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.8,
+          "global": "SA",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "SA",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "GA",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.85,
+          "global": "SA",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "SA",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "SA",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.9,
+          "global": "PPO",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "PPO",
+              "fallback": false
+            }
+          }
+        },
+        {
+          "alpha": 0.95,
+          "global": "PPO",
+          "global_fallback": false,
+          "profiles": {
+            "High_Vol_Seasonal": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Sparse_High_Impact": {
+              "policy": "PPO",
+              "fallback": false
+            },
+            "Unstable_Trend": {
+              "policy": "PPO",
+              "fallback": true
+            }
+          }
+        }
+      ],
+      "contrasts": [
+        {
+          "dataset": "M5",
+          "alpha": 0.7,
+          "cost_reduction_percent": 0.681054636720565,
+          "cost_reduction_ci": [
+            -1.1897600747463437,
+            2.401566334810231
+          ],
+          "fill_difference_pp": -0.12161817228556493,
+          "fill_difference_ci_pp": [
+            -0.3671874349040911,
+            0.09457493094085384
+          ],
+          "cluster_stores": 10,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.8,
+          "cost_reduction_percent": -2.3325997902081985,
+          "cost_reduction_ci": [
+            -5.496160044467243,
+            0.07603683510249054
+          ],
+          "fill_difference_pp": 0.095895577520301,
+          "fill_difference_ci_pp": [
+            -0.16053576960931465,
+            0.3356272331344019
+          ],
+          "cluster_stores": 10,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.85,
+          "cost_reduction_percent": -3.0134013618047564,
+          "cost_reduction_ci": [
+            -5.936385567813232,
+            -0.7178932844386315
+          ],
+          "fill_difference_pp": 0.19817074489816822,
+          "fill_difference_ci_pp": [
+            -0.002488249086561471,
+            0.4076084047259372
+          ],
+          "cluster_stores": 10,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.9,
+          "cost_reduction_percent": 0.0,
+          "cost_reduction_ci": [
+            0.0,
+            0.0
+          ],
+          "fill_difference_pp": 0.0,
+          "fill_difference_ci_pp": [
+            0.0,
+            0.0
+          ],
+          "cluster_stores": 10,
+          "conditional_bootstrap_draws": 5000
+        },
+        {
+          "dataset": "M5",
+          "alpha": 0.95,
+          "cost_reduction_percent": 0.0,
+          "cost_reduction_ci": [
+            0.0,
+            0.0
+          ],
+          "fill_difference_pp": 0.0,
+          "fill_difference_ci_pp": [
+            0.0,
+            0.0
+          ],
+          "cluster_stores": 10,
+          "conditional_bootstrap_draws": 5000
+        }
+      ]
+    }
+  ],
+  "qualification": "Conditional reanalysis of saved matrices; profiles/preprocessing may use full series; not PSE generalization or retraining."
+}

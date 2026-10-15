@@ -1,0 +1,171 @@
+simulation:
+  device: "auto"  # CUDA, MPS ou CPU, nessa ordem
+  n_replications: 5
+  random_seed: 42
+  lead_time: 2          # ciclos (≈42 dias)
+  service_level_target: 0.90
+  z_score: 1.28         # quantil normal de referencia; nao garante fill rate de 90%
+
+  # Integridade temporal
+  evaluation_mode: "walkforward"   # "full" | "walkforward"
+  train_split_cycles: 17
+
+  cost:
+    holding: 1.0
+    stockout: 5.0
+    order_fixed: 50.0
+    order_unit: 0.5
+
+  # Limiar minimo de nivel de servico (Eq. 4.2): politicas abaixo dele nao sao
+  # consideradas dominantes e sao penalizadas na busca das meta-heuristicas.
+  alpha_min: 0.70
+
+  policies:
+    classical: true          # EOQ, (s,S), Jornaleiro  -- baseline do varejo
+    sota_classical: true     # PIL, CappedBaseStock, BigDataNewsvendor
+    zabraoui: false          # familia retirada do comparativo principal
+    metaheuristics: true
+    reinforcement_learning: true
+    proposed_architecture: true
+    # 2026-10-14: candidato apos revisao dirigida de literatura.
+    # Ativos: EOQ, sS, CappedBaseStock, GA, PPO e GA-DQN.
+    # DQN reservado a ablacao pareada GA / DQN / GA-DQN; nao redundante.
+    # Escolha de escopo, nao prova de equivalencia ou inferioridade dos demais.
+    # As implementacoes e matrizes historicas continuam disponiveis.
+    # Ver docs/supply_chain_analytics_article/PORTFOLIO_REPRESENTATIVO.md.
+    disabled_names: ["PIL", "MinMax", "PSO", "DE", "SARSA", "GA-PPO", "Newsvendor", "BigDataNewsvendor", "FixedInterval", "VendorResponsive", "SA", "DQN"]
+
+  ga:
+    # Hiperparametros conforme Zabraoui et al. (2025), Tabela 5.
+    #   fitness_mode "zabraoui"   -> Eq.(3) do artigo: lambda1*SL - lambda2*TIC
+    #   fitness_mode "constrained"-> Eq.(4.2) da proposta: min CTI s.a. NS>=alpha_min
+    # O artigo usa a soma ponderada; a variante restrita fica disponivel porque
+    # a soma ponderada e sensivel a escala do CTI entre series heterogeneas.
+    fitness_mode: "zabraoui"
+    fitness_weights: [1.0, 0.0001]   # [lambda1, lambda2]
+    # 2026-08-18 (AJUSTES_INFRA item #33): 10.0 -> 30.0. Combinado com a
+    # correcao de tic_ref_fixed (nao mais auto-referencial -- ver
+    # constrained_cost em core/inventory_env_torch.py), 10.0 ainda deixava
+    # "nunca pedir" vencer em series de baixo volume onde o custo fixo de
+    # pedido (K=50) domina: confirmado numericamente (serie BA/3775034/
+    # 48062) que so a partir de penalty_weight=20 (CappedBaseStock) / 30
+    # (PIL, projecao mais cara em TIC que o limiar simples) o candidato
+    # viavel passa a custar menos que o degenerado. 30.0 cobre as duas e
+    # nao piora GA/SA/PSO/DE (deficit=0 quando ja viavel, penalty so entra
+    # em jogo se NS<alpha_min). Vale tambem para PIL/CappedBaseStock
+    # (policies_sota.py), que reaproveitam este mesmo campo.
+    penalty_weight: 30.0
+    # 2026-08-18: extensao desta dissertacao sobre a Eq.(3)/Eq.(4.2) —
+    # somados a QUALQUER fitness_mode (ver _risk_terms em
+    # core/inventory_env_torch.py). TIC so registra o custo de ruptura
+    # REALIZADO na trajetoria simulada; estes dois termos penalizam
+    # fragilidade que TIC sozinho nao capta:
+    #   tr_weight * TR * (1-NS) * TIC  -- TR = probabilidade de ruptura
+    #     (fracao de ciclos sem produto pro cliente), modulada por NS: o
+    #     risco composto cresce quando servico ja ruim E ruptura frequente
+    #     coincidem.
+    #   be_weight * max(BE-1, 0) * TIC -- BE = var(pedido)/var(demanda).
+    #     So pune o EXCESSO acima de 1 (pedido mais erratico que a propria
+    #     demanda justificaria = "compra excessiva"); BE<=1 nao e punido.
+    tr_weight: 1.0
+    be_weight: 1.0
+    population: 100         # Zabraoui Tab.5 (faixa 50-200)
+    generations: 50
+    crossover_prob: 0.8     # Zabraoui Tab.5 (faixa 0.6-0.9)
+    # 2026-08-18: CORRIGIDO apos auditoria de fidelidade. O artigo (Sec.3.4/4.4)
+    # descreve "tournament selection, uniform crossover, and adaptive mutation"
+    # -- ate esta correcao, o codigo usava blend crossover (BLX-alpha, herdado
+    # da versao DEAP de julho/2026) e mutacao gaussiana de TAXA FIXA, so os
+    # tres numeros da Tab.5 (population/crossover_prob/mutation_prob) batiam
+    # com o artigo, nao o mecanismo dos operadores. TorchGA.optimize() agora
+    # implementa uniform crossover (cada gene herda de um dos pais com
+    # probabilidade 0.5) e mutacao adaptativa (taxa decai linearmente de
+    # mutation_prob no inicio ate mutation_prob*mutation_final_ratio na
+    # ultima geracao -- o artigo nao da formula, esta e a leitura adotada,
+    # documentada em TorchGA).
+    mutation_prob: 0.05     # Zabraoui Tab.5 (faixa 0.01-0.1) -- taxa INICIAL
+    mutation_final_ratio: 0.2   # taxa final = mutation_prob * este fator
+    tournament_size: 3
+    elitism: true           # Zabraoui Sec.3.4: "an elitist strategy is integrated"
+
+  sa:
+    initial_temp: 1000.0
+    cooling_rate: 0.95
+    max_iter: 500
+
+  pso:
+    n_particles: 40
+    iterations: 80
+    inertia: 0.7
+    cognitive: 1.5
+    social: 1.5
+
+  de:
+    strategy: "rand1bin"
+    mutation: 0.8
+    recombination: 0.9
+    max_iter: 100
+    population_size: 15
+
+  # RL em PyTorch (simulation/core/rl_torch.py):
+  #   dqn   -> Double DQN dueling (van Hasselt 2016 / Wang 2016)
+  #   ppo   -> PPO com GAE (Schulman 2017 / 2016)
+  #   sarsa -> Expected SARSA (van Seijen 2009)
+  dqn:
+    # 2026-08-18: CORRIGIDO apos auditoria de fidelidade (pedido do usuario).
+    # Ate esta correcao, o comentario citava Zabraoui et al. (2025) Tab.4/Sec.3.8
+    # mas os valores abaixo (epsilon_start=1.0 decaindo, episodes=500) NUNCA
+    # implementavam epsilon=0.2 fixo nem >=1000 episodios -- ficava so na
+    # citacao, sem chegar no config. Agora epsilon_start=epsilon_end=0.2 (via
+    # epsilon_decay=1.0, ou seja, taxa de exploracao CONSTANTE, conforme
+    # Tab.4) e episodes=1000 (piso "no fewer than 1000 episodes" do Sec.3.8).
+    device: "auto"            # "cpu" | "mps" | "cuda" | "auto"
+    seed: 42
+    soft_update_tau: 0.0     # >0 usa soft update no lugar de target_update_freq
+    grad_clip: 10.0
+    episodes: 1000           # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
+    gamma: 0.95
+    epsilon_start: 0.2       # Zabraoui Tab.4: epsilon=0.2 (fixo, nao decrescente)
+    epsilon_end: 0.2
+    epsilon_decay: 1.0
+    batch_size: 64
+    memory_size: 10000
+    target_update_freq: 10
+    n_actions: 20
+    hidden_layers: [64, 64]
+
+  ppo:
+    # 2026-08-18: episodes alinhado ao mesmo piso do Sec.3.8 ("each RL agent
+    # was exposed to the environment for no fewer than 1000 episodes" -- o
+    # artigo usa DQN e PPO como os dois agentes de RL, entao o piso vale
+    # para os dois, nao so o DQN).
+    device: "auto"
+    seed: 42
+    gae_lambda: 0.95
+    entropy_coef: 0.005      # Zabraoui et al. (2025) Tab.4: coeficiente de entropia
+    value_coef: 0.5
+    minibatch_size: 64
+    grad_clip: 0.5
+    clip_value_loss: true
+    hidden_layers: [64, 64]
+    episodes: 1000            # Zabraoui Sec.3.8: "no fewer than 1000 episodes"
+    gamma: 0.99
+    clip_epsilon: 0.2
+    update_epochs: 4
+    learning_rate: 0.0003
+    n_actions: 20
+
+  sarsa:
+    seed: 42
+    n_pipeline_states: 3     # discretizacao 2D: estoque x pedidos em transito
+    episodes: 500
+    n_states: 5
+    n_actions: 10
+    gamma: 0.99
+    learning_rate: 0.1
+    epsilon: 0.1
+
+  hybrid:
+    ga_generations: 50
+    buffer_size: 1000
+    rl_episodes: 200

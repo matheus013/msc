@@ -1,0 +1,113 @@
+\mychapter{Plano de Continuidade e Cronograma}{cap:plano_continuidade}\lhead{PLANO DE CONTINUIDADE}
+
+Este capítulo organiza as atividades já concluídas, em andamento e planejadas para a continuidade da dissertação. Os dois experimentos reportados no Capítulo~\ref{cap:results} e discutidos no Capítulo~\ref{cap:conclusion} consolidam a etapa empírica inicial: estudo piloto na Paraíba e expansão experimental na Bahia. A partir desses experimentos iniciais, a continuidade da dissertação segue um princípio metodológico explícito: o AIPE, não a base de dados, é a contribuição central; cada base adicional (M5, benchmark público internacional, e a expansão multiestado da rede varejista nacional) é incorporada como \textbf{estudo de caso} cuja função é validar e fortalecer o \textit{framework} — testar se a heterogeneidade regime$\rightarrow$política observada na Bahia se replica sob condições de demanda, escala e proveniência de dados diferentes, não ampliar por si só a cobertura geográfica. A etapa seguinte finaliza o treinamento do PSE, avalia sensibilidade dos parâmetros e transforma o \textit{pipeline} em um mapa operacional de recomendação de políticas.
+
+\section{Visão Geral das Atividades Restantes}
+
+\paragraph{Formulação do problema e revisão da literatura.}
+Esta atividade consolidou a definição de política de reposição como regra de decisão parametrizada, a função objetivo baseada no custo total de inventário sob restrição de serviço, as famílias de políticas candidatas e o posicionamento em relação aos trabalhos relacionados. Ela fornece a base conceitual que sustenta o AIPE como \textit{framework} metodológico de seleção contextual.
+
+\paragraph{Benchmarking do Experimento~1.}
+O primeiro experimento funcionou como estudo piloto na Paraíba, com 15 lojas e um produto de alta intermitência. Essa etapa validou o ambiente de simulação, as métricas de avaliação e o portfólio inicial de 12 políticas, permitindo identificar comportamentos degenerados e motivar a ampliação experimental.
+
+\paragraph{Pipeline Kedro e módulo de previsão.}
+O \textit{pipeline} Kedro organiza o processamento dos dados, a extração de características, a previsão auxiliar e a rastreabilidade dos artefatos. Essa infraestrutura permite recompor resultados, comparar políticas sob as mesmas condições experimentais e integrar sinais preditivos à camada de entrada do AIPE.
+
+\paragraph{Simulação do Experimento~2.}
+O segundo experimento ampliou a avaliação para 145 séries do estado da Bahia, com cinco replicações independentes por política. Essa etapa permitiu análise por perfil operacional, validação estatística formal e comparação entre uma política única global e a seleção por perfil.
+
+\paragraph{Validação estatística.}
+A validação estatística formaliza a comparação entre políticas por meio de Wilcoxon pareado, Friedman, Nemenyi e tamanho de efeito. Essa atividade separa diferença amostral de evidência operacional mais consistente e reduz o risco de interpretar flutuações do \textit{benchmark} como dominância real.
+
+\paragraph{Módulo \texttt{demand\_profiling} e PODs.}
+O módulo \texttt{demand\_profiling} define perfis operacionais configuráveis usados para estratificação e como entrada interpretável do PSE. Os PODs não substituem a taxonomia Syntetos-Boylan; eles adicionam uma camada operacional que aproxima características estatísticas de situações de decisão em estoque.
+
+\section{Estudos de Caso Adicionais: Validação Externa e Validação em Escala}
+\label{sec:estudos_caso_adicionais}
+
+Dois estudos de caso adicionais estão em andamento, ambos subordinados ao mesmo objetivo: verificar se a heterogeneidade regime$\rightarrow$política e o comportamento do portfólio de políticas observados no Experimento~2 (Bahia) se replicam sob condições estruturalmente diferentes de demanda, escala e origem de dados. Nenhum dos dois substitui o Experimento~2 como referência central de resultados; ambos servem para testar os limites de validade externa do AIPE.
+
+\subsection{Estudo de Caso 3: Benchmark Público M5 (Walmart)}
+
+O M5 é o estudo de caso metodologicamente mais forte entre os dois em andamento, precisamente porque não é uma base escolhida por conveniência: é a mesma base usada por \citet{Zabraoui2025GaDQN} para validar a arquitetura GA-DQN que fundamenta parte do portfólio desta dissertação, e uma das bases de referência mais usadas na literatura de previsão de demanda e otimização de estoque em geral (competição M5, milhares de séries reais de varejo). Adotá-la como estudo de caso empresta ao AIPE a força de ancoragem bibliográfica que a própria base já tem, em vez de depender só da originalidade do recorte brasileiro. O recorte segue o filtro de \citet{Zabraoui2025GaDQN}: categoria \textit{FOODS} e coeficiente de variação $\text{CV} \geq 1{,}5$, reduzindo o total de 30.490 séries do M5 para 2.408 séries de alta intermitência, comparáveis em regime ao recorte \textit{Lumpy} avaliado na Bahia.
+
+O valor metodológico desse estudo de caso é duplo. Primeiro, permite comparar o portfólio final desta dissertação diretamente contra o artigo-base, em sua própria base de validação, isolando o efeito da ampliação do portfólio (Seção~\ref{sec:portfolio_ampliado}) e das correções de fidelidade de hiperparâmetros do efeito da base de dados. Segundo, testa a robustez do achado central do AIPE (heterogeneidade regime$\rightarrow$política) fora do contexto de varejo brasileiro, numa base de demanda de alto volume e escala muito distinta da Bahia. Com o M5, a dissertação passa a se apoiar em \textbf{duas bases de dados reais} como estudo de caso (a rede varejista brasileira, Experimento~2, e o M5, Walmart), não numa única fonte: um achado que se sustenta nas duas é evidência de validade externa muito mais forte do que o mesmo achado replicado só dentro da mesma base, com o mesmo viés de coleta e o mesmo contexto de mercado.
+
+\paragraph{Resultados preliminares.} A execução completa do portfólio final sobre o recorte M5 (12 políticas $\times$ 2.408 séries, 28.896 avaliações) foi concluída em 19/08/2026, sob o mesmo ambiente de simulação e os mesmos parâmetros de custo usados na Bahia (\textit{lead time}$=2$, $h=1$, $c_s=5$, $K=50$). Comparado ao recorte \textit{Lumpy} da Bahia, o recorte M5 é mensuravelmente mais severo em toda dimensão de caracterização disponível: ADI mediano de 2,58 contra 2,00, CV$^2$ mediano de 2,24 contra 1,75, e fração de ciclos com demanda nula de 61\% contra 50\%. Note-se que essa severidade é deliberada, não acidental: o corte de \citet{Zabraoui2025GaDQN} usado como referência filtra a categoria \textit{FOODS} por CV$\geq 1{,}5$, mas os próprios autores reportam validar GA-DQN sobre uma faixa de CV típico $<1$ do M5 (Seção~\ref{cap:rel}), consideravelmente mais regular que o recorte de alta intermitência aqui avaliado.
+
+Sob essa severidade adicional, o nível de serviço observado cai de forma acentuada em relação à Bahia. Das 2.408 séries, 2.350 (97,6\%) caem no perfil \textit{Sparse High Impact}, no qual apenas duas das doze políticas atingem o limiar mínimo de NS$\geq 0{,}70$: PPO (NS$=0{,}986$) e SA (NS$=0{,}853$). As dez políticas restantes, incluindo EOQ (NS$=0{,}119$), $(s,S)$ (NS$=0{,}120$) e a própria GA-DQN do artigo-base (NS$=0{,}459$), ficam abaixo do limiar. O PPO, contudo, atinge esse resultado por meio de um padrão degenerado já discutido no Capítulo~\ref{cap:results} para outras políticas: frequência de pedidos de $99{,}3\%$ dos ciclos, ou seja, pede quase sempre, garantindo NS alto ao custo de TIC muito superior ao das demais políticas viáveis. O relatório de dominância por perfil sinaliza esse caso explicitamente como \textit{dominante degenerado, interpretar com cautela}; sob essa ressalva, o SA é a política não degenerada de melhor desempenho no perfil que concentra a quase totalidade do M5 avaliado, com frequência de pedidos moderada ($6{,}3\%$ dos ciclos).
+
+Nos dois perfis restantes, de menor representação e caráter exploratório ($n<20$ e $n=40$), o padrão de dominância muda novamente: $(s,S)$ domina o perfil \textit{Unstable Trend} ($n=40$, NS$=0{,}798$, oito das doze políticas viáveis), e a própria GA-DQN domina o perfil \textit{High Vol.~Seasonal} ($n=18$, NS$=0{,}762$), desta vez de forma não degenerada, ainda que o PPO também seja tecnicamente viável ali (NS$=0{,}954$) ao custo de pedir em 100\% dos ciclos e de um TIC quase duas vezes maior. Assim, mesmo restrito a uma única base de dados e um único recorte de regime, nenhuma política do portfólio, incluindo a arquitetura híbrida do próprio artigo-base, domina de forma consistente entre os três perfis operacionais identificados: o achado central desta dissertação (heterogeneidade regime$\rightarrow$política) se replica dentro do M5, reforçando a motivação do AIPE de forma independente da rede varejista brasileira. A validação estatística formal (Wilcoxon, Friedman) e o treinamento do PSE sobre esses rótulos permanecem como próximos passos deste estudo de caso.
+
+\subsection{Estudo de Caso 4: Expansão Multiestado (Base Nacional)}
+
+O quarto estudo de caso aplica o \textit{pipeline} completo à base nacional da rede varejista, com aproximadamente $10{,}4$ milhões de séries distribuídas em 26 estados e no Distrito Federal. Dado o volume, a avaliação usa um recorte por atividade (\textit{top-N} lojas por estado) em vez da base íntegra, evitando o esgotamento de memória observado na tentativa de processamento irrestrito. O processamento por estado e por SKU amplia a diversidade de regimes, regiões e produtos, permitindo testar se os padrões observados nos experimentos da Paraíba e da Bahia se mantêm em escala ampliada.
+
+Esse estudo de caso também aumenta a cobertura dos quadrantes Syntetos-Boylan e dos PODs. Com maior diversidade de séries, será possível avaliar heterogeneidade regional, diferenças entre categorias de produto e estabilidade das políticas recomendadas em contextos operacionais distintos — sempre como evidência adicional a favor (ou contra) a validade do AIPE, não como objetivo de cobertura geográfica em si.
+
+\section{Treinamento e Avaliação do PSE}
+
+Com os resultados dos experimentos executados e dos estudos de caso adicionais (Seção~\ref{sec:estudos_caso_adicionais}), o PSE será treinado como componente supervisionado de recomendação. A entrada será formada pelas características operacionais das séries e pelos PODs; o rótulo será a política viável de melhor desempenho observada no \textit{benchmark}, segundo CTI sob restrição de NS.
+
+A avaliação do PSE será feita por validação cruzada estratificada por POD e por testes fora da amostra geográfica. O objetivo é verificar se o meta-modelo aprende uma associação estável entre perfil operacional e política recomendada, sem transformar o AIPE em uma nova política de reposição ou em sistema transacional.
+
+\subsection{Validação de Robustez: Agrupamento por Perfil na Calibração}
+\label{sec:robustez_pooling}
+
+Além da seleção de política por perfil, discutida no Capítulo~\ref{cap:results}, uma questão relacionada, mas distinta, é se o próprio processo de calibração das políticas parametrizadas se beneficia de agrupar séries do mesmo perfil operacional (POD). Duas estratégias de calibração foram comparadas: agrupar as séries de um mesmo perfil antes de ajustar os parâmetros de cada política (\textit{com\_perfil}) e calibrar cada série individualmente (\textit{sem\_perfil}). A comparação usa o mesmo protocolo de teste pareado adotado no Capítulo~\ref{cap:results} (Wilcoxon \textit{signed-rank} com correção de Holm, sobre CTI ajustado, TIC e NS), replicado em seis configurações independentes: as bases Bahia e M5, cada uma com o ponto de corte entre janela de treino e janela de avaliação deslocado (dois cortes adicionais por base, além do corte de referência), de forma a verificar se a vantagem observada depende da janela temporal usada na calibração.
+
+O agrupamento por perfil reduz o custo ajustado (CTI ajustado) e o custo bruto (TIC) de forma estatisticamente significativa nas seis configurações, com o número de pares comparados praticamente idêntico entre cortes de treino distintos dentro da mesma base (o que descarta tamanho de amostra como explicação para eventuais divergências). O nível de serviço (NS) é a métrica menos estável: a diferença nunca é significativa na Bahia e inverte de sinal entre os cortes de treino do M5.
+
+Por política, o padrão de robustez é heterogêneo. EOQ, $(s,S)$ e \textit{Capped Base-Stock} favorecem a calibração por perfil nas seis configurações, de forma significativa. \textit{Fixed Interval} e \textit{Vendor-Responsive} favorecem a calibração individual na maioria das configurações, sem inverter de forma significativa em nenhuma delas, replicando o padrão já identificado em experimentos anteriores para essas duas heurísticas de limiar adaptativo. Já GA-DQN, PPO e Newsvendor invertem de direção entre configurações, inclusive dentro da mesma base: não constituem achado estável e não devem ser generalizados a partir desta validação.
+
+Esses resultados sugerem que o benefício de considerar o perfil operacional pode não se restringir à etapa de seleção de política, foco central desta dissertação, estendendo-se também à etapa de calibração de parâmetros para famílias específicas (políticas clássicas de estrutura fechada, como EOQ, $(s,S)$ e \textit{Capped Base-Stock}), enquanto heurísticas de limiar adaptativo parecem se beneficiar mais de calibração individual por série. Trata-se de validação preliminar de robustez, não de um resultado central reportado no Capítulo~\ref{cap:results}; o aprofundamento dessa análise, incluindo mais pontos de corte temporal e a investigação da instabilidade observada em GA-DQN, PPO e Newsvendor, é tratado como trabalho futuro nos estudos de caso adicionais.
+
+\section{Análise de Sensibilidade e Mapa de Recomendação}
+
+A análise de sensibilidade testará como custos de falta e manutenção, prazo de entrega, limiares dos PODs e regimes de demanda afetam a política recomendada. Essa etapa é necessária porque uma recomendação obtida em um cenário de custo ou serviço pode deixar de ser adequada quando as condições operacionais mudam.
+
+O resultado esperado é um mapa de recomendação por regime e perfil operacional. Esse mapa traduzirá os achados do \textit{benchmark} e do PSE em regras interpretáveis, indicando em quais condições cada família de política tende a ser mais apropriada.
+
+\section{Otimização em Janela Móvel}
+
+A versão atual avalia as políticas no horizonte experimental disponível para cada série. Essa escolha é adequada para comparar métodos sob um mesmo recorte temporal, mas pode gerar parametrizações sensíveis ao horizonte observado.
+
+Como atividade futura, será testada a otimização em janelas móveis $[i,i+T]$, atualizando parâmetros à medida que novos ciclos de demanda são observados. Essa extensão reduz comportamento míope, aproxima o processo de uma operação real em \textit{rolling horizon} e permite avaliar quando uma política deve ser recalibrada.
+
+\section{Produção Científica e Escrita da Dissertação}
+
+Os resultados do \textit{benchmark}, da comparação entre política única e seleção por perfil, do treinamento do PSE e dos estudos de caso adicionais (M5 e expansão multiestado, Seção~\ref{sec:estudos_caso_adicionais}) serão candidatos a publicações adicionais. A submissão ao SBPO~2026 permanece como uma etapa de disseminação dos resultados iniciais, enquanto os artigos seguintes poderão explorar a validação externa via M5, a expansão multiestado e o mapa de recomendação.
+
+A escrita final consolidará resultados, limitações, validação externa e em escala, análise de sensibilidade e discussão metodológica. A defesa deverá apresentar o AIPE como \textit{framework} de seleção contextual de políticas, com o PSE como componente supervisionado de recomendação e a Bahia, o M5 e a base nacional como estudos de caso que sustentam essa proposta.
+
+\section{Cronograma Consolidado}
+
+A Tabela~\ref{tab:cronograma} resume as atividades concluídas, em andamento e planejadas. A tabela deve ser lida em conjunto com as descrições anteriores: ela organiza a sequência temporal, mas a justificativa metodológica de cada atividade foi apresentada nas seções precedentes.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Cronograma de atividades (referência: maio de 2026). \checkmark: concluído; $\bullet$: em andamento; $\circ$: planejado.}
+\label{tab:cronograma}
+\begin{tabular}{@{}p{7.2cm}cccc@{}}
+\toprule
+Atividade & 2024 S2 & 2025 S1 & 2025 S2 & 2026 \\
+\midrule
+Formulação do problema e revisão de literatura              & \checkmark & & & \\
+Benchmarking Experimento~1 (15 lojas, PB, 12 políticas)     & \checkmark & \checkmark & & \\
+Pipeline Kedro e módulo de previsão de demanda              & & \checkmark & \checkmark & \\
+Simulação Experimento~2 (145 séries, BA, 5 replicações)     & & & \checkmark & \\
+Validação estatística (Wilcoxon, Friedman, Cohen's $d$)     & & & \checkmark & \\
+Módulo \texttt{demand\_profiling} e PODs                    & & & \checkmark & \\
+Revisão do portfólio (Seção~\ref{sec:portfolio_ampliado}) e correções de fidelidade & & & & \checkmark \\
+Estudo de Caso 3: benchmark M5 (Walmart, vs. artigo-base)    & & & & $\bullet$ \\
+Estudo de Caso 4: expansão multiestado (base nacional)       & & & & $\bullet$ \\
+Treinamento e avaliação do PSE                              & & & & $\bullet$ \\
+Análise de sensibilidade e mapa de recomendação             & & & & $\circ$ \\
+Otimização em janela móvel                                  & & & & $\circ$ \\
+Submissão artigo SBPO~2026                                  & & & & $\circ$ \\
+Submissão de artigos adicionais                             & & & & $\circ$ \\
+Escrita e defesa da dissertação                             & & & & $\bullet$ \\
+\bottomrule
+\end{tabular}
+\end{table}

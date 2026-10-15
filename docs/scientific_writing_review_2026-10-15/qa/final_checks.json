@@ -1,0 +1,30 @@
+{
+  "documents": {
+    "article": {
+      "pages": 22,
+      "pdf_sha256": "db16f7514cac170c3bbb378cdd73923d54ba4ee1920f03dd47e897aca020b1bd",
+      "cited_keys": 10,
+      "missing_keys": [],
+      "overfull_boxes": 0
+    },
+    "dissertation": {
+      "pages": 69,
+      "pdf_sha256": "8e8df8e33a24f8c3003c9c5000af6ccf3ddaeee86aa7f3378b63e35d02fe821c",
+      "cited_keys": 61,
+      "missing_keys": [],
+      "overfull_boxes": 0
+    }
+  },
+  "checks": {
+    "same_bahia_section_in_both_documents": true,
+    "article_build_manifest_and_zip": true,
+    "simulation_sources_unchanged": true,
+    "M5_execution_profile": {
+      "state": "running",
+      "workers": 8,
+      "device": "cpu"
+    },
+    "dissertation_page_reduction_percent": 41.52542372881356
+  },
+  "visual_review": "All-page contact sheets plus final detailed renderings of new tables, references and results ending inspected."
+}

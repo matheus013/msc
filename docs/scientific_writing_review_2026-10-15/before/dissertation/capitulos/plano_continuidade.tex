@@ -1,0 +1,73 @@
+\mychapter{Plano de Continuidade e Cronograma}{cap:plano_continuidade}\lhead{PLANO DE CONTINUIDADE}
+
+A continuidade prioriza transformar a comparação exploratória da qualificação em uma avaliação verificável da seleção de políticas. Isso exige identificar quais resultados pertencem a cada versão experimental, separar escolha retrospectiva de teste futuro e avaliar o PSE com comparadores fortes. Ampliar a base só será útil se essas condições forem preservadas.
+
+\section{Consolidação da etapa empírica}
+
+Os estudos da Paraíba e da Bahia estabeleceram o ambiente inicial, o processamento em Kedro e as análises por perfil. Antes de novas conclusões, será consolidado um manifesto com entradas, versões do código, políticas ativas, parâmetros e saídas. Tabelas de portfólios diferentes não serão combinadas. Resultados que não possam ser recompostos permanecerão identificados como históricos.
+
+A auditoria verificará eventos do simulador, custos, estoque inicial e terminal, unidades de tempo e serviço em séries sem demanda. O número de execuções não substituirá a demonstração de variabilidade entre sementes. Políticas determinísticas serão avaliadas como tais. Correções exigirão novas execuções antes de atribuir os resultados à versão corrigida.
+
+\section{Validação temporal e estudos adicionais}
+\label{sec:estudos_caso_adicionais}
+
+O protocolo seguinte separará calibração, validação e teste em ordem temporal. Perfis, previsões e parâmetros serão calculados apenas no passado disponível. A validação servirá à escolha de políticas e hiperparâmetros; o teste permanecerá reservado à avaliação. Múltiplos cortes poderão reduzir a dependência de uma janela curta.
+
+A comparação principal será entre seleção contextual e a melhor política global viável na mesma validação. Referências tradicionais e escolhas retrospectivas por série terão funções distintas: as primeiras situam o desempenho; as últimas indicam uma oportunidade idealizada, sem serem tratadas como políticas implantáveis. Custo e serviço serão reportados conjuntamente, com frequência de violações individuais.
+
+\subsection{M5: consolidação dos experimentos públicos}
+
+O M5 oferece dados reais de varejo e uma referência próxima ao estudo de \citet{Zabraoui2025GaDQN}. O projeto já dispõe de artefatos experimentais M5, produzidos após a etapa inicial da qualificação. Sua consolidação deve conferir recorte, políticas, custos, frequência temporal e tratamento das séries. Usar a mesma base de outro artigo não garante comparação direta quando esses elementos diferem.
+
+O recorte documentado de 2.408 séries de alta intermitência será confrontado com as saídas disponíveis antes de integrar conclusões. A concentração em um perfil também precisa ser considerada: muitas séries não compensam baixa diversidade de contextos. O conjunto público permite que terceiros examinem o protocolo e reproduzam uma versão independente do experimento. Sua disponibilidade não significa que o PSE já tenha sido validado.
+
+\subsection{Expansão multiestado}
+
+A expansão brasileira será feita em recortes documentados por estado, produto e atividade, respeitando memória e tempo de execução. O objetivo é avaliar estabilidade entre contextos, não maximizar cobertura geográfica. Filtros e quantidades serão registrados sem confundir transações, combinações potenciais e séries realmente simuladas.
+
+Estados ou lojas reservados para teste não participarão do ajuste do seletor. Dependências por produto e loja serão consideradas na interpretação. Dados proprietários permanecerão sujeitos às permissões de uso e divulgação; ampliar sua cobertura não elimina vieses da mesma fonte de coleta.
+
+\section{Treinamento e avaliação do PSE}
+
+O PSE receberá características calculadas antes da decisão. Seus rótulos serão derivados de custo e serviço apenas nos dados destinados ao ajuste. A avaliação incluirá acerto de escolha, arrependimento de custo e violações de serviço: prever um rótulo corretamente não garante uma diferença econômica relevante.
+
+Modelos supervisionados serão comparados com política global, regras por perfil e modelos simples. A separação respeitará tempo e agrupamento por loja. Seleção de variáveis, hiperparâmetros e interpretação não usarão o teste. Perfis com poucas séries exigirão agrupamento, fallback explícito ou interpretação exploratória.
+
+\subsection{Calibração agrupada por perfil}
+\label{sec:robustez_pooling}
+
+Agrupar séries para calibrar parâmetros é uma pergunta diferente de selecionar uma política por perfil. Análises preliminares dessa calibração serão mantidas separadas, com seus artefatos conferidos. A comparação usará os mesmos cortes e orçamentos para ajuste individual e agrupado, reportando custo, serviço e sensibilidade por família.
+
+Um resultado favorável não será descrito como robustez geral. Inversões entre janelas, pouca representação e alterações do algoritmo devem aparecer no relatório. Só após essa verificação será possível avaliar se o agrupamento reduz variância de estimação ou favorece apenas determinado recorte.
+
+\section{Sensibilidade e eficiência computacional}
+
+Custos de falta e manutenção, prazo, estoque inicial, tratamento terminal, limiares dos perfis e serviço mínimo serão variados de forma documentada. A análise distinguirá média por série, atendimento ponderado pela demanda e exigências individuais. Um mapa de recomendação indicará condições favoráveis e situações sem evidência suficiente.
+
+A otimização em janela móvel atualizará parâmetros apenas com observações disponíveis. GPU poderá acelerar redes e avaliações vetoriais quando houver benefício mensurável; heurísticas pequenas poderão continuar em CPU. Orçamento, tempo e hardware serão registrados para não confundir velocidade com qualidade decisória.
+
+\section{Escrita e produção científica}
+
+A versão final consolidará resultados auditados e limites de generalização. O material do SBPO foi arquivado e não integra o plano ativo de submissão. O novo artigo para \textit{Supply Chain Analytics} é uma frente própria, apoiada por revisão metodológica, científica e editorial. Seus resultados não serão transferidos automaticamente para a dissertação sem identificar protocolo e versão.
+
+\section{Sequência de trabalho}
+
+A Tabela~\ref{tab:cronograma} organiza prioridades por dependência, sem fixar datas ainda não acordadas. Validar o seletor depende de um benchmark confiável; expansão e redação final devem acompanhar essa ordem.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Continuidade da pesquisa por etapa e critério de conclusão.}
+\label{tab:cronograma}
+\begin{tabular}{@{}p{4.1cm}p{8.9cm}@{}}
+\toprule
+Etapa & Critério de conclusão\\
+\midrule
+Auditoria dos experimentos & Manifesto de versões, métricas e resultados recompostos\\
+Validação temporal & Cortes documentados, comparadores comuns e teste preservado\\
+Estudos M5 e multiestado & Recortes auditados e limites de transferência identificados\\
+Treinamento do PSE & Avaliação fora da amostra contra referências simples\\
+Sensibilidade & Estabilidade e falhas de serviço reportadas por cenário\\
+Redação e defesa & Resultados, contribuições e pendências coerentes com a evidência\\
+\bottomrule
+\end{tabular}
+\end{table}

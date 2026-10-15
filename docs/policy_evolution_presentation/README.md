@@ -39,7 +39,7 @@ projeto -- nenhum número ou comportamento foi inventado:
   metaheuristics_torch,rl_torch,policies_sota,policies_zabraoui}.py` --
   estado atual, incluindo os comentários e docstrings que já documentam
   cada decisão de fidelidade/ressalva metodológica.
-- `simulation/conf/base/parameters/simulation.yml` -- diff de
+- `experiment/conf/base/parameters/simulation.yml` -- diff de
   hiperparâmetros entre as duas versões.
 - `simulation/AJUSTES_INFRA_2026-08-18.md`, item 21 -- extensão da
   aptidão com termos de risco TR/BE (mudança mais recente, feita na

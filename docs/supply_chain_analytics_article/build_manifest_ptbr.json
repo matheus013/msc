@@ -1,0 +1,20 @@
+{
+  "status": "research draft; not submitted",
+  "elsarticle": "3.5 2026-01-09",
+  "sha256": {
+    "manuscript_ptbr.tex": "cb431945c7ee50c06202117952ac1d7fce7089d9a7821ea99e876b34adc6781e",
+    "manuscript_ptbr.bbl": "b7c403419ede0d26c1722160242c77f1816f257ac593aa4ebb43c742bc0367c0",
+    "references_ptbr.bib": "04123d6f66d671321532c0e1be1b691ab842ae755790582605f4943d2013c227",
+    "elsarticle.cls": "40af0200a8ad6777126f93bf7be6ab3046fa7c3ef1073307f0809703602e59da",
+    "elsarticle-num.bst": "f04dfa2f78d0198ab8e4055b609dc0b91bdb730743cbbd549d84270f20d11394",
+    "highlights_ptbr.txt": "e7123a7f159a3b3b99aa42b6e267c0341698d813fc84a86257f349f3a8d74aae",
+    "bahia_20261015.tex": "d8cdb749741414c6d458510d7f44d1e384593e66d72c9d9efc67fa5bb1e78d3f",
+    "protocolo_bahia_20261015.tex": "e4f250e829f450647af0d6e5dedc81f398a9f7fa0baa8618f41a3ffe6056804e",
+    "figures/fluxo_experimental.png": "8e1a4262c7d846d36bfac64488547ccaab12049290d46e1d81ce85edebec8d9f",
+    "figures/custo_servico.png": "5ab3345fbc65ecc892ee0f2ce8afa6a405906d935b7e6d8da8318cc4211a17c1",
+    "figures/escolhas_perfil.png": "463aa379405d5ce089c9f1712d308584beb11882fea6506b761e6e6d9ea6ab88",
+    "figures/distribuicao_atendimento.png": "6ea8aff2f5faa6043c5a6f9b5c69ecb89a7e36de38d140a5fd05e294b63a9782",
+    "manuscript_ptbr.pdf": "9068e698718360e26474a08bd23a6647f6a045c4ada1670a44aeaadf4077bd42",
+    "article_sources_ptbr_draft.zip": "6e30e6843f7d392b897c20e54204b74bf6b8eb4d38e1ed273917c72cecc67af4"
+  }
+}

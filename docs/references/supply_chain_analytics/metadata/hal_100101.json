@@ -1,0 +1,12 @@
+{
+  "response":{
+    "numFound":1,
+    "start":0,
+    "maxScore":5.5702114,
+    "numFoundExact":true,
+    "docs":[{
+      "title_s":["An investigation of foreign affiliates and supply chain productivity in the European Union industrial sectors"],
+      "uri_s":"https://hal.science/hal-04895330v1"
+    }]
+  }
+}

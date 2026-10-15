@@ -1,0 +1,219 @@
+\mychapter{Resultados Preliminares}{cap:results}\lhead{RESULTADOS PRELIMINARES}
+
+Este capítulo reúne os experimentos da qualificação — piloto com 15 lojas da Paraíba e expansão para 145 séries da Bahia — e uma avaliação externa com 2.408 séries M5. A pergunta é se diferenças de demanda justificam escolher políticas distintas, considerando conjuntamente custo total de inventário (CTI), nível de serviço (NS), ruptura (TR), amplificação dos pedidos (BE) e frequência de reposição (FP). A diversidade de resultados motiva essa pergunta, mas não demonstra, por si só, que um seletor de políticas generaliza para séries novas.
+
+A apresentação mantém os resultados históricos da qualificação e distingue seus critérios de comparação. CTI bruto, CTI acrescido de penalidades por indisponibilidade e excesso, e objetivo normalizado com penalização de BE são medidas diferentes. Os experimentos complementares desenvolvidos para o novo artigo não substituem esses resultados: utilizam outro portfólio e outro protocolo. A síntese abaixo privilegia as evidências decisivas e explicita as pendências de consistência que impedem interpretar todo o acervo como um único experimento reproduzido.
+
+\section{Escopo dos Experimentos}
+
+O piloto considera o produto~48130 em 15 lojas da Paraíba; a expansão abrange 145 combinações loja--produto da Bahia. Ambos usam horizonte de 38 ciclos comerciais e prazo configurado $L=2$. A cobertura geográfica efetivamente avaliada restringe-se a esses estados. Mapas da rede nacional descrevem a disponibilidade potencial de dados, não uma validação do AIPE em escala nacional.
+
+Na Bahia, as séries distribuem-se entre Calçada, Cajazeiras e Lauro de Freitas e seis segmentos comerciais. Calçada concentra 104 séries, aproximadamente 72\% da amostra. Essa concentração limita a representatividade da média estadual: diferenças entre segmentos podem refletir volume e composição de produtos, além da política aplicada. Por isso, a interpretação central usa os perfis de demanda, sem atribuir às filiais efeitos causais que o desenho não identifica.
+
+Os documentos do Experimento~2 registram cinco repetições nominais por série e 12 políticas, totalizando 8.700 avaliações nominais. Isso não equivale a 8.700 observações independentes. A auditoria dos artefatos encontrou dispersão de custo praticamente nula entre repetições; logo, o número configurado de sementes não comprova variabilidade efetiva de treinamento ou de demanda. A unidade empírica continua sendo a série, com dependência possível entre produtos da mesma loja. Essa ressalva orienta a leitura dos testes históricos.
+
+A descrição dos recortes também exige cuidado. O texto metodológico caracteriza a amostra avaliada como \textit{Lumpy}, enquanto uma tabela-resumo anterior informava percentuais de 67\% e 71\%, incompatíveis com essa caracterização integral. Esses percentuais não são utilizados aqui. Permanecem pendentes a reconciliação dos filtros e a documentação do cálculo de ADI e CV$^2$, sobretudo da inclusão ou exclusão dos ciclos de demanda zero. As conclusões ficam restritas ao recorte operacional documentado, sem pressupor uma reprodução exata da taxonomia original.
+
+\section{Experimento 1: Estudo Piloto na Paraíba}
+\label{sec:experimento1}
+
+O piloto foi usado para verificar o ambiente e identificar diferenças entre as políticas em séries de alta intermitência, com CV entre 2,5 e 5,4. A tabela completa permanece no Apêndice~\ref{app:reproducibility}, Tabela~\ref{tab:global_prelim}; os resultados não foram transferidos para novos anexos nesta revisão. Nesse recorte, o GA-DQN apresentou CTI até 48\% menor que $(s,S)$, ruptura 55\% menor e BE de 5,0, contra 119,4. O NS foi 82,1\%, frente a 84,3\%: houve pequena perda de serviço, e não melhoria simultânea de todas as dimensões.
+
+O percentual de 48\% é um contraste específico do piloto, não um ganho médio do AIPE nem uma previsão de economia em outras lojas. Na Bahia, o GA-DQN apresenta custo maior e serviço menor que o EOQ na média. Essa mudança é relevante: o desempenho favorável de um híbrido em um produto não permite adotá-lo como solução padrão da rede. Também não comprova que o refinamento por perfil consiga antecipar corretamente o vencedor fora da amostra.
+
+\subsection{Diferenças por Volume}
+
+A estratificação das 15 lojas separou cinco de alto volume ($\hat\mu>500$), seis de volume médio ($50<\hat\mu\leq500$) e quatro de baixo volume ($\hat\mu\leq50$). Nas primeiras, o estoque inicial sustentou NS próximo de um para quase todas as políticas. O custo médio do EOQ foi R\$~85.956, contra R\$~45.739 para alternativas de menor frequência de pedidos. Como a condição inicial já oferece ampla cobertura, esse contraste deve ser lido também como sensibilidade à inicialização e ao horizonte, não somente como qualidade intrínseca dos algoritmos.
+
+No estrato intermediário, o registro do GA-DQN combina NS de 0,933 e CTI de R\$~10.854. Nas lojas de menor volume, três não ultrapassam NS de 0,42 com as políticas avaliadas. O Jornaleiro é mais econômico nesse grupo, mas seu baixo custo não resolve a insuficiência de serviço. A amostra pequena e o uso da própria trajetória para análise impedem transformar esses padrões em regras universais de recomendação.
+
+\subsection{Aprendizado e Estabilidade}
+
+O piloto registrou PPO emitindo pedidos em 98\% dos ciclos e SARSA sem reposição. Esses comportamentos apontam problemas de treinamento, recompensa ou implementação que precisam ser examinados antes de comparar famílias de algoritmos. Não constituem prova de que RL seja inadequado à demanda intermitente. A necessidade de muitas interações em estudos de inventário, discutida por \citet{Oroojlooyjadid2022BeerGameDQN}, ajuda a situar o orçamento experimental, mas não identifica a causa dessas falhas locais.
+
+A combinação com GA procurou fornecer uma configuração inicial mais favorável. O relato histórico associa a inicialização a 5.000 avaliações simuladas e treinamento de 200 episódios. Esses números descrevem o procedimento registrado; não isolam causalmente o efeito da inicialização. Seria necessária uma ablação com o mesmo orçamento, sementes verificadas e separação entre ajuste e avaliação. Também não se deve equiparar avaliações de soluções pelo GA a transições reais independentes nem tratar PPO e DQN como se compartilhassem o mesmo mecanismo de treinamento.
+
+O BE complementa custo e serviço, mas requer interpretação conjunta. Pedir pouco pode reduzir sua variância enquanto aumenta faltas; pedir em grandes lotes pode garantir cobertura e amplificar a demanda a montante. Portanto, o BE menor de GA-DQN ou DQN não demonstra antecipação de picos sem examinar as trajetórias de estoque, demanda atendida e pedidos. O piloto cumpriu seu papel de diagnóstico e motivou a expansão, mantendo abertas as questões de robustez.
+
+\section{Experimento 2: Expansão na Bahia}
+
+\subsection{Comparação Agregada}
+
+A Tabela~\ref{tab:kpis_fase2} preserva os valores do portfólio histórico de 12 políticas. Ela descreve médias sobre as séries, não o efeito de um seletor aprendido. Os nomes correspondem às implementações avaliadas; não certificam, por si, a reprodução de uma política ótima de referência. A comparação precisa considerar as condições de estoque inicial, prazo, custos e calibração comuns ao recorte.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Indicadores médios do recorte histórico BA: 12 políticas, 145 séries. As cinco repetições nominais não são tratadas como observações independentes. $^\dagger$DQN sem pedidos.}
+\label{tab:kpis_fase2}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Política &
+\makecell[r]{CTI\\(R\$)} &
+\makecell[r]{NS} &
+\makecell[r]{TR} &
+\makecell[r]{BE} &
+\makecell[r]{FP} \\
+\midrule
+DQN$^\dagger$          & \textbf{126.73} & 0.23 & 0.40 & 1.87  & \textbf{0.00} \\
+Jornaleiro             & 289.92          & 0.54 & 0.29 & 0.71  & 0.18 \\
+Vendor-Responsive      & 433.31          & 0.77 & 0.16 & 1.14  & 0.30 \\
+Fixed Interval         & 457.81          & 0.84 & 0.11 & 2.13  & 0.30 \\
+Capped Base-Stock      & 561.87          & 0.64 & 0.24 & 0.43  & 0.43 \\
+Jornaleiro (\textit{Big Data}) & 582.11  & 0.72 & 0.19 & 3.50  & 0.37 \\
+\textbf{EOQ}           & 628.42          & 0.94 & 0.05 & 55.43 & 0.05 \\
+$(s,S)$                & 654.86          & 0.94 & 0.05 & 58.62 & 0.05 \\
+SA                     & 1.147,86        & 0.86 & 0.10 & 21.70 & 0.90 \\
+GA-DQN (Híbrido)       & 1.175,79        & 0.73 & 0.19 & 0.16 & 0.98 \\
+GA                     & 1.265,38        & 0.90 & 0.07 & 0.16  & 0.97 \\
+PPO                    & 5.112,75        & \textbf{0.96} & \textbf{0.02} & 14.12 & 0.97 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O menor CTI pertence ao DQN, que apresenta FP igual a zero e NS de 0,23. Trata-se de uma solução de baixo atendimento, inadequada ao limiar médio de 0,70 adotado. O Jornaleiro também fica abaixo desse limiar, com NS de 0,54. Em contrapartida, \textit{Vendor-Responsive} e \textit{Fixed Interval} combinam custos inferiores ao EOQ com menor serviço. Ambas ultrapassam 0,70 na média global; isso não garante que cada série cumpra a restrição.
+
+O EOQ e $(s,S)$ alcançam NS próximo de 0,94, acompanhados de BE elevado. O PPO oferece o maior NS reportado, 0,96, com custo muito superior. GA e GA-DQN têm BE próximo de 0,16, mas essa estabilidade não compensa automaticamente seu custo. Na média da tabela, o GA-DQN custa mais e atende menos que o EOQ: nessas duas dimensões, é desfavorecido, e não representa um compromisso vantajoso. Sua eventual utilidade precisaria aparecer em outro indicador ou estrato devidamente justificado.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.68\textwidth]{../../experiment/data/08_reporting/comparison/pareto_frontier}
+\caption{Custo e serviço médios no recorte histórico BA. A comparação indica diferentes pontos de operação; não comprova desempenho de seleção em séries novas.}
+\label{fig:pareto}
+\end{figure}
+
+A Figura~\ref{fig:pareto} sintetiza esses pontos de operação. Nenhuma política reúne o menor custo e o maior serviço da tabela, mas isso não implica que todas sejam eficientes nem que cada série necessite de uma política diferente. A escolha depende da exigência de atendimento e da métrica econômica adotada. Em particular, comparar um método com uma referência de serviço mais alto pode produzir economia aparente sem melhorar a fronteira custo--serviço.
+
+\subsection{Comparação por Perfil Operacional}
+\label{sec:comparacao_pod}
+
+O refinamento por Perfis Operacionais de Demanda (POD), descrito na Seção~\ref{sec:carac_series}, separa 116 séries \textit{Sparse High Impact}, 18 \textit{Unstable Trend} e 11 \textit{High Vol. Seasonal}. Os dois últimos grupos são exploratórios. Os perfis \textit{Low Vol. Stable} e \textit{Fast Moving} não aparecem nesse recorte. A Tabela~\ref{tab:dominancia_por_perfil} usa o CTI ajustado por indisponibilidade e excesso, entre candidatos cujo NS médio no perfil atinge 0,70.
+
+\begin{table}[ht]
+\centering\small
+\caption{Política de menor CTI ajustado por perfil no recorte histórico BA, condicionada a NS médio $\geq0{,}70$. Custos médios em R\$. Grupos com menos de 20 séries são exploratórios.}
+\label{tab:dominancia_por_perfil}
+\begin{tabular}{@{}lrlrrr@{}}
+\toprule
+Perfil & $n$ & Política & CTI & CTI ajustado & NS\\
+\midrule
+Sparse High Impact &116&EOQ&632,51&908,05&0,939\\
+Unstable Trend &18&EOQ&607,95&836,73&0,947\\
+High Vol. Seasonal &11&Fixed Interval&422,93&426,12&0,907\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O EOQ é selecionado em 134 das 145 séries, por meio dos dois primeiros perfis. A diferença de escolha concentra-se nas 11 séries \textit{High Vol. Seasonal}. Esse resultado é mais restrito que afirmar uma ampla especialização do portfólio: no critério ajustado, a estratificação modifica uma fração pequena das decisões. A denominação do perfil também não comprova sazonalidade observável; ela deriva das regras de caracterização, cuja estabilidade precisa ser avaliada em históricos curtos.
+
+O Jornaleiro tem custo bruto inferior, mas seu serviço médio insuficiente o exclui da seleção viável. Já a alteração de vencedor entre CTI bruto e ajustado decorre de uma mudança explícita de objetivo: as penalidades acrescentam informação sobre indisponibilidade e excesso. Não se pode comparar as duas ordenações como se uma corrigisse estatisticamente a outra. A interpretação deve informar sempre o custo utilizado e o nível no qual a viabilidade é imposta.
+
+\subsection{Política Única versus Seleção por Perfil}
+\label{sec:custo_politica_unica_vs_perfil}
+
+A estratégia A1 escolhe a política global de menor custo ajustado entre as viáveis; A2 fixa EOQ como referência. No recorte desta tabela, ambas coincidem. A estratégia B aplica o vencedor de cada perfil, e C escolhe retrospectivamente por série dentro do portfólio. O percentual de redução é calculado em relação à referência global, preservando a distinção entre custo médio e total.
+
+\begin{table}[ht]
+\centering\small
+\caption{Comparação histórica por CTI ajustado: penalidades de indisponibilidade e excesso. C é referência retrospectiva, sem garantia de implementação ou generalização.}
+\label{tab:strategy_cost_comparison}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Estratégia & CTI ajustado total & Média & NS médio & Redução\\
+\midrule
+A1: melhor única viável &129.791,42&895,11&0,942&0,0\%\\
+A2: EOQ &129.791,42&895,11&0,942&0,0\%\\
+B: seleção por perfil &125.082,77&862,64&0,938&3,6\%\\
+C: oráculo por série &64.007,39&441,43&0,700&50,7\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A redução descritiva de 3,6\% da estratégia B resulta da substituição do EOQ por \textit{Fixed Interval} no grupo de 11 séries. O NS médio passa de 0,942 para 0,938. A variação pequena não autoriza concluir ausência de perda, equivalência de serviço ou ganho líquido garantido. Como as políticas e os perfis são escolhidos com resultados do próprio conjunto, a tabela mede ajuste retrospectivo. Não mede transferência da recomendação a uma loja ou período ainda não observado.
+
+O oráculo amplia a redução aparente, mas opera com NS médio de 0,700. É uma referência ex post dentro do portfólio, condicionada ao objetivo e à restrição utilizados; não é um limite teórico do problema de inventário. Seu desempenho não pode ser atribuído ao PSE, que ainda precisa ser treinado e validado. Tampouco a distância até esse oráculo mede um ganho que um modelo supervisionado necessariamente alcançaria.
+
+Para uma aplicação operacional, a restrição também precisaria expressar a exigência da rede. NS médio de um perfil pode ser aceitável para uma análise exploratória e insuficiente para itens críticos de uma loja específica. As médias da tabela não mostram quantas séries ficam abaixo do alvo, nem o volume de demanda associado a essas faltas. Uma avaliação futura deve registrar ambos e distinguir média por série de atendimento ponderado pelo volume. Assim, a regra de viabilidade pode ser julgada pelo objetivo empresarial, sem escolher o limiar depois de observar a economia. A qualificação adota 0,70 como parâmetro de análise, não como garantia universal de serviço adequado.
+
+Há três conjuntos de números no acervo que devem permanecer separados. O resumo de validação anterior reportava redução de 6,2\% em CTI bruto; a tabela aqui preservada reporta 3,6\% em CTI ajustado; a sensibilidade por estabilidade normaliza CTI e BE e varia $\lambda_{BE}$. São versões ou objetivos distintos. As diferenças de portfólio e de função objetivo exigem reconciliação de código, parâmetros e dados antes de se apresentar uma estimativa única consolidada. Esta revisão textual não preenche essa lacuna com resultados de outro experimento.
+
+\section{Validação e Limites da Inferência}
+\label{sec:stats}
+
+Os artefatos incluem testes de Wilcoxon com correção de Holm, tamanhos de efeito e agrupamentos de Friedman--Nemenyi. Sua interpretação exige identificar a unidade pareada, a dependência entre observações e a versão exata dos resultados. Repetições numericamente idênticas não ampliam o tamanho amostral efetivo. Além disso, comparar séries de uma mesma loja como independentes pode subestimar incerteza; a correção de múltiplos testes não resolve esse problema de dependência.
+
+A tabela histórica de estratégias registra $p_{\mathrm{Holm}}=0{,}020$ para CTI bruto e ajustado e 0,111 para NS. Entretanto, a narrativa anterior também afirmava ausência de diferença significativa em custo e diferenças significativas de serviço, leitura incompatível com essa tabela. Por isso, os testes não são utilizados aqui como confirmação de benefício operacional. É necessário regenerá-los a partir de uma única versão, com pareamento e hipóteses documentados. Ausência de significância em NS tampouco prova preservação de atendimento.
+
+As proporções históricas de testes significativos para GA-DQN e GA-PPO foram retiradas da síntese porque misturavam candidatos e versões diferentes do portfólio da Tabela~\ref{tab:kpis_fase2}. Contar rejeições de hipóteses, mesmo após ajuste, não informa se o método é melhor na direção relevante nem se a diferença tem utilidade econômica. Da mesma forma, um efeito padronizado grande pode representar custo maior e serviço menor. As médias preservadas permitem reconhecer essa direção sem transformar significância em ranking de qualidade.
+
+A principal evidência disponível é, portanto, descritiva: as políticas ocupam pontos distintos de custo e serviço, e a seleção por perfil altera poucas decisões no critério ajustado. Para sustentar generalização, será necessário separar treinamento, escolha do seletor e avaliação temporal, preservando agrupamentos de loja e verificando a variabilidade real dos métodos. Essa etapa é diferente de repetir a mesma simulação ou calcular novos testes sobre a mesma matriz.
+
+\section{M5: Evidência Externa Disponível após a Qualificação}
+\label{sec:resultados_m5}
+
+Além dos recortes brasileiros, os artefatos M5 disponíveis contêm 2.408 séries de 287 produtos \textit{FOODS}, em dez lojas dos estados CA, TX e WI, com 93 ciclos por série e 28.896 pares série--política. A classificação armazenada inclui 2.350 séries \textit{Lumpy}, 33 \textit{Erratic}, 24 \textit{Smooth} e uma \textit{Intermittent}. A base pública complementa a evidência regional proprietária, sem substituí-la.
+
+\begin{table}[ht]
+\centering\small
+\caption{M5: médias por política nos artefatos disponíveis. CTI relativo é a razão entre o CTI médio da política e o do EOQ, exclusivamente dentro do M5.}
+\label{tab:m5_sintese}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Política & CTI relativo ao EOQ & NS médio\\
+\midrule
+Jornaleiro &0,892&0,084\\
+Vendor-Responsive &0,898&0,100\\
+Capped Base-Stock &0,928&0,098\\
+Fixed Interval &0,942&0,100\\
+DQN &0,993&0,076\\
+EOQ &1,000&0,133\\
+$(s,S)$ &1,004&0,134\\
+Jornaleiro (Big Data) &1,005&0,096\\
+GA &1,190&0,231\\
+GA-DQN &1,271&0,467\\
+SA &3,127&0,852\\
+PPO &3,563&0,985\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A configuração atual agrega vendas diárias em blocos de 21 dias, seleciona \textit{FOODS} com filtro de CV e aplica truncamento superior por $1{,}5\times\mathrm{IQR}$. Declara separação de 19 ciclos de treino e restante de avaliação. Contudo, suavização e seleção consultam a série completa; a correspondência integral entre configuração e execução histórica precisa ser fixada por versão. O recorte não reproduz exatamente o experimento de \citet{Zabraoui2025GaDQN}: compartilhar o M5 não iguala frequência, filtros, custos ou treinamento.
+
+Somente SA e PPO superam NS médio de 0,70 nessa tabela; o atendimento baixo das demais políticas impede interpretar seus menores custos como vantagem. Os contrastes diferem dos brasileiros e reforçam a necessidade de auditar o protocolo, sem demonstrar transferência do PSE. Não comparamos custos absolutos entre bases: horizontes, escalas e parametrização divergem. As repetições também apresentam dispersão praticamente nula. Esses resultados externos já existem; permanecem pendentes sua reprodução independente e uma avaliação temporal sem informação futura no pré-processamento.
+
+Em 2.213 das 2.408 séries (91,9\%), os primeiros 19 ciclos não têm demanda, embora todas tenham demanda na avaliação: predomina partida sem histórico positivo. Os orçamentos também divergem: M5/BA usam GA de 500/50 gerações, SA de 100/500 iterações e híbrido de 30/200 episódios. O contraste não isola transferência entre bases nem prova falha universal dos algoritmos.
+
+\section{Previsão como Sinal Auxiliar}
+
+O módulo de previsão fornece características de previsibilidade, não a regra final de reposição. A Tabela~\ref{tab:forecast_metrics} preserva médias históricas. O código escala MASE/RMSSE por diferenças da própria série de teste, não pela referência ingênua de treino; sMAPE exclui casos $0/0$. Valores abaixo de um não comprovam superioridade sobre uma referência convencional validada.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Métricas históricas de previsão sobre 145 séries BA. Os rótulos MASE/RMSSE usam a escala implementada no teste; não validam comparação convencional com previsão ingênua. sMAPE em \%.}
+\label{tab:forecast_metrics}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Modelo   & MASE & sMAPE (\%) & RMSSE \\
+\midrule
+LSTM     & 0.76 & 193.5 & 0.86 \\
+XGBoost  & 1.05 & 148.8 & 0.99 \\
+ANN      & 1.12 & 135.8 & 0.99 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O LSTM apresenta os menores indicadores rotulados MASE e RMSSE; o ANN, e não o XGBoost, tem o menor sMAPE. Não há superioridade do LSTM em todas as métricas. Em séries esparsas, sMAPE próximo de 200\% exige atenção ao tratamento de zeros e não deve ser chamado de pouco sensível à intermitência.
+
+Esses números pertencem às implementações históricas. Alterações posteriores no código de previsão não validam retroativamente as métricas, e o nome LSTM não basta para garantir equivalência entre versões. A reprodução deve fixar implementação, janelas, escala, hiperparâmetros e política de atualização. Mesmo uma previsão superior não demonstra melhor decisão de estoque sem avaliar o custo e o serviço decorrentes. Por isso, os resultados auxiliares não são usados como prova da eficácia do PSE.
+
+\section{Alcance e Continuidade}
+\label{sec:threats}
+
+Os experimentos ampliaram o diagnóstico de um produto na Paraíba para 145 séries na Bahia, mas a diversidade regional, temporal e de regime permanece limitada. Os 38 ciclos disponíveis dificultam avaliar sazonalidade, mudanças estruturais e aprendizado persistente. O estoque inicial, a ausência ou presença de valor terminal e a convenção de prazo podem afetar os resultados. O parâmetro $L=2$ deve ser interpretado pela ordem de eventos do simulador, não automaticamente como dois ciclos efetivos de espera.
+
+Custos de falta, manutenção e pedido controlam o compromisso observado. Os valores parametrizados não demonstram economia monetária efetivamente realizada pela empresa; relações diferentes podem alterar o vencedor. Além disso, vendas observadas podem omitir demanda não atendida, e completar ciclos ausentes com zeros pode confundir falta de registro com ausência de demanda. Essas limitações atingem tanto a caracterização dos perfis quanto a comparação das políticas.
+
+A contribuição empírica atual é organizar alternativas conhecidas sob um problema operacional comum e identificar condições em que suas escolhas divergem. A evidência não confirma uma vantagem geral do GA-DQN, um seletor supervisionado pronto ou economias nacionais. A consolidação do M5 já disponível e a expansão multiestado, discutidas no Capítulo~\ref{cap:plano_continuidade}, exigem protocolo próprio e critérios de validação definidos antes da análise de teste.
+
+O próximo passo científico é congelar um conjunto coerente de dados, código, portfólio e objetivos, regenerar indicadores e testar decisões em períodos não usados na escolha. Isso permitirá distinguir três questões hoje parcialmente sobrepostas: qual política funciona melhor, se o perfil prevê essa diferença e se a recomendação preserva o atendimento desejado. Uma resposta negativa à segunda questão também é informativa e deve ser relatada sem adaptar o critério para recuperar um ganho.

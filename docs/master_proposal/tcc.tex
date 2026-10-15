@@ -9,6 +9,7 @@
     citecolor = {Blue},
     urlcolor = {Red}, 
     unicode = {true}, 
+    hypertexnames = {false},
     pdftitle = {Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos},
     pdfauthor = {Matheus Inácio Batista Santos},
     pdfsubject = {Dissertação de Mestrado},
@@ -34,9 +35,12 @@
 \usepackage{algpseudocode}
 \usepackage{mathtools}
 \usepackage{comment}
+% DOI identifiers may contain underscores; keep them valid in links and labels.
+\renewcommand{\doi}[1]{\textbf{DOI}~\href{https://doi.org/#1}{\nolinkurl{#1}}}
 \usepackage{enumerate}
 
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{makecell}
@@ -110,6 +114,7 @@
 \begin{abstract}
 \input{capitulos/resumo}
 \end{abstract}
+\input{abstract_en}
 \selectlanguage{brazil}
 
 \tableofcontents
@@ -133,7 +138,7 @@
 \include{capitulos/plano_continuidade}
 
 \include{capitulos/apendice}
-\include{capitulos/apendice_b}
+% Diagramas didáticos preservados nos arquivos; fórmulas no referencial/metodologia.
 
 \begin{raggedright}
     \bibliographystyle{plainnat}

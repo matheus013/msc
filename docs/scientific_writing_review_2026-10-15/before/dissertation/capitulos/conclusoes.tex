@@ -1,0 +1,31 @@
+\mychapter{Conclusões}{cap:conclusion}\lhead{CONCLUSÕES}
+
+Esta dissertação propõe o AIPE para investigar a escolha de políticas de reposição a partir das características de séries loja-produto. O trabalho reúne preparação de dados, perfis operacionais e comparação de políticas em um ambiente comum. Seu componente supervisionado, o PSE, permanece em desenvolvimento e avaliação; os experimentos não validam um recomendador implantado nem garantem vantagem em novas séries.
+
+\section{Síntese dos resultados}
+
+O piloto avaliou 15 lojas da Paraíba e um produto. A expansão para a Bahia abrangeu 145 séries. Os dois recortes mostram que custo, serviço e variabilidade dos pedidos reagem de forma diferente à política utilizada. Essa observação motiva a seleção contextual, mas não prova que um seletor supera uma política única bem escolhida.
+
+No piloto, a redução de custo de até 48\% atribuída ao GA--DQN é um resultado histórico de uma comparação e implementação específicas, acompanhado por um compromisso de serviço. Não representa economia média para toda a rede nem permite separar automaticamente o efeito da arquitetura dos parâmetros e do ambiente. Resultados de diferentes versões do portfólio exigem identificação dos artefatos antes de qualquer comparação.
+
+A análise por perfil depende do serviço exigido. Uma política pode ser barata porque atende menos demanda; permanecer acima de um limiar médio não garante atendimento mínimo em cada série. Ganhos precisam ser apresentados com variação do serviço, casos abaixo do limiar e uma referência global competitiva. Diferenças estatísticas não eliminam essas condições de interpretação.
+
+A avaliação externa do M5 reúne 2.408 séries de alimentos. Apenas SA e PPO atendem ao limiar médio de serviço de 0,70 nesse recorte. O contraste com a Bahia é condicionado pela ausência de demanda no prefixo de ajuste de 91,9\% das séries M5 e pelos diferentes orçamentos dos algoritmos.
+
+A dominância por perfil da Tabela~\ref{tab:dominancia_por_perfil} descreve o recorte avaliado. Os perfis menores têm alcance exploratório, e a concentração no regime \textit{lumpy} limita a generalização. O protocolo de cinco execuções não equivale a cinco amostras independentes quando os resultados são determinísticos ou praticamente iguais. A evidência está ligada às séries e às dependências entre elas, não apenas ao total de linhas produzidas.
+
+\section{Contribuições e limitações}
+
+A primeira contribuição é a formulação de uma avaliação contextual: caracterizar a série, comparar alternativas viáveis e testar se a representação ajuda a escolher uma política. A segunda é o estudo empírico em dados proprietários de varejo brasileiro. A terceira é a infraestrutura integrada para preparar dados, executar simulações e organizar resultados com configurações rastreáveis.
+
+Políticas clássicas, meta-heurísticas e aprendizado por reforço são componentes conhecidos. As arquiteturas híbridas GA--RL também não são contribuições algorítmicas originais. O valor do portfólio depende da implementação, da força dos comparadores e da transparência sobre treinamento e avaliação.
+
+A reprodutibilidade exige congelar versões, parâmetros e entradas. Uma correção no código atual não comprova retrospectivamente saídas anteriores. Uma tabela de política dominante calculada no próprio histórico também não valida o PSE. Essa etapa requer separar dados usados na calibração, na escolha e no teste.
+
+Outras limitações decorrem do horizonte curto, de vendas possivelmente censuradas por falta e de custos definidos para simulação. A análise trata produtos separadamente e não otimiza capacidade, transporte ou coordenação entre escalões. Dados proprietários restringem verificação externa. Os artefatos M5 disponíveis ampliam a possibilidade de replicação, mas precisam de auditoria do protocolo antes de fundamentar conclusões de validade externa.
+
+\section{Implicações e continuidade}
+
+O uso operacional exige decidir primeiro qual serviço preservar e em qual nível: média do grupo, média ponderada pela demanda ou garantia por série. A escolha deve ser comparada com a melhor alternativa global disponível, observando custo, estabilidade e faltas. Uma melhoria frente a uma referência fraca pode decorrer apenas de menor atendimento.
+
+A próxima etapa é validar a seleção em períodos futuros, ajustando características e políticas apenas sobre o passado. O M5 permite examinar dados públicos; recortes brasileiros adicionais podem testar diferenças regionais. Nenhuma expansão confirma antecipadamente a hipótese. O plano do Capítulo~\ref{cap:plano_continuidade} prioriza consolidação dos artefatos, validação temporal e treinamento do PSE antes de atribuir ao AIPE um benefício operacional generalizável.

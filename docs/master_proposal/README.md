@@ -1,5 +1,9 @@
 # Proposta de Dissertação - AIPE
 
+**Versão revisada em 15/10/2026: 65 páginas, redução de 44,9% em relação às 118 originais.** O capítulo de resultados organiza a mesma matriz pelas perguntas de pesquisa, com quatro figuras compartilhadas com o artigo e uma tabela de tempos por política. A dissertação mantém a formulação ampla do AIPE; o artigo tem escopo delimitado.
+
+A Bahia tem 145 séries, duas origens e 4.350 ajustes completos. O M5 permanece em execução, sem conclusão quantitativa parcial. Textos e PDFs anteriores estão preservados nos arquivos de revisão; resultados de configurações diferentes não são combinados. Veja [PLANO_DE_EVIDENCIAS.md](../PLANO_DE_EVIDENCIAS.md).
+
 Proposta de dissertação de mestrado de Matheus Inácio Batista Santos, UFAL, Instituto de Computação.
 
 Título:
@@ -8,11 +12,10 @@ Título:
 
 ## Compilação
 
-Use `latexmk` a partir desta pasta:
+O comando abaixo, executado na raiz do repositório, usa `pdflatex` e `bibtex` diretamente; não exige Perl, ausente neste ambiente:
 
 ```bash
-cd docs/master_proposal
-latexmk tcc.tex
+& experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_dissertation.py
 ```
 
 O PDF final é gerado em:
@@ -22,6 +25,8 @@ build/tcc.pdf
 ```
 
 A configuração está em `.latexmkrc`. Os arquivos auxiliares de compilação ficam em `build/`.
+
+Depois de conferir o PDF, `--sync-pdf` atualiza a cópia canônica `tcc.pdf`. O comando não cria um arquivo histórico por si só; preserve a versão anterior antes de usá-lo. Nesta revisão, isso foi feito em `../scientific_writing_review_2026-10-15/before/`. `comparison.json` registra páginas e contagem aproximada das fontes, incluindo comandos, legendas e tabelas; a medição atual inclui o resumo inglês e a seção nova da Bahia.
 
 ## Estrutura
 
@@ -58,12 +63,14 @@ master_proposal/
 | `capitulos/apendice.tex` | Matriz de Parâmetros Experimentais |
 | `capitulos/apendice_b.tex` | Representações Visuais das Políticas Avaliadas |
 
+O antigo Apêndice B permanece preservado nas fontes, mas suas imagens didáticas duplicavam o referencial/metodologia e não são incluídas na versão enxuta. Nenhuma figura PDF foi apagada. O apêndice ativo conserva parâmetros, rastreabilidade e a tabela histórica do piloto.
+
 ## Arquivos externos usados no texto
 
 O Capítulo 5 incorpora tabelas e figuras geradas pelo pipeline Kedro em:
 
 ```text
-../../simulation/data/08_reporting/
+../../experiment/data/08_reporting/
 ```
 
 Esses artefatos incluem mapas, gráficos comparativos, validação estatística, previsão e tabelas de estratégia por perfil.

@@ -1,0 +1,79 @@
+\section{Resultados: valor da seleção por perfil}
+\label{sec:ba2026}
+
+\subsection{Quais candidatas oferecem compromissos competitivos?}
+
+A Tabela~\ref{tab:ba2026_portfolio} resume os 290 casos série--origem. Sete casos não têm demanda no teste: um na primeira origem e seis na segunda. Seus custos permanecem na média dos 290 casos; o atendimento médio utiliza os 283 casos com denominador positivo. O atendimento ponderado é a razão entre a soma das unidades atendidas e a soma da demanda nos blocos avaliados, após a média das sementes. As origens repetidas não ampliam a amostra para 290 séries independentes.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Bahia, protocolo temporal: médias no teste de sete ciclos. Custo em unidades do cenário, calculado nos 290 casos. Atendimento médio e contagem abaixo da meta consideram os 283 casos com demanda positiva; sete casos têm atendimento indefinido.}
+\label{tab:ba2026_portfolio}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Política & Custo & Atendimento & Ponderado & Abaixo de 0,70\\\midrule
+EOQCycle &166,77&0,7787&0,6265&101\\
+sSCycle &164,23&0,8037&0,6802&90\\
+CappedBaseStock &218,11&0,6631&0,4948&148\\
+GA &143,85&0,6953&0,5457&140\\
+PPO &134,23&0,5514&0,4189&171\\
+GA--DQN &145,75&0,6802&0,5248&144\\
+DQN (controle) &164,88&0,5718&0,4033&164\\
+\bottomrule\end{tabular}
+\end{table}
+
+PPO tem o menor custo descritivo, acompanhado do menor atendimento médio. Apenas EOQCycle e sSCycle superam 0,70 no conjunto dos testes; nenhuma política alcança essa meta no atendimento ponderado. Entre essas duas referências, sSCycle apresenta menor custo e maior atendimento médio. Essa comparação é um diagnóstico do teste, não uma escolha retrospectiva a ser atribuída ao seletor.
+
+GA--DQN custa 11,60\% menos que DQN e aumenta o atendimento médio de 0,5718 para 0,6802. Frente ao GA isolado, porém, custa 1,32\% mais e atende menos, com média de 0,6953 para o GA. O refinamento híbrido não oferece vantagem agregada nessas duas dimensões sobre seu componente evolutivo. A diferença varia entre origens: na segunda, seu custo é ligeiramente menor que o do GA, também com menor atendimento. A comparação não isola causalmente o benefício das demonstrações ou do gatilho e não justifica excluir o híbrido antes de consolidar a avaliação M5.
+
+\begin{figure}[htbp]
+\centering\includegraphics[width=\linewidth]{figures/custo_servico.png}
+\caption{Compromisso custo--serviço das sete candidatas na Bahia. Médias de teste em 290 casos série--origem para custo e 283 com demanda positiva para atendimento. A fronteira é descritiva: não utiliza o teste para escolher a recomendação nem representa dominância estatística ou por série.}
+\label{fig:cost_service}
+\end{figure}
+
+A Figura~\ref{fig:cost_service} distingue economia aparente por baixo atendimento de um compromisso competitivo. A restrição usada pelo seletor continua sendo avaliada na validação, sem recorrer a essa fronteira de teste.
+
+\subsection{O perfil melhora a decisão frente à seleção global?}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Escolha na validação das demais lojas e avaliação no teste da loja reservada, com meta 0,70. Há 145 casos por linha; atendimento definido em 144 casos na origem 17 e 139 na origem 23.}
+\label{tab:ba2026_selection}
+\begin{tabular}{@{}llrrr@{}}\toprule
+Treino & Estratégia & Custo & Atendimento & Abaixo de 0,70\\\midrule
+17 ciclos & Global &180,58&0,5711&101\\
+17 ciclos & Perfil &186,79&0,6475&82\\
+23 ciclos & Global &142,03&0,9073&18\\
+23 ciclos & Perfil &142,03&0,9073&18\\
+\bottomrule\end{tabular}
+\end{table}
+
+Na primeira origem, a regra global escolhe GA para todas as séries. Por perfil, as escolhas são GA em 65 casos, sSCycle em 75 e EOQCycle em cinco. O maior atendimento custa mais, e ambas as estratégias ficam abaixo da meta no teste. Na segunda origem, os dois seletores escolhem sSCycle em todos os casos. A Tabela~\ref{tab:ba2026_selection} evidencia, portanto, tanto mudança temporal da escolha global quanto ausência de diferenciação contextual na segunda janela.
+
+No conjunto das origens, o custo médio passa de 161,31 na estratégia global para 164,41 por perfil: aumento de 1,93\%. O atendimento médio cresce de 0,7362 para 0,7751, diferença de 3,89 pontos percentuais; o ponderado passa de 0,5750 para 0,6395. Os casos abaixo da meta diminuem de 119 para 100, entre os 283 com atendimento definido. Não há redução de custo, mas há melhora de serviço, concentrada na primeira origem. Essa melhora não assegura atendimento mínimo individual nem equivale a cumprir uma meta ponderada de 0,70.
+
+Uma reamostragem exploratória pareada de 115 lojas, com 5.000 sorteios e todas as origens e produtos de cada loja preservados, produz intervalo condicional de 95\% de $[-0{,}32;4{,}16]\%$ para o aumento de custo por perfil. Os controladores e seletores permanecem fixos nos sorteios. O intervalo inclui zero e não representa incerteza de novos treinamentos ou de novas trajetórias de demanda; dependência entre lojas que compartilham produtos também permanece possível.
+
+A sensibilidade reforça a distinção entre meta de escolha e serviço futuro. Em 0,80, todas as escolhas da segunda origem são contingências por ausência de candidata viável na validação, apesar do serviço posterior de 0,9073. Em 0,90 e 0,95, ambas as estratégias usam contingências nos 290 casos. Atendimento futuro alto não torna retroativamente viável uma escolha que descumpria o critério na validação.
+
+\begin{figure}[htbp]
+\centering\includegraphics[width=\linewidth]{figures/distribuicao_atendimento.png}
+\caption{Distribuição do atendimento das estratégias no teste, por origem. Cada caixa resume séries com demanda positiva; a linha tracejada indica 0,70. Há 144 casos por estratégia na primeira origem e 139 na segunda. As mesmas séries participam das duas estratégias; observações e origens não são independentes.}
+\label{fig:service_distribution}
+\end{figure}
+
+A Figura~\ref{fig:service_distribution} mostra por que a comparação não se esgota na média: a primeira janela concentra violações de serviço, enquanto a segunda tem distribuição e escolha coincidentes entre estratégias.
+
+\subsection{As escolhas e o atendimento são estáveis entre períodos?}
+
+Os perfis são recalculados no prefixo disponível em cada origem. Com 17 ciclos, há 65 séries Sparse High Impact e 80 Unstable Trend; com 23, são 60, 69 e 16 High Volatility Seasonal. Essa mudança reflete a janela e as regras de caracterização, inclusive a indisponibilidade da autocorrelação na primeira origem. Não demonstra mudança de regime econômico em todas essas séries.
+
+
+\begin{figure}[htbp]
+\centering\includegraphics[width=\linewidth]{figures/escolhas_perfil.png}
+\caption{Políticas escolhidas por perfil na validação das demais lojas, com meta 0,70. Cada painel contém 145 escolhas; os números indicam séries. A primeira origem diferencia grupos, enquanto a segunda recomenda sSCycle em todos eles. Nomes abreviados dos perfis correspondem às regras operacionais descritas no método.}
+\label{fig:profile_choices}
+\end{figure}
+
+A Figura~\ref{fig:profile_choices} localiza a diferenciação que produz o serviço adicional: na primeira origem, a regra por perfil substitui GA por sSCycle ou EOQCycle em parte das séries. Na segunda, identificar perfis não muda a política recomendada. Assim, a existência de grupos distintos não implica valor incremental da seleção em todo período.
+\FloatBarrier

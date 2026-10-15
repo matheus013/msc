@@ -1,0 +1,352 @@
+% apendice.tex: Apêndice A: Matriz Completa de Parâmetros Experimentais
+
+\appendix
+\chapter{Matriz de Parâmetros Experimentais}
+\label{app:reproducibility}
+\lhead{APÊNDICE A}
+
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{table}{0}
+
+Este apêndice consolida os parâmetros utilizados nos experimentos reportados, organizados por camada experimental. A formulação conceitual de cada política permanece no Capítulo~2, enquanto sua instanciação experimental é descrita no Capítulo~4; o registro aqui serve para auditoria e reprodução. Os valores foram obtidos a partir das configurações, scripts e artefatos versionados do projeto. A organização segue a sequência experimental: parâmetros globais (Tabela~\ref{tab:global_params}), políticas clássicas e meta-heurísticas (Tabela~\ref{tab:classic_meta_params}), agentes de aprendizado por reforço e políticas híbridas (Tabela~\ref{tab:rl_params}), previsão e geração de rótulos (Tabela~\ref{tab:forecast_label_params}) e ambiente de validação e reprodução (Tabela~\ref{tab:validation_env}). \textbf{Nota geral:} salvo indicação contrária nas tabelas, todo componente estocástico (meta-heurísticas, agentes de RL, PSE) usa semente fixa $=42$; essa linha não é repetida individualmente em cada tabela.
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.1: Parâmetros globais do experimento
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Parâmetros globais do experimento.]{Parâmetros globais do experimento.}
+\label{tab:global_params} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.1)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Dados}} \\[2pt]
+Dados & estado & BA & UF selecionada para a análise \\
+Dados & período & jan/2023 a abr/2025 & 17 ciclos por ano \\
+Dados & registros transacionais & ${\approx}48$ milhões & base completa da rede varejista \\
+Dados & produtos & ${\approx}12\,000$ & base completa \\
+Dados & periodicidade & ciclos sazonais & 17 ciclos por ano \\
+Dados & tratamento de zeros & preenche com zero & ciclos ausentes completados \\
+Dados & filtro min.\ de ciclos com venda & 17 & séries com menos ciclos positivos são removidas \\
+Dados & janela de atividade do produto & 3 ciclos & produto considerado ativo se vendeu nos últimos 3 ciclos \\
+Dados & status incluídos & Ativo & produtos com status diferente são excluídos \\
+Dados & tipos de venda excluídos & Brinde & transações de brinde não entram na simulação \\
+Dados & deduplicação & por armazém, produto, loja e ciclo & chave de deduplicação dos registros \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Ambiente de simulação}} \\[2pt]
+Ambiente & lead time & 2 ciclos & uniforme; mesmo valor para todas as políticas \\
+Ambiente & estoque inicial $I_0$ & escalonado por série & $\mathrm{rop\_ref} = \hat{\mu} L + z\hat{\sigma}\sqrt{L}$; ajustado por série \\
+Ambiente & tipo de falta & perda de venda & demanda não atendida é perdida; sem acúmulo \\
+Ambiente & regra de arredondamento & inteiro superior & aplicada a todos os pedidos calculados \\
+Ambiente & frequência de reavaliação (AIPE) & 6 ciclos & intervalo $\Delta t$ definido conceitualmente \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Custos}} \\[2pt]
+Custos & custo de manutenção $h$ & 1,0 & por unidade por ciclo \\
+Custos & custo de ruptura $c_s$ & 5,0 & por unidade de demanda não atendida \\
+Custos & custo fixo de pedido $c_o^{\text{fix}}$ & 50,0 & por ordem emitida \\
+Custos & custo variável de pedido $c_o^{\text{var}}$ & 0,5 & por unidade pedida \\
+Custos & razão $c_s/h$ & 5,0 & nível de serviço crítico ${\approx}83\%$ \\
+Custos & unidade monetária & adimensional & valores relativos, não em R\$ \\
+Custos & custos globais ou por série & globais & mesmos parâmetros para todas as séries \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Avaliação}} \\[2pt]
+Avaliação & número de replicações & 5 & replicações independentes por série \\
+Avaliação & semente global & 42 & fixa para todas as execuções \\
+Avaliação & modo de avaliação & \textit{walk-forward} & janela deslizante; 17 ciclos de treino \\
+Avaliação & métricas reportadas & CTI, NS, TR, BE, FP & definição formal no Capítulo~3 \\
+Avaliação & limiar mínimo de NS (viabilidade) & 0,70 & política abaixo do limiar é considerada inviável \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.2: Políticas clássicas e meta-heurísticas
+% ─────────────────────────────────────────────────────────────────────────────
+
+Nas políticas clássicas, os parâmetros de reposição são calculados diretamente a partir das estatísticas históricas da série e dos parâmetros globais de custo. Nas meta-heurísticas (GA e SA no portfólio final), cada candidato é uma parametrização $(s,Q)$ da política, avaliada por execução no ambiente de simulação; a formulação de cada método (representação de solução, operadores de busca) foi apresentada no Capítulo~\ref{cap:tec} e sua instanciação experimental no Capítulo~\ref{cap:metod}: a tabela a seguir registra apenas os valores de configuração usados.
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.0cm} p{4.1cm} @{}}
+\caption[Parâmetros das políticas clássicas e meta-heurísticas.]{Parâmetros das políticas clássicas e meta-heurísticas.}
+\label{tab:classic_meta_params} \\
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.2)}} \\[2pt]
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{EOQ}} \\[2pt]
+EOQ & lote econômico $Q^*$ ($Q_{\text{ref}}$ na implementação) & $\sqrt{2\hat{\mu} T\, c_o^{\text{fix}}/h}$ & $c_o^{\text{fix}}{=}50$ instancia $K$; $h{=}1$; $\hat{\mu}$ estimado por série; $T$ é o horizonte de referência \\
+EOQ & ponto de pedido $s$ ($s_{\text{ref}}$ na implementação) & $\hat{\mu} L + z\hat{\sigma}\sqrt{L}$ & $L{=}2$; $z{=}1{,}28$ para nível de serviço de referência de 90\%; ponto de pedido também chamado de ponto de reposição \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{$(s,S)$}} \\[2pt]
+$(s,S)$ & ponto de pedido $s$ & $\hat{\mu} L + z\hat{\sigma}\sqrt{L}$ (igual a $s_{\text{ref}}$ da EOQ) & $L{=}2$; $z{=}1{,}28$ \\
+$(s,S)$ & nível alvo $S$ & $s + Q^*$ & $Q^*$ derivado da EOQ ($Q_{\text{ref}}$) \\
+$(s,S)$ & fator de segurança $z$ & $1{,}28$ & quantil configurado para o nível de serviço de referência de 90\% \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Jornaleiro (Newsvendor)}} \\[2pt]
+Jornaleiro & razão crítica CR & $c_s/(c_s{+}h) = 5/6 \approx 0{,}833$ & \\
+Jornaleiro & nível ótimo $y^*$ & quantil(0,833) da previsão & via distribuição empírica \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{GA (Algoritmo Genético)}} \\[2pt]
+GA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+GA & tamanho da população & 100 & \\
+GA & número de gerações & 50 & \\
+GA & taxa de crossover & 0,8 & uniforme (cada gene herda do pai A ou B, $p{=}0{,}5$) \\
+GA & taxa de mutação & 0,05 (inicial) & adaptativa: decai linearmente até $0,05\times0{,}2$ na última geração \\
+GA & método de seleção & torneio de tamanho 3 & \\
+GA & função de avaliação & $1{,}0 \times \mathrm{NS} - 0{,}0001 \times \mathrm{CTI}$ & aptidão escalar; rótulos finais usam menor CTI viável \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{SA (Simulated Annealing)}} \\[2pt]
+SA & variáveis otimizadas & ponto de reposição e lote & $(s, Q)$ contínuos \\
+SA & temperatura inicial & 1000,0 & \\
+SA & fator de resfriamento & 0,95 & geométrico por iteração \\
+SA & iterações máximas & 500 & \\
+SA & minimizador local & Nelder-Mead & \texttt{scipy.optimize.}\newline\texttt{dual\_annealing} \\[4pt]
+
+\end{longtable}
+
+\begin{quote}
+\small \textit{PSO e DE foram testados preliminarmente sobre o mesmo espaço de parametrização do GA/SA (Seção~\ref{sec:portfolio_ampliado}) e permanecem implementados, mas não compõem o portfólio final avaliado nesta dissertação; seus parâmetros de configuração não são reportados aqui por não integrarem os resultados reportados no Capítulo~\ref{cap:results}.}
+\end{quote}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.3: Agentes RL e políticas híbridas
+% ─────────────────────────────────────────────────────────────────────────────
+
+Nos agentes de aprendizado por reforço e nas políticas híbridas GA-RL, a formulação (estado, ação, recompensa, mecanismo de inicialização por GA) foi apresentada nos Capítulos~\ref{cap:tec} e~\ref{cap:metod}; a tabela a seguir registra apenas os valores de configuração usados nos experimentos.
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.0cm} p{5.5cm} p{3.2cm} p{3.9cm} @{}}
+\caption[Parâmetros dos agentes de aprendizado por reforço e políticas híbridas.]{Parâmetros dos agentes de aprendizado por reforço e políticas híbridas.}
+\label{tab:rl_params} \\
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.3)}} \\[2pt]
+\toprule
+\textbf{Política} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Ambiente compartilhado (todos os agentes)}} \\[2pt]
+Ambiente & vetor de estado (dim.\ 1 a 3) & $I_t/I_0$,\; $\hat{D}/\mu$,\; $\mathrm{OP}/I_0$ & nível de estoque, previsão, pedido aberto \\
+Ambiente & vetor de estado (dim.\ 4 a 6) & $\mu_6/\mu$,\; $\sigma_6/\sigma$,\; $t/T$ & tendências de curto prazo e posição no horizonte \\
+Ambiente & função de recompensa & $-(h I_t + c_s S_t + K\mathbf{1}_{Q>0} + c_v Q_t)$ & $S_t$ = demanda não atendida \\
+Ambiente & espaço de ações (DQN/PPO) & 20 ações discretas & $Q \in [0,\, \max(200,\, 12\mu)]$ \\
+Ambiente & número de episódios (DQN/PPO) & 1\,000 & piso do artigo-base \citep{Zabraoui2025GaDQN} \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{DQN}} \\[2pt]
+DQN & fator de desconto $\gamma$ & 0,95 & \\
+DQN & $\varepsilon$ & 0,2 & fixo, sem decaimento (Tab.~4 do artigo-base) \\
+DQN & tamanho do batch & 64 & \\
+DQN & tamanho do \textit{replay buffer} & 10\,000 & \\
+DQN & frequência de atualização da rede-alvo & 10 episódios & \\
+DQN & arquitetura da Q-network & $[6] \to [64, 64] \to [20]$ & duas camadas ocultas \\
+DQN & taxa de aprendizado & 0,001 & padrão do código; não exposto no YAML \\
+DQN & recorte de gradiente & $[-1{,}0,\; 1{,}0]$ & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{PPO}} \\[2pt]
+PPO & fator de desconto $\gamma$ & 0,99 & \\
+PPO & epsilon de recorte & 0,2 & razão de probabilidade recortada em $[1{-}\varepsilon,\, 1{+}\varepsilon]$ \\
+PPO & épocas de otimização por rollout & 4 & \\
+PPO & taxa de aprendizado & 0,0003 & \\
+PPO & arquitetura do ator & $[6] \to [64, 32] \to [20]$ & saída em logits \\
+PPO & arquitetura do crítico & $[6] \to [64, 32] \to [1]$ & saída em valor escalar \\
+PPO & estimativa de vantagem & $A_t = G_t - V(s_t)$, normalizada & $(G - \bar{G})/(\sigma_G + 10^{-8})$ \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{GA-DQN}} \\[2pt]
+GA-DQN & parâmetros do GA & herdados (ver Tabela~A.2) & 50 gerações \\
+GA-DQN & parâmetros do DQN & herdados (ver acima) & \\
+GA-DQN & tamanho do \textit{replay buffer} pré-populado & 1\,000 & trajetórias geradas pelo GA \\
+GA-DQN & episódios de refinamento RL & 200 & \\
+GA-DQN & regra de integração GA~$\to$~DQN & se $(I_t + \mathrm{OP}) \leq s + \mathrm{SS}$:\newline $Q = \max(Q_{\mathrm{DQN}},\; 0{,}5 \cdot Q_{\mathrm{GA}})$;\newline caso contrário: $Q = 0$ & \\
+\end{longtable}
+
+\begin{quote}
+\small \textit{SARSA e GA-PPO foram testados preliminarmente (parâmetros análogos aos de DQN/GA-DQN acima) e permanecem implementados, mas não compõem o portfólio final avaliado nesta dissertação (Seção~\ref{sec:portfolio_ampliado}): SARSA por não ter estado da arte identificável em veículo relevante para inventário, e GA-PPO por não ter referência publicada como âncora.}
+\end{quote}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.4: Previsão, características operacionais e geração de rótulos
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Parâmetros de previsão, características operacionais e geração de rótulos.]{Parâmetros de previsão, características operacionais e geração de rótulos.}
+\label{tab:forecast_label_params} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.4)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Previsão auxiliar}} \\[2pt]
+Previsão & modelos utilizados & LSTM, ANN, XGBoost, Croston, ARIMA & ensemble de previsão \\
+Previsão & janela de entrada (lookback) & 6 ciclos & \\
+Previsão & ciclos mínimos de treino & 17 & \\
+Previsão & modo \textit{walk-forward} & desativado & previsão em janela fixa \\
+Previsão & horizonte de previsão & 1 ciclo à frente & \\[3pt]
+
+LSTM & hidden size & 64 & \\
+LSTM & épocas & 50 & \\
+LSTM & batch size & 16 & \\
+LSTM & taxa de aprendizado & 0,001 & \\[3pt]
+
+ANN / MLP & camadas ocultas & $[64, 32]$ & \\
+ANN / MLP & iterações máximas & 200 & \\
+ANN / MLP & early stopping & ativo & \\
+ANN / MLP & fração de validação & 0,1 & \\[3pt]
+
+XGBoost (previsão) & n\_estimators & 200 & \\
+XGBoost (previsão) & max\_depth & 6 & \\
+XGBoost (previsão) & taxa de aprendizado & 0,05 & \\
+XGBoost (previsão) & \textit{subsample} & 0,8 & \\[3pt]
+
+Croston & alpha (suavização) & 0,1 & suavização exponencial \\[3pt]
+
+ARIMA & ordem $(p,d,q)$ & $(1,1,1)$ & \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Características operacionais e classificação POD}} \\[2pt]
+POD / ADI $\times$ CV$^2$ & limiares de classificação & ADI${\geq}1{,}32$; CV$^2{\geq}0{,}49$; zeros consec.${\geq}5$; \textit{burstiness}${\geq}0{,}30$; ACF${\geq}0{,}25$; tendência${\geq}0{,}05$; entropia${\geq}2{,}0$ & Syntetos-Boylan + regras POD (Tabela~\ref{tab:pod}) \\
+POD / ADI $\times$ CV$^2$ & média mínima de demanda & 2,0 & séries abaixo são excluídas \\
+POD / ADI $\times$ CV$^2$ & limiar CV para segmentação & 1,5 & segmentação adicional por variabilidade \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Geração de rótulos e PSE}} \\[2pt]
+Rótulos & limiar mínimo de NS para rótulo & 0,70 & política abaixo é excluída do \textit{ranking} \\
+Rótulos & modelo PSE & XGBoost & classificador treinado sobre perfis de séries \\
+Rótulos & validação cruzada & 5 folds & \\
+Rótulos & n\_estimators (PSE) & 300 & \\
+Rótulos & max\_depth (PSE) & 6 & \\
+Rótulos & taxa de aprendizado (PSE) & 0,05 & \\
+Rótulos & \textit{subsample} (PSE) & 0,8 & \\
+Rótulos & colsample\_bytree (PSE) & 0,8 & \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.5: Validação estatística, ambiente computacional e artefatos
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begingroup\setlength{\tabcolsep}{4pt}\scriptsize
+\begin{longtable}{@{} p{2.6cm} p{5.2cm} p{2.8cm} p{4.0cm} @{}}
+\caption[Validação estatística, ambiente computacional e artefatos.]{Validação estatística, ambiente computacional e artefatos.}
+\label{tab:validation_env} \\
+\toprule
+\textbf{Componente} & \textbf{Parâmetro ou artefato} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\scriptsize\textit{(continuação da Tabela~A.5)}} \\[2pt]
+\toprule
+\textbf{Componente} & \textbf{Parâmetro ou artefato} & \textbf{Valor usado} & \textbf{Observação} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\scriptsize\textit{(continua)}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textit{Validação estatística}} \\[2pt]
+Estatística & teste par a par & Wilcoxon signed-rank & comparação de pares de políticas \\
+Estatística & teste global & Friedman & hipótese nula de igualdade entre múltiplas políticas \\
+Estatística & \textit{post-hoc} & Nemenyi & comparações múltiplas após rejeição de Friedman \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Ambiente computacional (versões mínimas)}} \\[2pt]
+Linguagem/orquestração & versões mínimas & Python 3.9; Kedro 0.19.0; kedro-datasets 2.0.0 & orquestração do \textit{pipeline} \\
+Dados/ML & versões mínimas & pandas 2.0; NumPy 1.24; scikit-learn 1.3; XGBoost 2.0; PyArrow 14.0 & \\
+Otimização/estatística & versões mínimas & DEAP 1.4 (GA/DE); SciPy 1.11 (SA/DE); scikit-posthocs 0.8 (Nemenyi) & \\
+Visualização/geo & versões mínimas & Matplotlib 3.7; GeoPandas 0.14; geobr 0.4; PyYAML 6.0 & geobr: malhas geográficas \\[4pt]
+
+\multicolumn{4}{@{}l}{\textit{Artefatos de reprodução}} \\[2pt]
+dados processados & \nolinkurl{experiment/data/03_primary/} & & snapshot dos dados usados nas simulações \\
+características operacionais & \nolinkurl{experiment/data/04_feature/} & & descritores das séries de demanda \\
+configurações YAML & \nolinkurl{experiment/conf/base/parameters/} & & hiperparâmetros de todos os módulos \\
+resultados de simulação & \nolinkurl{experiment/data/07_model_output/} & & métricas CTI, NS, TR, BE e FP por série \\
+testes estatísticos & \nolinkurl{results/statistical_tests/} & & Wilcoxon, Friedman, Nemenyi \\
+rótulos PSE & \nolinkurl{results/policy_labels/} & & política dominante por série \\
+\end{longtable}
+\endgroup
+
+% ─────────────────────────────────────────────────────────────────────────────
+% TABELA A.6: Resultados agregados do Experimento 1 (Paraíba)
+% ─────────────────────────────────────────────────────────────────────────────
+
+\section{Resultados Agregados do Experimento 1}
+\label{app:fase1_resultados}
+
+Esta seção registra a tabela completa de indicadores agregados do Experimento~1 (15 lojas da Paraíba, produto~48130, regime \textit{Lumpy}), citada na Seção~\ref{sec:custo_politica_unica_vs_perfil} apenas em forma resumida para evitar duplicação com a comparação agregada do Experimento~2 (Tabela~\ref{tab:kpis_fase2}).
+
+\noindent\textbf{Como ler a tabela:} políticas com melhor equilíbrio combinam baixo CTI, alto NS, baixa TR e baixo BE. FP indica a frequência de emissão de pedidos: valores próximos de zero ($\approx 0$) ou de um ($\approx 1$) sinalizam degeneração operacional (o agente parou de emitir pedidos ou pediu em quase todos os ciclos), e essas políticas não constituem soluções práticas viáveis.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Médias dos indicadores de desempenho por política (15 lojas, regime \textit{Lumpy}). Melhores valores por coluna. $^\dagger$SARSA e PPO apresentam degeneração (FP\,=\,0 e FP\,=\,0.98, respectivamente); resultados degenerados não constituem soluções operacionalmente viáveis.}
+\label{tab:global_prelim}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Política &
+\makecell[r]{CTI\\(R\$)} &
+\makecell[r]{NS} &
+\makecell[r]{TR} &
+\makecell[r]{BE} &
+\makecell[r]{FP} \\
+\midrule
+SARSA$^\dagger$              & 16.139 & 0.785 & 0.200 & 0.00 & 0.00 \\
+Jornaleiro                   & 16.402 & 0.794 & 0.111 & 0.003 & 0.27 \\
+DQN                          & 17.974 & 0.806 & 0.078 & 4.1   & 0.37 \\
+GA-DQN (Híbrido)             & 18.502 & 0.821 & 0.050 & 5.0   & 0.31 \\
+PSO                          & 19.100 & 0.819 & 0.056 & 6.2   & 0.31 \\
+GA-PPO (Híbrido)             & 19.801 & 0.833 & 0.050 & 6.6   & 0.35 \\
+GA                           & 20.015 & 0.825 & 0.061 & 19.7  & 0.30 \\
+DE                           & 20.252 & 0.813 & 0.056 & 31.0  & 0.27 \\
+SA                           & 20.967 & 0.820 & 0.056 & 36.4  & 0.27 \\
+EOQ                          & 31.034 & 0.840 & 0.050 & 23.0  & 0.20 \\
+PPO$^\dagger$                & 34.637 & 0.848 & 0.039 & 15.9 & 0.98 \\
+$(s,S)$                      & 35.589 & 0.843 & 0.050 & 119.4 & 0.15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os dois extremos revelam os riscos da otimização por única métrica: o SARSA$^\dagger$ converge ao comportamento degenerado de não emitir pedidos (FP\,=\,0), obtendo o menor CTI ao preço de 20\% de rupturas; o PPO$^\dagger$ emite pedidos em 98\% dos ciclos, atingindo o maior NS mas com custo inviável.
+
+\noindent A redução de ``até 48\%'' citada no resumo deste trabalho origina-se exatamente desta comparação, calculada diretamente da Tabela~\ref{tab:global_prelim}: CTI médio GA-DQN (R\$\,18.502) versus $(s,S)$ (R\$\,35.589), $(35.589-18.502)/35.589 \approx 48\%$, sobre as 15 lojas do Experimento~1, produto~48130 (Paraíba). O valor representa o ganho máximo observado neste experimento, não uma redução média universal: no Experimento~2 (145 séries, BA) o GA-DQN não domina o EOQ em CTI, e o Jornaleiro apresenta menor custo bruto, mas não atinge o nível de serviço mínimo de $0{,}70$ (Seção~\ref{sec:custo_politica_unica_vs_perfil}).

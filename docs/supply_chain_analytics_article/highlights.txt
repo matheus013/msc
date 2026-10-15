@@ -1,0 +1,4 @@
+Demand profiles do not improve cost over a strong uniform policy in this case.
+Cross-store and temporal checks expose the limits of retrospective selection.
+Mean service constraints conceal individual store-product service shortfalls.
+Correcting the legacy EOQ time units changes the cost-service comparison.

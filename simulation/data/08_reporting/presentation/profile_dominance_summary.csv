@@ -1,4 +1,0 @@
-operational_profile,profile_display,n_series,dominant_policy,dominant_policy_disp,CTI_mean,CTI_ajustado_mean,NS_mean,TR_mean,BE_mean,fallback,note
-High_Vol_Seasonal,High Vol. Seasonal,11,FixedInterval,Fixed Interval,422.93,426.12,0.907,0.065,1.97,False,
-Unstable_Trend,Unstable Trend,18,EOQ,EOQ,607.95,836.73,0.947,0.061,24.22,False,
-Sparse_High_Impact,Sparse High Impact,116,EOQ,EOQ,632.51,908.05,0.939,0.044,59.85,False,

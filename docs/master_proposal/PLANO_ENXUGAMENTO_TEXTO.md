@@ -1,5 +1,7 @@
 # Plano de Enxugamento do Texto — 124 → ~80 páginas
 
+> **Atualização de 14/10/2026:** a nova reescrita foi concluída em **66 páginas**, comparadas com **118 páginas** da fonte anterior recompilada (redução de **44,1%**), preservando formatação e incorporando a síntese M5. Este plano permanece como registro histórico; o resultado atual e os pareceres estão em `revisao_concisao/` e `README.md`.
+
 Criado em 19/08/2026, a pedido do autor: reduzir a dissertação de **124 páginas**
 (medido no PDF compilado em 19/08/2026, após as correções de portfólio/hiperparâmetros
 e o reenquadramento "estudo de caso" desta sessão) para **~80 páginas**, sem perder
@@ -144,7 +146,7 @@ mudam pouco entre as duas opções.
 **Importante**: os `kpis.parquet`/relatórios (`profile_policy_analysis.py`,
 `strategy_cost_comparison.py`) já têm o mecanismo pra filtrar políticas — as
 tabelas do Capítulo 5 são `\input` direto dos `.tex` gerados por esses scripts
-(`simulation/data/08_reporting/...`), então **depois de decidir o corte, regenerar
+(`experiment/data/08_reporting/...`), então **depois de decidir o corte, regenerar
 os relatórios já ajusta as tabelas do texto automaticamente**, sem edição manual
 de tabela.
 

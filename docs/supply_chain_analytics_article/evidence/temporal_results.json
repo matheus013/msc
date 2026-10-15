@@ -1,0 +1,653 @@
+{
+  "input_sha256": "78e4f119fa258639ab4f778bb49223d23543a4302c7642a26c2cea4563244596",
+  "script_sha256": "bf0d8210227198e0e377eace416231d6015e931691d0bcf6124e1c3176c40efd",
+  "n_series": 145,
+  "n_stores": 115,
+  "profile_counts": {
+    "Sparse_High_Impact": 90,
+    "Unstable_Trend": 52,
+    "Fast_Moving": 2,
+    "Low_Vol_Stable": 1
+  },
+  "calibration_cycles": 17,
+  "validation_cycles": 10,
+  "test_cycles": 11,
+  "portfolio": [
+    "EOQ",
+    "sS",
+    "Newsvendor",
+    "FixedInterval",
+    "VendorResponsive"
+  ],
+  "bootstrap_draws": 5000,
+  "bootstrap_unit": "store",
+  "seed": 20261014,
+  "device": "cpu; scalar deterministic heuristics",
+  "zero_demand_validation_series": 0,
+  "zero_demand_test_series": 1,
+  "zero_demand_convention": "NS=1, retain cost; positive-demand-only macro NS also reported",
+  "audit_amendment": "Zero-demand convention and EOQPerCycle sensitivity added after reviewer audit; original five-policy selector unchanged.",
+  "summary": [
+    {
+      "alpha": 0.7,
+      "strategy": "global",
+      "TIC_mean": 218.9774182087967,
+      "NS_mean": 0.7422285966807465,
+      "demand_weighted_NS": 0.66253282670615,
+      "series_below_alpha": 59,
+      "NS_mean_positive_demand_only": 0.7404385174910295,
+      "policy_counts": {
+        "VendorResponsive": 145
+      }
+    },
+    {
+      "alpha": 0.7,
+      "strategy": "profile",
+      "TIC_mean": 219.3526962887539,
+      "NS_mean": 0.7408634707209459,
+      "demand_weighted_NS": 0.6609469017052799,
+      "series_below_alpha": 60,
+      "NS_mean_positive_demand_only": 0.7390639114898414,
+      "policy_counts": {
+        "VendorResponsive": 144,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.7,
+      "strategy": "EOQ",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 4,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 145
+      }
+    },
+    {
+      "alpha": 0.7,
+      "strategy": "EOQPerCycle",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 19,
+      "NS_mean_positive_demand_only": 0.8948810475188603,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "global",
+      "TIC_mean": 231.31234624651833,
+      "NS_mean": 0.7467165402052148,
+      "demand_weighted_NS": 0.6669136480787631,
+      "series_below_alpha": 85,
+      "NS_mean_positive_demand_only": 0.7449576272899734,
+      "policy_counts": {
+        "VendorResponsive": 138,
+        "FixedInterval": 7
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "profile",
+      "TIC_mean": 239.72215711054625,
+      "NS_mean": 0.7749848563836433,
+      "demand_weighted_NS": 0.7002705431370125,
+      "series_below_alpha": 69,
+      "NS_mean_positive_demand_only": 0.773422251219641,
+      "policy_counts": {
+        "VendorResponsive": 91,
+        "FixedInterval": 53,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "EOQ",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 14,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 145
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "EOQPerCycle",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 31,
+      "NS_mean_positive_demand_only": 0.8948810475188603,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "global",
+      "TIC_mean": 263.59412988532586,
+      "NS_mean": 0.8446304475758518,
+      "demand_weighted_NS": 0.763531292535924,
+      "series_below_alpha": 58,
+      "NS_mean_positive_demand_only": 0.8435514923506839,
+      "policy_counts": {
+        "FixedInterval": 145
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "profile",
+      "TIC_mean": 263.6508712868729,
+      "NS_mean": 0.8417655195175863,
+      "demand_weighted_NS": 0.7602029835248194,
+      "series_below_alpha": 59,
+      "NS_mean_positive_demand_only": 0.8406666689586806,
+      "policy_counts": {
+        "FixedInterval": 144,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "EOQ",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 18,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 145
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "EOQPerCycle",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 35,
+      "NS_mean_positive_demand_only": 0.8948810475188603,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "global",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 31,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 133,
+        "sS": 12
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "profile",
+      "TIC_mean": 384.3144645090337,
+      "NS_mean": 0.9409758130277828,
+      "demand_weighted_NS": 0.9166094869769228,
+      "series_below_alpha": 32,
+      "NS_mean_positive_demand_only": 0.9405659228404757,
+      "policy_counts": {
+        "EOQ": 129,
+        "sS": 14,
+        "Newsvendor": 1,
+        "FixedInterval": 1
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "EOQ",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 31,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 145
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "EOQPerCycle",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 45,
+      "NS_mean_positive_demand_only": 0.8948810475188603,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "global",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 50,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 133,
+        "sS": 12
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "profile",
+      "TIC_mean": 384.3144645090337,
+      "NS_mean": 0.9409758130277828,
+      "demand_weighted_NS": 0.9166094869769228,
+      "series_below_alpha": 51,
+      "NS_mean_positive_demand_only": 0.9405659228404757,
+      "policy_counts": {
+        "EOQ": 129,
+        "sS": 14,
+        "Newsvendor": 1,
+        "FixedInterval": 1
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "EOQ",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 50,
+      "NS_mean_positive_demand_only": 0.9434507462324793,
+      "policy_counts": {
+        "EOQ": 145
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "EOQPerCycle",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 61,
+      "NS_mean_positive_demand_only": 0.8948810475188603,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    }
+  ],
+  "contrasts": [
+    {
+      "alpha": 0.7,
+      "baseline": "global",
+      "treatment": "profile",
+      "cost_reduction_percent": -0.17137752514706825,
+      "cost_reduction_ci": [
+        -0.566211577683998,
+        0.0
+      ],
+      "service_difference": -0.0013651259598006,
+      "service_difference_ci": [
+        -0.004242404260234126,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.7,
+      "baseline": "EOQ",
+      "treatment": "profile",
+      "cost_reduction_percent": 43.285065771370014,
+      "cost_reduction_ci": [
+        38.03104192688019,
+        47.7574951071755
+      ],
+      "service_difference": -0.20297727036510227,
+      "service_difference_ci": [
+        -0.23345184757399473,
+        -0.17259742621185825
+      ]
+    },
+    {
+      "alpha": 0.7,
+      "baseline": "EOQPerCycle",
+      "treatment": "profile",
+      "cost_reduction_percent": -31.30278793237133,
+      "cost_reduction_ci": [
+        -42.443357809885754,
+        -19.182401244415907
+      ],
+      "service_difference": -0.15474253509088787,
+      "service_difference_ci": [
+        -0.17554917715564056,
+        -0.13302196620082782
+      ]
+    },
+    {
+      "alpha": 0.8,
+      "baseline": "global",
+      "treatment": "profile",
+      "cost_reduction_percent": -3.6356947653218987,
+      "cost_reduction_ci": [
+        -7.591392335019166,
+        -0.13355139084969986
+      ],
+      "service_difference": 0.02826831617842853,
+      "service_difference_ci": [
+        0.016353609407545874,
+        0.0415275323752849
+      ]
+    },
+    {
+      "alpha": 0.8,
+      "baseline": "EOQ",
+      "treatment": "profile",
+      "cost_reduction_percent": 38.01842145686455,
+      "cost_reduction_ci": [
+        33.56747510108908,
+        42.01723496648839
+      ],
+      "service_difference": -0.16885588470240478,
+      "service_difference_ci": [
+        -0.19972223417578078,
+        -0.13797845771086226
+      ]
+    },
+    {
+      "alpha": 0.8,
+      "baseline": "EOQPerCycle",
+      "treatment": "profile",
+      "cost_reduction_percent": -43.495785966276394,
+      "cost_reduction_ci": [
+        -50.12685472516219,
+        -37.7214037883257
+      ],
+      "service_difference": -0.12062114942819034,
+      "service_difference_ci": [
+        -0.1419537587402716,
+        -0.09900549487243161
+      ]
+    },
+    {
+      "alpha": 0.85,
+      "baseline": "global",
+      "treatment": "profile",
+      "cost_reduction_percent": -0.021526048994989746,
+      "cost_reduction_ci": [
+        -0.07245063377412889,
+        0.0
+      ],
+      "service_difference": -0.002864928058265445,
+      "service_difference_ci": [
+        -0.00890334178497707,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.85,
+      "baseline": "EOQ",
+      "treatment": "profile",
+      "cost_reduction_percent": 31.831511181097717,
+      "cost_reduction_ci": [
+        27.819714541427675,
+        35.42840218937627
+      ],
+      "service_difference": -0.10207522156846191,
+      "service_difference_ci": [
+        -0.1352112052993567,
+        -0.07385840357355085
+      ]
+    },
+    {
+      "alpha": 0.85,
+      "baseline": "EOQPerCycle",
+      "treatment": "profile",
+      "cost_reduction_percent": -57.81932488850859,
+      "cost_reduction_ci": [
+        -64.16340612322935,
+        -52.5867233391696
+      ],
+      "service_difference": -0.053840486294247494,
+      "service_difference_ci": [
+        -0.06765190243353095,
+        -0.040026195963811656
+      ]
+    },
+    {
+      "alpha": 0.9,
+      "baseline": "global",
+      "treatment": "profile",
+      "cost_reduction_percent": 0.6332270060247772,
+      "cost_reduction_ci": [
+        -0.0032043673711397466,
+        1.6968354690225553
+      ],
+      "service_difference": -0.002864928058265445,
+      "service_difference_ci": [
+        -0.00890334178497707,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.9,
+      "baseline": "EOQ",
+      "treatment": "profile",
+      "cost_reduction_percent": 0.6332270060247772,
+      "cost_reduction_ci": [
+        -0.0030592713255720196,
+        1.6432142426610243
+      ],
+      "service_difference": -0.002864928058265445,
+      "service_difference_ci": [
+        -0.008901740752467633,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.9,
+      "baseline": "EOQPerCycle",
+      "treatment": "profile",
+      "cost_reduction_percent": -130.04759679974646,
+      "cost_reduction_ci": [
+        -147.30586700750237,
+        -114.07092255868884
+      ],
+      "service_difference": 0.045369807215948965,
+      "service_difference_ci": [
+        0.023632661366651295,
+        0.07123934021797618
+      ]
+    },
+    {
+      "alpha": 0.95,
+      "baseline": "global",
+      "treatment": "profile",
+      "cost_reduction_percent": 0.6332270060247772,
+      "cost_reduction_ci": [
+        -0.0032043673711397466,
+        1.6968354690225553
+      ],
+      "service_difference": -0.002864928058265445,
+      "service_difference_ci": [
+        -0.00890334178497707,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.95,
+      "baseline": "EOQ",
+      "treatment": "profile",
+      "cost_reduction_percent": 0.6332270060247772,
+      "cost_reduction_ci": [
+        -0.0030592713255720196,
+        1.6432142426610243
+      ],
+      "service_difference": -0.002864928058265445,
+      "service_difference_ci": [
+        -0.008901740752467633,
+        0.0
+      ]
+    },
+    {
+      "alpha": 0.95,
+      "baseline": "EOQPerCycle",
+      "treatment": "profile",
+      "cost_reduction_percent": -130.04759679974646,
+      "cost_reduction_ci": [
+        -147.30586700750237,
+        -114.07092255868884
+      ],
+      "service_difference": 0.045369807215948965,
+      "service_difference_ci": [
+        0.023632661366651295,
+        0.07123934021797618
+      ]
+    }
+  ],
+  "expanded_six_policy_sensitivity": [
+    {
+      "alpha": 0.7,
+      "strategy": "global",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 19,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.7,
+      "strategy": "profile",
+      "TIC_mean": 167.59009570464337,
+      "NS_mean": 0.8928728486255659,
+      "demand_weighted_NS": 0.8251317484985308,
+      "series_below_alpha": 20,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQPerCycle": 144,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "global",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 31,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.8,
+      "strategy": "profile",
+      "TIC_mean": 167.59009570464337,
+      "NS_mean": 0.8928728486255659,
+      "demand_weighted_NS": 0.8251317484985308,
+      "series_below_alpha": 32,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQPerCycle": 144,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "global",
+      "TIC_mean": 167.05867388111625,
+      "NS_mean": 0.8956060058118337,
+      "demand_weighted_NS": 0.8283069736723622,
+      "series_below_alpha": 35,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQPerCycle": 145
+      }
+    },
+    {
+      "alpha": 0.85,
+      "strategy": "profile",
+      "TIC_mean": 167.59009570464337,
+      "NS_mean": 0.8928728486255659,
+      "demand_weighted_NS": 0.8251317484985308,
+      "series_below_alpha": 36,
+      "fallback_count": 1,
+      "policy_counts": {
+        "EOQPerCycle": 144,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "global",
+      "TIC_mean": 332.5135990406479,
+      "NS_mean": 0.9148272881819299,
+      "demand_weighted_NS": 0.8609880249677303,
+      "series_below_alpha": 41,
+      "fallback_count": 0,
+      "policy_counts": {
+        "EOQ": 90,
+        "EOQPerCycle": 45,
+        "sS": 10
+      }
+    },
+    {
+      "alpha": 0.9,
+      "strategy": "profile",
+      "TIC_mean": 260.0838927919685,
+      "NS_mean": 0.9084273184952194,
+      "demand_weighted_NS": 0.851593431330956,
+      "series_below_alpha": 40,
+      "fallback_count": 1,
+      "policy_counts": {
+        "EOQPerCycle": 91,
+        "EOQ": 43,
+        "sS": 10,
+        "Newsvendor": 1
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "global",
+      "TIC_mean": 386.7635557937816,
+      "NS_mean": 0.9438407410860483,
+      "demand_weighted_NS": 0.9199377959880274,
+      "series_below_alpha": 50,
+      "fallback_count": 145,
+      "policy_counts": {
+        "EOQ": 133,
+        "sS": 12
+      }
+    },
+    {
+      "alpha": 0.95,
+      "strategy": "profile",
+      "TIC_mean": 383.58037091543065,
+      "NS_mean": 0.9409758130277828,
+      "demand_weighted_NS": 0.9166094869769228,
+      "series_below_alpha": 51,
+      "fallback_count": 144,
+      "policy_counts": {
+        "EOQ": 129,
+        "sS": 14,
+        "Newsvendor": 1,
+        "EOQPerCycle": 1
+      }
+    }
+  ],
+  "limitations": [
+    "Short reset episodes; no terminal inventory credit.",
+    "Not a rerun or validation of historical RL/GA results.",
+    "Bootstrap conditional on selected strategies; store clusters share products.",
+    "Series inclusion inherited from retrospective prepared cohort.",
+    "Simulator L=2 delivers order t at t+3."
+  ]
+}

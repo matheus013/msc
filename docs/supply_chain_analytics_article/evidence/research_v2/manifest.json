@@ -1,0 +1,153 @@
+{
+  "status": "implementation pilot, not publication evidence",
+  "device": "cuda",
+  "policies": [
+    "EOQCycle",
+    "sSCycle",
+    "NewsvendorHeuristic",
+    "FixedInterval",
+    "VendorResponsive",
+    "GA"
+  ],
+  "training_seeds": [
+    11,
+    29,
+    47
+  ],
+  "sources": {
+    "BA": {
+      "source": "experiment\\data\\02_intermediate\\sales_raw.parquet",
+      "sha256": "556c54ffd104337e9a82e986c63ca5ba0cb22d91edafedc7d07456eab15de13d",
+      "preparation": "Pre-filter transaction snapshot; sum all rows by cycle, no key-first dedup, no full-history CV/activity filter. Not yet independently reconciled with original transaction IDs.",
+      "available_series": 2491912,
+      "complete_cycles": 38
+    },
+    "M5": {
+      "source": "data\\m5_walmart\\sales_train_evaluation.csv",
+      "sha256": "c21a519596680feb86f27a9e62f6c8b583f8be60c2c195f080ae8ca2990af2b7",
+      "preparation": "FOODS raw quantities; 92 full 21-day cycles; no IQR clipping or future CV filter.",
+      "available_series": 14370,
+      "complete_cycles": 92
+    }
+  },
+  "cohorts": [
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "candidate_series": 2491912,
+      "cold_start_zero_prefix": 1310576,
+      "insufficient_positive_history": 2438516,
+      "eligible_series": 53396,
+      "evaluated_series": 8,
+      "validation_cycles": 7,
+      "test_cycles": 7
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "candidate_series": 2491912,
+      "cold_start_zero_prefix": 921444,
+      "insufficient_positive_history": 2403047,
+      "eligible_series": 88865,
+      "evaluated_series": 8,
+      "validation_cycles": 7,
+      "test_cycles": 7
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "candidate_series": 14370,
+      "cold_start_zero_prefix": 2377,
+      "insufficient_positive_history": 2590,
+      "eligible_series": 11780,
+      "evaluated_series": 8,
+      "validation_cycles": 7,
+      "test_cycles": 7
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "candidate_series": 14370,
+      "cold_start_zero_prefix": 862,
+      "insufficient_positive_history": 1139,
+      "eligible_series": 13231,
+      "evaluated_series": 8,
+      "validation_cycles": 7,
+      "test_cycles": 7
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "candidate_series": 14370,
+      "cold_start_zero_prefix": 106,
+      "insufficient_positive_history": 178,
+      "eligible_series": 14192,
+      "evaluated_series": 8,
+      "validation_cycles": 7,
+      "test_cycles": 7
+    }
+  ],
+  "elapsed_seconds": 72.70992090000072,
+  "script_sha256": "25c98e81417491b18bf284f36f5b9dc6ebb69cbd9e8f50bad648c43040737618",
+  "config_by_dataset": "same calibration_config per method; GA pilot 32 individuals/8 generations, optional RL 10 episodes; not equal total compute across algorithm families",
+  "core_sha256": {
+    "experiment\\src\\simulation\\commands.py": "1f8992d8046a080753e00095220b035d6b4a46aa29690159be0839c240b6cae6",
+    "experiment\\src\\simulation\\paths.py": "7647d8a7a3aeeec4c65d592bec29ad3df09fb3f433d3ea3f0b74bf5955aff916",
+    "experiment\\src\\simulation\\pipeline_registry.py": "c68ae21fcce6afc17e1c8f7bd60849626ecea9d831bf7d700b6a69d1974d8bab",
+    "experiment\\src\\simulation\\settings.py": "9e3faa0733535c397293771824961d16f72fe14a65ab9003758f9440e9190bd3",
+    "experiment\\src\\simulation\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "experiment\\src\\simulation\\core\\data_loader.py": "03261010fe45c2257e733768b5d14e19652f86baeaabbb976246b0626391e72b",
+    "experiment\\src\\simulation\\core\\device.py": "743cca82dc238abd3cf71a1b4c85fea946d95f0363741bc83a13478adc95a667",
+    "experiment\\src\\simulation\\core\\forecasting.py": "cb1efffbfe05692ff47b565b67b525c935416a2fcba2e075b227d6230bfea391",
+    "experiment\\src\\simulation\\core\\forecasting_torch.py": "1700d77ca4ecc3734fb450b3d242335032e3fad0a667281f329b6e6d7517feac",
+    "experiment\\src\\simulation\\core\\inventory_env.py": "1e9256792f8dd79dbe4508e8621e9e6ebb52fbb3f3eee2d62388454eeb5207ae",
+    "experiment\\src\\simulation\\core\\inventory_env_torch.py": "e4b73daa09a26ec22a47605c3c63153ff2c8b91dd4714bb4eb017c2e7fd569fe",
+    "experiment\\src\\simulation\\core\\metaheuristics_torch.py": "4d4ddc9066763bb490ccda0b85c3c665db2e85bc970303e7c438f1f68d8afef3",
+    "experiment\\src\\simulation\\core\\policies.py": "605220d21342f0651dba614026492ba5494ccffe6b98cef356135eba40fd10f2",
+    "experiment\\src\\simulation\\core\\policies_sota.py": "54ac40e754deed67364aaa33c0cb8c79240ca716f1b46ae5eb69320b0ddb7442",
+    "experiment\\src\\simulation\\core\\policies_zabraoui.py": "39f1e67be1fa5966637d14757e1f1fe29807ff6e6be41661494f0d1918d508b5",
+    "experiment\\src\\simulation\\core\\rl_torch.py": "f7d2cb2b6cdb3dfc7f427579c435c484ae925dc562dab9293531a6c440117146",
+    "experiment\\src\\simulation\\core\\visualizations.py": "bdcbed7c260b7989e3ba2000d59100d5568ca724a39712d511211e5d69bd802d",
+    "experiment\\src\\simulation\\core\\__init__.py": "4a9a0e9da3f12f75256ac2bc70d273e1e50e6cd509fe954ba2ef5abfe38d7f01",
+    "experiment\\src\\simulation\\pipelines\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "experiment\\src\\simulation\\preprocessing\\sales.py": "4692b3960e910aa7aa0f9e0ac48c2f6ef1932dd31b3a2e4e6589b99bbbf8df30",
+    "experiment\\src\\simulation\\preprocessing\\__init__.py": "2254ff1470f224739ca9f734e8e5acd695757d1b98428c44247d0fe4069da9c8",
+    "experiment\\src\\simulation\\research\\protocol.py": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a",
+    "experiment\\src\\simulation\\research\\__init__.py": "a81ff4f53159d1bdb128fc6a1de2aa5e0e7fb58b2bc1237be1f2acae33d6a0ba",
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\duckdb_loader.py": "e35c6dce26f8b18e8fabfd03b2e8abb09b579b10ee50b3da0bcd8d34abe586ac",
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\m5_loader.py": "ad95b6fd7f723666ade588322f675ede7d4d7fcf7f6ee776d085a123eba97b1a",
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\nodes.py": "0bddc993367b1578fa0d886da312934082752a0a42500c057d552d3fa17dfc4d",
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\pipeline.py": "0b097faea4061c89b093c82916203e2e847599821f4e7e7b3c6452b1036ec19a",
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\__init__.py": "91300894806655f5583b584a1642e17951d9b6e04b8c521ba05a79d4c32c1dea",
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\nodes.py": "89ec778880a13a88bc28743b91d1f465eeada317fceb12935b85be5249a4d797",
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\pipeline.py": "73b1f886fe2c79b3abd565f157761acdff04bd4c6ed8129a39c386ac764d4563",
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\__init__.py": "6f44fb419e485dab97e279008a76025ad74bf24376a18f656deb77bddab31a67",
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\nodes.py": "f80cc5e147dc38a64e0a3b975f1e176fe4c1990b9391eac9164e7faf8b95b803",
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\pipeline.py": "c97123b32656e375fad90275b7b7afc45698828ab597da9796438ddccdaf01ee",
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\__init__.py": "cf434391721ea3da39835c364deab53c97f98c31e5b3ad8b7c53dec8e87edc29",
+    "experiment\\src\\simulation\\pipelines\\final_report\\nodes.py": "66a8a47a8816a1218b6c567815c391ea2806562b88ed00b04dd0d86123c3d215",
+    "experiment\\src\\simulation\\pipelines\\final_report\\pipeline.py": "1e2d70b59b8ca18eadf2c0ce8d5751cbfc03a7ad7316ecfe9964112ee02928df",
+    "experiment\\src\\simulation\\pipelines\\final_report\\__init__.py": "314d7834f8e5146d376be087ec2f411c4c237939e9daf0b09d41fe6e3726e836",
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\nodes.py": "377cb65cc77c0229db69bdea7edada381d8f2a6fdd254c27b9381f13ce4638a8",
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\pipeline.py": "561c8124957b22679b74cf98d0212f4682e9b1084390cb594ce1f24c56be3343",
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\__init__.py": "5e37d930e6ce4f22b4bbc277e5a255c978571e1f2b46cfb2e12062bc556f6b7a",
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\nodes.py": "609f6d8e91656244aeda34318c1704894e232bc15fbefe1b6521ca2a198c2aeb",
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\pipeline.py": "b8f943294b3e91e33719dbc61bc3f2c3a7c468492c64cec157ea7673eaf685db",
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\__init__.py": "a120686cab137e3de98c0d482ce3da93ec5d6904bf76d668e4ce666dbf5305f1",
+    "experiment\\src\\simulation\\pipelines\\reporting\\nodes.py": "730845d8d9092dfdbf46c48b04dbf018cc7d599466a9669ce8bf959419941388",
+    "experiment\\src\\simulation\\pipelines\\reporting\\pipeline.py": "e66cb75d84fc636e752e091d4f477a314e0b5c0c03ad3aac96a51b4ba0c57727",
+    "experiment\\src\\simulation\\pipelines\\reporting\\__init__.py": "bca1de370267137fa913dfc11be2bdde64b639f5142d2653dafcd644ee10fa11",
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\nodes.py": "11c53daf92d19a35cdeba84494d1958e27d70e4b715bc2f1291a8979a3b11a4c",
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\pipeline.py": "407ed7c2c611c1b4566f8ab2c0a24689d4b696eb2a3b47b081755744226059e6",
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\__init__.py": "c7ac3efae8e9d219f36fd008021ab6115088b6e22784fb5e93c3aeb2579aed82"
+  },
+  "protocol": "Past-only preparation/fit/profiles. Independent retraining per stochastic seed. Test inventory/pipeline common to candidates, from fixed EOQ baseline history. Seven-cycle validation/test; store-out selection.",
+  "limitations": [
+    "Small hashed pilot sample; no population inference.",
+    "BA source is preserved raw transaction snapshot, not independently reconciled IDs.",
+    "No terminal salvage credit; terminal committed units exported for sensitivity.",
+    "No neural methods unless --include-rl; their pilot episodes are insufficient for algorithm rankings.",
+    "Cold-start histories counted separately, not evaluated as mature series.",
+    "No claim of prospective supervised PSE validation."
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "run": "bahia145_cpu16_2026-10-15",
+  "completed_fits": 4350,
+  "KPI_rows": 8700,
+  "series": 145,
+  "stores": 115,
+  "items": 9,
+  "series_origin_cases": 290,
+  "origins": [
+    17,
+    23
+  ],
+  "train_validation_test": [
+    [
+      17,
+      7,
+      7
+    ],
+    [
+      23,
+      7,
+      7
+    ]
+  ],
+  "test_cycle_overlap": 1,
+  "training_seeds": [
+    11,
+    29,
+    47
+  ],
+  "profiles_by_origin": "{(17, 'Sparse_High_Impact'): 65, (17, 'Unstable_Trend'): 80, (23, 'High_Vol_Seasonal'): 16, (23, 'Sparse_High_Impact'): 60, (23, 'Unstable_Trend'): 69}",
+  "selection_counts_070": "{(17, 'global', 'GA'): 145, (17, 'perfil', 'EOQCycle'): 5, (17, 'perfil', 'GA'): 65, (17, 'perfil', 'sSCycle'): 75, (23, 'global', 'sSCycle'): 145, (23, 'perfil', 'sSCycle'): 145}",
+  "conditional_intervals": [
+    {
+      "contrast": "global_vs_profile",
+      "cost_reduction_percent": -1.9259705457970928,
+      "conditional_CI95": [
+        -4.161022781694612,
+        0.32199434119626624
+      ],
+      "stores": 115,
+      "cases": 290
+    },
+    {
+      "contrast": "GA_vs_GA-DQN",
+      "cost_reduction_percent": -1.3206082086828792,
+      "conditional_CI95": [
+        -2.4726687659525908,
+        -0.19802567099050108
+      ],
+      "stores": 115,
+      "cases": 290
+    },
+    {
+      "contrast": "DQN_vs_GA-DQN",
+      "cost_reduction_percent": 11.603311545389959,
+      "conditional_CI95": [
+        4.522367843577262,
+        17.896623066512625
+      ],
+      "stores": 115,
+      "cases": 290
+    }
+  ],
+  "source_sha256": {
+    "kpis.csv": "2415afc8149f0d76d3d5dc62e00efca84b4da770a0572d875474932e4e3c09a2",
+    "manifest.json": "5af144eec99c018e05882735e6a980d895c2b2c0fa7782dba166e06c0d6cf0d4",
+    "status.json": "6eeed0176582e34152b29514995425ee5c6e55c5f2bdf890826428f893c48622"
+  },
+  "limitations": [
+    "Historical membership; past-only fitting does not make cohort prospective.",
+    "Origins are repeated measurements and their seven-cycle tests overlap by one cycle.",
+    "Seeds averaged per series/origin, not independent retail units.",
+    "Intervals conditional on fitted candidates and choices; shared-product dependence remains.",
+    "Fixed common baseline initial states; candidate policies do not carry their own validation stocks into test.",
+    "Test ranking is descriptive and must not be reused to tune the selection rule."
+  ]
+}

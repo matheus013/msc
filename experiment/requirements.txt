@@ -1,0 +1,2 @@
+# Fonte unica das dependencias: pyproject.toml. Executar dentro de experiment/.
+-e .

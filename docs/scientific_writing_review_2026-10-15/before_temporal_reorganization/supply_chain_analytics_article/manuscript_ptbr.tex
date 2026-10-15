@@ -1,0 +1,274 @@
+\documentclass[preprint,12pt]{elsarticle}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,booktabs,graphicx}
+\usepackage{xurl}
+\usepackage{placeins}
+\setlength{\emergencystretch}{2em}
+\usepackage[hidelinks]{hyperref}
+\journal{Supply Chain Analytics -- versão de trabalho em português}
+\begin{document}
+\begin{frontmatter}
+\title{Seleção de políticas de reposição sob restrições de serviço: evidências históricas e avaliação temporal no varejo}
+\author[ufal]{Matheus Inácio Batista Santos}
+\affiliation[ufal]{organization={Instituto de Computação, Universidade Federal de Alagoas},country={Brasil}}
+\begin{abstract}
+Selecionar políticas de reposição por perfil de demanda acrescenta complexidade à gestão de estoques. Este estudo investiga o que essa escolha oferece em relação a uma política global sob a mesma restrição de serviço. Reanalisamos matrizes históricas com doze políticas, 145 séries loja-produto de uma rede varejista brasileira e 2.408 séries de alimentos do M5. A seleção minimiza custo sob atendimento médio mínimo de 0,70, excluindo a loja avaliada da escolha. Nesse desenho, os perfis aumentam o custo em 0,58\% na base brasileira e reduzem em 0,68\% no M5; os intervalos condicionais de 95\% incluem zero. Uma nova execução da Bahia utiliza sete políticas, duas origens temporais, três sementes para métodos estocásticos e blocos separados de validação e teste, totalizando 4.350 ajustes. Nela, a seleção por perfil aumenta o custo em 1,93\% e o atendimento médio em 3,89 pontos percentuais; os casos abaixo da meta caem de 119 para 100 entre 283 casos série--origem com demanda positiva. Os resultados diferem entre janelas e não demonstram economia geral da seleção contextual. Sua contribuição é explicitar compromissos de serviço e a sensibilidade temporal da recomendação. A avaliação nova restringe o ajuste ao passado, mas mantém uma coorte retrospectiva e testes curtos parcialmente sobrepostos. O M5 permanece uma comparação histórica, com 91,90\% de prefixos sem demanda, e não uma validação do protocolo corrigido.
+\end{abstract}
+\begin{keyword}
+Gestão de estoques \sep Demanda intermitente \sep Seleção de políticas \sep Nível de serviço \sep Varejo \sep M5
+\end{keyword}
+\end{frontmatter}
+
+\section{Introdução}
+Uma rede varejista precisa decidir quando e quanto repor para muitas combinações de loja e produto. Uma regra que funciona para vendas frequentes pode produzir excesso de estoque em séries esparsas; outra, econômica em média, pode não cobrir picos relevantes. O problema não se resume a prever demanda: envolve escolher uma regra de decisão e ajustar seus parâmetros sob custos e exigências de atendimento \cite{Axsater2006InventoryControl}.
+
+Comparações de algoritmos ampliam o conjunto de alternativas disponíveis. Políticas analíticas, heurísticas, busca por parâmetros e aprendizado por reforço oferecem diferentes compromissos entre custo, serviço e esforço computacional. Entretanto, a existência de um portfólio não resolve a escolha operacional. O gestor precisa saber se vale aplicar uma política uniforme ou distinguir grupos de séries, e se a distinção oferece ganho suficiente para justificar maior complexidade.
+
+Essa pergunta pode ser formulada como seleção de algoritmos: características de uma instância ajudam a escolher um método de um conjunto candidato \cite{rice1976,Kotthoff2014AlgorithmSelection}. Em inventário, a instância é uma série loja-produto e o resultado depende da política, do ambiente e do serviço exigido. A proposta Adaptive Inventory Policy Engine (AIPE) organiza essa avaliação em caracterização, comparação e seleção. Seu componente supervisionado, Policy Selection Engine (PSE), é uma extensão ainda não validada neste artigo; a análise presente utiliza regras explícitas de escolha por perfil.
+
+Trabalhos publicados em \textit{Supply Chain Analytics} relacionam previsão e desempenho operacional \cite{sca_f81ad2b3e023}, comparam algoritmos de controle \cite{sca_27e994c54848} e examinam a informação decisória preservada por critérios de classificação \cite{sca_c5c06dcbc9e5}. Esses enfoques motivam avaliar o que a seleção por perfil acrescenta ao portfólio: distinguir padrões de demanda só justifica uma regra mais complexa se a distinção melhorar a decisão em relação a uma referência global competitiva.
+
+A pesquisa parte dos experimentos da qualificação de mestrado com dados de uma rede brasileira. O piloto da Paraíba teve 15 lojas e um produto; seu papel foi estabelecer um protocolo inicial. O caso central deste artigo é o conjunto de 145 séries da Bahia. A reanálise histórica é complementada por uma nova avaliação temporal dessa coorte. Os artefatos históricos do M5 acrescentam uma origem pública de dados, com diferenças de recorte, horizonte, informação inicial e orçamento de busca. Bahia e M5 são experimentos separados, com escolhas e custos analisados dentro de cada base.
+
+Investigamos três questões: (i) selecionar por perfil reduz custo em relação à melhor política global viável? (ii) a diferença persiste quando a loja avaliada não participa da escolha? (iii) como a exigência de serviço altera as políticas selecionadas e as violações individuais? A contribuição é avaliar diretamente o ganho incremental da seleção contextual, usando a mesma matriz de candidatos para as duas estratégias e informando custo, atendimento e incerteza. O desenho permite examinar a transferência da escolha entre lojas, com as limitações temporais descritas no protocolo.
+
+\section{Trabalhos relacionados e posicionamento}
+A classificação da demanda organiza diferenças de frequência e tamanho das ocorrências. A taxonomia ADI--CV$^2$ é uma referência para distinguir demanda suave, errática, intermitente e \textit{lumpy} \cite{syntetos2005}. Uma classe estatística, porém, não identifica sozinha a melhor política: custo de falta, prazo, estado inicial e requisito de atendimento também influenciam a decisão.
+
+Tadayonrad e Ndiaye \cite{sca_f81ad2b3e023} aproximam a avaliação de previsão dos custos de inventário e do serviço. Pietukhov et al.\ \cite{sca_92a549559870} estudam previsão de indicadores de desempenho em um contexto empírico. A conexão com este trabalho é avaliar consequências operacionais, sem transformar precisão preditiva em substituto de custo e atendimento. O benchmark M5 utilizado aqui não inclui, em seu grafo de execução, a etapa de previsão por redes de memória de longo e curto prazo (LSTM); não atribuímos seus resultados à aprendizagem de previsão.
+
+Zabraoui et al.\ \cite{sca_27e994c54848} comparam famílias de algoritmos de inventário e apresentam combinações de algoritmos genéticos (GA) e aprendizado por reforço com dados M5. A arquitetura GA--DQN, que combina GA e uma rede Q profunda (DQN, do inglês deep Q-network), e a ideia de portfólio já estão, portanto, na literatura da revista. Nosso foco não é propor a mesma combinação como novidade, mas avaliar a camada de escolha entre alternativas. As heurísticas inspiradas naquele estudo envolvem decisões de implementação próprias, e custos, filtros e granularidade não constituem uma reprodução exata de seus experimentos.
+
+A análise de critérios de Theunissen et al.\ \cite{sca_c5c06dcbc9e5} destaca a diferença entre importância estatística e utilidade decisória. Não implementamos seu método topológico. Testamos uma consequência próxima: mesmo um perfil interpretável pode ser pouco útil se recomendar praticamente a mesma política global ou se suas mudanças elevarem custo sem benefício de serviço relevante.
+
+Revisões de aprendizado por reforço em inventário discutem a importância do ambiente, da recompensa e da avaliação \cite{Boute2022DRLInventoryRoadmap}. Uma baixa taxa de atendimento ou frequência de pedidos extrema não caracteriza, isoladamente, uma família algorítmica. Os resultados abaixo descrevem implementações e matrizes específicas. Corrigir um controlador atual não valida retrospectivamente uma saída armazenada de outra versão.
+
+O M5 documenta uma competição de previsão sobre vendas reais de varejo \cite{Makridakis2022M5Accuracy}. Neste artigo, seus dados são agregados e usados em simulação de reposição. Os resultados não são classificações da competição nem uma comparação com seus vencedores. A comparação adicional examina retrospectivamente se o mesmo procedimento de seleção apresenta comportamento semelhante em outro conjunto, mantendo claras as restrições da transformação e do recorte.
+
+\section{Dados e ambiente de reposição}
+O estudo tem duas etapas. As matrizes históricas arquivadas, com 145 séries da Bahia e 2.408 do M5, fundamentam a reanálise inicialmente apresentada. A Seção~\ref{sec:ba2026} acrescenta a execução concluída da Bahia sob protocolo corrigido. Cada etapa possui seu portfólio, horizonte e preparação; as tabelas não concatenam suas saídas. A nova execução M5 ainda não integra o manuscrito.
+\subsection{Caso central: rede varejista brasileira}
+A base brasileira é proprietária. Os registros de vendas são agregados por ciclo comercial e preparados em séries loja-produto. A matriz analisada contém 145 séries da Bahia, 115 lojas e nove produtos, com 38 ciclos por série. O primeiro prefixo de referência do código tem 17 ciclos. Todos os rótulos macro de regime no artefato são \textit{lumpy}. O horizonte curto e o recorte de alta irregularidade delimitam a evidência; não há avaliação nacional representativa.
+
+Os perfis armazenados dividem a amostra em 116 séries Sparse High Impact, 18 Unstable Trend e 11 High Volatility Seasonal. São identificadores das regras locais de caracterização, detalhadas adiante. Não são classes aprendidas nem comprovação de impacto econômico, tendência ou sazonalidade. Os dois menores grupos têm interpretação exploratória.
+
+Vendas realizadas são um indicador imperfeito da demanda quando falta estoque. Além disso, completar ciclos ausentes com zero exige distinguir ausência de venda e ausência de registro. O estudo não estima demanda censurada a partir de informação indisponível. Os resultados devem ser interpretados como replay das séries preparadas, sob o ambiente configurado.
+
+\subsection{Contraste público: M5}
+A matriz M5 contém 2.408 séries de alimentos, dez lojas e 287 produtos distintos, com 93 ciclos por série. O código agrega vendas diárias em blocos consecutivos de 21 dias, filtra a categoria FOODS e utiliza um limiar de CV de 1,5 calculado por produto sobre lojas e ciclos, e não individualmente por série. A configuração também prevê limitação de valores extremos por cercas de 1,5 vezes o intervalo interquartil. Trata-se de um recorte local inspirado no estudo de Zabraoui et al.\ \cite{sca_27e994c54848}. A seção 3.7 daquele estudo descreve alimentos com demanda volátil, mas não publica uma lista de séries nem um limiar numérico de CV que permita certificar uma amostra idêntica. O corte de 1,5 e as 2.408 séries identificam, portanto, a adaptação local, não uma reprodução exata da amostra publicada.
+
+O prefixo de referência da configuração M5 tem 19 ciclos. Nesse prefixo, 2.213 das 2.408 séries (91,90\%) não registram demanda, e 2.237 têm menos de três ciclos positivos. Todas registram demanda positiva nos 74 ciclos posteriores. A matriz M5 representa, portanto, predominantemente um cenário sem vendas registradas no prefixo, distinto da base brasileira, onde nenhuma série tem prefixo nulo e todas têm ao menos três ciclos positivos. Os artefatos registram 2.350 séries \textit{lumpy}, 33 erráticas, 24 suaves e uma intermitente. Os perfis são 2.350 Sparse High Impact, 40 Unstable Trend e 18 High Volatility Seasonal. Assim, o M5 é majoritariamente irregular, mas não exclusivamente \textit{lumpy}. A predominância de um perfil, presente também na base brasileira, limita o contraste entre grupos.
+
+A janela final de 93 ciclos inclui um bloco diário parcial. Estatísticas de recorte e suavização obtidas no histórico completo impedem tratar o conjunto como um teste temporal inteiramente independente. O M5 amplia a diversidade de origem, produtos e horizonte, mas permanece um recorte transformado de uma mesma fonte pública. Ter 2.408 séries não equivale a ter 2.408 lojas independentes.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Coortes verificadas nas matrizes analisadas. Prefixo indica o corte de ajuste configurado no código, não uma garantia de independência temporal de toda a preparação.}\label{tab:cohort}
+\begin{tabular}{lrr}
+\toprule
+Característica & Rede brasileira (BA) & M5 FOODS\\
+\midrule
+Séries & 145 & 2.408\\
+Lojas & 115 & 10\\
+Produtos & 9 & 287\\
+Ciclos disponíveis & 38 & 93\\
+Prefixo configurado & 17 & 19\\
+Prefixo sem demanda & 0 & 2.213\\
+Menos de 3 ciclos positivos no prefixo & 0 & 2.237\\
+Sparse High Impact & 116 & 2.350\\
+Unstable Trend & 18 & 40\\
+High Volatility Seasonal & 11 & 18\\
+Políticas na matriz & 12 & 12\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Portfólio, custos e dinâmica}
+As duas matrizes possuem os mesmos doze rótulos: EOQ (lote econômico de pedido), $(s,S)$, Newsvendor, CappedBaseStock, BigDataNewsvendor, FixedInterval, VendorResponsive, GA, recozimento simulado (SA, simulated annealing), DQN, Proximal Policy Optimization (PPO) e GA--DQN. As matrizes registram avaliações separadas de cada série. Não há otimização conjunta de capacidade ou coordenação de pedidos entre lojas, embora a variabilidade dos pedidos seja observada como indicador complementar.
+
+Os orçamentos configurados também diferem entre bases: GA utiliza 50 gerações na Bahia e 500 no M5; SA, 500 e 100 iterações; a fase de reforço do híbrido, 200 e 30 episódios, respectivamente. São valores encontrados nas configurações examinadas, sem um manifesto histórico completo que certifique cada execução. Não descrevemos as bases como comparação sob orçamento idêntico.
+
+Os nomes identificam implementações do projeto. A heurística EOQ legada acumula demanda no horizonte de calibração, embora o custo de manutenção seja por ciclo; difere, portanto, da formulação com unidades temporais consistentes. Newsvendor emprega uma aproximação por média e dispersão. VendorResponsive ajusta a proteção de estoque segundo o atendimento passado. Essas implementações não recebem automaticamente as garantias teóricas ou os resultados de métodos homônimos da literatura.
+
+Nos KPIs, a quantidade de ciclos disponível é metadado da série, não a duração certificada do episódio. Os cortes configurados deixam 21 ciclos para avaliação na Bahia e 74 no M5; sem um manifesto histórico completo, essa correspondência deve ser confirmada na reprodução.
+
+No ciclo $t$, a política decide antes da chegada prevista; o ambiente recebe pedidos antigos, atende demanda sem acumular faltas para o futuro e cobra o estoque remanescente. A convenção de pipeline com configuração $L=2$ entrega uma ordem emitida em $t$ em $t+3$. Essa regra é comum aos candidatos, mas não deve ser descrita como prazo efetivo contínuo de dois ciclos. Estoque inicial e limites de ação podem depender das estatísticas de cenário armazenadas, inclusive do histórico completo.
+
+O custo total da série $i$ sob política $\pi$ é representado por
+\begin{equation}
+ C_{i\pi}=\sum_t\left[h_i I_{it}+p_i U_{it}+k_i\mathbf{1}(Q_{it}>0)+v_i Q_{it}\right],
+\end{equation}
+com estoque remanescente $I$, falta $U$, pedido $Q$ e coeficientes de manutenção, falta, emissão e quantidade. Os parâmetros são custos de cenário e não foram estimados neste artigo como preços econômicos comparáveis entre Brasil e Estados Unidos. Horizontes, volumes e escalas diferem. Por isso, custos absolutos só são comparados dentro de cada base.
+
+O fill rate é $F_{i\pi}=\sum_t(D_{it}-U_{it})/\sum_tD_{it}$, definido quando a demanda acumulada no período avaliado é positiva. Todas as séries das matrizes históricas têm demanda positiva no horizonte posterior ao prefixo configurado. Em janelas sem demanda, esse indicador é indefinido e deve ser reportado separadamente, sem atribuição artificial de atendimento completo. É uma fração de unidades atendidas, distinta da probabilidade de um ciclo sem falta. Outros indicadores são frequência de ciclos com ruptura, frequência de pedidos e razão entre variâncias de pedido e demanda. Essas medidas apoiam interpretação; a seleção principal utiliza custo e fill rate.
+
+\section{Seleção e protocolo de comparação}
+\subsection{Referência global e escolha por perfil}
+Para um conjunto $A$ de séries usadas na escolha, definimos custo e atendimento médios por política:
+\begin{equation}
+ \bar C_{\pi,A}=|A|^{-1}\sum_{i\in A}C_{i\pi},\qquad
+ \bar F_{\pi,A}=|A|^{-1}\sum_{i\in A}F_{i\pi}.
+\end{equation}
+Cada série recebe o mesmo peso. A média de fill rates não é o atendimento ponderado pelo volume total da rede. Seja $\Pi$ o portfólio de políticas. A política global é
+\begin{equation}
+ \widehat\pi_A=\arg\min_{\pi\in\Pi:\bar F_{\pi,A}\geq\alpha}\bar C_{\pi,A}.
+\end{equation}
+A seleção por perfil aplica a mesma regra separadamente a $A_g$, o subconjunto associado ao perfil $g$. Se nenhuma política atende à restrição, escolhe-se maior atendimento médio, com custo como desempate, e registra-se fallback. Esse caso é explicitado: não é uma escolha viável que cumpriu o limiar. Entre candidatas viáveis com mesmo custo, preferimos maior serviço; no fallback empatado em serviço, menor custo. Empates restantes usam ordem alfabética do identificador. Um perfil ausente nas lojas de escolha utiliza a regra global.
+
+A restrição é média e específica do conjunto usado para escolher. Não exige $F_{i\pi}\geq\alpha$ em toda série. Também não garante a média da loja excluída. Além disso, exigir viabilidade em cada perfil é diferente de exigi-la apenas no agregado. Uma política global viável pode ser inviável em um grupo; a escolha por perfil não precisa apresentar menor custo mesmo na avaliação retrospectiva.
+
+O limiar principal é $\alpha=0{,}70$, herdado da investigação original. Ele não representa recomendação de meta comercial. Avaliamos também 0,80, 0,85, 0,90 e 0,95, sem escolher a conclusão pelo limiar mais favorável. A diferença relativa de custo é
+\begin{equation}
+ R=100\frac{\bar C_{\mathrm{global}}-\bar C_{\mathrm{perfil}}}{\bar C_{\mathrm{global}}}.
+\end{equation}
+$R>0$ indica redução; $R<0$, aumento. Diferenças de atendimento são dadas em pontos percentuais. Custo menor acompanhado por atendimento menor não é chamado de dominância.
+
+\subsection{Perfis operacionais e informação disponível}
+Os perfis são regras heurísticas ordenadas, não clusters aprendidos nem políticas previamente validadas. A prioridade é Sparse High Impact, High Volatility Seasonal, Unstable Trend, Low Volume Stable e Fast Moving. A primeira regra utiliza ADI elevado, CV$^2$ elevado e sequência longa de zeros; a segunda, autocorrelação sazonal ou concentração de ocorrências; a terceira, tendência ou entropia. Os perfis de baixo volume estável e venda frequente não aparecem nas matrizes de perfil analisadas. Para tornar a regra reproduzível, usamos $a=n/\max(n_+,1)$, $c^2=[s/(\mu+10^{-9})]^2$ e $Z$, maior sequência de zeros. Aqui, $n$ é o número de ciclos do cenário, $n_+$ é a quantidade de ciclos com demanda positiva, $\mu$ é a média sobre todos os ciclos e $s$ é o desvio-padrão amostral, incluindo zeros. Essa variância difere da calculada apenas sobre os tamanhos positivos da demanda na taxonomia original. A Tabela~\ref{tab:profile_rules} apresenta os cortes, aplicados na ordem indicada; uma série sem correspondência recebe Sparse High Impact.
+
+\begin{table}[htbp]\centering\small
+\caption{Regras operacionais de perfil: primeiro corte satisfeito determina o grupo.}\label{tab:profile_rules}
+\begin{tabular}{@{}p{3.7cm}p{7.2cm}@{}}\toprule
+Perfil & Condição\\\midrule
+Sparse High Impact & $a\geq1{,}32$, $c^2\geq0{,}49$ e $Z\geq5$\\
+High Volatility Seasonal & Autocorrelação na defasagem 17 $\geq0{,}25$ ou burstiness $\geq0{,}30$\\
+Unstable Trend & Módulo da tendência normalizada $\geq0{,}05$ ou entropia $\geq2$\\
+Low Volume Stable & $\mu\leq2$ e $c^2<0{,}49$\\
+Fast Moving & $a<1{,}32$\\\bottomrule\end{tabular}\end{table}
+
+Burstiness é $(s_\Delta-\mu_\Delta)/(s_\Delta+\mu_\Delta+10^{-9})$, em que $\mu_\Delta$ e $s_\Delta$ são a média e o desvio-padrão dos intervalos $\Delta$ entre ocorrências positivas; recebe zero com menos de dois intervalos. Tendência é a inclinação estimada por mínimos quadrados ordinários (OLS) sobre o índice de ciclo, dividida por $\mu+10^{-9}$. Entropia é $-\sum_j p_j\log_2(p_j+10^{-12})$, em que $p_j$ é a frequência relativa na classe $j$ de um histograma com dez intervalos de mesma largura. Autocorrelação é a covariância na defasagem 17 dividida pela variância global; recebe zero se a série tem até 18 ciclos ou variância desprezível. Os rótulos descrevem regras locais, não sazonalidade ou impacto econômico empiricamente validados.
+
+O código calcula essas características sobre as séries de cenário completas. A seleção neste artigo utiliza os perfis armazenados, sem alegar que estavam disponíveis antes de todos os ciclos avaliados. A coluna de política associada heuristicamente ao nome de um perfil não é usada como resultado: a política selecionada é determinada pelos custos e pelo serviço da matriz. Isso evita confundir uma associação escrita no código com evidência empírica de superioridade.
+
+\subsection{Transferência entre lojas e incerteza condicional}
+Calculamos inicialmente seletores retrospectivos na própria matriz. Em seguida, excluímos todas as séries da loja avaliada antes de escolher a política global e as políticas de perfil. As escolhas são pontuadas nas saídas dessa loja já existentes na matriz. Esse procedimento é leave-one-store-out: examina transferência da regra de escolha entre lojas, condicional aos resultados de cada política.
+
+A exclusão da loja controla sua participação na escolha da política. Características, condições iniciais e saídas dos controladores permanecem as da matriz histórica, que pode incorporar informação posterior ao prefixo. O procedimento avalia, assim, transferência entre lojas condicionada à matriz, sem validar temporalmente os controladores ou o PSE supervisionado.
+
+O protocolo original registra cinco execuções por série e política. Contudo, os desvios-padrão de custo armazenados são efetivamente zero. São repetições de avaliação determinística, não cinco sementes independentes de treinamento. Cada série--política contribui uma observação agregada. A unidade de dependência utilizada para incerteza é a loja.
+
+Os intervalos percentis de 95\% usam 5.000 amostras bootstrap pareadas de lojas; cada loja sorteada leva todas as suas séries. Os seletores não são reajustados em cada sorteio. Os intervalos são, portanto, condicionais às matrizes, perfis e escolhas já obtidas. Não incluem incerteza de treinamento ou de nova demanda. No M5 existem apenas dez agrupamentos de loja, o que torna essa aproximação especialmente frágil; produtos compartilhados entre lojas introduzem dependência adicional não eliminada pelo agrupamento.
+
+\section{Resultados históricos}
+\subsection{A melhor escolha global depende da base}
+No limiar de 0,70, VendorResponsive é a política global de menor custo viável na rede brasileira. O custo médio é 433,31 e o fill rate médio 0,7738. No M5, o vencedor é SA, com custo 19.500,54 e atendimento 0,8521. A diferença de vencedor mostra dependência do contexto, mas a diferença de custo absoluto não mede vantagem entre bases.
+
+A restrição altera fortemente o conjunto admissível. No M5, apenas SA e PPO apresentam atendimento médio global acima de 0,70. GA--DQN registra 0,4666 e a heurística EOQ legada, 0,1332. Custos baixos dessas alternativas não constituem resultados competitivos sob o requisito escolhido. Sua insuficiência de atendimento descreve as implementações e o cenário analisados, sem estabelecer que os algoritmos sejam inadequados a todo varejo. O prefixo sem venda em 91,90\% das séries é uma condição relevante para interpretar calibração e aprendizagem no M5. Pode estar associado a parâmetros pouco informativos, mas esta análise não isola seu efeito causal nem atribui todo o resultado a ele.
+
+A Tabela~\ref{tab:portfolio_dual} apresenta todo o portfólio, evitando restringir a comparação aos vencedores. O denominador do custo relativo é a política global viável de cada base, sem juntar moedas ou horizontes.
+
+\begin{table}[htbp]\centering\small
+\caption{Portfólio histórico completo: custo relativo à melhor global viável em $\alpha=0{,}70$ e serviço médio. BA: denominador VendorResponsive; M5: denominador SA.}\label{tab:portfolio_dual}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+ & \multicolumn{2}{c}{BA} & \multicolumn{2}{c}{M5}\\
+Política & Custo relativo & Serviço & Custo relativo & Serviço\\\midrule
+BigDataNewsvendor & 1,343 & 0,717 & 0,322 & 0,096\\
+CappedBaseStock & 1,297 & 0,642 & 0,297 & 0,098\\
+DQN & 0,292 & 0,225 & 0,318 & 0,076\\
+EOQ & 1,450 & 0,942 & 0,320 & 0,133\\
+FixedInterval & 1,057 & 0,844 & 0,301 & 0,100\\
+GA & 2,920 & 0,896 & 0,381 & 0,231\\
+GA--DQN & 2,714 & 0,731 & 0,406 & 0,467\\
+Newsvendor & 0,669 & 0,540 & 0,285 & 0,084\\
+PPO & 11,799 & 0,963 & 1,139 & 0,985\\
+SA & 2,649 & 0,865 & 1,000 & 0,852\\
+VendorResponsive & 1,000 & 0,774 & 0,287 & 0,100\\
+$(s,S)$ & 1,511 & 0,943 & 0,321 & 0,134\\
+\bottomrule\end{tabular}\end{table}
+
+No M5, PPO apresenta atendimento médio de 0,9853 e emite pedidos em cerca de 99,31\% dos ciclos; SA atende 0,8521, com pedidos em 8,02\% dos ciclos. O serviço mais alto corresponde, portanto, a outro padrão de reposição, além da diferença de custo apresentada na tabela.
+
+\subsection{O ganho incremental de selecionar por perfil é pequeno}
+A Tabela~\ref{tab:strategies} compara seletores com a loja avaliada excluída. Na rede brasileira, a seleção por perfil aumenta o custo médio de 433,31 para 435,80: redução relativa de $-0{,}576\%$, com intervalo $[-1{,}442;0{,}153]\%$. O atendimento cresce de 0,7738 para 0,7816, ou 0,779 ponto percentual. São diferenças pequenas, e o intervalo de custo inclui zero.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Seleção com exclusão da loja avaliada, em $\alpha=0{,}70$. A coluna abaixo do limiar conta séries individualmente, não médias de perfil. Custos não são comparáveis entre bases.}\label{tab:strategies}
+\begin{tabular}{llrrr}
+\toprule
+Base & Estratégia & Custo médio & Fill rate & Abaixo do limiar\\
+\midrule
+Brasileira & Global & 433,31 & 0,7738 & 40\\
+Brasileira & Perfil & 435,80 & 0,7816 & 39\\
+M5 & Global & 19.500,54 & 0,8521 & 270\\
+M5 & Perfil & 19.367,73 & 0,8509 & 274\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No caso brasileiro, a regra por perfil escolhe VendorResponsive para 130 séries e FixedInterval para 15. Na própria amostra, havia redução de apenas 0,195\% de custo; essa vantagem não persiste ao retirar a loja. Encontrar um ajuste retrospectivo favorável, portanto, não basta para justificar maior complexidade de recomendação.
+
+No M5, o custo por perfil cai de 19.500,54 para 19.367,73, redução de 0,681\%, com intervalo $[-1{,}190;2{,}402]\%$. O atendimento diminui 0,122 ponto percentual. O seletor mantém SA nas 2.350 séries Sparse High Impact e distribui as outras 58 entre VendorResponsive, GA--DQN, EOQ, FixedInterval e CappedBaseStock. A política global já cobre o perfil de 97,59\% das séries; a camada contextual muda uma parcela pequena das decisões.
+
+Os intervalos condicionais das duas comparações principais incluem zero e não sustentam uma redução de custo positiva nesse critério. Isso não prova equivalência entre estratégias, nem elimina a possibilidade de ganhos em outros contextos. Mostra que estes perfis e estas matrizes não sustentam uma vantagem geral de custo sobre a melhor referência global viável do portfólio.
+
+\subsection{Serviço médio esconde falhas individuais}
+Em 0,70, a estratégia por perfil deixa 39 das 145 séries brasileiras e 274 das 2.408 séries M5 abaixo do limiar. São aproximadamente 26,9\% e 11,4\% das respectivas amostras. Os seletores cumprem sua regra de viabilidade média no conjunto de escolha, mas não oferecem garantia individual.
+
+Isso muda a interpretação operacional. Um gestor pode aceitar uma média adequada para um grupo e ainda enfrentar faltas concentradas em produtos relevantes. Uma restrição por série, por volume de demanda ou por criticidade definiria outro problema. O artigo não transfere automaticamente os resultados de uma restrição média para essas exigências mais fortes.
+
+A heurística EOQ legada na base brasileira tem fill rate médio 0,9422, maior que o dos seletores em 0,70. Compará-la isoladamente com uma escolha mais barata pode produzir uma economia expressiva, mas com atendimento diferente. O comparador principal utilizado aqui evita atribuir essa economia à camada de perfis quando uma política global de serviço semelhante já alcança custo próximo.
+
+\subsection{A sensibilidade ao limiar modifica vencedores e trade-offs}
+Na base brasileira, em 0,80, a escolha por perfil custa 4,178\% mais que a global, com intervalo de redução $[-7{,}088;-1{,}860]\%$. O fill rate melhora apenas 0,615 ponto percentual. Em 0,85 e 0,90 aparecem reduções de custo de 2,233\% e 1,413\%, respectivamente, acompanhadas de queda média de atendimento de 0,515 e 0,471 ponto percentual. Essas diferenças devem ser vistas como compromissos condicionais, não como um limiar ótimo escolhido após observar os resultados.
+
+No M5, em 0,80 e 0,85, perfis aumentam o custo em 2,333\% e 3,013\%. Em 0,90 e 0,95, ambas as estratégias escolhem PPO para todas as séries, com os mesmos indicadores. Um intervalo de contraste igual a zero nesse caso resulta de decisões idênticas na matriz, não de certeza sobre generalização.
+
+Na base brasileira, em 0,95, a redução de custo por perfil é 17,246\%, com intervalo condicional $[12{,}091;22{,}948]\%$, acompanhada de queda de 0,640 ponto percentual de atendimento. Nesse limiar, há grupos sem alternativa que satisfaça a exigência durante a escolha: 11 séries brasileiras e 40 M5 recebem escolhas de fallback por perfil. O resultado não pode ser descrito como viabilidade cumprida em todos os grupos. A sensibilidade revela, assim, tanto troca de vencedor quanto impossibilidade de atendimento da regra, e precisa ser lida junto com o serviço.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_dual_1.png}
+\caption{Custo e atendimento das políticas e estratégias nas duas bases. Os painéis possuem escalas próprias: diferenças absolutas de custo entre Brasil e M5 não têm interpretação econômica comum.}
+\label{fig:dualmain}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_dual_2.png}
+\caption{Contraste de seleção por perfil e global com exclusão de loja em diferentes limiares. Reduções de custo são interpretadas com diferenças de atendimento; intervalos são condicionais ao procedimento e às matrizes.}
+\label{fig:dualsensitivity}
+\end{figure}
+
+\FloatBarrier
+\input{bahia_20261015}
+
+\section{Discussão e implicações operacionais}
+Os resultados separam duas proposições: o desempenho das políticas depende do contexto, e um perfil pode ajudar a escolher entre elas. A troca de vencedor entre as bases históricas e entre as origens da Bahia ilustra a primeira. A segunda exige ganho incremental frente à referência global. A reanálise histórica não estabelece economia geral; na nova execução, os perfis elevam o atendimento com aumento de custo. A utilidade depende, portanto, de quanto a operação valoriza esse serviço adicional e de sua estabilidade em outros períodos.
+
+A concentração em um perfil ajuda a interpretar essa limitação. Quando 80\% das séries brasileiras e 97,59\% das séries M5 pertencem a Sparse High Impact, a recomendação por perfil tende a reproduzir a escolha global na maior parte da amostra. Os grupos restantes podem conter diferenças operacionais importantes, mas sua representação não autoriza conclusões amplas sobre classes sazonais ou tendências. O aumento de séries no M5 não elimina o pequeno número de lojas ou a baixa diversidade de perfis.
+
+O contraste M5 deve ainda ser entendido à luz da ausência de vendas registradas na maioria dos prefixos. Não se demonstrou que essa condição corresponda ao lançamento real dos produtos ou à indisponibilidade de histórico operacional. As políticas enfrentam demanda futura positiva após prefixos quase sempre nulos, e seus orçamentos configurados diferem. Essa assimetria limita qualquer conclusão de superioridade generalizável de SA ou inadequação de heurísticas. Uma análise específica deve separar séries com histórico disponível, alinhar orçamentos e avaliar estratégias de inicialização ou pooling; isso não foi realizado na comparação principal.
+
+A referência utilizada também importa. Comparar perfis apenas com EOQ pode atribuir à representação um benefício proveniente de menor atendimento. A melhor alternativa global viável isola mais diretamente o que a camada contextual acrescenta ao portfólio. Essa leitura aproxima o problema da seleção de algoritmos \cite{rice1976,Kotthoff2014AlgorithmSelection}: a existência de especialistas só beneficia a decisão quando sua escolha acrescenta desempenho verificável.
+
+O resultado também complementa a comparação de algoritmos de Zabraoui et al.\ \cite{sca_27e994c54848}. Um portfólio e uma arquitetura híbrida fornecem candidatos, mas sua qualidade não resolve a escolha entre eles. Como recortes, implementações e orçamentos diferem, o contraste com aquele estudo é conceitual; os valores aqui observados não confirmam nem refutam seu ranking. A avaliação conjunta de custo e atendimento segue a preocupação com consequências operacionais discutida por Tadayonrad e Ndiaye \cite{sca_f81ad2b3e023}.
+
+Para a operação, a primeira decisão deve ser o significado da meta de serviço. Média por série, proporção total atendida e atendimento mínimo de itens críticos não são equivalentes. O segundo passo é verificar custos e ações no ponto de operação escolhido. No M5, a transição para PPO em limiares altos implica pedidos quase contínuos; no cenário de SA, a variabilidade média dos pedidos é elevada. São consequências que um ranking agregado não resolve. Restrições de capacidade, lotes mínimos e frequência máxima podem alterar a política preferida.
+
+Os resultados não recomendam uma política única para todo varejo. Recomendam validar a complexidade adicional de um seletor antes de adotá-lo. Perfis podem continuar úteis para comunicação, investigação de falhas e agrupamento de parâmetros, mesmo que não reduzam custo nesta escolha. Essas utilidades são perguntas separadas e não devem ser apresentadas como benefício de seleção já demonstrado.
+
+\section{Limitações e continuidade}
+A etapa histórica utiliza saídas existentes de um simulador. Arquivos e hashes permitem rastrear a reanálise, mas o manifesto histórico incompleto impede certificar a versão que produziu cada controlador. A nova etapa da Bahia dispõe de manifesto, código congelado e sementes de treinamento identificadas. Ela sustenta suas próprias tabelas, sem validar retroativamente as saídas antigas. Diferenças de portfólio, preparação e horizonte restringem comparações diretas entre etapas ou bases.
+
+O uso do histórico completo na filtragem, na suavização e nos perfis limita a independência temporal. Uma avaliação prospectiva precisa recalcular essas etapas com informação disponível até cada origem. Mesmo com ajuste restrito ao passado, conservar uma coorte selecionada pela trajetória completa produz uma avaliação condicional àquela coorte. Na base proprietária, vendas censuradas, cobertura de registros e distinção entre duplicatas técnicas e transações complementares acrescentam incerteza sobre a aproximação da demanda.
+
+A dependência entre produtos e lojas e os dez agrupamentos M5 limitam inferências populacionais. Os intervalos não reajustam seletores nem simulam novas demandas. Perfis heurísticos, custos ilustrativos, horizonte, bloco parcial, efeito de borda e estoque inicial podem influenciar rankings. O uso de CV sobre as quantidades agregadas do código também requer cautela ao interpretar rótulos como aplicação literal de uma taxonomia baseada em tamanhos positivos.
+
+A nova etapa da Bahia aplica separação entre ajuste, validação e teste, inclui atendimento ponderado e compara o híbrido com GA e DQN. A continuidade deve ampliar janelas, reduzir sobreposição dos testes e avaliar o protocolo corrigido no M5. Restrições por série e critérios econômicos previamente definidos permitirão julgar o serviço adicional dos perfis. O PSE supervisionado permanece uma extensão a avaliar após a consolidação desse protocolo.
+
+\section{Conclusão}
+A escolha de políticas depende da base, do período e da exigência de atendimento. Na reanálise histórica, selecionar por perfil altera pouco o custo em relação à melhor política global viável, com intervalos condicionais que incluem zero. A avaliação temporal corrigida da Bahia também não demonstra economia: acrescenta 1,93\% ao custo e 3,89 pontos percentuais ao atendimento médio, com escolhas idênticas entre seletores na segunda origem. O resultado relevante é esse compromisso, e não uma superioridade geral da seleção contextual.
+
+O caso brasileiro é a evidência central, e o M5 amplia o contraste histórico. A contribuição é distinguir heterogeneidade, utilidade do perfil e avaliação da escolha, reportando custo e atendimento conjuntamente. O ajuste temporal da nova etapa constitui um avanço sobre a reanálise, mas a coorte retrospectiva e as duas janelas curtas limitam a generalização. A validação do PSE supervisionado e a consolidação do M5 corrigido continuam necessárias.
+
+\section*{Disponibilidade de dados e código}
+Os dados transacionais brasileiros são proprietários e não são distribuídos nesta versão. O M5 é um conjunto público; sua transformação e o recorte devem acompanhar uma futura disponibilização reprodutível. Código de reanálise, tabelas e hashes são mantidos no projeto de pesquisa. Permissões de divulgação de derivados, repositório arquivado e identificadores públicos precisam ser confirmados antes de submissão.
+\section*{Autoria, financiamento e interesses}
+Autoria, contribuições CRediT, financiamento, agradecimentos e declaração de interesses permanecem sujeitos à confirmação dos autores responsáveis. Esta versão de trabalho em português requer consolidação dessas informações e adequação ao idioma e às normas editoriais antes da submissão.
+\section*{Uso de inteligência artificial na preparação do manuscrito}
+OpenAI Codex foi utilizado para auxiliar organização bibliográfica, leitura de código, preparação de análises e redação. A versão atual exige verificação e revisão do autor humano responsável, que deverá conferir fontes, cálculos e afirmações e assumir responsabilidade pelo texto final. Sistemas de IA não são autores.
+\bibliographystyle{elsarticle-num}
+\bibliography{references_ptbr}
+\end{document}

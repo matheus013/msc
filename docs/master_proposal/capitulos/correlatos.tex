@@ -1,131 +1,91 @@
-﻿\mychapter{Trabalhos Relacionados}{cap:rel}\lhead{TRABALHOS RELACIONADOS}
+\mychapter{Trabalhos Relacionados}{cap:rel}\lhead{TRABALHOS RELACIONADOS}
 
-Este capítulo posiciona a dissertação em relação à literatura existente sobre controle de inventário, previsão de demanda intermitente, meta-heurísticas, aprendizado por reforço e seleção adaptativa de políticas. Enquanto o Capítulo~\ref{cap:tec} apresentou os fundamentos conceituais necessários à formulação do problema, este capítulo compara como trabalhos anteriores abordam problemas próximos ao AIPE e em que medida diferem da proposta desta dissertação.
+A literatura fornece métodos para prever demanda, calibrar regras e aprender decisões de reposição. A questão desta dissertação é como escolher entre essas alternativas para uma série loja-produto. A revisão distingue o desempenho de uma política da capacidade de um seletor de reconhecer quando utilizá-la.
 
-A análise está organizada em cinco eixos: controle de inventário em redes varejistas, previsão de demanda intermitente, métodos de otimização e aprendizado por reforço, seleção adaptativa de políticas e arquiteturas híbridas GA-RL. O objetivo é explicitar o posicionamento da dissertação sem repetir fundamentos já apresentados, destacando sua contribuição como integração metodológica para seleção contextual de políticas de reposição.
-
-\section{Visão Geral dos Métodos e Resultados da Literatura}
+\section{Famílias de métodos}
 \label{sec:visao_geral_literatura}
 
-A literatura de controle de inventário dispõe de uma base consolidada de políticas clássicas, como EOQ, $(s,S)$, estoque-base e jornaleiro~\citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}, reconhecidas pela simplicidade, interpretabilidade e facilidade de implantação operacional. Em paralelo, métodos de previsão de demanda intermitente, como Croston~\citep{Croston1972ForecastingIntermittentDemand}, SBA, ARIMA/SARIMAX, LSTM e XGBoost~\citep{Makridakis2020M4Competition,Nasseri2023RetailDemandPrediction}, produzem estimativas que qualificam o comportamento esperado das séries. Contudo, políticas clássicas enfrentam dificuldades em regimes de alta intermitência e demanda heterogênea, e a previsão não determina, por si só, qual política de reposição adotar para cada perfil de série.
+Políticas clássicas têm formulações interpretáveis e constituem referências necessárias, mesmo quando se avaliam métodos de aprendizado \citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}. Meta-heurísticas exploram seus parâmetros; agentes de reforço aprendem ações sequenciais; e a seleção de algoritmos escolhe métodos a partir de características das instâncias. São níveis complementares, não substitutos automáticos.
 
-A Tabela~\ref{tab:sintese_metodos_literatura} sintetiza as principais famílias de métodos, seus resultados típicos e as limitações que motivam esta dissertação. Na tabela, a coluna ``Família'' agrupa os métodos por linha de pesquisa; ``Exemplos'' lista métodos representativos de cada família; ``Resultado típico'' resume o tipo de ganho ou aplicação mais comum reportado na literatura; e ``Limitação'' indica a lacuna que persiste em relação ao problema tratado nesta dissertação.
+A Tabela~\ref{tab:sintese_metodos_literatura} resume seu papel no problema estudado. As limitações indicadas são questões de avaliação: não significam que toda implementação de uma família apresente o mesmo comportamento.
 
 \begin{table}[htb]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\caption{Síntese dos principais métodos e lacunas da literatura.}
+\centering\small
+\caption{Papel das famílias de métodos na pesquisa.}
 \label{tab:sintese_metodos_literatura}
-\begin{tabular}{@{}p{2.8cm}p{3.6cm}p{3.4cm}p{3.4cm}@{}}
+\begin{tabular}{@{}p{3.0cm}p{5.1cm}p{5.0cm}@{}}
 \toprule
-Família & Exemplos & Resultado típico & Limitação \\
+Família & Decisão ou informação produzida & Questão de avaliação\\
 \midrule
-Políticas clássicas & EOQ, $(s,S)$, estoque-base, Jornaleiro & Simplicidade, interpretabilidade e facilidade de implantação & Baixa adaptação a séries heterogêneas e regimes intermitentes \\
-\addlinespace
-Previsão de demanda & Croston, SBA, ARIMA, LSTM, XGBoost & Melhora estimativas e fornece sinais preditivos & Não define qual política de reposição aplicar \\
-\addlinespace
-Otimização e meta-heurísticas & GA, SA, PSO, DE, MILP & Calibração de parâmetros e redução de custo em cenários específicos & Calibra política ou formulação específica, sem selecionar entre famílias \\
-\addlinespace
-Aprendizado por reforço & DQN, PPO, SARSA, DRL & Decisões sequenciais em ambientes simulados & Sensível à recompensa, ao ambiente e ao histórico disponível \\
-\addlinespace
-Seleção e meta-aprendizado & ASP, hiper-heurísticas, AutoML & Escolha de método conforme características da instância & Pouco explorado para seleção de políticas em redes varejistas reais \\
+Políticas clássicas & Quando e quanto pedir por uma regra explícita & Adequação e calibração ao cenário\\
+Previsão & Estimativa de demanda ou de sua distribuição & Efeito da previsão sobre custo e serviço\\
+Meta-heurísticas & Parâmetros de uma política escolhida & Custo de busca e validade fora do ajuste\\
+Aprendizado por reforço & Ação condicionada ao estado & Recompensa, estabilidade e generalização\\
+Seleção de políticas & Escolha de um membro do portfólio & Ganho incremental frente à referência global\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Para tratar essas limitações isoladas, a literatura explorou meta-heurísticas para calibrar parâmetros em espaços não convexos~\citep{Talbi2009Metaheuristics,Yuna2023IntermittentMetaheuristics}, agentes de aprendizado por reforço para aprender decisões sequenciais em ambientes simulados~\citep{Oroojlooyjadid2022BeerGameDQN,Gijsbrechts2022DRLInventoryMSOM} e abordagens de seleção de algoritmos para mapear características de instâncias em métodos adequados~\citep{Rice1976AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection}. Meta-heurísticas normalmente calibram uma política ou formulação específica, sem resolver automaticamente a escolha entre famílias distintas; agentes de RL demandam históricos longos e são sensíveis à função de recompensa e à modelagem do ambiente; a seleção de algoritmos, por sua vez, tem pouca aplicação direta à escolha de políticas de reposição por série em redes varejistas reais.
+\section{Inventário e demanda intermitente}
 
-A literatura oferece, assim, blocos metodológicos sólidos para previsão de demanda, otimização de parâmetros e controle sequencial de estoque, mas ainda há espaço para integrá-los em um \textit{framework} único que caracterize as séries, avalie empiricamente um portfólio de políticas candidatas e aprenda a selecionar contextualmente a política mais adequada. As seções seguintes detalham como cada frente contribui e onde persistem as lacunas.
+\citet{ClarkScarf1960MultiEchelon} estabelecem resultados de decomposição para sistemas multi-escalão sob hipóteses específicas. Os textos de \citet{Axsater2006InventoryControl} e \citet{Zipkin2000FoundationsInventory} consolidam políticas, custos e medidas de serviço. Para estoques de segurança em redes, o modelo de serviço garantido e suas extensões oferecem outra linha de planejamento \citep{GravesWillems2000SafetyStock,Eruguz2016GSMsurvey,Achkar2024GSMExtensions}. Esses resultados não dispensam verificar se demanda, abastecimento e coordenação correspondem ao caso aplicado.
 
-\section{Inventário em Redes Varejistas}
+A demanda intermitente requer atenção à frequência e ao tamanho das ocorrências. \citet{Croston1972ForecastingIntermittentDemand} separam esses componentes na previsão. A classificação ADI$\times$CV$^2$ diferencia padrões suaves, erráticos, intermitentes e \textit{lumpy} \citep{Syntetos2005Categorization}. Essa descrição organiza séries, mas não determina a política de menor custo: o resultado depende também de prazo, custos e serviço exigido.
 
-A literatura de controle de estoques em redes multi-escalão parte do trabalho fundador de \citet{ClarkScarf1960MultiEchelon}, que estabelece, para estruturas seriadas, que políticas ótimas podem ser decompostas por escalão sob hipóteses específicas. \citet{Axsater2006InventoryControl} e \citet{Zipkin2000FoundationsInventory} consolidam essa base em textos clássicos que formalizam custos de posse e ruptura, políticas de estoque-base (\textit{base-stock}) e medidas de nível de serviço. Em ambientes industriais, modelos Guaranteed Service Model (GSM)~\citep{GravesWillems2000SafetyStock} e suas extensões~\citep{Achkar2024GSMExtensions,Eruguz2016GSMsurvey} constituem a principal família de abordagens para posicionamento estratégico de estoques de segurança em redes gerais, sendo amplamente empregados em planejamento integrado.
+A revisão de \citet{DeKok2018Typology} mostra a diversidade de estruturas consideradas na otimização multi-escalão. Nesta dissertação, porém, as séries são simuladas como decisões locais. Não se reivindica a otimização conjunta de uma rede geral, nem se transfere uma garantia teórica de otimalidade para um cenário que não atende às hipóteses originais.
 
-O regime de demanda intermitente introduz complexidades que escapam à teoria clássica. \citet{Croston1972ForecastingIntermittentDemand} propôs o primeiro estimador específico para esse regime, modelando separadamente a frequência e o tamanho dos eventos de demanda. \citet{Syntetos2001IntermittentDemand} refinaram essa classificação, introduzindo o diagrama ADI$\times$CV$^2$ que divide os padrões de demanda em quatro quadrantes com recomendações metodológicas distintas, tornando explícita a diferença entre séries de demanda \textit{suave}, \textit{errática}, \textit{intermitente} e \textit{grumosa} (\textit{lumpy}). \citet{DeKok2018Typology} sintetizam o estado da arte em otimização de inventário multi-escalão (MEIO) e identificam como lacunas abertas exatamente as situações de demanda não-estacionária em redes gerais (o contexto desta dissertação).
+\section{Previsão e utilidade operacional}
 
-\section{Previsão de Demanda Intermitente}
+Históricos com muitos zeros tornam problemático o uso de erros relativos divididos pela demanda observada. O MASE permite comparação entre escalas quando seu denominador é definido, mas séries constantes também exigem tratamento \citep{Hyndman2006MASE}. Métricas de previsão devem ser acompanhadas de convenções para casos degenerados, sem substituir a avaliação de inventário.
 
-A previsão de demanda intermitente apresenta dois desafios estruturais: (i) a frequência de zeros impede o uso de métricas relativas clássicas como MAPE; (ii) a não-estacionariedade invalida hipóteses de modelos como Holt-Winters que pressupõem padrões suaves. Evidência empírica em competições de previsão (M4/M5) indica que modelos baseados em árvores de decisão e gradiente \textit{boosting} frequentemente têm desempenho melhor que redes LSTM em séries com alta intermitência, especialmente quando o volume de dados históricos por SKU é limitado~\citep{Nasseri2023RetailDemandPrediction}.
+Estudos em varejo mostram que o desempenho preditivo depende da granularidade, dos dados e da forma de treinamento \citep{Makridakis2020M4Competition,Nasseri2023RetailDemandPrediction}. Não há razão para supor que uma rede LSTM será sempre superior a modelos simples em históricos curtos. Um resultado de competição de previsão tampouco demonstra vantagem em custo de reposição.
 
-No plano das métricas, \citet{Hyndman2006MASE} introduziram o MASE como substituto livre de escala para o MAPE: é definido com demanda real zero, é comparável entre séries de escalas distintas e não sofre da assimetria do MAPE. \citet{Makridakis1993SMAPE} propôs o sMAPE como variante simétrica; a competição M4 adotou o MASE como métrica primária, consolidando seu uso \citep{Makridakis2020M4Competition}.
+\citet{TadayonradNdiaye2023KPIDemandForecasting} aproximam a avaliação preditiva de custos e serviço. Essa conexão orienta o AIPE: previsões e seus erros fornecem sinais auxiliares, mas a seleção deve ser julgada pelas consequências da decisão. Para evitar informação futura, previsão, características e calibração precisam respeitar o mesmo corte temporal da avaliação.
 
-\citet{TadayonradNdiaye2023KPIDemandForecasting} argumentam que essas métricas, embora mais adequadas que o MAPE em séries intermitentes, não capturam o impacto sobre custos operacionais e propõem KPIs alinhados ao custo e ao nível de serviço. Esta dissertação segue essa direção: o módulo de previsão alimenta características ao AIPE em vez de ser avaliado isoladamente.
+\section{Meta-heurísticas e aprendizado por reforço}
 
-A previsão de demanda, entretanto, não define sozinha a política de reposição. Ela fornece sinais auxiliares sobre o comportamento esperado da série, mas a decisão de quando pedir e quanto pedir depende de uma política de controle, cujo ajuste ou aprendizado por meta-heurísticas e por aprendizado por reforço é discutido na seção seguinte.
+Meta-heurísticas procuram soluções em espaços de parâmetros difíceis de tratar analiticamente \citep{Talbi2009Metaheuristics}. Em inventário, permitem ajustar ponto de pedido e lote. \citet{Yuna2023IntermittentMetaheuristics} estudam otimização de parâmetros em demanda intermitente, enquanto \citet{Erkayman2025MarkovInventory} combinam modelagem da demanda e busca de parâmetros. O ganho permanece condicionado à política e ao cenário de calibração.
 
-\section{Meta-Heurísticas e Aprendizado por Reforço em Políticas de Reposição}
+Aprendizado por reforço formula reposição como decisão sequencial. \citet{Oroojlooyjadid2022BeerGameDQN} estudam DQN no \textit{Beer Game}; \citet{Gijsbrechts2022DRLInventoryMSOM} discutem aplicações de aprendizado profundo a inventário; e \citet{Vanvuchelen2020PPOJointReplenishment} aplicam PPO à reposição conjunta. Outros trabalhos investigam topologias e coordenação descentralizada \citep{Geevers2024MEIODRL,Liu2024HAPPO}.
 
-Enquanto a seção anterior discutiu métodos de previsão de demanda, esta seção trata de trabalhos que aplicam meta-heurísticas e aprendizado por reforço ao controle de inventário e à parametrização de políticas de reposição. Nesse contexto, o objetivo não é prever diretamente a demanda, mas decidir quando emitir pedidos e em que quantidade, ou calibrar parâmetros de políticas como $(s,S)$, EOQ ou regras equivalentes. Essa distinção é importante para esta dissertação, pois a previsão é usada como sinal auxiliar, enquanto a decisão central do AIPE é selecionar políticas de reposição.
+Esses estudos mostram possibilidades de controle adaptativo, mas a aplicação depende de estado, ação, recompensa e dinâmica do simulador. Um agente pode obter serviço elevado emitindo pedidos excessivos ou reduzir custo deixando de atender demanda. Custo, serviço e comportamento das ações precisam ser examinados em conjunto.
 
-A otimização de parâmetros de políticas de inventário por meta-heurísticas tem sido extensivamente estudada. \citet{Talbi2009Metaheuristics} consolida a base teórica de GA, SA, PSO e outros métodos de busca para problemas combinatórios e de otimização em espaços de parâmetros.
+Históricos curtos restringem a avaliação, embora o número de ciclos observados não seja igual ao número possível de interações simuladas. Repetir episódios pode ampliar treinamento sem adicionar novos processos de demanda. Comportamento degenerado em uma implementação não demonstra incapacidade geral do algoritmo: pode refletir recompensa, orçamento, parametrização ou erro de código. Essa cautela importa ao interpretar resultados antigos após correções do ambiente.
 
-No contexto de demanda intermitente, \citet{Yuna2023IntermittentMetaheuristics} compararam SA e Busca Tabu na otimização de parâmetros de uma política $(s,S)$ em sete conjuntos com CV$>$1.5; \citet{Erkayman2025MarkovInventory} modelaram demanda como cadeia de Markov e otimizaram parâmetros com GA e PSO. Esses estudos mostram que a calibração automática pode melhorar o desempenho de uma política específica, isto é, resolvem \textit{como} calibrar uma política já escolhida, mas não \textit{qual} política adotar dado o perfil da série. Além disso, restringem-se a modelos de único escalão sem comparação entre famílias distintas de política.
-
-Na frente de aprendizado por reforço, os trabalhos relacionados tratam a reposição como um problema sequencial de decisão, não como previsão. \citet{Oroojlooyjadid2022BeerGameDQN} demonstraram que DQN aprende políticas de reposição no \textit{Beer Game} multi-escalão sem especificar a distribuição de demanda, mas assumem séries longas e demanda contínua. \citet{Geevers2024MEIODRL} aplicaram PPO a três topologias de rede com desempenho melhor que o \textit{benchmark}, porém em ambientes sintéticos com CV~$<1$. \citet{Liu2024HAPPO} introduziram HAPPO para reduzir simultaneamente custo e efeito \textit{bullwhip} em ambientes descentralizados, mas não abordam demanda intermitente.
-
-A limitação transversal desses trabalhos está na distância entre calibrar ou treinar uma política específica e selecionar contextualmente entre famílias distintas de políticas: meta-heurísticas calibram bem uma formulação já escolhida, e agentes de RL podem aprender boas decisões em um ambiente específico, mas nenhuma dessas abordagens responde diretamente \textit{qual} política deve ser adotada para uma série loja-produto com características operacionais específicas. Soma-se a isso uma limitação prática do RL: a exigência da ordem de $10^6$ interações agente-ambiente, isto é, passos sequenciais em que o agente observa o estado do estoque, escolhe uma ação de reposição, recebe a recompensa associada ao custo e ao nível de serviço e atualiza sua política~\citep{Oroojlooyjadid2022BeerGameDQN}. Essa escala é incompatível com séries históricas curtas de varejo (38 ciclos no \textit{dataset} desta dissertação) e é a razão estrutural pela qual RL isolado degenera no regime estudado. Essa lacuna justifica tratar meta-heurísticas e agentes de RL como componentes de um portfólio de políticas candidatas, e não como solução única para todas as séries.
-
-\section{Seleção de Políticas, Hiper-Heurísticas e Meta-Aprendizado}
+\section{Seleção de políticas e meta-aprendizado}
 \label{sec:aas_literatura}
 
-O problema de determinar qual algoritmo usar dada uma instância foi formalizado por \citet{Rice1976AlgorithmSelection} como o \textit{Algorithm Selection Problem} (ASP). Dado um espaço de instâncias $\mathcal{I}$, um espaço de algoritmos $\mathcal{A}$ e uma medida de desempenho $f$, o objetivo é encontrar $s^*: \mathcal{I} \rightarrow \mathcal{A}$ tal que $s^*(i) = \arg\max_{a \in \mathcal{A}} f(a, i)$. O AIPE é uma instância direta do ASP aplicada ao controle de inventário: as instâncias são séries de demanda, os algoritmos são as políticas candidatas e $f$ é o CTI minimizado sujeito a NS mínimo.
+\citet{Rice1976AlgorithmSelection} formalizam a escolha de um algoritmo a partir das características de uma instância. Revisões posteriores descrevem seletores supervisionados e sua avaliação \citep{Kotthoff2014AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection}. No AIPE, a instância é a série loja-produto, o portfólio reúne políticas e a medida de desempenho combina custo e viabilidade de serviço.
 
-O teorema \textit{No Free Lunch} (NFL) de \citet{Wolpert1997NoFreeLunch} fornece a justificativa teórica: nenhum algoritmo domina todos os outros na média sobre todas as instâncias. Isso implica que qualquer ganho de desempenho consistente exige explorar estrutura específica da classe de problemas. As características operacionais usadas como entrada pelo AIPE (ADI, CV$^2$, \textit{burstiness}, entropia, sazonalidade) são exatamente essa estrutura discriminativa.
+A analogia separa três objetos: o melhor método global, o melhor método conhecido para cada instância e o método escolhido pelo seletor. O segundo é uma referência retrospectiva; não é implementável quando sua escolha exige conhecer resultados futuros. O terceiro deve ser avaliado em dados que não determinaram os rótulos ou o ajuste.
 
-A implementação prática do ASP segue o paradigma \textit{características de instância $\rightarrow$ modelo supervisionado $\rightarrow$ seleção de algoritmo}. \citet{Kerschke2019AutomatedAlgorithmSelection} consolidam esse paradigma em \textit{survey} abrangente; \citet{Kerschke2019ELASelection} demonstram empiricamente que características de paisagem combinadas com classificadores supervisionados selecionam automaticamente o otimizador mais adequado por instância, a mesma arquitetura conceitual adotada pelo AIPE ao usar características operacionais de demanda como entrada. \citet{Kotthoff2014AlgorithmSelection} mostra que seletores por instância podem obter ganhos frente a políticas fixas em problemas combinatórios.
+O teorema \textit{No Free Lunch} trata de médias sobre classes de problemas sob condições próprias \citep{Wolpert1997NoFreeLunch}. Ele não prova que haverá troca de vencedores neste recorte varejista nem que as características escolhidas permitirão aprendê-la. Essas são questões empíricas. Características de instância podem ajudar na seleção \citep{Kerschke2019ELASelection}, mas sua utilidade precisa ser verificada no problema aplicado.
 
-No campo das \textit{hyper-heuristics}, \citet{Drake2020SelectionHyperHeuristics} e \citet{Dokeroglu2024HyperHeuristics} consolidam o estado da arte: \textit{selection hyper-heuristics} escolhem, a cada estado do problema, qual heurística aplicar. O AIPE é análogo operando no nível de série, mas com escopo distinto: seleciona \textit{offline} a política a partir do histórico e do perfil de demanda da combinação loja-produto, antes da execução operacional. Uma seleção \textit{online} por estado de estoque implicaria trocar heurísticas a cada ciclo ou decisão de reposição, exigindo um controlador em tempo real; nesta dissertação, essa responsabilidade é substituída por recomendações periódicas de política por série.
+Hiper-heurísticas selecionam ou geram heurísticas, inclusive durante a resolução \citep{Drake2020SelectionHyperHeuristics,Dokeroglu2024HyperHeuristics}. O AIPE tem escopo mais restrito: propõe recomendar periodicamente uma política por série. Não troca controladores a cada estado do estoque nem coordena agentes em tempo real. Trabalhos com \textit{bandits} e contexto investigam outras formas de adaptação em inventário \citep{Preil2022BanditInventory,ContextualRL2024SupplyChain}; abordagens integradas relacionam características e decisões em outros desenhos operacionais \citep{Qi2023EndToEndInventory}.
 
-Em inventário especificamente, \citet{Preil2022BanditInventory} modelam a seleção como \textit{multi-armed bandit}, e \citet{ContextualRL2024SupplyChain} adaptam políticas de RL via informação de contexto. O AIPE se alinha a essa direção ao deslocar o foco da adaptação de parâmetros de uma política fixada para a seleção contextual entre famílias de política. \citet{Qi2023EndToEndInventory} mostram em \textit{Management Science} que características operacionais podem sustentar aprendizado de políticas de inventário em escala industrial.
+A consequência prática é comparar o seletor com uma referência global forte. A avaliação deve separar o ajuste das políticas da aprendizagem da escolha entre elas. Excluir uma loja do seletor, por exemplo, não elimina informação futura já usada para gerar seus resultados de simulação.
 
-\smallskip
-A literatura de ASP, \textit{hyper-heuristics} e meta-aprendizado converge para o mesmo ponto: a política mais adequada depende da instância, essa dependência pode ser aprendida e, em contextos apropriados, um meta-modelo treinado com evidência empírica pode obter ganhos frente a políticas fixas. Neste trabalho, esse princípio é aplicado ao problema de inventário varejista sob demanda intermitente.
+\section{Arquiteturas híbridas e posicionamento}
 
-\section{Políticas Híbridas GA-RL}
+\citet{Zabraoui2025GaDQN} combinam busca genética e aprendizado por reforço em um estudo de inventário com dados do Walmart M5. É uma referência próxima do portfólio adotado aqui. A arquitetura GA--DQN e combinações GA--RL não são apresentadas como invenções desta dissertação. Sua inclusão permite investigar se oferecem vantagem em determinados recortes e como se comparam a regras simples sob condições comuns.
 
-A frente mais próxima combina busca global de meta-heurísticas com adaptação local do RL. \citet{Zabraoui2025GaDQN} é o artigo-base que inspirou a inclusão da arquitetura GA-DQN no portfólio desta dissertação. Os autores introduziram GA-DQN sobre o conjunto Walmart~M5 (CV típico $<1$): o GA otimiza parâmetros globalmente enquanto o DQN refina decisões a cada ciclo, elevando o NS de 61\% para 94\% com redução de custo. Esta dissertação incorpora GA-DQN como \textit{uma das doze políticas do portfólio final} (Seção~\ref{sec:portfolio_ampliado}), mas posiciona o \textit{Policy Selection Engine} como contribuição principal: o objetivo não é provar que GA-DQN vence em todos os regimes, mas aprender \textit{quando} cada política do portfólio apresenta vantagem relativa. Esse enquadramento é compatível com a evidência empírica observada, pois nenhuma política domina todas as métricas em todos os regimes. Também preserva abertura metodológica: o PSE pode incorporar novas políticas ao \textit{benchmark} desde que seus desempenhos sejam avaliados e os rótulos do meta-modelo sejam atualizados. Além de reproduzir a inspiração conceitual de \citet{Zabraoui2025GaDQN} no portfólio, esta dissertação avalia o portfólio completo diretamente sobre o mesmo conjunto Walmart~M5 usado pelos autores, como estudo de caso de validação externa (Estudo de Caso 3, Capítulo~\ref{cap:plano_continuidade}).
-
-A variante GA-PPO, que substitui o DQN por uma política contínua baseada em PPO~\citep{Vanvuchelen2020PPOJointReplenishment,Gijsbrechts2022DRLInventoryMSOM}, \textbf{também é proposta por} \citet{Zabraoui2025GaDQN}: o Algoritmo~1 daquele trabalho inicializa indistintamente um agente PPO ou DQN a partir da configuração $\theta^*$ obtida pelo GA, e os autores comparam as duas variantes, reportando nível de serviço de 94\% para GA-DQN contra 91\% para GA-PPO, com o GA-PPO exibindo padrões de pedido mais reativos e maior volatilidade do estoque. Nenhuma das duas arquiteturas híbridas é, portanto, contribuição original desta dissertação: ambas foram testadas como políticas especialistas do portfólio, com formulação herdada do artigo-base: GA-DQN compõe o portfólio final (Seção~\ref{sec:portfolio_ampliado}); GA-PPO foi avaliada no Experimento~1 mas não tem referência publicada própria como âncora, e por isso não compõe o portfólio final.
-
-Registra-se que a maior volatilidade do GA-PPO observada por \citet{Zabraoui2025GaDQN} em regime de baixa intermitência (CV~$<1$) é consistente com a frequência de pedidos elevada verificada para a mesma arquitetura no Experimento~1 desta dissertação, sob regime \textit{Lumpy}. Trata-se de convergência de evidência entre bases e regimes distintos, e não de achado inédito. A presença de GA-DQN no portfólio final possibilita ao PSE identificar, para cada perfil operacional de demanda, se a abordagem híbrida oferece melhor compromisso entre custo e nível de serviço ou se políticas clássicas permanecem mais adequadas naquele recorte.
-
-\section{Posicionamento da Dissertação}
-
-A Tabela~\ref{tab:relwork_intro} posiciona esta dissertação em relação aos trabalhos mais próximos segundo seis dimensões. A coluna ``Trabalho'' identifica o estudo analisado; ``Base usada'' diferencia avaliações conduzidas em ambientes sintéticos, conjuntos de teste e dados transacionais reais; ``CV ou regime'' resume o nível de variabilidade ou o regime de demanda considerado; ``Políticas avaliadas'' informa quantas alternativas de reposição ou controle foram comparadas; ``Multinível'' indica se o estudo considera mais de um escalão da cadeia de suprimentos; e ``Indicadores avaliados'' informa o número de métricas operacionais utilizadas. Essa comparação permite situar a dissertação quanto à escala experimental, ao tipo de dado e à abrangência metodológica.
+A Tabela~\ref{tab:relwork_intro} situa o foco da pesquisa sem equiparar bases, contagens de políticas ou protocolos diferentes. Uma comparação quantitativa direta exigiria reproduzir custos, horizontes, demandas e critérios de serviço.
 
 \begin{table}[htb]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\caption{Posicionamento desta dissertação em relação aos trabalhos relacionados.}
+\centering\small
+\caption{Relação entre linhas da literatura e o foco da dissertação.}
 \label{tab:relwork_intro}
-\begin{tabular}{@{}p{3.1cm}p{2.1cm}cccc@{}}
+\begin{tabular}{@{}p{4.2cm}p{4.4cm}p{4.5cm}@{}}
 \toprule
-Trabalho &
-\makecell[c]{Base\\usada} &
-\makecell[c]{CV ou\\regime} &
-\makecell[c]{Políticas\\avaliadas} &
-\makecell[c]{Multi-\\nível} &
-\makecell[c]{Indicadores\\avaliados} \\
+Referência & Foco & Relação com esta pesquisa\\
 \midrule
-\footnotesize\citealt{Oroojlooyjadid2022BeerGameDQN} & Sintética & $<1$ & 3 & Sim & 2 \\
-\citealt{Vanvuchelen2020PPOJointReplenishment} & Sintética & $<1$ & 4 & Não & 1 \\
-\citealt{Gijsbrechts2022DRLInventoryMSOM} & Sintética & $<1$ & 6 & Sim & 2 \\
-\citealt{Yuna2023IntermittentMetaheuristics} & Testes intermitentes & $>1.5$ & 2 & Não & 2 \\
-\citealt{Erkayman2025MarkovInventory} & Sint. Markov & $>1.5$ & 2 & Não & 1 \\
-\citealt{Liu2024HAPPO} & Sintética & $<1$ & 4 & Sim & 2 \\
-\citealt{Zabraoui2025GaDQN} & Real (Walmart M5) & $<1$ & 7 & Sim & 3 \\
-\midrule
-Esta dissertação (Experimento 1) & Real (PB) & $\mathbf{2.5{-}5.4}$ & 12 & Sim & 5 \\
-Esta dissertação (Experimento 2) & Real (BA) & Lumpy; etapa nacional futura & 12 & Sim & 5 + testes \\
+\citealt{Oroojlooyjadid2022BeerGameDQN} & Aprender controle sequencial & Política candidata, não seletor validado\\
+\citealt{Yuna2023IntermittentMetaheuristics} & Calibrar em demanda intermitente & Busca de parâmetros dentro do portfólio\\
+\citealt{Zabraoui2025GaDQN} & Comparação e combinação de algoritmos & Referência das arquiteturas avaliadas\\
+\citealt{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection} & Selecionar métodos por instância & Base conceitual do PSE\\
+Esta dissertação & Seleção contextual em varejo brasileiro & Comparar seleção e referência global\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A revisão da literatura aponta três lacunas convergentes. A primeira é empírica: embora trabalhos recentes já incluam bases reais de varejo, como o Walmart M5 em \citet{Zabraoui2025GaDQN}, ainda há poucos estudos que avaliam políticas de reposição em dados reais de varejo brasileiro com demanda altamente intermitente e séries loja-produto heterogêneas. A segunda é metodológica: trabalhos existentes tendem a otimizar ou aprender políticas específicas, mas não formulam a escolha da política como um problema de seleção contextual por perfil operacional da série. A terceira é operacional: ainda é pouco explorada a integração, em um mesmo \textit{pipeline} reprodutível, entre caracterização das séries, simulação comparável de políticas, validação estatística, geração de rótulos de política dominante e treinamento de um seletor supervisionado. Essas lacunas motivam a formulação do AIPE como abordagem integrada de avaliação e recomendação de políticas.
-
-As seções anteriores indicam que decisões de reposição em redes varejistas heterogêneas dependem do comportamento operacional de cada série loja-produto: políticas clássicas, parametrizadas por meta-heurísticas e aprendidas por reforço oferecem alternativas relevantes, mas seu desempenho varia conforme frequência, variabilidade e volume da demanda, e a previsão contribui apenas como sinal auxiliar. A contribuição desta dissertação não está em propor novos algoritmos: GA, SA, DQN, PPO e as arquiteturas híbridas GA-RL já existem na literatura e são utilizados como componentes conhecidos de um portfólio experimental, avaliados sob o mesmo protocolo. O papel do AIPE é organizar esses componentes em um \textit{framework} metodológico de seleção contextual, no qual séries são caracterizadas, políticas candidatas são avaliadas sob ambiente comum de simulação e os resultados recomendam a política mais adequada por perfil operacional, sobre dados reais de rede varejista brasileira.
-
-A comparação entre múltiplas políticas é necessária para construir o \textit{benchmark} e gerar rótulos de política dominante, mas não constitui, isoladamente, a contribuição central: o ponto central é avaliar se a seleção contextual reduz o custo de inventário em relação a uma política única global, preservando serviço mínimo e estabilidade operacional, completado pelo treinamento do PSE a partir dessa evidência. O próximo capítulo apresenta a metodologia adotada para operacionalizar essa proposta: avaliação das políticas candidatas em simulação comum, comparação por métricas de custo, serviço e estabilidade, geração de rótulos de política dominante e treinamento do \textit{Policy Selection Engine} (PSE).
-
+O espaço de investigação está na avaliação dessa seleção em séries reais do recorte brasileiro e na integração de um protocolo rastreável. Não se afirma que selecionar políticas seja uma ideia inédita em inventário nem que a revisão esgote a literatura. O resultado deve ser uma evidência verificável sobre o ganho incremental da seleção, inclusive quando for pequeno ou ausente. O capítulo seguinte apresenta os dados, o ambiente e o protocolo para investigar essa questão.

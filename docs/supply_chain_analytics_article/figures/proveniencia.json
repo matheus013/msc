@@ -1,0 +1,11 @@
+{
+  "run": "bahia145_cpu16_2026-10-15",
+  "completed_fits": 4350,
+  "case_count": 290,
+  "source_sha256": {
+    "experiment\\data\\08_reporting\\research_v2\\bahia145_cpu16_2026-10-15\\kpis.csv": "2415afc8149f0d76d3d5dc62e00efca84b4da770a0572d875474932e4e3c09a2",
+    "docs\\scientific_writing_review_2026-10-15\\bahia_completed\\selections.csv": "8528adcc9bcf75253ef2564bab9f7017a6b3d0e071b3a8d5d388974af1f5a187"
+  },
+  "selection": "Other-store validation; held-store test; alpha=0.70",
+  "frontier": "Descriptive test means; not prospective selection or uncertainty inference"
+}

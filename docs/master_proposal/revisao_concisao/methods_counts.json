@@ -1,0 +1,25 @@
+{
+  "conceitos.tex": {
+    "words_regex_before": 5577,
+    "words_regex_after": 2635,
+    "whitespace_words_before": 4878,
+    "whitespace_words_after": 2236,
+    "removed_labels": [
+      "fig:ga_rl_arch",
+      "fig:sb_quadrant"
+    ],
+    "added_labels": []
+  },
+  "proposta.tex": {
+    "words_regex_before": 11176,
+    "words_regex_after": 5286,
+    "whitespace_words_before": 9873,
+    "whitespace_words_after": 4766,
+    "removed_labels": [
+      "fig:aipe_decision_flow",
+      "fig:asp_rice",
+      "tab:met_comp_proposta"
+    ],
+    "added_labels": []
+  }
+}

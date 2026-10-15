@@ -2,7 +2,7 @@
 
 Apresentação Beamer (LaTeX) para o exame de qualificação do mestrado,
 baseada na proposta de dissertação (`docs/master_proposal/`) e nos
-artefatos do pipeline de simulação (`simulation/data/08_reporting/`).
+artefatos do pipeline de simulação (`experiment/data/08_reporting/`).
 
 ## Estrutura
 
@@ -107,14 +107,14 @@ apresentador/instrutor, ex.: `pympress`, ou compilando com
 
 Todos os números reportados vêm diretamente de:
 
-- `simulation/data/08_reporting/final_results_validation.md`
+- `experiment/data/08_reporting/final_results_validation.md`
 - `docs/master_proposal/capitulos/correlatos.tex` (panorama da literatura
   e posicionamento — Capítulo 3 da apresentação)
 - `docs/master_proposal/capitulos/resultados.tex`
 - `docs/master_proposal/capitulos/conclusoes.tex`
 - `docs/master_proposal/capitulos/plano_continuidade.tex`
-- Fragmentos de tabela em `simulation/data/08_reporting/profiles/` e
-  `simulation/data/08_reporting/strategy/`
+- Fragmentos de tabela em `experiment/data/08_reporting/profiles/` e
+  `experiment/data/08_reporting/strategy/`
 
 Nenhum valor foi inventado ou extrapolado além do que está documentado
 nessas fontes.

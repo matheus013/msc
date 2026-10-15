@@ -1,0 +1,61 @@
+{
+  "before_pages": 118,
+  "after_pages": 65,
+  "page_reduction_percent": 44.91525423728814,
+  "before_approx_source_words": 34677,
+  "after_approx_source_words": 14799,
+  "source_word_reduction_percent": 57.32329786313695,
+  "word_count_note": "Same Unicode-word regex after removing TeX comments; includes commands, captions and tables; active chapters plus English abstract and completed Bahia section.",
+  "chapters": {
+    "resumo.tex": {
+      "before": 342,
+      "after": 235
+    },
+    "introducao.tex": {
+      "before": 2882,
+      "after": 1405
+    },
+    "conceitos.tex": {
+      "before": 5103,
+      "after": 2420
+    },
+    "correlatos.tex": {
+      "before": 2991,
+      "after": 1288
+    },
+    "proposta.tex": {
+      "before": 10411,
+      "after": 4942
+    },
+    "resultados.tex": {
+      "before": 6044,
+      "after": 540
+    },
+    "conclusoes.tex": {
+      "before": 1527,
+      "after": 498
+    },
+    "plano_continuidade.tex": {
+      "before": 2490,
+      "after": 677
+    },
+    "apendice.tex": {
+      "before": 2272,
+      "after": 972
+    },
+    "abstract_en.tex": {
+      "before": 0,
+      "after": 220
+    },
+    "bahia_20261015.tex": {
+      "before": 0,
+      "after": 988
+    },
+    "protocolo_bahia_20261015.tex": {
+      "before": 0,
+      "after": 614
+    }
+  },
+  "diagnostics": [],
+  "pdf_sha256": "f2a752fe87268aef8d08ca4e72836040e742be0b015f8c1c0e4dfb53297b0429"
+}

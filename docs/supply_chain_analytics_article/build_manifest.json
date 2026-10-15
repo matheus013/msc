@@ -1,0 +1,16 @@
+{
+  "status": "research draft; not submitted",
+  "elsarticle": "3.5 2026-01-09",
+  "sha256": {
+    "manuscript.tex": "20baeab53fd49a2487e82554f3a9cbd633c53debb16b91a67e49461f78551f67",
+    "manuscript.bbl": "784d7e4c6bc1501b30809d6273de4441f576e091c9794b489817be595e218e69",
+    "references.bib": "006e8944044ffda94960ef190f5f84337afbd4b6b0d73034e0f51421fc119ea2",
+    "elsarticle.cls": "40af0200a8ad6777126f93bf7be6ab3046fa7c3ef1073307f0809703602e59da",
+    "elsarticle-num.bst": "f04dfa2f78d0198ab8e4055b609dc0b91bdb730743cbbd549d84270f20d11394",
+    "Figure_1.png": "eb842d71f5918147c7b547f2ca3d7742539fdadd01b049b75ed7a9a23d78dd90",
+    "Figure_2.png": "6cb97516f74a7a78033bda9e86fbc07a6eb3a0ce51a689317ae338896a86e07c",
+    "highlights.txt": "0b895e336ff69554b0ff986750b6849b2c9565691e1390df8a4742ae0bb13fd6",
+    "manuscript.pdf": "1c47a1e25a565a0c700257b6e914f48ef58c93164ec933dbe466ae249e123e1b",
+    "article_sources_draft.zip": "842ba1b8e8e0c9377911c43c8e36c80881bd96df7cdf038dc394e4fcbee259db"
+  }
+}

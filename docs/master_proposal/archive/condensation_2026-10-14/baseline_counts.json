@@ -1,0 +1,52 @@
+{
+  "apendice.tex": {
+    "words_approx": 2272,
+    "lines": 352,
+    "characters": 20308
+  },
+  "apendice_b.tex": {
+    "words_approx": 615,
+    "lines": 68,
+    "characters": 5081
+  },
+  "conceitos.tex": {
+    "words_approx": 5103,
+    "lines": 311,
+    "characters": 36982
+  },
+  "conclusoes.tex": {
+    "words_approx": 1527,
+    "lines": 45,
+    "characters": 11079
+  },
+  "correlatos.tex": {
+    "words_approx": 2991,
+    "lines": 131,
+    "characters": 23258
+  },
+  "introducao.tex": {
+    "words_approx": 2882,
+    "lines": 115,
+    "characters": 21494
+  },
+  "plano_continuidade.tex": {
+    "words_approx": 2490,
+    "lines": 113,
+    "characters": 17792
+  },
+  "proposta.tex": {
+    "words_approx": 10411,
+    "lines": 583,
+    "characters": 75190
+  },
+  "resultados.tex": {
+    "words_approx": 6044,
+    "lines": 391,
+    "characters": 46117
+  },
+  "resumo.tex": {
+    "words_approx": 342,
+    "lines": 8,
+    "characters": 2385
+  }
+}

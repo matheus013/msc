@@ -1,0 +1,67 @@
+\section{Bahia: avaliação temporal com o protocolo corrigido}
+\label{sec:ba2026}
+
+Uma nova execução, concluída em 15 de outubro de 2026, avalia as mesmas 145 séries da Bahia, em 115 lojas e nove produtos. Esta etapa acrescenta teste temporal à investigação da seleção de políticas. Seus resultados são apresentados separadamente das matrizes históricas: demanda preparada, portfólio, convenção de entrega e horizonte de avaliação foram alterados. A diferença entre custos antigos e novos não estima o efeito isolado de uma correção.
+
+\subsection{Protocolo e cobertura}
+
+Os registros complementares de vendas são somados por chave, sem descartar transações apenas por compartilharem loja, produto e ciclo. A coorte mantém os identificadores históricos; em cada origem, exige ao menos três ciclos positivos no treino. As 145 séries são elegíveis nos dois prefixos, de 17 e 23 ciclos. Cada prefixo é seguido por sete ciclos de validação e sete de teste. Na numeração iniciada em um, os testes abrangem os ciclos 25--31 e 31--37: compartilham um ciclo e representam medidas repetidas das mesmas séries.
+
+Perfis, escalas dos estados e parâmetros são calculados no treino. O prazo efetivo de entrega é de dois ciclos, e EOQCycle utiliza demanda e manutenção na mesma unidade temporal. Custos de manutenção, falta, emissão e quantidade permanecem, respectivamente, em 1 por unidade e ciclo, 5 por unidade não atendida, 50 por pedido e 0,5 por unidade pedida. São unidades do cenário, sem equivalência monetária calibrada. O custo soma manutenção, falta e pedidos no bloco de teste, sem crédito pelo estoque final. Estados iniciais comuns são obtidos por uma política EOQ de referência: um aquecimento no passado precede a validação, e sua trajetória na validação determina o estado inicial do teste. O teste não continua o estoque particular de cada candidata.
+
+O portfólio principal contém EOQCycle, sSCycle, CappedBaseStock, GA, PPO e GA--DQN; DQN é o controle adicional do híbrido. As três primeiras políticas têm um ajuste por série e origem. GA, PPO, GA--DQN e DQN usam sementes 11, 29 e 47, totalizando 4.350 ajustes e 8.700 registros de validação ou teste. A matriz está completa, sem casos excluídos por falta de política ou semente. Cinquenta e quatro ajustes compatíveis foram reaproveitados com proveniência registrada. O GA usa população de 100 indivíduos e 50 gerações. DQN e PPO têm orçamento mínimo de 20 mil transições, arredondado para episódios completos: 20.009 e 20.010 nas duas origens. GA--DQN acrescenta busca genética e mil transições de demonstração; seu esforço total é maior que o do DQN isolado. A variante corrigida mantém o mesmo gatilho e piso de pedido nas demonstrações, no treinamento e na inferência.
+
+As sementes são primeiro promediadas dentro de cada série, origem e política. Para cada loja excluída, as políticas global e por perfil são escolhidas na validação das demais lojas e avaliadas no teste da loja reservada. O limiar principal continua em 0,70. Escolher uma alternativa viável na validação não garante repetir seu atendimento no futuro. Se nenhuma candidata cumpre a meta, a escolha de maior serviço é registrada como alternativa de contingência, sem classificá-la como viável.
+
+\subsection{Custo e atendimento no teste}
+
+A Tabela~\ref{tab:ba2026_portfolio} resume os 290 casos série--origem. Sete casos não têm demanda no teste: um na primeira origem e seis na segunda. Seus custos permanecem na média dos 290 casos; o atendimento médio utiliza os 283 casos com denominador positivo. O atendimento ponderado é a razão entre a soma das unidades atendidas e a soma da demanda nos blocos avaliados, após a média das sementes. As origens repetidas não ampliam a amostra para 290 séries independentes.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Bahia, protocolo corrigido: médias no teste de sete ciclos. Custo em unidades do cenário, calculado nos 290 casos. Atendimento médio e contagem abaixo da meta consideram os 283 casos com demanda positiva; sete casos têm atendimento indefinido.}
+\label{tab:ba2026_portfolio}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Política & Custo & Atendimento & Ponderado & Abaixo de 0,70\\\midrule
+EOQCycle &166,77&0,7787&0,6265&101\\
+sSCycle &164,23&0,8037&0,6802&90\\
+CappedBaseStock &218,11&0,6631&0,4948&148\\
+GA &143,85&0,6953&0,5457&140\\
+PPO &134,23&0,5514&0,4189&171\\
+GA--DQN &145,75&0,6802&0,5248&144\\
+DQN (controle) &164,88&0,5718&0,4033&164\\
+\bottomrule\end{tabular}
+\end{table}
+
+PPO tem o menor custo descritivo, acompanhado do menor atendimento médio. Apenas EOQCycle e sSCycle superam 0,70 no conjunto dos testes; nenhuma política alcança essa meta no atendimento ponderado. Entre essas duas referências, sSCycle apresenta menor custo e maior atendimento médio. Essa comparação é um diagnóstico do teste, não uma escolha retrospectiva a ser atribuída ao seletor.
+
+GA--DQN custa 11,60\% menos que DQN e aumenta o atendimento médio de 0,5718 para 0,6802. Frente ao GA isolado, porém, custa 1,32\% mais e atende menos, com média de 0,6953 para o GA. O refinamento híbrido não oferece vantagem agregada nessas duas dimensões sobre seu componente evolutivo. A diferença varia entre origens: na segunda, seu custo é ligeiramente menor que o do GA, também com menor atendimento. A comparação não isola causalmente o benefício das demonstrações ou do gatilho e não justifica excluir o híbrido antes de consolidar a avaliação M5.
+
+\subsection{Seleção global e por perfil}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Escolha na validação das demais lojas e avaliação no teste da loja reservada, com meta 0,70. Há 145 casos por linha; atendimento definido em 144 casos na origem 17 e 139 na origem 23.}
+\label{tab:ba2026_selection}
+\begin{tabular}{@{}llrrr@{}}\toprule
+Treino & Estratégia & Custo & Atendimento & Abaixo de 0,70\\\midrule
+17 ciclos & Global &180,58&0,5711&101\\
+17 ciclos & Perfil &186,79&0,6475&82\\
+23 ciclos & Global &142,03&0,9073&18\\
+23 ciclos & Perfil &142,03&0,9073&18\\
+\bottomrule\end{tabular}
+\end{table}
+
+Na primeira origem, a regra global escolhe GA para todas as séries. Por perfil, as escolhas são GA em 65 casos, sSCycle em 75 e EOQCycle em cinco. O maior atendimento custa mais, e ambas as estratégias ficam abaixo da meta no teste. Na segunda origem, os dois seletores escolhem sSCycle em todos os casos. A Tabela~\ref{tab:ba2026_selection} evidencia, portanto, tanto mudança temporal da escolha global quanto ausência de diferenciação contextual na segunda janela.
+
+No conjunto das origens, o custo médio passa de 161,31 na estratégia global para 164,41 por perfil: aumento de 1,93\%. O atendimento médio cresce de 0,7362 para 0,7751, diferença de 3,89 pontos percentuais; o ponderado passa de 0,5750 para 0,6395. Os casos abaixo da meta diminuem de 119 para 100, entre os 283 com atendimento definido. Não há redução de custo, mas há melhora de serviço, concentrada na primeira origem. Essa melhora não assegura atendimento mínimo individual nem equivale a cumprir uma meta ponderada de 0,70.
+
+Uma reamostragem exploratória pareada de 115 lojas, com 5.000 sorteios e todas as origens e produtos de cada loja preservados, produz intervalo condicional de 95\% de $[-0{,}32;4{,}16]\%$ para o aumento de custo por perfil. Os controladores e seletores permanecem fixos nos sorteios. O intervalo inclui zero e não representa incerteza de novos treinamentos ou de novas trajetórias de demanda; dependência entre lojas que compartilham produtos também permanece possível.
+
+A sensibilidade reforça a distinção entre meta de escolha e serviço futuro. Em 0,80, todas as escolhas da segunda origem são contingências por ausência de candidata viável na validação, apesar do serviço posterior de 0,9073. Em 0,90 e 0,95, ambas as estratégias usam contingências nos 290 casos. Atendimento futuro alto não torna retroativamente viável uma escolha que descumpria o critério na validação.
+
+\subsection{Alcance da nova evidência}
+
+Os perfis calculados no prefixo diferem dos rótulos do histórico completo. Com 17 ciclos, há 65 séries Sparse High Impact e 80 Unstable Trend; com 23, são 60, 69 e 16 High Volatility Seasonal. Essa mudança reflete a janela e as regras de caracterização, inclusive a indisponibilidade da autocorrelação na primeira origem. Não demonstra mudança de regime econômico em todas essas séries.
+
+A nova execução controla o uso do passado no ajuste e separa validação de teste para a escolha. Ainda assim, a coorte é retrospectiva, o horizonte de teste é curto e as duas origens se sobrepõem. O estado inicial comum corresponde a uma referência operacional específica. A evidência sustenta avaliar a seleção pelo compromisso entre custo e atendimento e pela estabilidade entre períodos. Não demonstra superioridade geral de um controlador, implantação do PSE ou transferência para o M5 corrigido, cuja execução permanece separada.

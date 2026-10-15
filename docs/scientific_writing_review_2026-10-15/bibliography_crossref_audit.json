@@ -1,0 +1,2349 @@
+[
+  {
+    "doi": "10.1007/0-387-33331-2",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Axsater2006InventoryControl",
+        "title": "Inventory Control"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "Axsater2006InventoryControl",
+        "title": "Inventory Control"
+      }
+    ],
+    "crossref_title": "Inventory Control",
+    "crossref_year": [
+      [
+        2006
+      ]
+    ],
+    "crossref_authors": [],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/mnsc.6.4.475",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "ClarkScarf1960MultiEchelon",
+        "title": "Optimal Policies for a Multi-Echelon Inventory Problem"
+      }
+    ],
+    "crossref_title": "Optimal Policies for a Multi-Echelon Inventory Problem",
+    "crossref_year": [
+      [
+        1960,
+        7
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Andrew J.",
+        "family": "Clark",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Planning Research Corporation, Los Angeles, California"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Herbert",
+        "family": "Scarf",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Stanford University, Stanford, California"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/mnsc.43.4.546",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "LeePadmanabhanWhang1997Bullwhip",
+        "title": "Information Distortion in a Supply Chain: The Bullwhip Effect"
+      }
+    ],
+    "crossref_title": "Information Distortion in a Supply Chain: The Bullwhip Effect",
+    "crossref_year": [
+      [
+        1997,
+        4
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Hau L.",
+        "family": "Lee",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Department of Industrial Engineering and Engineering Management, Stanford University, Stanford, California 94305"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "V.",
+        "family": "Padmanabhan",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Graduate School of Business, Stanford University, Stanford, California 94305"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Seungjin",
+        "family": "Whang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Graduate School of Business, Stanford University, Stanford, California 94305"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/msom.2.1.68.23267",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "GravesWillems2000SafetyStock",
+        "title": "Optimizing Strategic Safety Stock Placement in Supply Chains"
+      }
+    ],
+    "crossref_title": "Optimizing Strategic Safety Stock Placement in Supply Chains",
+    "crossref_year": [
+      [
+        2000,
+        1
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Stephen C.",
+        "family": "Graves",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Leaders for Manufacturing Program and A. P. Sloan School of Management, Massachusetts Institute of Technology, Cambridge, Massachusetts 02139-4307"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Sean P.",
+        "family": "Willems",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "College of Business Administration, University of Cincinnati, Cincinnati, Ohio 45221-0130"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ejor.2018.02.047",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "DeKok2018Typology",
+        "title": "A Typology and Literature Review on Stochastic Multi-Echelon Inventory Models"
+      }
+    ],
+    "crossref_title": "A typology and literature review on stochastic multi-echelon inventory models",
+    "crossref_year": [
+      [
+        2018,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0001-8622-8599",
+        "authenticated-orcid": false,
+        "given": "Ton",
+        "family": "de Kok",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-1250-0083",
+        "authenticated-orcid": false,
+        "given": "Christopher",
+        "family": "Grob",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Marco",
+        "family": "Laumanns",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0001-6127-8223",
+        "authenticated-orcid": false,
+        "given": "Stefan",
+        "family": "Minner",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Jörg",
+        "family": "Rambau",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0001-6945-9272",
+        "authenticated-orcid": false,
+        "given": "Konrad",
+        "family": "Schade",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ijpe.2015.11.017",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Eruguz2016GSMsurvey",
+        "title": "A Comprehensive Survey of Guaranteed-Service Models for Multi-Echelon Inventory Optimization"
+      }
+    ],
+    "crossref_title": "A comprehensive survey of guaranteed-service models for multi-echelon inventory optimization",
+    "crossref_year": [
+      [
+        2016,
+        2
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Ayse Sena",
+        "family": "Eruguz",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Evren",
+        "family": "Sahin",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Zied",
+        "family": "Jemai",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Yves",
+        "family": "Dallery",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ejor.2023.08.013",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Achkar2024GSMExtensions",
+        "title": "Extensions to the Guaranteed Service Model for Industrial Applications of Multi-Echelon Inventory Optimization"
+      }
+    ],
+    "crossref_title": "Extensions to the guaranteed service model for industrial applications of multi-echelon inventory optimization",
+    "crossref_year": [
+      [
+        2024,
+        2
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Victoria G.",
+        "family": "Achkar",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Braulio B.",
+        "family": "Brunaud",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-7374-1120",
+        "authenticated-orcid": false,
+        "given": "Héctor D.",
+        "family": "Pérez",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Rami",
+        "family": "Musa",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Carlos A.",
+        "family": "Méndez",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-7210-084X",
+        "authenticated-orcid": false,
+        "given": "Ignacio E.",
+        "family": "Grossmann",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1057/jors.1972.50",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Croston1972ForecastingIntermittentDemand",
+        "title": "Forecasting and Stock Control for Intermittent Demands"
+      }
+    ],
+    "crossref_title": "Forecasting and Stock Control for Intermittent Demands",
+    "crossref_year": [
+      [
+        1972,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "J. D.",
+        "family": "Croston",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "P. &amp; O. Steam Navigation Co. London"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/S0925-5273(00)00143-2",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Syntetos2001IntermittentDemand",
+        "title": "On the Bias of Intermittent Demand Estimates"
+      }
+    ],
+    "crossref_title": "On the bias of intermittent demand estimates",
+    "crossref_year": [
+      [
+        2001,
+        5
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "A.A",
+        "family": "Syntetos",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "J.E",
+        "family": "Boylan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1057/palgrave.jors.2601841",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Syntetos2005Categorization",
+        "title": "On the Categorization of Demand Patterns"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "syntetos2005",
+        "title": "On the categorization of demand patterns"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1057/jors.2012.158",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Syntetos2012DemandClassificationsApplications",
+        "title": "Forecasting for Inventory Planning: A 50-Year Review"
+      }
+    ],
+    "crossref_title": "The effect of non-linear delay costs on workforce mix",
+    "crossref_year": [
+      [
+        2013,
+        11
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "D E",
+        "family": "Simmons",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "University of Texas at San Antonio\rSan Antonio\rTX\rUSA"
+          }
+        ],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.114,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1007/978-1-84800-011-7\\_20",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Boylan2008Intermittent",
+        "title": "Forecasting for Inventory Management of Service Parts"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  {
+    "doi": "10.3390/app131911112",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Nasseri2023RetailDemandPrediction",
+        "title": "Applying Machine Learning in Retail Demand Prediction---A Comparison of Tree-Based Ensembles and Long Short-Term Memory-Based Deep Learning"
+      }
+    ],
+    "crossref_title": "Applying Machine Learning in Retail Demand Prediction—A Comparison of Tree-Based Ensembles and Long Short-Term Memory-Based Deep Learning",
+    "crossref_year": [
+      [
+        2023,
+        10,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0003-3562-2240",
+        "authenticated-orcid": false,
+        "given": "Mehran",
+        "family": "Nasseri",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Department of Logistics, University of Applied Sciences Upper Austria, 4400 Steyr, Austria"
+          },
+          {
+            "name": "Josef Ressel Centre for Predictive Value Network Intelligence, 4400 Steyr, Austria"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Taha",
+        "family": "Falatouri",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Logistics, University of Applied Sciences Upper Austria, 4400 Steyr, Austria"
+          },
+          {
+            "name": "Josef Ressel Centre for Predictive Value Network Intelligence, 4400 Steyr, Austria"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-0011-3502",
+        "authenticated-orcid": false,
+        "given": "Patrick",
+        "family": "Brandtner",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Logistics, University of Applied Sciences Upper Austria, 4400 Steyr, Austria"
+          },
+          {
+            "name": "Josef Ressel Centre for Predictive Value Network Intelligence, 4400 Steyr, Austria"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Farzaneh",
+        "family": "Darbanian",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Logistics, University of Applied Sciences Upper Austria, 4400 Steyr, Austria"
+          },
+          {
+            "name": "Josef Ressel Centre for Predictive Value Network Intelligence, 4400 Steyr, Austria"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.sca.2023.100026",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "TadayonradNdiaye2023KPIDemandForecasting",
+        "title": "A New Key Performance Indicator Model for Demand Forecasting in Inventory Management Considering Supply Chain Reliability and Seasonality"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "sca_f81ad2b3e023",
+        "title": "A new key performance indicator model for demand forecasting in inventory management considering supply chain reliability and seasonality"
+      }
+    ],
+    "crossref_title": "A new key performance indicator model for demand forecasting in inventory management considering supply chain reliability and seasonality",
+    "crossref_year": [
+      [
+        2023,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-1333-1517",
+        "authenticated-orcid": false,
+        "given": "Yasin",
+        "family": "Tadayonrad",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Alassane Balle",
+        "family": "Ndiaye",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ijforecast.2006.03.001",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Hyndman2006MASE",
+        "title": "Another Look at Measures of Forecast Accuracy"
+      }
+    ],
+    "crossref_title": "Another look at measures of forecast accuracy",
+    "crossref_year": [
+      [
+        2006,
+        10
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Rob J.",
+        "family": "Hyndman",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Anne B.",
+        "family": "Koehler",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/0169-2070(93)90079-3",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Makridakis1993SMAPE",
+        "title": "Accuracy Measures: Theoretical and Practical Concerns"
+      }
+    ],
+    "crossref_title": "Accuracy measures: theoretical and practical concerns",
+    "crossref_year": [
+      [
+        1993,
+        12
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Spyros",
+        "family": "Makridakis",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ijforecast.2019.04.014",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Makridakis2020M4Competition",
+        "title": "The M4 Competition: 100,000 Time Series and 61 Forecasting Methods"
+      }
+    ],
+    "crossref_title": "The M4 Competition: 100,000 time series and 61 forecasting methods",
+    "crossref_year": [
+      [
+        2020,
+        1
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Spyros",
+        "family": "Makridakis",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Evangelos",
+        "family": "Spiliotis",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Vassilios",
+        "family": "Assimakopoulos",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.2307/3001968",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Wilcoxon1945SignedRank",
+        "title": "Individual Comparisons by Ranking Methods"
+      }
+    ],
+    "crossref_title": "Individual Comparisons by Ranking Methods",
+    "crossref_year": [
+      [
+        1945,
+        12
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Frank",
+        "family": "Wilcoxon",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1214/aoms/1177731944",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Friedman1940Ranks",
+        "title": "A Comparison of Alternative Tests of Significance for the Problem of $m$ Rankings"
+      }
+    ],
+    "crossref_title": "A Comparison of Alternative Tests of Significance for the Problem of $m$ Rankings",
+    "crossref_year": [
+      [
+        1940,
+        3
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Milton",
+        "family": "Friedman",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1002/9780470496916",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Talbi2009Metaheuristics",
+        "title": "Metaheuristics: From Design to Implementation"
+      }
+    ],
+    "crossref_title": "Metaheuristics",
+    "crossref_year": [
+      [
+        2009,
+        6
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "El‐Ghazali",
+        "family": "Talbi",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.519,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1126/science.220.4598.671",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Kirkpatrick1983SA",
+        "title": "Optimization by Simulated Annealing"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1109/ICNN.1995.488968",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Kennedy1995PSO",
+        "title": "Particle Swarm Optimization"
+      }
+    ],
+    "crossref_title": "Particle swarm optimization",
+    "crossref_year": null,
+    "crossref_authors": [
+      {
+        "given": "J.",
+        "family": "Kennedy",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "R.",
+        "family": "Eberhart",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1023/A:1008202821328",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Storn1997DE",
+        "title": "Differential Evolution --- A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces"
+      }
+    ],
+    "crossref_title": "Differential Evolution – A Simple and Efficient Heuristic for global Optimization over Continuous Spaces",
+    "crossref_year": [
+      [
+        1997,
+        12
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Rainer",
+        "family": "Storn",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Kenneth",
+        "family": "Price",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1038/nature14236",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Mnih2015DQN",
+        "title": "Human-Level Control through Deep Reinforcement Learning"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.48550/arXiv.1707.06347",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Schulman2017PPO",
+        "title": "Proximal Policy Optimization Algorithms"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1016/j.ejor.2021.07.016",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Boute2022DRLInventoryRoadmap",
+        "title": "Deep Reinforcement Learning for Inventory Control: A Roadmap"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "Boute2022DRLInventoryRoadmap",
+        "title": "Deep Reinforcement Learning for Inventory Control: A Roadmap"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1007/s10100-023-00872-2",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Geevers2024MEIODRL",
+        "title": "Multi-Echelon Inventory Optimization Using Deep Reinforcement Learning"
+      }
+    ],
+    "crossref_title": "Multi-echelon inventory optimization using deep reinforcement learning",
+    "crossref_year": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-4896-5835",
+        "authenticated-orcid": false,
+        "given": "Kevin",
+        "family": "Geevers",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Lotte",
+        "family": "van Hezewijk",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Martijn R. K.",
+        "family": "Mes",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/msom.2020.0939",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Oroojlooyjadid2022BeerGameDQN",
+        "title": "A Deep Q-Network for the Beer Game: Deep Reinforcement Learning for Inventory Optimization"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1287/msom.2021.1064",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Gijsbrechts2022DRLInventoryMSOM",
+        "title": "Can Deep Reinforcement Learning Improve Inventory Management? Performance on Lost Sales, Dual-Sourcing, and Multi-Echelon Problems"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1016/j.compind.2020.103239",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Vanvuchelen2020PPOJointReplenishment",
+        "title": "Use of Proximal Policy Optimization for the Joint Replenishment Problem"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1016/j.sca.2025.100154",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Zabraoui2025GaDQN",
+        "title": "A Comparative Study of Multi-Algorithm Optimization for Inventory Analytics in Supply Chains"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "sca_27e994c54848",
+        "title": "A comparative study of multi-algorithm optimization for inventory analytics in supply chains"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1007/s00500-023-07871-0",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Yuna2023IntermittentMetaheuristics",
+        "title": "Inventory Control Model for Intermittent Demand: A Comparison of Metaheuristics"
+      }
+    ],
+    "crossref_title": "Inventory control model for intermittent demand: a comparison of metaheuristics",
+    "crossref_year": [
+      [
+        2023,
+        2,
+        14
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Ferhat",
+        "family": "Yuna",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-9551-2679",
+        "authenticated-orcid": false,
+        "given": "Burak",
+        "family": "Erkayman",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Mustafa",
+        "family": "Yılmaz",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1371/journal.pone.0325658",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Erkayman2025MarkovInventory",
+        "title": "Markov Approach for Inventory Control with Meta-Heuristics in Intermittent Demand Environment"
+      }
+    ],
+    "crossref_title": "Markov approach for inventory control with meta-heuristics in intermittent demand environment",
+    "crossref_year": [
+      [
+        2025,
+        6,
+        10
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Ferhat",
+        "family": "Yuna",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-9551-2679",
+        "authenticated-orcid": true,
+        "given": "Burak",
+        "family": "Erkayman",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Mustafa",
+        "family": "Yılmaz",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1177/10591478241305863",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Liu2024HAPPO",
+        "title": "Multi-Agent Deep Reinforcement Learning for Multi-Echelon Inventory Management"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1145/2939672.2939785",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "ChenGuestrin2016XGBoost",
+        "title": "{XGBoost}: A Scalable Tree Boosting System"
+      }
+    ],
+    "crossref_title": "XGBoost",
+    "crossref_year": [
+      [
+        2016,
+        8,
+        13
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Tianqi",
+        "family": "Chen",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "University of Washington, Seattle, WA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Carlos",
+        "family": "Guestrin",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "University of Washington, Seattle, WA, USA"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.341,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1209/0295-5075/81/48002",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "GohBarabasi2008Burstiness",
+        "title": "Burstiness and Memory in Complex Systems"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1109/4235.585893",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Wolpert1997NoFreeLunch",
+        "title": "No Free Lunch Theorems for Optimization"
+      }
+    ],
+    "crossref_title": "No free lunch theorems for optimization",
+    "crossref_year": [
+      [
+        1997,
+        4
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "D.H.",
+        "family": "Wolpert",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "W.G.",
+        "family": "Macready",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1162/evco\\_a\\_00242",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Kerschke2019AutomatedAlgorithmSelection",
+        "title": "Automated Algorithm Selection: Survey and Perspectives"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  {
+    "doi": "10.1609/aimag.v35i3.2460",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Kotthoff2014AlgorithmSelection",
+        "title": "Algorithm Selection for Combinatorial Search Problems: A Survey"
+      },
+      {
+        "file": "references_ptbr.bib",
+        "key": "Kotthoff2014AlgorithmSelection",
+        "title": "Algorithm Selection for Combinatorial Search Problems: A Survey"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1162/evco\\_a\\_00236",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Kerschke2019ELASelection",
+        "title": "Automated Algorithm Selection on Continuous Black-Box Problems by Combining Exploratory Landscape Analysis and Machine Learning"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  {
+    "doi": "10.1016/j.ejor.2019.07.073",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Drake2020SelectionHyperHeuristics",
+        "title": "Recent advances in selection hyper-heuristics"
+      }
+    ],
+    "crossref_title": "Recent advances in selection hyper-heuristics",
+    "crossref_year": [
+      [
+        2020,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "John H.",
+        "family": "Drake",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-6716-2130",
+        "authenticated-orcid": false,
+        "given": "Ahmed",
+        "family": "Kheiri",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-0276-1391",
+        "authenticated-orcid": false,
+        "given": "Ender",
+        "family": "Özcan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Edmund K.",
+        "family": "Burke",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.cie.2023.109815",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Dokeroglu2024HyperHeuristics",
+        "title": "Hyper-heuristics: A survey and taxonomy"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1016/j.ijpe.2022.108595",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Preil2022BanditInventory",
+        "title": "Bandit-based inventory optimisation: Reinforcement learning in multi-echelon supply chains"
+      }
+    ],
+    "crossref_title": "Inventory decisions for ameliorating products under consideration of stochastic demand",
+    "crossref_year": [
+      [
+        2022,
+        10
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-6620-1396",
+        "authenticated-orcid": false,
+        "given": "Marjolein E.",
+        "family": "Buisman",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-4472-0328",
+        "authenticated-orcid": false,
+        "given": "Sonja U.K.",
+        "family": "Rohmer",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.321,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.eswa.2024.124068",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "ContextualRL2024SupplyChain",
+        "title": "Contextual reinforcement learning for supply chain management"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  {
+    "doi": "10.1287/mnsc.2022.4564",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Qi2023EndToEndInventory",
+        "title": "A Practical End-to-End Inventory Management Model with Deep Learning"
+      }
+    ],
+    "crossref_title": "A Practical End-to-End Inventory Management Model with Deep Learning",
+    "crossref_year": [
+      [
+        2023,
+        2
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-0984-4846",
+        "authenticated-orcid": false,
+        "given": "Meng",
+        "family": "Qi",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "SC Johnson College of Business, Cornell University, Ithaca, New York 14853;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Yuanyuan",
+        "family": "Shi",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Electrical and Computer Engineering, University of California–San Diego, San Diego, California 92161;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Yongzhi",
+        "family": "Qi",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "JD.com Smart Supply Chain Y, Mountain View, California 94043;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Chenxin",
+        "family": "Ma",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "JD.com Silicon Valley Research Center, Mountain View, California 94043;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Rong",
+        "family": "Yuan",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "JD.com Silicon Valley Research Center, Mountain View, California 94043;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Di",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "JD.com Silicon Valley Research Center, Mountain View, California 94043;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-4538-8312",
+        "authenticated-orcid": false,
+        "given": "Zuo-Jun (Max)",
+        "family": "Shen",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "SC Johnson College of Business, Cornell University, Ithaca, New York 14853;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1126/science.275.5296.51",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Huberman1997AlgorithmPortfolios",
+        "title": "An Economic Approach to Hard Computational Problems"
+      }
+    ],
+    "crossref_title": "An Economics Approach to Hard Computational Problems",
+    "crossref_year": [
+      [
+        1997,
+        1,
+        3
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Bernardo A.",
+        "family": "Huberman",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Dynamics of Computation Group, Xerox Palo Alto Research Center, Palo Alto, CA 94304, USA."
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Rajan M.",
+        "family": "Lukose",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Dynamics of Computation Group, Xerox Palo Alto Research Center, Palo Alto, CA 94304, USA."
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Tad",
+        "family": "Hogg",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Dynamics of Computation Group, Xerox Palo Alto Research Center, Palo Alto, CA 94304, USA."
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.989,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.48550/arXiv.1802.00933",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Lundberg2018ConsistentIndividually",
+        "title": "Consistent Individualized Feature Attribution for Tree Ensembles"
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  {
+    "doi": "10.1287/opre.2021.0032",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "VanJaarsveldArts2024PIL",
+        "title": ""
+      }
+    ],
+    "crossref_title": "Projected Inventory-Level Policies for Lost Sales Inventory Systems: Asymptotic Optimality in Two Regimes",
+    "crossref_year": [
+      [
+        2024,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0003-3620-4067",
+        "authenticated-orcid": false,
+        "given": "Willem",
+        "family": "van Jaarsveld",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "School of Industrial Engineering, Eindhoven University of Technology, 5600 MB Eindhoven, Netherlands;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-3749-6965",
+        "authenticated-orcid": false,
+        "given": "Joachim",
+        "family": "Arts",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Luxembourg Centre for Logistics and Supply Chain Management, Department of Economics and Management, University of Luxembourg, 1359 Luxembourg City, Luxembourg"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/opre.2020.2019",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Xin2021CappedBaseStock",
+        "title": ""
+      }
+    ],
+    "crossref_title": "Technical Note—Understanding the Performance of Capped Base-Stock Policies in Lost-Sales Inventory Models",
+    "crossref_year": [
+      [
+        2021,
+        1
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-8160-6877",
+        "authenticated-orcid": false,
+        "given": "Linwei",
+        "family": "Xin",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Booth School of Business, University of Chicago, Chicago, Illinois 60637"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 0.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ejor.2025.01.026",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "Temizoz2025DeepControlledLearning",
+        "title": "Deep Controlled Learning for Inventory Control"
+      }
+    ],
+    "crossref_title": "Deep Controlled Learning for Inventory Control",
+    "crossref_year": [
+      [
+        2025,
+        7
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0002-2921-6900",
+        "authenticated-orcid": false,
+        "given": "Tarkan",
+        "family": "Temizöz",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-3181-8879",
+        "authenticated-orcid": false,
+        "given": "Christina",
+        "family": "Imdahl",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-4083-0036",
+        "authenticated-orcid": false,
+        "given": "Remco",
+        "family": "Dijkman",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-7756-7377",
+        "authenticated-orcid": false,
+        "given": "Douniel",
+        "family": "Lamghari-Idrissi",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-3620-4067",
+        "authenticated-orcid": false,
+        "given": "Willem",
+        "family": "van Jaarsveld",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1287/opre.2018.1757",
+    "local": [
+      {
+        "file": "referencias.bib",
+        "key": "BanRudin2019BigDataNewsvendor",
+        "title": "The Big Data Newsvendor: Practical Insights from Machine Learning"
+      }
+    ],
+    "crossref_title": "The Big Data Newsvendor: Practical Insights from Machine Learning",
+    "crossref_year": [
+      [
+        2019,
+        1
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0003-3229-1386",
+        "authenticated-orcid": false,
+        "given": "Gah-Yi",
+        "family": "Ban",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Management Science & Operations, London Business School, London NW1 4SA, United Kingdom;"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-4283-2780",
+        "authenticated-orcid": false,
+        "given": "Cynthia",
+        "family": "Rudin",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Computer Science, Department of Electrical and Computer Engineering, and Statistical Science, Duke University, Durham, North Carolina 27708"
+          }
+        ],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/S0065-2458(08)60520-3",
+    "local": [
+      {
+        "file": "references_ptbr.bib",
+        "key": "rice1976",
+        "title": ""
+      }
+    ],
+    "status": "unresolved",
+    "reason": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "doi": "10.1016/j.sca.2023.100041",
+    "local": [
+      {
+        "file": "references_ptbr.bib",
+        "key": "sca_92a549559870",
+        "title": "A hybrid forecasting model with logistic regression and neural networks for improving key performance indicators in supply chains"
+      }
+    ],
+    "crossref_title": "A hybrid forecasting model with logistic regression and neural networks for improving key performance indicators in supply chains",
+    "crossref_year": [
+      [
+        2023,
+        12
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0001-8775-5905",
+        "authenticated-orcid": false,
+        "given": "Rostyslav",
+        "family": "Pietukhov",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Mujthaba",
+        "family": "Ahtamad",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Mona",
+        "family": "Faraji-Niri",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-7166-5128",
+        "authenticated-orcid": false,
+        "given": "Tarek",
+        "family": "El-Said",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.sca.2026.100229",
+    "local": [
+      {
+        "file": "references_ptbr.bib",
+        "key": "sca_c5c06dcbc9e5",
+        "title": "A topological analytics framework for preserving decision structure in supply chain inventory classification"
+      }
+    ],
+    "crossref_title": "A topological analytics framework for preserving decision structure in supply chain inventory classification",
+    "crossref_year": [
+      [
+        2026,
+        9
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "ORCID": "https://orcid.org/0000-0001-6919-2029",
+        "authenticated-orcid": false,
+        "given": "Frank Michael",
+        "family": "Theunissen",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Shafiq",
+        "family": "Alam",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Aymen",
+        "family": "Sajjad",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  },
+  {
+    "doi": "10.1016/j.ijforecast.2021.11.013",
+    "local": [
+      {
+        "file": "references_ptbr.bib",
+        "key": "Makridakis2022M5Accuracy",
+        "title": "{M5} accuracy competition: Results, findings, and conclusions"
+      }
+    ],
+    "crossref_title": "M5 accuracy competition: Results, findings, and conclusions",
+    "crossref_year": [
+      [
+        2022,
+        10
+      ]
+    ],
+    "crossref_authors": [
+      {
+        "given": "Spyros",
+        "family": "Makridakis",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Evangelos",
+        "family": "Spiliotis",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "Vassilios",
+        "family": "Assimakopoulos",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "title_similarity": 1.0,
+    "status": "resolved"
+  }
+]

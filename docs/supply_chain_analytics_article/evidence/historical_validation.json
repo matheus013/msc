@@ -1,0 +1,524 @@
+{
+  "input_sha256": {
+    "kpis": "b0355dbe3939911832e5159974c960364452f4f5567fdb300825ed24f7794de5",
+    "profiles": "9b09d9a0e776bbb4bcd275cf852ed64bc8c3858b0617dddf1bfe8d3582e3a629"
+  },
+  "n_series": 145,
+  "n_stores": 115,
+  "n_policies": 12,
+  "policies": [
+    "BigDataNewsvendor",
+    "CappedBaseStock",
+    "DQN",
+    "EOQ",
+    "FixedInterval",
+    "GA",
+    "GA-DQN",
+    "Newsvendor",
+    "PPO",
+    "SA",
+    "VendorResponsive",
+    "sS"
+  ],
+  "profile_counts": {
+    "Sparse_High_Impact": 116,
+    "Unstable_Trend": 18,
+    "High_Vol_Seasonal": 11
+  },
+  "maximum_TIC_std": 9.094947017729282e-13,
+  "profile_choices": {
+    "0.7": {
+      "High_Vol_Seasonal": "VendorResponsive",
+      "Sparse_High_Impact": "VendorResponsive",
+      "Unstable_Trend": "FixedInterval"
+    },
+    "0.8": {
+      "High_Vol_Seasonal": "FixedInterval",
+      "Sparse_High_Impact": "FixedInterval",
+      "Unstable_Trend": "EOQ"
+    },
+    "0.85": {
+      "High_Vol_Seasonal": "FixedInterval",
+      "Sparse_High_Impact": "EOQ",
+      "Unstable_Trend": "EOQ"
+    },
+    "0.9": {
+      "High_Vol_Seasonal": "FixedInterval",
+      "Sparse_High_Impact": "EOQ",
+      "Unstable_Trend": "EOQ"
+    },
+    "0.95": {
+      "High_Vol_Seasonal": "EOQ",
+      "Sparse_High_Impact": "PPO",
+      "Unstable_Trend": "sS"
+    }
+  },
+  "contrasts": [
+    {
+      "alpha": 0.7,
+      "treatment": "profile_in_sample",
+      "baseline": "global_in_sample",
+      "cost_reduction_percent": 0.19507978043869253,
+      "cost_reduction_percent_ci": [
+        -1.005903452086562,
+        1.4271512903308945
+      ],
+      "service_difference": 0.007942044264369903,
+      "service_difference_ci": [
+        0.0033565806274825057,
+        0.013488731600549397
+      ],
+      "mean_paired_cost_saving": 0.8452905502318235,
+      "mean_paired_cost_saving_ci": [
+        -4.304315568722041,
+        6.206268200844895
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.7,
+      "treatment": "profile_leave_series_out",
+      "baseline": "global_leave_series_out",
+      "cost_reduction_percent": -0.5759621001252729,
+      "cost_reduction_percent_ci": [
+        -1.3954814668965567,
+        0.1567500359986581
+      ],
+      "service_difference": 0.007791421622043172,
+      "service_difference_ci": [
+        0.0034128298315216593,
+        0.01293199539762883
+      ],
+      "mean_paired_cost_saving": -2.495672895636609,
+      "mean_paired_cost_saving_ci": [
+        -6.0263326962583035,
+        0.6722375907117134
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.7,
+      "treatment": "profile_leave_store_out",
+      "baseline": "global_leave_store_out",
+      "cost_reduction_percent": -0.5759621001252729,
+      "cost_reduction_percent_ci": [
+        -1.4295603118612281,
+        0.1865822447242194
+      ],
+      "service_difference": 0.007791421622043172,
+      "service_difference_ci": [
+        0.0033824947487559346,
+        0.012774367867185284
+      ],
+      "mean_paired_cost_saving": -2.495672895636609,
+      "mean_paired_cost_saving_ci": [
+        -6.131350896727412,
+        0.8237522364650547
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.7,
+      "treatment": "profile_leave_store_out",
+      "baseline": "EOQ",
+      "cost_reduction_percent": 30.651199744115583,
+      "cost_reduction_percent_ci": [
+        26.22946903621314,
+        34.293118720524845
+      ],
+      "service_difference": -0.16058346784151162,
+      "service_difference_ci": [
+        -0.18465286577722934,
+        -0.13866534181780127
+      ],
+      "mean_paired_cost_saving": 192.61782633459848,
+      "mean_paired_cost_saving_ci": [
+        154.73413731418898,
+        231.60129946508482
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.8,
+      "treatment": "profile_in_sample",
+      "baseline": "global_in_sample",
+      "cost_reduction_percent": -4.195759451282278,
+      "cost_reduction_percent_ci": [
+        -7.091378330836407,
+        -1.799876264438681
+      ],
+      "service_difference": 0.01943547228257606,
+      "service_difference_ci": [
+        0.0085049660018864,
+        0.03221626149245886
+      ],
+      "mean_paired_cost_saving": -19.208677218413627,
+      "mean_paired_cost_saving_ci": [
+        -31.672570277530422,
+        -8.349015412492752
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.8,
+      "treatment": "profile_leave_series_out",
+      "baseline": "global_leave_series_out",
+      "cost_reduction_percent": -4.178148921581123,
+      "cost_reduction_percent_ci": [
+        -7.201349734041242,
+        -1.7972630567144499
+      ],
+      "service_difference": 0.006146191569850817,
+      "service_difference_ci": [
+        -0.0019615514254080475,
+        0.015031559586759885
+      ],
+      "mean_paired_cost_saving": -19.128054154912935,
+      "mean_paired_cost_saving_ci": [
+        -31.91556870894373,
+        -8.206331536834854
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.8,
+      "treatment": "profile_leave_store_out",
+      "baseline": "global_leave_store_out",
+      "cost_reduction_percent": -4.178148921581123,
+      "cost_reduction_percent_ci": [
+        -7.046068174768351,
+        -1.7193921256193656
+      ],
+      "service_difference": 0.006146191569850817,
+      "service_difference_ci": [
+        -0.0021008721176067084,
+        0.015359806295120442
+      ],
+      "mean_paired_cost_saving": -19.128054154912935,
+      "mean_paired_cost_saving_ci": [
+        -31.055626953983648,
+        -8.01831065665601
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.8,
+      "treatment": "profile_leave_store_out",
+      "baseline": "EOQ",
+      "cost_reduction_percent": 24.104764250185774,
+      "cost_reduction_percent_ci": [
+        19.217825149239445,
+        28.66544952546527
+      ],
+      "service_difference": -0.09190233645866064,
+      "service_difference_ci": [
+        -0.12060923579001578,
+        -0.06682124586419556
+      ],
+      "mean_paired_cost_saving": 151.47881103969132,
+      "mean_paired_cost_saving_ci": [
+        125.45199612787506,
+        176.78544536159663
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.85,
+      "treatment": "profile_in_sample",
+      "baseline": "global_in_sample",
+      "cost_reduction_percent": 2.3644337766774446,
+      "cost_reduction_percent_ci": [
+        1.0768503535820604,
+        3.9394891815138617
+      ],
+      "service_difference": -0.004713956623548059,
+      "service_difference_ci": [
+        -0.009343641114829816,
+        -0.001132476428333325
+      ],
+      "mean_paired_cost_saving": 14.85854055886165,
+      "mean_paired_cost_saving_ci": [
+        6.784834502493707,
+        24.38486174758767
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.85,
+      "treatment": "profile_leave_series_out",
+      "baseline": "global_leave_series_out",
+      "cost_reduction_percent": 1.9751967796526748,
+      "cost_reduction_percent_ci": [
+        0.3719287428987922,
+        3.682796724461133
+      ],
+      "service_difference": -0.015684978560610827,
+      "service_difference_ci": [
+        -0.034378611138480335,
+        -0.0028870071231909145
+      ],
+      "mean_paired_cost_saving": 12.412503049014829,
+      "mean_paired_cost_saving_ci": [
+        2.3544985252853086,
+        23.138758732416655
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.85,
+      "treatment": "profile_leave_store_out",
+      "baseline": "global_leave_store_out",
+      "cost_reduction_percent": 2.232952739377835,
+      "cost_reduction_percent_ci": [
+        0.9266637506193921,
+        3.7962685959604174
+      ],
+      "service_difference": -0.005147732297322175,
+      "service_difference_ci": [
+        -0.014443897649761629,
+        0.0031070545370770067
+      ],
+      "mean_paired_cost_saving": 14.069284471119493,
+      "mean_paired_cost_saving_ci": [
+        5.844326412342038,
+        23.62617177527544
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.85,
+      "treatment": "profile_leave_store_out",
+      "baseline": "EOQ",
+      "cost_reduction_percent": 1.9751967796526748,
+      "cost_reduction_percent_ci": [
+        0.41724872703692745,
+        3.7579346401947675
+      ],
+      "service_difference": -0.015684978560610827,
+      "service_difference_ci": [
+        -0.033850251550014296,
+        -0.002872496319398277
+      ],
+      "mean_paired_cost_saving": 12.412503049014829,
+      "mean_paired_cost_saving_ci": [
+        2.536123167587868,
+        23.115119933443587
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.9,
+      "treatment": "profile_in_sample",
+      "baseline": "global_in_sample",
+      "cost_reduction_percent": 2.3644337766774446,
+      "cost_reduction_percent_ci": [
+        1.0768503535820604,
+        3.9394891815138617
+      ],
+      "service_difference": -0.004713956623548059,
+      "service_difference_ci": [
+        -0.009343641114829816,
+        -0.001132476428333325
+      ],
+      "mean_paired_cost_saving": 14.85854055886165,
+      "mean_paired_cost_saving_ci": [
+        6.784834502493707,
+        24.38486174758767
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.9,
+      "treatment": "profile_leave_series_out",
+      "baseline": "global_leave_series_out",
+      "cost_reduction_percent": 1.4126375016718342,
+      "cost_reduction_percent_ci": [
+        0.3994313191960152,
+        2.6756166567908366
+      ],
+      "service_difference": -0.004713956623548059,
+      "service_difference_ci": [
+        -0.00929985540042368,
+        -0.00112447585099921
+      ],
+      "mean_paired_cost_saving": 8.877276166751072,
+      "mean_paired_cost_saving_ci": [
+        2.5431180116521643,
+        16.784973733565813
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.9,
+      "treatment": "profile_leave_store_out",
+      "baseline": "global_leave_store_out",
+      "cost_reduction_percent": 1.4126375016718342,
+      "cost_reduction_percent_ci": [
+        0.42765942507754906,
+        2.6700526168319283
+      ],
+      "service_difference": -0.004713956623548059,
+      "service_difference_ci": [
+        -0.009349350399046323,
+        -0.0011395520653233917
+      ],
+      "mean_paired_cost_saving": 8.877276166751072,
+      "mean_paired_cost_saving_ci": [
+        2.6978779843388723,
+        16.79754703926106
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.9,
+      "treatment": "profile_leave_store_out",
+      "baseline": "EOQ",
+      "cost_reduction_percent": 1.4126375016718342,
+      "cost_reduction_percent_ci": [
+        0.4225525262983437,
+        2.7366873732734134
+      ],
+      "service_difference": -0.004713956623548059,
+      "service_difference_ci": [
+        -0.009330538043071065,
+        -0.0010684304771718077
+      ],
+      "mean_paired_cost_saving": 8.877276166751072,
+      "mean_paired_cost_saving_ci": [
+        2.6804625364134314,
+        17.01769574692779
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.95,
+      "treatment": "profile_in_sample",
+      "baseline": "global_in_sample",
+      "cost_reduction_percent": 17.15544200305734,
+      "cost_reduction_percent_ci": [
+        11.96604124764122,
+        22.821736344255903
+      ],
+      "service_difference": -0.0007789911957735282,
+      "service_difference_ci": [
+        -0.0093506256144789,
+        0.012477906201338944
+      ],
+      "mean_paired_cost_saving": 877.1152840959488,
+      "mean_paired_cost_saving_ci": [
+        607.8858101881256,
+        1175.5921802402777
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.95,
+      "treatment": "profile_leave_series_out",
+      "baseline": "global_leave_series_out",
+      "cost_reduction_percent": 17.246033597636266,
+      "cost_reduction_percent_ci": [
+        11.919020649104933,
+        22.696539132751063
+      ],
+      "service_difference": -0.006403967456053502,
+      "service_difference_ci": [
+        -0.010946722193428612,
+        -0.0026593443557755394
+      ],
+      "mean_paired_cost_saving": 881.7470080819377,
+      "mean_paired_cost_saving_ci": [
+        607.6212616214656,
+        1167.0437361349248
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.95,
+      "treatment": "profile_leave_store_out",
+      "baseline": "global_leave_store_out",
+      "cost_reduction_percent": 17.246033597636266,
+      "cost_reduction_percent_ci": [
+        11.907741299486792,
+        22.59396751672062
+      ],
+      "service_difference": -0.006403967456053502,
+      "service_difference_ci": [
+        -0.0109170978569519,
+        -0.0025391039015795706
+      ],
+      "mean_paired_cost_saving": 881.7470080819377,
+      "mean_paired_cost_saving_ci": [
+        608.42211202711,
+        1157.2703819850703
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    },
+    {
+      "alpha": 0.95,
+      "treatment": "profile_leave_store_out",
+      "baseline": "EOQ",
+      "cost_reduction_percent": -573.2782519797945,
+      "cost_reduction_percent_ci": [
+        -650.0879100269683,
+        -492.5553765938964
+      ],
+      "service_difference": 0.014127456482998395,
+      "service_difference_ci": [
+        -0.006583519010219384,
+        0.0325250655526601
+      ],
+      "mean_paired_cost_saving": -3602.586903713138,
+      "mean_paired_cost_saving_ci": [
+        -3885.8556337204654,
+        -3315.3364788992276
+      ],
+      "bootstrap_unit": "store",
+      "bootstrap_draws": 5000,
+      "qualification": "conditional on historical KPI matrix, profiles and fitted selectors; selectors not refitted in bootstrap"
+    }
+  ],
+  "warnings": [
+    "Existing June report uses a different policy portfolio and is stale.",
+    "Five deterministic evaluation repetitions are not independent training replications.",
+    "Cross-fitting policy choice does not remove retrospective profile or simulator scaling information.",
+    "Costs are simulation objective units unless original monetary calibration is independently documented."
+  ]
+}

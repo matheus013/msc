@@ -1,0 +1,156 @@
+﻿ \documentclass[dissertacao]{ic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hypersetup{
+    colorlinks = {true},
+    linktocpage = {false},
+    plainpages = {false},
+    linkcolor = {black},
+    citecolor = {Blue},
+    urlcolor = {Red}, 
+    unicode = {true}, 
+    hypertexnames = {false},
+    pdftitle = {Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos},
+    pdfauthor = {Matheus Inácio Batista Santos},
+    pdfsubject = {Dissertação de Mestrado},
+    pdfkeywords={Adaptive Inventory Policy Engine, AIPE, Policy Selection Engine, Intermittent Demand, Syntetos-Boylan, Meta-Learning, Inventory Optimization, Retail Networks},
+    pdfcreator = {LaTeX2e},
+    pdffitwindow = {false},
+    pdfstartview = {FitH}, 
+    pdftoolbar = {true},
+    pdfpagemode = {UseOutlines}, 
+    pdfview = {XYZ null null null}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{smartdiagram} 
+\newtheorem{teo}{Teorema}[section]
+\newtheorem{prop}[teo]{Proposição} 
+\newtheorem{defi}[teo]{Definição} 
+\newtheorem{conj}[teo]{Conjectura} 
+\usepackage{dsfont}
+\renewcommand*\familydefault{\sfdefault}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{comment}
+% DOI identifiers may contain underscores; keep them valid in links and labels.
+\renewcommand{\doi}[1]{\textbf{DOI}~\href{https://doi.org/#1}{\nolinkurl{#1}}}
+\usepackage{enumerate}
+
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{pdflscape}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows, automata, shapes, calc, fit, backgrounds}
+%\usepackage{algorithmic}
+%\parskip 3pt plus 2pt minus 1pt
+%\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+% In center/flushright/raggedleft, \\ is \@centercr (not \@normalcr).
+% Both check for hmode/vmode and error with "no line to end" if called in vmode.
+% Patch both to force horizontal mode first.
+\let\@orig@normalcr\@normalcr
+\renewcommand{\@normalcr}{\ifvmode\leavevmode\fi\@orig@normalcr}
+\let\@origcentercr\@centercr
+\def\@centercr{\ifhmode\else\leavevmode\fi\@origcentercr}
+\makeatother
+
+%\usepackage{algorithmic}     
+ 
+\titulo{Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos}
+%PROCESSOS DE HANDOVER EM REDES MÓVEIS 5G COM REDES DEFINIDAS POR SOFTWARE	
+
+\autor{Matheus Inácio Batista Santos}{mibs@ic.ufal.br}{}
+
+\orientador{Dr. Rian Gabriel Santos Pinheiro}{}{Instituto de Computação}{Universidade Federal de Alagoas}
+
+\orientadorDois{Dr. Bruno Costa e Silva Nogueira}{}{Instituto de Computação}{Universidade Federal de Alagoas}
+
+\examinador{}{}{}{} % a preencher
+
+\examinadorDois{}{}{}{} % a preencher
+
+\examinadorTres{}{}{}{} % a preencher
+ 
+\dataMesAno{5 de junho}{2026}
+
+\setlength{\marginparwidth}{2cm}
+\newcommand{\red}{\textcolor{red}}
+\newcommand{\blue}{\textcolor{blue}}
+
+\begin{document}
+
+\selectlanguage{brazil}   
+
+\capa
+
+% \begin{agradecimentos}   
+
+% \vspace{2em}
+
+% \vspace*{\fill}
+% \begin{epigraph}{Perterson, \textit{J. B.}}{All hell is about to break loose and chaos is coming. When that is happening in your life, you might want be doing something that you regard as truly worthwhile.}
+
+% \end{epigraph}
+
+% \end{agradecimentos}
+
+\selectlanguage{brazil}
+\begin{abstract}
+\input{capitulos/resumo}
+\end{abstract}
+\input{abstract_en}
+\selectlanguage{brazil}
+
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{table}{Lista de Figuras}
+
+\listoftables
+\addcontentsline{toc}{table}{Lista de Tabelas}
+
+\input{lista_siglas_termos}
+
+\inicio
+
+\include{capitulos/introducao}
+\include{capitulos/conceitos}
+\include{capitulos/correlatos}
+\include{capitulos/proposta}
+\include{capitulos/resultados}
+\include{capitulos/conclusoes}
+\include{capitulos/plano_continuidade}
+
+\include{capitulos/apendice}
+% Diagramas didáticos preservados nos arquivos; fórmulas no referencial/metodologia.
+
+\begin{raggedright}
+    \bibliographystyle{plainnat}
+    \renewcommand{\bibsection} {
+    \chapter*{\begin{flushright}Referências\end{flushright}}
+    \addcontentsline{toc}{chapter}{Referências}
+}
+
+\lhead{REFERÊNCIAS}
+\bibliography{referencias}
+\newpage\lhead{\rightmark}
+\end{raggedright}
+
+\end{document}
+
+

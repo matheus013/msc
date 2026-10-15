@@ -1,0 +1,97 @@
+\appendix
+\chapter{Parâmetros e Resultados Complementares}
+\label{app:reproducibility}
+\lhead{APÊNDICE A}
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{table}{0}
+
+Este apêndice reúne configurações históricas de referência e a tabela do piloto. Elas não identificam a versão de cada controlador na ausência de um manifesto completo. As diferenças entre PB, BA e M5 permanecem registradas; o protocolo corrigido da Bahia está na Seção~\ref{sec:ba2026}.
+
+\begin{table}[htbp]\centering\small
+\caption{Dados e ambiente de referência.}\label{tab:global_params}
+\begin{tabular}{@{}p{3cm}p{11.4cm}@{}}\toprule
+\textbf{Componente} & \textbf{Configuração}\\\midrule
+Base real & PB: 15 séries do produto 48130; BA: 145 séries, 115 lojas e 9 produtos. Horizonte de 38 ciclos.\\
+Base M5 & 2.408 séries FOODS, 10 lojas, 287 produtos e 93 ciclos, após os filtros da configuração M5.\\
+Ciclo & Agregação em blocos de aproximadamente 21 dias. O último bloco M5 pode ser incompleto.\\
+Filtros BA & Produto ativo, exclusão de brindes, preenchimento de ciclos ausentes com zero; filtro de atividade e variabilidade conforme configuração.\\
+Filtros M5 & FOODS, CV$\geq1,5$ e suavização superior por $Q_3+1,5\,IQR$ na série agregada. Filtro e suavização usam o histórico completo.\\
+Entrega histórica & Configuração $L=2$ com fila de $L+1$ posições: entrega em $t+3$. A nova Bahia usa a convenção efetiva de dois ciclos.\\
+Estoque inicial & $I_0=\hat\mu L+1{,}28\hat\sigma\sqrt L$, escalado por série. A estimação pelo histórico completo limita a interpretação temporal.\\
+Custos & Manutenção 1/unidade/ciclo, falta 5/unidade, pedido fixo 50 e variável 0,5/unidade; cenário simulado, sem calibração econômica independente.\\
+Avaliação & Divisão configurada BA: 17 ciclos iniciais e M5: 19; cinco avaliações nominais por política. Repetições determinísticas não são treinamentos independentes.\\
+Semente & Referência 42; a independência exige novos treinamentos e controle dos geradores aleatórios.\\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{Regras e parâmetros das políticas clássicas e meta-heurísticas.}\label{tab:classic_meta_params}
+\begin{tabular}{@{}p{3cm}p{11.4cm}@{}}\toprule
+\textbf{Política} & \textbf{Configuração de referência}\\\midrule
+EOQ legado & $Q=\sqrt{2\hat\mu T K/h}$; $s=\hat\mu L+z\hat\sigma\sqrt L$, $z=1{,}28$. Demanda e manutenção devem usar a mesma unidade temporal; o fator $T$ requer revisão.\\
+$(s,S)$ & Mesmo ponto de pedido, nível-alvo $S=s+Q$. Herda a escala do lote EOQ.\\
+Jornaleiro & Implementação heurística $Q=\max(0,\hat\mu+1{,}28\hat\sigma)$, quando a posição de estoque não excede $\hat\mu L$; não equivale automaticamente ao quantil ótimo de período único.\\
+GA & População 100, 50 gerações no recorte BA e 500 na configuração M5; cruzamento 0,8, torneio 3, mutação inicial 0,05 com redução linear até 20\% dessa taxa.\\
+SA & Temperatura inicial 1.000, resfriamento 0,95 e 500 iterações; o código atual usa busca vetorizada com aceitação de Metropolis.\\
+Aptidão & Configuração ponderada $\mathrm{NS}-0{,}0001\,\mathrm{CTI}$ e variantes penalizadas; a seleção final usa menor custo entre candidatos com serviço viável. Não confundir aptidão de treino com critério de escolha.\\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{Agentes de reforço e híbrido: configurações documentadas.}\label{tab:rl_params}
+\begin{tabular}{@{}p{3cm}p{11.4cm}@{}}\toprule
+\textbf{Componente} & \textbf{Configuração}\\\midrule
+Estado & Seis componentes: estoque, previsão, pedidos em trânsito, média e dispersão recentes e posição no horizonte, normalizados conforme o simulador.\\
+Recompensa & Negativo do custo de manutenção, falta e pedido. Variantes incorporam penalidades de serviço e estabilidade; a versão precisa ser registrada.\\
+Ações & 20 quantidades discretas; limite escalado pela demanda média.\\
+DQN & $\gamma=0{,}95$, $\varepsilon=0,2$, lote 64, memória 10.000, rede-alvo atualizada a cada 10 episódios, taxa 0,001. Configuração de referência: 1.000 episódios.\\
+PPO & $\gamma=0{,}99$, recorte 0,2, quatro épocas por atualização, taxa 0,0003. A implementação atual usa ator-crítico e GAE; os resultados antigos não são regenerados por essa alteração.\\
+GA--DQN & Inicialização pelo GA, memória pré-populada com 1.000 transições e 200 episódios de refinamento na configuração híbrida; horizonte e orçamento variam entre experimentos.\\
+Arquiteturas & Estado de dimensão 6; duas camadas ocultas na configuração dos agentes. A versão exata é definida nos arquivos de parâmetros, não inferida dos KPIs.\\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{Previsão auxiliar e seleção de políticas.}\label{tab:forecast_label_params}
+\begin{tabular}{@{}p{3cm}p{11.4cm}@{}}\toprule
+\textbf{Componente} & \textbf{Configuração}\\\midrule
+Previsão & LSTM, ANN, XGBoost, Croston e ARIMA; janela de entrada 6 ciclos, treinamento mínimo 17 e previsão de um ciclo.\\
+LSTM / ANN & LSTM: 64 unidades, 50 épocas, lote 16 e taxa 0,001; ANN: camadas 64/32, máximo 200 iterações, parada antecipada e validação 0,1.\\
+XGBoost & Previsão: 200 árvores, profundidade 6, taxa 0,05 e subamostragem 0,8.\\
+Croston / ARIMA & Suavização 0,1 / ordem $(1,1,1)$.\\
+POD & ADI 1,32, CV$^2$ 0,49, maior silêncio 5, burstiness 0,30, autocorrelação 0,25, tendência 0,05 e entropia 2; regras de prioridade descritas na metodologia.\\
+Rótulos & Menor CTI entre políticas com NS$\geq0{,}70$; esse filtro não assegura serviço individual quando aplicado a médias de perfil.\\
+PSE proposto & XGBoost: 300 árvores, profundidade 6, taxa 0,05, subamostragem e seleção de colunas 0,8; validação de cinco partições prevista. A existência da configuração não demonstra validação do seletor.\\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{Rastreabilidade da reprodução.}\label{tab:validation_env}
+\begin{tabular}{@{}p{3cm}p{11.4cm}@{}}\toprule
+\textbf{Evidência} & \textbf{Local e interpretação}\\\midrule
+Dados preparados & \nolinkurl{experiment/data/03_primary/}, com diretório próprio para M5.\\
+Características & \nolinkurl{experiment/data/04_feature/}; registrar se foram estimadas antes ou depois da separação temporal.\\
+Configurações & \nolinkurl{experiment/conf/base/parameters/} e \nolinkurl{experiment/conf/m5/}; versões diferentes podem gerar portfólios com o mesmo número de políticas.\\
+KPIs & \nolinkurl{experiment/data/07_model_output/}; chave loja-produto-política e contagem de séries verificadas antes de agregar.\\
+Análises & \nolinkurl{experiment/data/08_reporting/}; distinguir tabelas históricas, critérios penalizados e reanálises posteriores.\\
+Software & Ambiente Python definido em \nolinkurl{experiment/pyproject.toml}. Código atual e histórico devem ser identificados separadamente por versão e hash.\\
+Inferência & Comparações pareadas por série, controle de multiplicidade e dependência entre séries; cinco repetições de um episódio determinístico não ampliam a amostra.\\
+\bottomrule\end{tabular}\end{table}
+
+\section{Resultados Agregados do Piloto na Paraíba}
+\label{app:fase1_resultados}
+A Tabela~\ref{tab:global_prelim} preserva o piloto de 15 lojas. O ganho de 48\% do GA--DQN frente a $(s,S)$ é $(35.589-18.502)/35.589$, acompanhado de NS 0,821 contra 0,843. Não é ganho universal nem validação do PSE. Resultados de outros portfólios não são combinados com os da Bahia ou M5.
+
+\begin{table}[htbp]\centering\small
+\caption{Indicadores históricos do piloto PB: 15 lojas do produto 48130.}\label{tab:global_prelim}
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Política & CTI & NS & TR & BE & FP\\\midrule
+SARSA &16.139&0,785&0,200&0,00&0,00\\
+Jornaleiro &16.402&0,794&0,111&0,003&0,27\\
+DQN &17.974&0,806&0,078&4,1&0,37\\
+GA--DQN &18.502&0,821&0,050&5,0&0,31\\
+PSO &19.100&0,819&0,056&6,2&0,31\\
+GA--PPO &19.801&0,833&0,050&6,6&0,35\\
+GA &20.015&0,825&0,061&19,7&0,30\\
+DE &20.252&0,813&0,056&31,0&0,27\\
+SA &20.967&0,820&0,056&36,4&0,27\\
+EOQ &31.034&0,840&0,050&23,0&0,20\\
+PPO &34.637&0,848&0,039&15,9&0,98\\
+$(s,S)$ &35.589&0,843&0,050&119,4&0,15\\
+\bottomrule\end{tabular}\end{table}

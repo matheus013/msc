@@ -1,0 +1,2 @@
+# Preservar os bytes dos artigos e figuras, inclusive PDFs sem compressao.
+*.pdf binary

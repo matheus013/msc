@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aipe-experiment"
+version = "0.2.0"
+description = "Experimentos integrados do mestrado: AIPE"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "kedro>=1.0,<2", "kedro-datasets>=6",
+    "numpy>=1.26,<2.4", "pandas>=2.0,<3", "pyarrow>=14,<24",
+    "scikit-learn>=1.3,<1.8", "xgboost>=2.0,<3", "torch>=2.8,<3",
+    "scipy>=1.11,<1.17", "statsmodels>=0.14", "duckdb>=1.0",
+    "matplotlib>=3.7", "seaborn>=0.13", "scikit-posthocs>=0.8",
+    "pyyaml>=6", "tqdm>=4.65", "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+maps = ["geopandas>=0.14", "geobr>=0.4", "folium>=0.15"]
+documents = ["PyPDF2>=3"]
+research = ["requests>=2.31", "PyPDF2>=3"]
+test = ["pytest>=8"]
+
+[project.scripts]
+aipe = "simulation.commands:main"
+
+[tool.kedro]
+package_name = "simulation"
+project_name = "AIPE Experiment"
+kedro_init_version = "1.4.0"
+source_dir = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.kedro_telemetry]
+project_id = "b14d0563ee5b42b4aa51f82496606512"

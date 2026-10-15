@@ -1,0 +1,87 @@
+\section{Resultados históricos e contexto M5}
+\label{app:historical}
+
+Este apêndice preserva a reanálise das matrizes anteriores. Seu objetivo é documentar os antecedentes da avaliação temporal, não acrescentar observações ao teste principal. As mesmas 145 séries da Bahia e 2.408 séries de alimentos do M5 foram avaliadas com doze políticas. Características, preparação, episódios e orçamentos diferem do protocolo principal. Assim, a diferença entre custos históricos e atuais não estima o efeito isolado de uma mudança de método.
+
+O M5 histórico agrega vendas em 93 blocos de 21 dias, incluindo um bloco final parcial. O filtro local FOODS com CV de 1,5 por produto, sobre lojas e ciclos, e a suavização superior por intervalo interquartil usam a trajetória completa. O recorte foi inspirado em Zabraoui et al.\ \cite{sca_27e994c54848}, que não publicam identificadores e corte numérico suficientes para certificar uma amostra idêntica. A nova execução M5 utiliza protocolo próprio e permanece em andamento.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Coortes verificadas nas matrizes analisadas. Prefixo indica o corte de ajuste configurado no código, não uma garantia de independência temporal de toda a preparação.}\label{tab:cohort}
+\begin{tabular}{lrr}
+\toprule
+Característica & Rede brasileira (BA) & M5 FOODS\\
+\midrule
+Séries & 145 & 2.408\\
+Lojas & 115 & 10\\
+Produtos & 9 & 287\\
+Ciclos disponíveis & 38 & 93\\
+Prefixo configurado & 17 & 19\\
+Prefixo sem demanda & 0 & 2.213\\
+Menos de 3 ciclos positivos no prefixo & 0 & 2.237\\
+Sparse High Impact & 116 & 2.350\\
+Unstable Trend & 18 & 40\\
+High Volatility Seasonal & 11 & 18\\
+Políticas na matriz & 12 & 12\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Os prefixos configurados têm 17 ciclos na Bahia e 19 no M5. No M5, 2.213 séries (91,90\%) não registram demanda no prefixo e todas têm demanda posteriormente. Isso não comprova lançamento dos produtos ou indisponibilidade real de histórico. As diferenças de inicialização, orçamento e frequência limitam a comparação entre bases. Na dinâmica histórica, $L=2$ corresponde a chegada em $t+3$; na avaliação principal, o prazo efetivo é de dois ciclos. A heurística EOQ histórica também usa uma escala de lote distinta da EOQ por ciclo.
+
+As matrizes registram cinco avaliações nominais por série e política, com desvios de custo praticamente nulos. Essas avaliações não são cinco treinamentos independentes. O portfólio completo da Tabela~\ref{tab:portfolio_dual} mostra que baixo custo pode acompanhar atendimento insuficiente; seus denominadores relativos são específicos de cada base.
+
+\begin{table}[htbp]\centering\small
+\caption{Portfólio histórico completo: custo relativo à melhor global viável em $\alpha=0{,}70$ e serviço médio. BA: denominador VendorResponsive; M5: denominador SA.}\label{tab:portfolio_dual}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+ & \multicolumn{2}{c}{BA} & \multicolumn{2}{c}{M5}\\
+Política & Custo relativo & Serviço & Custo relativo & Serviço\\\midrule
+BigDataNewsvendor & 1,343 & 0,717 & 0,322 & 0,096\\
+CappedBaseStock & 1,297 & 0,642 & 0,297 & 0,098\\
+DQN & 0,292 & 0,225 & 0,318 & 0,076\\
+EOQ & 1,450 & 0,942 & 0,320 & 0,133\\
+FixedInterval & 1,057 & 0,844 & 0,301 & 0,100\\
+GA & 2,920 & 0,896 & 0,381 & 0,231\\
+GA--DQN & 2,714 & 0,731 & 0,406 & 0,467\\
+Newsvendor & 0,669 & 0,540 & 0,285 & 0,084\\
+PPO & 11,799 & 0,963 & 1,139 & 0,985\\
+SA & 2,649 & 0,865 & 1,000 & 0,852\\
+VendorResponsive & 1,000 & 0,774 & 0,287 & 0,100\\
+$(s,S)$ & 1,511 & 0,943 & 0,321 & 0,134\\
+\bottomrule\end{tabular}\end{table}
+
+\subsection{Seleção retrospectiva entre lojas}
+Na reanálise, a política global e as escolhas por perfil são determinadas excluindo a loja avaliada, mas consultando as saídas históricas já armazenadas. A exclusão da loja não elimina informação futura incorporada aos perfis ou à geração das matrizes. Esse desenho difere da escolha na validação e avaliação em teste posterior empregadas no corpo principal.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Seleção com exclusão da loja avaliada, em $\alpha=0{,}70$. A coluna abaixo do limiar conta séries individualmente, não médias de perfil. Custos não são comparáveis entre bases.}\label{tab:strategies}
+\begin{tabular}{llrrr}
+\toprule
+Base & Estratégia & Custo médio & Fill rate & Abaixo do limiar\\
+\midrule
+Brasileira & Global & 433,31 & 0,7738 & 40\\
+Brasileira & Perfil & 435,80 & 0,7816 & 39\\
+M5 & Global & 19.500,54 & 0,8521 & 270\\
+M5 & Perfil & 19.367,73 & 0,8509 & 274\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Em 0,70, os perfis aumentam o custo em 0,576\% na Bahia e reduzem em 0,681\% no M5, com diferenças de atendimento de 0,779 e $-0{,}122$ ponto percentual. Os intervalos condicionais de redução de custo são $[-1{,}442;0{,}153]\%$ e $[-1{,}190;2{,}402]\%$, respectivamente. Usam 5.000 reamostragens pareadas de lojas, sem reajustar escolhas; no M5, existem apenas dez lojas. Não demonstram equivalência nem vantagem geral dos perfis. A Tabela~\ref{tab:strategies} informa também as violações individuais, que não desaparecem quando a média do grupo é viável.
+
+A sensibilidade histórica das Figuras~\ref{fig:dualmain} e~\ref{fig:dualsensitivity} ilustra mudanças de vencedor com o serviço exigido. No M5, ambas as estratégias convergem para PPO em 0,90 e 0,95. Na Bahia, o aparente ganho de custo em 0,95 acompanha menor atendimento e escolhas de contingência em grupos sem alternativa viável. Esses diagnósticos motivam a separação temporal adotada no estudo principal; não determinam um limiar comercial ótimo.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_dual_1.png}
+\caption{Custo e atendimento das políticas e estratégias nas duas bases. Os painéis possuem escalas próprias: diferenças absolutas de custo entre Brasil e M5 não têm interpretação econômica comum.}
+\label{fig:dualmain}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_dual_2.png}
+\caption{Contraste de seleção por perfil e global com exclusão de loja em diferentes limiares. Reduções de custo são interpretadas com diferenças de atendimento; intervalos são condicionais ao procedimento e às matrizes.}
+\label{fig:dualsensitivity}
+\end{figure}
+\FloatBarrier

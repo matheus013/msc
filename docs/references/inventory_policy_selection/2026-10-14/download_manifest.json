@@ -1,0 +1,66 @@
+[
+  {
+    "key": "boute2022",
+    "source_url": "https://pure.tue.nl/ws/files/194325798/1_s2.0_S0377221721006111_main.pdf",
+    "status": "downloaded_open_copy",
+    "pages": 13,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\boute2022.pdf",
+    "sha256": "05761cedc1a1525f70c40fc82eea46a794d9820f554b32d72d302ba212aa176e"
+  },
+  {
+    "key": "banrudin2019",
+    "source_url": "https://lbsresearch.london.edu/id/eprint/966/1/BanRudin_BDNV_FINAL-onlineversion.pdf",
+    "status": "downloaded_open_copy",
+    "pages": 56,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\banrudin2019.pdf",
+    "sha256": "c3e594c7f441b3164660757e37b40dc041be8985ae86887e4cd56dc19658f92c"
+  },
+  {
+    "key": "jaarsveldarts2024",
+    "source_url": "https://arxiv.org/pdf/2101.07519",
+    "status": "downloaded_open_copy",
+    "pages": 39,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\jaarsveldarts2024.pdf",
+    "sha256": "5d656373451d9659b0e296c5784438e9b1430fc72f7059d91638fc9a7c96b3cf"
+  },
+  {
+    "key": "stranieri2025",
+    "source_url": "https://arxiv.org/pdf/2501.10895",
+    "status": "downloaded_open_copy",
+    "pages": 35,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\stranieri2025.pdf",
+    "sha256": "801dc3133d546111af1fbde7d47d3331f0627498ca3632bb19e8e537bf332d21"
+  },
+  {
+    "key": "schulman2017",
+    "source_url": "https://arxiv.org/pdf/1707.06347",
+    "status": "downloaded_open_copy",
+    "pages": 12,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\schulman2017.pdf",
+    "sha256": "e78feadadbdbb0b601b3c2bcc81404722cd431a489b307545f9b7bea1e8c4f5b"
+  },
+  {
+    "key": "vanhasselt2016",
+    "source_url": "https://arxiv.org/pdf/1509.06461",
+    "status": "downloaded_open_copy",
+    "pages": 13,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\vanhasselt2016.pdf",
+    "sha256": "a37336d7f35be5842740ef8e320bce03e725c03e56b7093afe98475c5c72e496"
+  },
+  {
+    "key": "geevers2024",
+    "source_url": "https://link.springer.com/content/pdf/10.1007/s10100-023-00872-2.pdf",
+    "status": "downloaded_open_copy",
+    "pages": 31,
+    "local_path": "docs\\references\\inventory_policy_selection\\2026-10-14\\geevers2024.pdf",
+    "sha256": "73b87feecee6bbc24d2e5a2ed71e65edcffe5252943c6a9b7444ddc8b941aeaa"
+  },
+  {
+    "key": "zabraoui2025",
+    "status": "existing_local_copy_read",
+    "pages": 22,
+    "source_url": "https://doi.org/10.1016/j.sca.2025.100154",
+    "local_path": "docs\\references\\supply_chain_analytics\\pdfs\\2025\\100154_A_comparative_study_of_multi_algorithm_optimization_for_inventory_analytics_in_supply.pdf",
+    "sha256": "674fb20d55dd46c384ca3b54e1273b637b6edadb32eab2b42fec3e281a9dea58"
+  }
+]
