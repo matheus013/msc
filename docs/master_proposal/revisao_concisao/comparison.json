@@ -1,10 +1,10 @@
 {
   "before_pages": 118,
-  "after_pages": 65,
-  "page_reduction_percent": 44.91525423728814,
+  "after_pages": 62,
+  "page_reduction_percent": 47.45762711864407,
   "before_approx_source_words": 34677,
-  "after_approx_source_words": 14799,
-  "source_word_reduction_percent": 57.32329786313695,
+  "after_approx_source_words": 13715,
+  "source_word_reduction_percent": 60.449289154194425,
   "word_count_note": "Same Unicode-word regex after removing TeX comments; includes commands, captions and tables; active chapters plus English abstract and completed Bahia section.",
   "chapters": {
     "resumo.tex": {
@@ -25,7 +25,7 @@
     },
     "proposta.tex": {
       "before": 10411,
-      "after": 4942
+      "after": 4447
     },
     "resultados.tex": {
       "before": 6044,
@@ -41,7 +41,7 @@
     },
     "apendice.tex": {
       "before": 2272,
-      "after": 972
+      "after": 383
     },
     "abstract_en.tex": {
       "before": 0,
@@ -57,5 +57,5 @@
     }
   },
   "diagnostics": [],
-  "pdf_sha256": "f2a752fe87268aef8d08ca4e72836040e742be0b015f8c1c0e4dfb53297b0429"
+  "pdf_sha256": "a4e705d88d95c17d7ba6006e34fa7afb980b168329a97c52b62ca0a430c4dd4f"
 }

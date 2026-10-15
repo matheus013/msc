@@ -1,6 +1,6 @@
 # Proposta de Dissertação - AIPE
 
-**Versão revisada em 15/10/2026: 65 páginas, redução de 44,9% em relação às 118 originais.** O capítulo de resultados organiza a mesma matriz pelas perguntas de pesquisa, com quatro figuras compartilhadas com o artigo e uma tabela de tempos por política. A dissertação mantém a formulação ampla do AIPE; o artigo tem escopo delimitado.
+**Versão revisada em 15/10/2026: 62 páginas, redução de 47,5% em relação às 118 originais.** O capítulo de resultados organiza a mesma matriz pelas perguntas de pesquisa, com quatro figuras compartilhadas com o artigo e uma tabela de tempos por política. A dissertação mantém a formulação ampla do AIPE; o artigo tem escopo delimitado.
 
 A Bahia tem 145 séries, duas origens e 4.350 ajustes completos. O M5 permanece em execução, sem conclusão quantitativa parcial. Textos e PDFs anteriores estão preservados nos arquivos de revisão; resultados de configurações diferentes não são combinados. Veja [PLANO_DE_EVIDENCIAS.md](../PLANO_DE_EVIDENCIAS.md).
 

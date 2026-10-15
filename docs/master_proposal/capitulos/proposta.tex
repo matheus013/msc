@@ -28,7 +28,7 @@ O cenário empresarial inclui um armazém regional e lojas revendedoras com vár
 Dado um portfólio $\Pi$, a representação $\phi$ e séries $\mathbf d_i$, o PSE proposto estima $f:\mathbb R^p\rightarrow\Pi$, com $f(\phi(\mathbf d_i))=\hat\pi_i$. A referência de treinamento é a política de menor custo observado entre as que cumprem o serviço mínimo. Sua aplicação a novas séries depende de validação separada da construção desses rótulos.
 \end{defi}
 
-Os custos configurados são $h=1$, $c_s=5$, $c_o^{\mathrm{fix}}=50$ e $c_o^{\mathrm{var}}=0{,}5$. Esses valores definem um cenário experimental uniforme. A razão entre falta e manutenção expressa a penalização adotada, mas não comprova custos monetários reais da empresa. Sem calibração econômica, diferenças de CTI devem ser interpretadas como diferenças no objetivo simulado, mesmo quando os relatórios históricos usam a identificação de reais.
+Os custos configurados são $h=1$, $c_s=5$, $c_o^{\mathrm{fix}}=50$ e $c_o^{\mathrm{var}}=0{,}5$. Esses valores definem um cenário experimental uniforme. A razão entre falta e manutenção expressa a penalização adotada, mas não comprova custos monetários reais da empresa. Sem calibração econômica, diferenças de CTI devem ser interpretadas como diferenças no objetivo simulado.
 
 \subsection{Métricas de Avaliação}
 \label{sec:metricas_avaliacao}
@@ -43,11 +43,11 @@ e $\mathrm{BE}=\mathrm{Var}(Q)/\mathrm{Var}(D)$. NS é a fração das unidades d
 
 O limiar principal é $\alpha_{\min}=0{,}70$. Na rotulagem por série, a restrição incide sobre o serviço daquela série; na escolha de uma política global ou por perfil, incide sobre a média do grupo. Essas regras não são equivalentes. Um grupo com NS médio acima do limiar pode conter muitas séries abaixo dele. As tabelas devem informar média, distribuição e número de violações individuais, além do custo agregado.
 
-Também se examina, de forma complementar,
+Para uma análise complementar futura, define-se
 \[
 J(\pi,g)=\mathrm{CTI}_{\mathrm{norm}}(\pi,g)+\lambda_{BE}\mathrm{BE}_{\mathrm{norm}}(\pi,g).
 \]
-A normalização min--max precisa fixar o conjunto de políticas e o escopo usado para calcular extremos. Com $\lambda_{BE}=0$, a ordenação equivale ao custo; pesos positivos favorecem estabilidade. Esse índice não tem unidade monetária e não substitui o CTI. A sensibilidade ajuda a mostrar como a preferência muda, sem demonstrar que um peso escolhido após observar resultados seja adequado à operação.
+A normalização min--max precisa fixar o conjunto de políticas e o escopo usado para calcular extremos. Com $\lambda_{BE}=0$, a ordenação equivale ao custo; pesos positivos favorecem estabilidade. Esse índice não tem unidade monetária e não substitui o CTI. Essa sensibilidade poderá mostrar como a preferência muda, sem demonstrar que um peso escolhido após observar resultados seja adequado à operação.
 
 Uma interpretação conjunta é essencial: baixo custo com baixo NS pode refletir pouca reposição, e BE pequeno pode ocorrer porque quase não há pedidos. Esses padrões não são automaticamente descartados; são identificados nos indicadores e confrontados com restrições previamente definidas. Excluir um comportamento depois de observar seu desempenho mudaria o portfólio e precisaria de justificativa explícita.
 
@@ -63,9 +63,9 @@ Os dados brutos não são disponibilizados publicamente. A reprodução depende 
 \subsection{Preparação das Séries}
 \label{sec:pipeline_experimental}
 
-O preparo consolida transações por armazém, loja, produto e ciclo. Valores negativos e registros incompatíveis seguem os filtros da versão executada. Transações complementares da mesma chave são somadas; repetições técnicas do mesmo evento exigem identificação antes da remoção. A nova execução da Bahia utiliza a agregação adotada descrita na Seção~\ref{sec:ba2026_methods}. O resultado é uma tabela de demanda por ciclo, acompanhada de metadados da série e do registro das exclusões aplicadas.
+O preparo consolida transações por armazém, loja, produto e ciclo. Valores negativos e registros incompatíveis seguem os filtros da versão executada. Transações complementares da mesma chave são somadas; repetições técnicas do mesmo evento exigem identificação antes da remoção. A avaliação da Bahia utiliza a agregação descrita na Seção~\ref{sec:ba2026_methods}. O resultado é uma tabela de demanda por ciclo, acompanhada de metadados da série e do registro das exclusões aplicadas.
 
-As séries são ordenadas e reindexadas nos ciclos do horizonte. Ciclos sem venda recebem zero na preparação histórica. Antes de usar essa convenção, verificam-se a cobertura da fonte e a distinção entre loja inativa e demanda nula. Séries inteiramente sem vendas não permitem comparar serviço pela razão de unidades atendidas. Sua exclusão, quando aplicada, é registrada como critério de amostragem, sem ocultar que altera a população analisada.
+As séries são ordenadas e reindexadas nos ciclos do horizonte. Ciclos sem venda recebem zero na preparação. Antes de usar essa convenção, verificam-se a cobertura da fonte e a distinção entre loja inativa e demanda nula. Séries inteiramente sem vendas não permitem comparar serviço pela razão de unidades atendidas. Sua exclusão, quando aplicada, é registrada como critério de amostragem, sem ocultar que altera a população analisada.
 
 Critérios de atividade, volume, número de demandas positivas e variabilidade delimitam os cenários. Os filtros evoluíram entre execuções, portanto não se presume que uma descrição única, como CV mínimo, identifique todos os recortes. O manifesto deve registrar a condição efetivamente aplicada e a contagem antes e depois de cada filtro. A representação dos regimes e a distribuição geográfica dos cenários avaliados aparecem no Capítulo~\ref{cap:results}.
 
@@ -86,7 +86,7 @@ com regularização numérica quando necessária~\citep{GohBarabasi2008Burstines
 
 A tendência é a inclinação de uma regressão temporal simples dividida pela média. A dependência anual é resumida pela autocorrelação na defasagem 17, correspondente a um ano comercial. Uma janela de 17 ciclos não permite estimar essa autocorrelação com segurança; no código, janelas insuficientes recebem zero. O resultado significa ausência de estimativa, não demonstra ausência de sazonalidade.
 
-Como explicado na Seção~\ref{sec:sb_taxa}, a característica CV$^2$ do código inclui ciclos zero, enquanto a classificação original usa a dispersão dos tamanhos positivos. Mantêm-se os rótulos já arquivados para rastrear os resultados, mas sem apresentar equivalência exata entre as definições. Essa diferença também impede interpretar os limiares originais como uma validação automática da classificação operacional implementada.
+Como explicado na Seção~\ref{sec:sb_taxa}, a característica CV$^2$ do código inclui ciclos zero, enquanto a classificação original usa a dispersão dos tamanhos positivos. Os perfis são recalculados no treino, sem pressupor equivalência exata entre as definições. Essa diferença também impede interpretar os limiares originais como uma validação automática da classificação operacional implementada.
 
 \subsection{Regras de Perfil}
 
@@ -110,24 +110,24 @@ Fast Moving & ADI $<1{,}32$\\
 
 O perfil organiza a análise e pode ser codificado como entrada do PSE. Não é uma recomendação fixa de controlador. A associação inicial entre nomes de perfis e políticas no código não substitui a seleção pela matriz de custo e serviço. Essa separação evita interpretar uma regra previamente atribuída, como ``perfil sazonal recebe PPO'', como uma descoberta empírica do experimento.
 
-Na Bahia, os artefatos de perfil apresentam 116 séries Sparse High Impact, 18 Unstable Trend e 11 High Volatility Seasonal. Essa concentração limita a informação disponível sobre grupos pequenos. Os limiares não foram aprendidos de uma grande população independente e devem ser submetidos a sensibilidade. Se forem ajustados usando os mesmos resultados que avaliam o seletor, a comparação deixa de representar validação independente da representação.
+Na Bahia, o prefixo de 17 ciclos apresenta 65 séries Sparse High Impact e 80 Unstable Trend. No prefixo de 23 ciclos, são 60, 69 e 16 High Volatility Seasonal. A caracterização é recalculada apenas no treino; diferenças entre origens refletem tanto a janela quanto as regras, inclusive a indisponibilidade da autocorrelação na primeira origem. Os limiares são heurísticos e não foram aprendidos em uma população independente.
 
 \section{Sinais Auxiliares de Previsão e Calibração}
 \label{sec:sinais_previsao}
 
 O projeto contempla Croston, ARIMA, redes neurais e XGBoost como fontes de previsão. Croston estima ocorrência e tamanho separadamente~\citep{Croston1972ForecastingIntermittentDemand}; modelos autorregressivos descrevem dependência temporal; modelos supervisionados utilizam janelas recentes. A configuração determina quais candidatos são executados em cada versão. Não se presume que todos tenham sido avaliados em cada recorte apenas porque estão disponíveis no código.
 
-A comparação emprega MASE como métrica principal e sMAPE e RMSSE como complementares, conforme as definições do Capítulo~\ref{cap:tec}. Nos artefatos históricos, a função de métricas usa diferenças da própria sequência avaliada como escala e exclui pares demanda/previsão ambos zero do sMAPE; essa convenção difere das definições de referência. A escolha do modelo deve ocorrer antes do bloco usado para avaliar a política, ou em validação interna. Se o erro de previsão integrar o PSE, ele precisa ser produzido sem observar a demanda que será usada para medir o resultado final da recomendação.
+Uma avaliação específica de previsão deverá empregar MASE e RMSSE escalados pela referência ingênua do treino e explicitar os casos de sMAPE com denominador nulo. Essas métricas não foram usadas para escolher as políticas reportadas no capítulo de resultados. Se o erro de previsão integrar o PSE, deverá ser produzido sem observar o bloco usado para avaliar a recomendação.
 
 Também é necessário verificar o consumo desse sinal. A presença de um arquivo de previsões não prova que ele foi fornecido ao simulador. Quando nenhuma previsão externa é recebida, o ambiente usa uma referência ingênua baseada na demanda anterior, com inicialização por média. A metodologia distingue a previsão efetivamente usada, as métricas calculadas como diagnóstico e as entradas previstas para versões futuras do seletor.
 
 Os valores de referência de reposição são derivados da média $\hat\mu$, do desvio $\hat\sigma$, do parâmetro $L$ e de $z=1{,}28$:
 \begin{align}
 I_0&=\hat\mu L+z\hat\sigma\sqrt L,\label{eq:I0_metod}\\
-Q_{\mathrm{ref}}&=\sqrt{2\hat\mu T_{\mathrm{cal}}c_o^{\mathrm{fix}}/h},\label{eq:qref_metod}\\
+Q_{\mathrm{ref}}&=\sqrt{2\hat\mu c_o^{\mathrm{fix}}/h},\label{eq:qref_metod}\\
 s_{\mathrm{ref}}&=\hat\mu L+z\hat\sigma\sqrt L.\label{eq:sref_metod}
 \end{align}
-$T_{\mathrm{cal}}$ é a quantidade de ciclos usados na calibração do lote legado. A primeira expressão corresponde à escala do pipeline disponível; outros estoques iniciais aparecem em versões históricas e devem ser identificados pela execução. A expressão de $Q_{\mathrm{ref}}$ acumula demanda no horizonte, embora $h$ seja por ciclo: não é a EOQ dimensionalmente uniforme $\sqrt{2\hat\mu c_o^{\mathrm{fix}}/h}$. A diferença permanece registrada, sem reatribuir resultados antigos a uma formulação distinta.
+A média e a dispersão são estimadas no prefixo de treino, com demanda e manutenção expressas por ciclo. A primeira expressão define a inicialização de referência anterior ao aquecimento; não substitui os estados comuns usados na validação e no teste, obtidos pela trajetória EOQ descrita na Seção~\ref{sec:ba2026_methods}.
 
 Estoque inicial, limites de ação e região de busca afetam fortemente o desempenho em séries curtas. Um estoque inicial amplo pode elevar serviço sem exigir aprendizado, e um limite baixo de pedido pode impedir atendimento de picos. Em validação temporal, essas escalas devem ser calculadas somente no treino. Usar média e desvio da série completa, mesmo mantendo o ajuste da política em um prefixo, introduz informação futura na avaliação.
 
@@ -136,25 +136,19 @@ Estoque inicial, limites de ação e região de busca afetam fortemente o desemp
 \subsection{Composição e Referências}
 \label{sec:portfolio_ampliado}
 
-O portfólio inicial contém EOQ, $(s,S)$, Jornaleiro, GA, SA, PSO, DE, DQN, PPO, SARSA, GA--DQN e GA--PPO. A configuração posterior mantém doze alternativas, porém substitui PSO, DE, SARSA e GA--PPO por CappedBaseStock, BigDataNewsvendor, FixedInterval e VendorResponsive. A contagem de políticas, isoladamente, não identifica um experimento: tabelas, configurações e arquivos precisam concordar sobre a lista de candidatos.
+O portfólio avaliado contém EOQCycle, sSCycle, CappedBaseStock, GA, PPO e GA--DQN; DQN é o controle adicional da hibridização. A composição busca referências analíticas, busca de parâmetros e aprendizado, sem acumular algoritmos de comportamento semelhante. A arquitetura híbrida é motivada por \citet{Zabraoui2025GaDQN}; sua inclusão não pressupõe superioridade.
 
-A revisão da composição busca referências competitivas e diversidade de decisões, em vez de aumentar o número de algoritmos semelhantes. CappedBaseStock é motivada por \citet{Xin2021CappedBaseStock} e pelas comparações com aprendizado profundo discutidas por \citet{Temizoz2025DeepControlledLearning}. O Jornaleiro orientado a características se relaciona à otimização de decisão de \citet{BanRudin2019BigDataNewsvendor}. A formulação PIL de \citet{VanJaarsveldArts2024PIL} é uma referência da literatura disponível para extensão, não um candidato do portfólio final de doze.
-
-FixedInterval e VendorResponsive são interpretações das descrições de \citet{Zabraoui2025GaDQN}. A primeira usa revisão periódica e reposição até um alvo; a segunda ajusta a proteção de estoque pelo serviço passado. Como o artigo-base não fornece todos os detalhes numéricos dessas regras, a implementação local precisa declarar suas equações e parâmetros. Preservar o nome de uma política não comprova reprodução exata de outro estudo.
-
-A redução do portfólio é uma escolha de escopo. Não permite afirmar inexistência de literatura sobre SARSA, PSO ou DE em inventário, nem que seus resultados seriam sempre redundantes. As versões excluídas permanecem disponíveis para análises futuras. O Apêndice~\ref{app:reproducibility} registra parâmetros e identificadores, enquanto o Capítulo~\ref{cap:results} apresenta a composição associada a cada conjunto de resultados.
+CappedBaseStock é motivada por \citet{Xin2021CappedBaseStock} e pelas comparações discutidas por \citet{Temizoz2025DeepControlledLearning}. Outros módulos existentes no projeto, como Jornaleiro, SA, PSO ou DE, não integram a matriz deste experimento. Sua disponibilidade no código não equivale a evidência reportada. A retirada de candidatos é uma decisão de escopo e redundância, sem afirmar ausência de literatura ou inferioridade universal.
 
 \subsection{Regras Analíticas e Heurísticas}
 
-EOQ legado pede $Q_{\mathrm{ref}}$ quando a posição de estoque cai até $s_{\mathrm{ref}}$. A política $(s,S)$ utiliza esse mesmo limiar e alvo $S=s_{\mathrm{ref}}+Q_{\mathrm{ref}}$, pedindo até o alvo. Ambas herdam a escala de lote discutida na Equação~\ref{eq:qref_metod}. Uma comparação com a EOQ canônica precisa corrigir a unidade temporal antes de interpretar diferenças como vantagem de aprendizado.
+EOQCycle pede um lote $Q_{\mathrm{ref}}$ quando a posição de estoque cai até $s_{\mathrm{ref}}$. sSCycle compartilha o limiar e repõe até $S=s_{\mathrm{ref}}+Q_{\mathrm{ref}}$. Média, dispersão e escalas são calculadas no treino, usando a mesma unidade temporal dos custos. O nome sSCycle identifica essa instanciação, sem alegar otimização exata dos parâmetros de uma política $(s,S)$.
 
-O Jornaleiro implementado utiliza $\max(0,\hat\mu+1{,}28\hat\sigma)$ como lote e um ponto de pedido baseado em $\hat\mu L$. Trata-se de uma regra recorrente inspirada no quantil normal, não do ótimo de um problema de período único com razão crítica estimada. As versões CappedBaseStock e BigDataNewsvendor acrescentam alternativas de calibração, mas sua fidelidade à referência depende de comparar hipóteses e procedimentos, não apenas o rótulo.
-
-No FixedInterval, a revisão ocorre a cada três ciclos e o alvo cobre revisão mais reposição, com proteção proporcional à variabilidade. No VendorResponsive, o fator de segurança aumenta quando o serviço acumulado fica abaixo da meta interna e diminui quando fica acima. Essas regras oferecem referências simples adaptáveis. Nenhuma delas deve ser removida porque supera um método proposto; sua função é tornar a comparação exigente.
+CappedBaseStock acrescenta uma regra de reposição até um alvo com limite de quantidade. Sua interpretação depende das hipóteses e da calibração implementadas, além do rótulo bibliográfico. As três referências determinísticas recebem um ajuste por série e origem e são avaliadas nas mesmas condições de demanda e estoque inicial das candidatas aprendidas.
 
 \subsection{Busca de Parâmetros}
 
-GA e SA ajustam uma regra de ponto de pedido e lote, representada por $\boldsymbol\theta=(s,Q)$. O problema de referência é
+GA ajusta uma regra de ponto de pedido e lote, representada por $\boldsymbol\theta=(s,Q)$. O problema de referência é
 \begin{equation}
 \boldsymbol\theta_i^*=\arg\min_{\boldsymbol\theta\in\Theta_i}\mathrm{CTI}(\pi_{\boldsymbol\theta},i)
 \quad\text{sujeito a }\mathrm{NS}(\pi_{\boldsymbol\theta},i)\geq\alpha_{\min}.
@@ -162,7 +156,7 @@ GA e SA ajustam uma regra de ponto de pedido e lote, representada por $\boldsymb
 \end{equation}
 A execução pode representar a restrição por penalidade ou usar uma soma ponderada de custo e serviço. Esses objetivos não são idênticos: uma solução favorecida pela aptidão ainda precisa ter a viabilidade verificada no critério de rotulagem. Os pesos e termos adicionais de risco fazem parte da versão experimental e não podem ser omitidos ao atribuir desempenho ao algoritmo.
 
-A configuração de referência histórica BA do GA emprega 100 indivíduos e 50 gerações, seleção por torneio, cruzamento uniforme e mutação adaptativa. O artigo-base motiva esses operadores~\citep{Zabraoui2025GaDQN}, mas a regra local de redução da mutação é uma escolha de implementação. O SA usa temperatura inicial 1000, resfriamento 0,95 e 500 iterações. Os detalhes de espaço de busca, sementes e operadores estão no apêndice; não são repetidos como uma descrição de módulos computacionais.
+O GA emprega 100 indivíduos e 50 gerações em cada ajuste, com sementes 11, 29 e 47. Operadores e a função de aptidão são identificados pela configuração e pelo código arquivados. O artigo-base motiva a busca evolutiva~\citep{Zabraoui2025GaDQN}, mas a implementação local e seu orçamento devem ser explicitados, sem pressupor reprodução exata.
 
 O orçamento dessas buscas difere do orçamento de agentes de reforço. Avaliar milhares de candidatos completos não é equivalente a milhares de passos do simulador. A comparação deve registrar avaliações e tempo, além dos KPIs finais, especialmente quando a inicialização híbrida incorpora trabalho prévio do GA. Sem esse controle, um resultado favorável pode refletir maior esforço computacional.
 
@@ -170,11 +164,11 @@ O orçamento dessas buscas difere do orçamento de agentes de reforço. Avaliar 
 
 O estado disponível reúne estoque, previsão ou demanda recente, pedidos em trânsito, média e dispersão recentes e posição no horizonte. Na implementação atual, DQN usa uma arquitetura Double DQN~\citep{VanHasselt2016DoubleDQN} com componentes dueling~\citep{Wang2016DuelingDQN}; PPO usa estimação generalizada de vantagem~\citep{Schulman2016GAE}. A recompensa parte do custo negativo, podendo incorporar penalidades na versão específica.
 
-Os parâmetros de referência histórica incluem duas camadas de 64 unidades, memória de 10.000 transições e mil episódios para DQN, com exploração 0.2. PPO também usa mil episódios e clipping 0.2. O projeto atual discretiza quantidades admissíveis; não se atribui a esses resultados a propriedade de ações contínuas apenas porque PPO permite essa formulação. Sementes, resolução de ações, taxas de aprendizado e atualização de alvos acompanham a configuração de reprodução.
+DQN e PPO utilizam duas camadas de 64 unidades e 20 ações discretas. O orçamento mínimo é de 20 mil transições, completando o último episódio: 20.009 e 20.010 transições nas origens Bahia de 17 e 23 ciclos. O número de episódios deriva desse orçamento e do tamanho do treino. As sementes são 11, 29 e 47. Os valores efetivamente usados, incluindo limites de ação e atualização, acompanham o manifesto e a configuração de reprodução.
 
-GA--DQN utiliza a parametrização evolutiva para gerar experiências iniciais e depois refina o agente, com referência de mil transições e 200 episódios na configuração híbrida. As 5.000 avaliações candidatas do GA não equivalem ao tamanho da memória. A arquitetura é uma especialista do portfólio, motivada pelo artigo-base~\citep{Zabraoui2025GaDQN}; não constitui a novidade principal da seleção contextual.
+GA--DQN usa a solução evolutiva para gerar mil transições de demonstração e depois refina o agente com o orçamento de transições do DQN. Mantém gatilho e piso de pedido entre demonstração, treinamento e inferência. A busca genética e as demonstrações representam esforço adicional: comparar o híbrido ao DQN não isola o efeito da arquitetura sob computação equivalente. A combinação é motivada por \citet{Zabraoui2025GaDQN} e não constitui a novidade principal da seleção contextual.
 
-Correções de operadores, penalidades e treinamento ocorreram durante o projeto. A descrição do código recente não prova que esse mesmo código gerou uma tabela anterior. Resultados associados a agentes degenerados são mantidos com sua versão; explicar sua causa exige ablações controladas. Episódios repetidos na demanda observada são interações sintéticas, não novas amostras de vendas nem validação de generalização.
+Episódios repetidos na demanda observada são interações sintéticas, não novas amostras de vendas. Sementes distintas medem parte da variabilidade de ajuste, sem substituir avaliação em outras lojas ou períodos. Explicar o efeito isolado de operadores, demonstrações ou gatilhos exige ablações controladas.
 
 \subsection{Redundância e Classes de Rotulagem}
 \label{sec:redundancia_portfolio}
@@ -188,9 +182,9 @@ Agrupar candidatos é uma decisão do conjunto de treinamento, não uma alteraç
 \subsection{Ambiente de Simulação}
 \label{sec:ambiente_simulacao}
 
-O simulador recebe demanda fixa, estoque inicial, fila vazia, custos e uma política. Em cada ciclo, a política decide usando o estado anterior à chegada. A primeira quantidade da fila é recebida e o novo pedido acrescentado; a demanda do ciclo é atendida com o estoque disponível; faltas são perdidas; manutenção incide sobre o saldo após demanda. Pedido fixo e variável são cobrados na emissão. Não há crédito pelo estoque ou pelos pedidos em trânsito ao final.
+O simulador recebe a trajetória de demanda, o estado inicial comum, custos e uma política. O estado pode incluir pedidos em trânsito produzidos pelo aquecimento. A política decide com informação passada, e o recebimento segue a convenção exata de prazo. A demanda é atendida com o estoque disponível; faltas são perdidas, e manutenção incide sobre o saldo após demanda. Custos fixos e variáveis do pedido são cobrados na emissão, sem crédito por estoque ou pedidos em trânsito ao final.
 
-Na instanciação histórica, a fila contém $L+1$ posições. Assim, o parâmetro $L=2$ implica chegada do pedido de $t$ em $t+3$ nessa indexação. Não corresponde a uma entrega efetiva em dois ciclos, apesar da nomenclatura histórica. Manter a convenção entre candidatos favorece comparabilidade interna, mas não elimina a necessidade de verificar sua aderência ao prazo real. Horizonte curto, estoque inicial e efeito terminal podem determinar parcela relevante do resultado.
+O prazo efetivo é de dois ciclos: o pedido emitido em $t$ torna-se disponível em $t+2$ segundo a ordem de eventos da execução. Essa convenção é compartilhada entre candidatas e deve acompanhar qualquer reprodução. O horizonte curto, o estado inicial e a ausência de crédito terminal limitam a interpretação.
 
 Cada trajetória produz custos de manutenção, falta e pedido, além dos KPIs e históricos de estoque e ações. A decomposição permite conferir se os componentes somam o CTI. As políticas compartilham demanda e condições operacionais, mas seus procedimentos de calibração podem diferir. A execução também precisa registrar falhas de candidatos; excluir silenciosamente séries com erro rompe a matriz pareada.
 
@@ -236,9 +230,7 @@ Essa divisão é necessária, mas não suficiente para prevenir vazamento. Norma
 \label{fig:walkforward}
 \end{figure}
 
-A documentação inicial menciona treino mínimo de 12 ciclos e até 26 alvos de previsão. A configuração posterior adota 17 ciclos e oferece tanto divisão única quanto ajuste por origem crescente. Esses modos não devem ser confundidos com uma única avaliação de controle. Os KPIs da matriz histórica são compatíveis com um bloco de 21 ciclos após 17 de treino; a identificação final depende da configuração arquivada, não do número nominal de ciclos da série.
-
-Há limitações residuais na execução histórica: escalas podem vir de metadados da série completa, perfis podem usar os 38 ciclos e o estado do ambiente pode normalizar pelo próprio bloco avaliado. Por isso, não se afirma avaliação integralmente livre de informação futura para as tabelas existentes. Uma nova execução rigorosa deve restringir todas as etapas ao passado e preservar um bloco final que não participe da escolha do seletor.
+Na Bahia, os prefixos de treino têm 17 e 23 ciclos, seguidos por sete de validação e sete de teste. As duas origens compartilham um ciclo de teste. Características, escalas e parâmetros usam somente o prefixo; a escolha usa a validação das demais lojas. O teste da loja reservada não participa dessas decisões.
 
 O treinamento de controladores, a seleção de uma política e a avaliação da recomendação exigem papéis temporais separados. O primeiro ajusta parâmetros; o segundo usa validação para comparar candidatos; o último mede o resultado em demanda futura intocada. Avaliar o seletor com a mesma matriz que define seus rótulos mede ajuste retrospectivo. Mesmo a exclusão de uma loja da rotulagem não corrige informação futura já incorporada à calibração de suas políticas.
 
@@ -248,7 +240,7 @@ Wilcoxon compara pares de políticas nas mesmas séries; Friedman e Nemenyi comp
 
 A unidade de observação é a série loja--produto. Séries da mesma loja e lojas que compartilham produtos ou condições comerciais podem ser dependentes. A análise deve reconhecer essa estrutura, por exemplo, mediante reamostragem por loja e verificações de sensibilidade. Não se obtém independência multiplicando o número de séries por repetições determinísticas.
 
-O segundo experimento registra cinco avaliações nominais por política e série. O código treina ou otimiza o candidato antes de repetir a trajetória, e os desvios registrados de CTI são essencialmente nulos. Portanto, essas avaliações não são cinco treinamentos independentes nem justificam uma alegação de \textit{common random numbers} como fonte de poder adicional. Para medir variabilidade de aprendizado, seriam necessárias sementes distintas de treinamento e resultados separados por semente.
+As três sementes estocásticas são promediadas dentro de cada caso série--origem e política antes da comparação. A reamostragem pareada preserva os produtos e origens de cada loja. Os intervalos são condicionais aos ajustes e escolhas fixos, sem retreinamento nos sorteios; por isso não representam toda a incerteza da investigação.
 
 \section{Geração de Rótulos e PSE}
 \label{sec:selecao_contextual}
@@ -287,10 +279,10 @@ A adaptação proposta consiste em recalcular características e consultar o sel
 \label{sec:protocolo_exp}
 \label{sec:reporting}
 
-O piloto da Paraíba fornece 180 combinações de 15 lojas e 12 políticas, sob a versão inicial. A expansão da Bahia reúne 145 séries e um portfólio posterior também de 12 candidatas, com composição distinta. Os resultados pertencem a essas versões e recortes. Não são uma validação nacional, um experimento independente para cada repetição ou uma aplicação conjunta de todos os controladores implementados.
+A Bahia reúne 145 séries em 115 lojas e nove produtos, com duas origens e 4.350 ajustes completos. O M5 utiliza uma coorte de 2.408 identificadores, com elegibilidade própria em cada prefixo, e permanece em execução. As bases são analisadas separadamente sob perguntas e critérios comuns. A expansão nacional foi retirada da execução ativa.
 
 Cada execução deve associar dados, lista de políticas, parâmetros, semente, divisão temporal e versão do código. Arquivos de características, perfis, KPIs e recomendações têm funções diferentes; o relatório precisa indicar qual foi usado em cada tabela. Hashes de entrada e manifesto de execução ajudam a detectar troca de arquivos, mas não certificam, isoladamente, ausência de informação futura ou fidelidade do algoritmo.
 
-O Apêndice~\ref{app:reproducibility} concentra a matriz de parâmetros e os artefatos necessários à reprodução. As fontes de vendas e PDFs de referência são preservadas. Correções recentes de código não sobrescrevem resultados históricos nem autorizam reinterpretá-los como novos experimentos. Uma comparação entre versões requer reexecução explícita sob protocolo congelado.
+O Apêndice~\ref{app:reproducibility} concentra os parâmetros da avaliação e sua rastreabilidade. Dados, fontes de conhecimento e versões de desenvolvimento são preservados no projeto, sem compor matrizes paralelas na síntese dos resultados.
 
-Os resultados históricos do M5 e a avaliação temporal da Bahia têm funções distintas no Capítulo~\ref{cap:results}. O M5 sob o protocolo temporal permanece em execução; a expansão nacional foi retirada da execução ativa.
+O Capítulo~\ref{cap:results} responde às perguntas com a cobertura disponível, distinguindo evidência completa de análises ainda pendentes. A execução M5 só sustentará conclusões após conferência de sua matriz.
