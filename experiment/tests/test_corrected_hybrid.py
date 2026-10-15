@@ -56,12 +56,13 @@ def test_demo_count_and_real_learning_remain_finite():
     assert agent.loss_hist and np.isfinite(agent.loss_hist).all()
 
 
-def test_historical_nonhybrid_fit_contract_is_unchanged():
+def test_historical_fit_guard_rejects_changed_calibration():
     script=Path(__file__).resolve().parents[1]/'scripts/analysis/run_scoped_production.py'
     import sys
     sys.path.insert(0,str(script.parent))
     spec=importlib.util.spec_from_file_location('scoped_queue',script)
     queue=importlib.util.module_from_spec(spec);spec.loader.exec_module(queue)
     source=script.parents[2]/'data/08_reporting/research_v2/overnight_cpu16_2026-10-14'
-    _,same_hybrid=queue.audit_source(source)
-    assert not same_hybrid
+    import pytest
+    with pytest.raises(ValueError, match='Scientific dependency changed:.*policies_sota'):
+        queue.audit_source(source)

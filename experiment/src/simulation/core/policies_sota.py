@@ -94,7 +94,12 @@ def _calibrate_batch(demand, cfg: dict, order_fn, grid: torch.Tensor,
         while not done:
             _, _, done, _ = env.step(order_fn(env, theta))
         tic_ref = series_tic_ref(d, cs)
-        return constrained_cost(env.kpis(), alpha_min, penalty_weight, tic_ref_fixed=tic_ref)
+        risk = cfg.get("GENETIC_ALGORITHM", {})
+        return constrained_cost(
+            env.kpis(), alpha_min, penalty_weight,
+            tr_weight=float(risk.get("tr_weight", 1.0)),
+            be_weight=float(risk.get("be_weight", 1.0)),
+            tic_ref_fixed=tic_ref)
 
     if demand_pool is None:
         cost = _run_one(demand)
