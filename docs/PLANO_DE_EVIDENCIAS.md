@@ -1,36 +1,22 @@
-# Perguntas de pesquisa e evidências
+# AIPE: perguntas e evidências
 
-O experimento deve produzir uma matriz coerente de evidências. Versões anteriores ficam preservadas para rastreabilidade, sem compor um segundo conjunto de resultados na argumentação. Não se concatenam resultados com diferentes definições de custo, preparação ou avaliação.
+O artigo concentra a arquitetura e a avaliação operacional das duas abordagens do PSE. A dissertação mantém a formulação ampla e seus fundamentos. Não se combinam custos de bases ou calibrações diferentes como se fossem um mesmo tratamento.
 
-## Artigo
-
-**Pergunta central:** selecionar a política por perfil melhora o compromisso custo–atendimento frente à seleção global com a mesma informação passada?
-
-| Análise necessária | Evidência | Situação |
+| Pergunta | Bahia | Piloto M5 |
 |---|---|---|
-| Qualidade das candidatas | Custo, atendimento médio e ponderado; fronteira descritiva | Bahia completa; M5 em execução |
-| Valor incremental do perfil | Comparação pareada global × perfil em teste reservado; violações individuais | Bahia completa; M5 pendente |
-| Estabilidade da recomendação | Escolhas por perfil e origem; distribuição de atendimento | Bahia completa; M5 pendente |
-| Dependência da meta | Limiares 0,70 / 0,80 / 0,85 / 0,90 / 0,95; contingências explícitas | Bahia disponível; M5 pendente |
-| Incerteza | Reamostragem por loja com origens preservadas; limites condicionais explícitos | Bahia disponível; M5 pendente |
+| PSE por perfil melhora a global? | 145 séries; serviço adicional com custo pontualmente maior | 30 séries; sem benefício agregado |
+| O PSE preditivo melhora a escolha? | Não avaliado | Pior custo e serviço; recuo exploratório reduz a perda |
+| Perfil explícito ajuda o classificador? | Não avaliado | 90/90 previsões idênticas; importância por ganho zero |
+| Distância ao melhor disponível? | Portfólio e seleção temporal | Oráculo por caso e 90 ótimos com informação perfeita |
+| Onde ocorrem as falhas? | Serviço e violações individuais | Seleção, portfólio, limite físico e demanda zero |
+| Qual a incerteza? | Bootstrap condicional de 115 lojas | Bootstrap exploratório de dez lojas |
 
-As duas bases são estudos separados que respondem à mesma pergunta. O artigo não precisa reunir todos os módulos, pilotos ou resultados da dissertação. O M5 só entra nas conclusões quando sua matriz estiver suficientemente completa; o andamento não é evidência final. Na Bahia, há 145 séries, duas origens e 4.350 ajustes completos.
+As matrizes analisadas estão completas: Bahia, 4.350 ajustes; piloto M5, 1.350. Isso não significa conclusão do M5 ampliado, que foi interrompido. Os 90 casos do piloto são 30 séries em três origens. Sementes não geram novas séries.
 
-## Dissertação
+O piloto é desenvolvimento, pois motivou a regra de recuo. A confirmação exige séries reservadas, ajustes em validação interna por loja e harmonização da calibração da CappedBaseStock entre bases. Objetivos de serviço por série e por grupo precisam ser explicitados.
 
-A dissertação comporta a formulação ampla do AIPE, descrição dos dados, justificativa do portfólio, implementação, custo computacional e análises complementares. A síntese experimental deve adotar o mesmo protocolo explícito e indicar para cada pergunta o que foi medido e o que permanece em aberto.
+O artigo possui cinco figuras: conceito AIPE, fronteira Bahia, escolhas por perfil Bahia, comparação M5 e decomposição das falhas M5. A dissertação inclui também distribuição de serviço Bahia. Figuras usam resultados congelados, sem treinar políticas.
 
-Não estão demonstrados apenas pela execução atual: eficácia do PSE supervisionado; economia monetária real; efeito causal da hibridização com esforço computacional equivalente; robustez a outros custos e prazos; desempenho nacional. Cada afirmação exigiria uma análise ou execução própria. Essas extensões não são requisitos automáticos do artigo.
+Não estão demonstrados: superioridade geral do AIPE, economia financeira real, efeito causal do híbrido com esforços iguais, implantação online, robustez a todos os custos/prazos e desempenho nacional. Esses pontos não são preenchidos por redação. Brasil permanece cancelado.
 
-## Critério de fechamento
-
-Primeiro consolidar as matrizes Bahia e M5, sem repetir ajustes compatíveis. Depois gerar as mesmas análises por base, conferir denominadores, cobertura e proveniência e revisar as conclusões. Não eliminar políticas somente porque perderam no teste; qualquer redução definitiva do portfólio deve considerar literatura, redundância, custo computacional e resultados nas duas bases.
-
-## Figuras do artigo
-
-1. Fluxo experimental: quem usa treino, validação e teste.
-2. Custo × atendimento: diferença entre preço baixo e compromisso competitivo.
-3. Distribuição do atendimento: onde a média esconde insuficiência individual.
-4. Escolhas por perfil e origem: onde a contextualização altera a decisão.
-
-As figuras são geradas por `experiment/scripts/documents/article_research_figures.py` a partir dos registros completos e das escolhas auditadas na validação. Não executam treinamento nem selecionam políticas usando o teste.
+Auditorias: docs/supply_chain_analytics_article/reviews/aipe_revision_2026-10-15/. Textos e PDFs anteriores: docs/archive/aipe_revision_2026-10-15/.

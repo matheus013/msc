@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import re
 
 ROOT=Path(__file__).resolve().parents[3]
 DOC=ROOT/'docs/supply_chain_analytics_article'
@@ -47,9 +48,16 @@ def main():
     files=[stem+'.tex',stem+'.bbl','references_ptbr.bib' if args.ptbr else 'references.bib','elsarticle.cls','elsarticle-num.bst']
     files+=['highlights_ptbr.txt'] if args.ptbr else ['Figure_1.png','Figure_2.png','highlights.txt']
     if args.ptbr:
-        files.extend(['bahia_20261015.tex','protocolo_bahia_20261015.tex'])
-        files.extend('figures/'+name+'.pdf' for name in [
-            'fluxo_experimental','custo_servico','escolhas_perfil','distribuicao_atendimento'])
+        pending=[stem+'.tex'];seen=set();texts=[]
+        while pending:
+            name=pending.pop()
+            if name in seen:continue
+            seen.add(name);content=(DOC/name).read_text(encoding='utf-8');texts.append(content)
+            for child in re.findall(r'\\input\{([^}]+)\}',content):
+                child=child if child.endswith('.tex') else child+'.tex'
+                pending.append(child);files.append(child)
+        files.extend(re.findall(r'\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}','\n'.join(texts)))
+        files=list(dict.fromkeys(files))
     zip_name='article_sources_ptbr_draft.zip' if args.ptbr else 'article_sources_draft.zip'
     with zipfile.ZipFile(DOC/zip_name,'w',zipfile.ZIP_DEFLATED) as archive:
         for name in files:

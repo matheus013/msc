@@ -289,8 +289,8 @@ de Curso e Dissertacoes]
     \begin{flushright} % Alinhamento à direita
       \href{http://ic.ufal.br}{\includegraphics[width=.3\linewidth]{IC.eps}}\\%
 % [Rian] Adicionado href
-      \Large \vspace*{2cm} \ifthenelse{\boolean{tcc}}{Undergraduate Thesis}{Proposta de Dissertação de Mestrado}\newline%
-      \vspace*{2cm}{\parbox{.9\linewidth}{\raggedleft\LARGE\bfseries\setstretch{1.05}\@titulo}}\par%
+      \Large \vspace*{2cm} \ifthenelse{\boolean{tcc}}{Undergraduate Thesis}{Dissertação de Mestrado}\par%
+      \vspace*{0.6cm}{\parbox{.9\linewidth}{\raggedleft\LARGE\bfseries\setstretch{1.05}\@titulo}}\par%
       \vspace*{2cm}%
       \Large \href{\@autorPagina}{\color{black}{\@autorNome}}\newline\normalsize %
 \texttt{\@autorEmail}\newline % [Rian] Adicionado href
@@ -335,7 +335,7 @@ de Curso e Dissertacoes]
        {Monografia apresentada como requisito parcial para obtenção do grau de
 Bacharel em Engenharia de Computação do Instituto de Computação da Universidade
 Federal de Alagoas.}%
-        {Uma proposta de dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para qualificação no curso de Mestrado em Informática pela Universidade Federal de Alagoas, Instituto de Computação.}%
+        {Dissertação em desenvolvimento no Programa de Pós-Graduação em Informática da Universidade Federal de Alagoas, Instituto de Computação.}%
     \end{minipage}%
     \begin{flushright}
         \vspace*{2cm} \large%
@@ -374,7 +374,7 @@ Federal de Alagoas.}%
         {Monografia apresentada como requisito parcial para obtenção do grau de
 Bacharel em Engenharia de Computação do Instituto de Computação da Universidade
 Federal de Alagoas, aprovada pela comissão examinadora que abaixo assina.}%
-        {Proposta de dissertação submetida por Matheus Inácio Batista Santos como requisito parcial para qualificação no curso de Mestrado em Informática pela Universidade Federal de Alagoas, Instituto de Computação, avaliada pela banca examinadora que assina abaixo.
+        {Versão de trabalho da dissertação de mestrado em desenvolvimento no Instituto de Computação da Universidade Federal de Alagoas. Composição da banca a confirmar.
         }%
     \begin{center}
         \normalsize%

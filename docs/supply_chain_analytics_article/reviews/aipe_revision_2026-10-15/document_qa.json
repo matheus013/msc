@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "documents": [
+    {
+      "document": "article",
+      "pages": 17,
+      "previous_pages": 19,
+      "pdf_sha256": "5c33ed52f26c74d40497356bd1a749140287aa6b4e833e080a82f2d207a7f9ca"
+    },
+    {
+      "document": "dissertation",
+      "pages": 52,
+      "previous_pages": 62,
+      "pdf_sha256": "8a6f96417458d67ffd1492bd8312bbb6cfc131297fd85a10c5ed74f32836d3c4"
+    }
+  ],
+  "visual_review": "All pages inspected in contact sheets; detailed checks of concept, M5 figures, cover and institutional front matter; cover spacing repaired.",
+  "visual_review_local_path": "experiment/data/document_qa/aipe_revision_2026-10-15",
+  "undefined_references": 0,
+  "overfull_boxes": 0,
+  "article_figures": 5,
+  "dissertation_figures": 6,
+  "shared_M5_results_identical": true,
+  "no_inventory_training": true,
+  "previous_versions_preserved": "docs/archive/aipe_revision_2026-10-15",
+  "limitations": "Development draft. M5 pilot and fallback are not independent confirmatory evidence. Human review, translation and final protocol remain necessary."
+}

@@ -2,7 +2,7 @@
 
 Uma rede varejista precisa decidir quando e quanto repor em cada loja. O problema se torna mais difícil quando um produto vende regularmente em uma unidade, mas passa vários ciclos sem venda em outra. Uma política que preserva disponibilidade no primeiro caso pode gerar excesso de estoque no segundo. Custos, faltas e variabilidade dos pedidos dependem da relação entre a regra de reposição e o comportamento da demanda \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
 
-Esta dissertação investiga essa relação como um problema de seleção: dadas as características de uma série loja-produto e um portfólio de políticas, qual alternativa oferece menor custo sob uma exigência de serviço? A proposta recebe o nome de \textit{Adaptive Inventory Policy Engine} (AIPE). Seu componente supervisionado, o \textit{Policy Selection Engine} (PSE), permanece em desenvolvimento e validação.
+Esta dissertação investiga essa relação como um problema de seleção: dadas as características de uma série loja-produto e um portfólio de políticas, qual alternativa oferece menor custo sob uma exigência de serviço? A proposta recebe o nome de \textit{Adaptive Inventory Policy Engine} (AIPE). Seu \textit{Policy Selection Engine} (PSE) admite associação entre perfil e política e previsão supervisionada da política por série. As duas abordagens são avaliadas pelas consequências operacionais de suas recomendações.
 
 \section{Motivação}
 
@@ -42,7 +42,7 @@ A questão principal é: \emph{características operacionais da demanda permitem
 
 A primeira pergunta trata de heterogeneidade; a segunda, de aprendizagem; a terceira, de generalização. Elas exigem evidências distintas. Encontrar vencedores diferentes na própria amostra não valida o PSE nem demonstra economia futura. Diferenças estatísticas entre políticas também não substituem a comparação entre estratégias de seleção.
 
-As hipóteses correspondentes são que existe heterogeneidade operacional relevante, que parte dela é capturada pelas características das séries e que um seletor pode aproveitar essa informação fora da amostra. As duas últimas permanecem em avaliação. Os resultados da qualificação são exploratórios e motivam testes adicionais; não autorizam concluir que a seleção contextual supera sempre a melhor política global.
+As hipóteses correspondentes são que existe heterogeneidade operacional relevante, que parte dela é capturada pelas características das séries e que um seletor pode aproveitar essa informação fora da amostra. São hipóteses empíricas, não premissas da proposta. A avaliação da Bahia e o piloto M5 mostram benefícios condicionais da escolha por perfil e limites da implementação preditiva, sem estabelecer superioridade geral.
 
 \section{Objetivos}
 
@@ -60,17 +60,17 @@ Propor e avaliar o AIPE como abordagem de seleção contextual de políticas de 
   \item Examinar a validade externa em dados públicos de varejo e em recortes adicionais da base brasileira, preservando a rastreabilidade.
 \end{enumerate}
 
-O piloto da Paraíba avaliou 15 lojas e um produto; a etapa histórica da Bahia ampliou a análise para 145 séries. Uma nova execução dessa coorte acrescenta ajuste no passado e blocos separados de validação e teste. O M5 oferece uma comparação histórica com 2.408 séries, cuja renova execução permanece em andamento. Esses estudos têm protocolos próprios, identificados no capítulo de resultados. A expansão nacional não integra a execução ativa.
+Os estudos da Paraíba e da qualificação motivaram o desenvolvimento. A evidência quantitativa consolidada compreende 145 séries da Bahia em duas origens e um piloto M5 com 30 séries nas dez lojas, em três origens. O capítulo de resultados separa as bases e suas condições. A rodada maior do M5 foi interrompida para construir o protocolo final; a expansão nacional foi cancelada e não integra as conclusões.
 
 \section{Contribuições e alcance da evidência}
 
-A contribuição metodológica é formular a escolha de políticas como seleção contextual apoiada por um portfólio avaliado em condições comuns. A contribuição empírica é estudar essa escolha em séries reais do varejo brasileiro, com forte intermitência. A contribuição computacional é integrar preparação, caracterização, simulação e análise em um fluxo configurável.
+A contribuição metodológica é formular a escolha de políticas como seleção contextual apoiada por um portfólio avaliado em condições comuns. A contribuição empírica é estudar essa escolha em séries reais do varejo brasileiro e no piloto público M5, com os limites de cada avaliação identificados. A contribuição computacional é integrar preparação, caracterização, simulação e análise em um fluxo configurável.
 
-GA, SA, DQN, PPO e suas combinações são métodos conhecidos. Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
+GA, DQN, PPO e suas combinações são métodos conhecidos. Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
 
-A infraestrutura implementada permite comparar candidatos e regras explícitas de seleção. A nova execução da Bahia avalia essas escolhas em períodos posteriores; o PSE supervisionado ainda requer avaliação própria fora da amostra. Versões distintas do portfólio e do protocolo permanecem separadas para preservar o significado de cada resultado.
+A infraestrutura permite avaliar separadamente controladores e seletores. Na Bahia, o PSE por perfil é confrontado com a global; no M5, a avaliação inclui o preditivo e uma extensão exploratória de recuo. O piloto não demonstra vantagem do modelo supervisionado e passa a integrar o desenvolvimento do protocolo final.
 
-O protocolo histórico prevê cinco execuções por série e política, mas isso não basta para afirmar independência. Saídas determinísticas ou praticamente idênticas não aumentam a evidência empírica. A série e suas dependências por loja devem orientar a análise, como discutido nos capítulos de metodologia e resultados.
+Cada política estocástica é ajustada com três sementes; referências determinísticas recebem um ajuste. Essas repetições descrevem variação do treinamento e não novas lojas ou demandas. A série e suas dependências por loja orientam a análise, como discutido nos capítulos de metodologia e resultados.
 
 \section{Escopo e delimitações}
 \label{sec:delimitacoes}
@@ -81,6 +81,6 @@ O simulador avalia políticas sobre históricos preparados. Custos e abastecimen
 
 Os dados proprietários limitam a divulgação pública. A rastreabilidade depende de código, parâmetros e identificação dos artefatos e recortes. Vendas podem não representar toda a demanda quando há falta de estoque, e ciclos ausentes exigem tratamento cuidadoso. Essas limitações impedem interpretar automaticamente a simulação como ganho econômico realizável.
 
-O Capítulo~\ref{cap:tec} apresenta os fundamentos; o Capítulo~\ref{cap:rel}, a literatura; e o Capítulo~\ref{cap:metod}, a implementação. O Capítulo~\ref{cap:results} reúne os resultados exploratórios. As conclusões estão no Capítulo~\ref{cap:conclusion}, e a continuidade no Capítulo~\ref{cap:plano_continuidade}.
+O Capítulo~\ref{cap:tec} apresenta os fundamentos; o Capítulo~\ref{cap:rel}, a literatura; e o Capítulo~\ref{cap:metod}, a implementação. O Capítulo~\ref{cap:results} reúne as avaliações e seus diagnósticos. As conclusões estão no Capítulo~\ref{cap:conclusion}, e a continuidade no Capítulo~\ref{cap:plano_continuidade}.
 
 \newpage\lhead{\rightmark}

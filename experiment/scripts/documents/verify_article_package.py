@@ -20,7 +20,7 @@ assert len(keys)==len(set(keys)), 'Duplicate bibliography keys'
 cited={key.strip() for block in re.findall(r'\\cite\w*\{([^}]+)\}',all_text) for key in block.split(',')}
 assert cited<=set(keys),'Missing bibliography entries'
 figures=re.findall(r'\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}',all_text)
-assert len(figures)==4 and all(f.endswith('.pdf') for f in figures)
+assert len(figures)>=5 and all(f.endswith('.pdf') for f in figures)
 fonts={}
 for name in figures:
     assert (DOC/name).exists()
@@ -49,6 +49,7 @@ report={'status':'passed','pages':int(re.search(r'Pages:\s+(\d+)',pdfinfo)[1]),
         'no_undefined_references_or_overfull_boxes':True,
         'manuscript_sha256':hashlib.sha256((DOC/'manuscript_ptbr.pdf').read_bytes()).hexdigest(),
         'note':'Structural and artifact checks; scientific audit is recorded separately.'}
-target=DOC/'reviews/fine_review_2026-10-15/package_checks.json'
+target=DOC/'reviews/aipe_revision_2026-10-15/package_checks.json'
+target.parent.mkdir(parents=True,exist_ok=True)
 target.write_text(json.dumps(report,indent=2),encoding='utf-8')
 print(json.dumps({k:v for k,v in report.items() if k!='figure_fonts'},indent=2))

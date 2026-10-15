@@ -1,0 +1,51 @@
+\mychapter{Plano de Continuidade}{cap:plano_continuidade}\lhead{PLANO DE CONTINUIDADE}
+
+A continuidade parte de uma avaliação temporal da Bahia já concluída e de uma avaliação M5 em andamento. O objetivo é consolidar evidência comparável para a seleção de políticas e, então, avaliar o PSE supervisionado. A expansão nacional foi cancelada na execução atual e não constitui requisito para concluir as etapas seguintes.
+
+\section{Consolidação dos experimentos}
+
+A Bahia dispõe de manifesto, 4.350 ajustes completos e métricas de validação e teste. A análise deverá examinar a variação entre origens, os casos sem demanda e o compromisso entre custo e atendimento. As análises complementam a mesma matriz experimental, com cobertura e proveniência verificadas.
+
+\subsection{M5: avaliação pública com protocolo temporal}
+\label{sec:estudos_caso_adicionais}
+
+A execução M5 utiliza a coorte histórica de 2.408 identificadores, sujeita à elegibilidade no prefixo de cada origem. Isso preserva uma comparação condicional à coorte, sem tornar prospectiva sua seleção inicial. O recorte local é inspirado em \citet{Zabraoui2025GaDQN}; não reproduz uma amostra publicada com identificadores e filtros numéricos integralmente especificados.
+
+A comparação com a Bahia deverá usar métricas e regras de escolha comuns, mantendo separadas as escalas de custo e as propriedades da demanda. A avaliação M5 ainda não sustenta conclusões neste documento.
+
+\section{Validação da seleção}
+
+O próximo desenho deverá ampliar os períodos e reduzir a sobreposição dos testes. Características, normalização, parâmetros e critérios de inclusão devem depender do passado disponível. A seleção usará validação, e o teste ficará reservado à avaliação. O comparador principal será a melhor política global viável escolhida sob a mesma informação.
+
+O PSE receberá características anteriores à decisão e rótulos produzidos apenas nos dados de ajuste. Sua avaliação incluirá custo, atendimento, déficit de serviço e arrependimento relativo à referência. Acurácia e F1 serão diagnósticos auxiliares: rótulos próximos em desempenho não têm o mesmo significado econômico que erros com grande perda de serviço. Modelos supervisionados serão comparados com política global, regras por perfil e modelos simples, respeitando tempo e agrupamento por loja.
+
+\subsection{Calibração agrupada por perfil}
+\label{sec:robustez_pooling}
+
+Calibrar parâmetros em grupos é uma hipótese distinta de escolher políticas por perfil. Uma eventual comparação entre ajuste individual e agrupado deverá manter cortes, custos e orçamento comuns. Benefícios e inversões entre períodos serão apresentados conjuntamente, sem interpretar um recorte favorável como robustez geral.
+
+\section{Sensibilidade e eficiência}
+
+As análises deverão variar custos, prazo, estoque inicial, tratamento terminal e exigência de serviço. Média por série, atendimento ponderado e restrições individuais serão comparados como problemas de decisão distintos. A escolha de um peso para custo e serviço deverá anteceder o teste, evitando ajustar o objetivo para favorecer um resultado observado.
+
+A revisão do portfólio combinará diversidade das regras, custo computacional e evidência nas duas bases. Métodos semelhantes não serão considerados equivalentes apenas por correlação de custo. A eventual retirada de candidatos será definida nos dados de desenvolvimento e documentada antes da avaliação final. GA--DQN continuará sendo comparado com GA e DQN, com o esforço total da combinação informado.
+
+CPU e GPU serão escolhidas por medições do tempo total e do uso de recursos. A execução M5 atual usa oito processos CPU para coexistir com o uso normal da máquina. Essa configuração operacional não altera sementes, cortes ou candidatos, nem é um resultado de qualidade das políticas.
+
+\section{Consolidação do texto e critérios de conclusão}
+
+O artigo para \textit{Supply Chain Analytics} e a dissertação compartilham resultados conferidos, mas têm funções diferentes: o artigo concentra a avaliação incremental da seleção; a dissertação explica fundamentos, percurso e limites. O material SBPO permanece arquivado. Autoria, declarações, disponibilidade de dados e adequação editorial serão consolidadas antes de submissão ou depósito.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Etapas de continuidade e critérios de conclusão, sem datas ainda não acordadas.}
+\label{tab:cronograma}
+\begin{tabular}{@{}p{4.1cm}p{8.9cm}@{}}\toprule
+Etapa & Critério de conclusão\\\midrule
+Consolidação Bahia & Resultados temporais, falhas de serviço e limites documentados\\
+Conclusão M5 & Cobertura planejada, matriz completa e comparação por origem\\
+Seleção e sensibilidade & Critérios de decisão definidos e teste preservado\\
+Avaliação do PSE & Comparação fora da amostra com referências competitivas\\
+Redação e defesa & Afirmações, contribuições e pendências coerentes com a evidência\\
+\bottomrule\end{tabular}
+\end{table}

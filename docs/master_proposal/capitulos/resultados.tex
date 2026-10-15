@@ -1,10 +1,12 @@
 \mychapter{Resultados e Discussão}{cap:results}\lhead{RESULTADOS E DISCUSSÃO}
 
-Este capítulo organiza as evidências pelas perguntas de pesquisa. A mesma matriz permite examinar a qualidade das candidatas, o valor da escolha contextual, sua estabilidade e o esforço computacional. Bahia e M5 são bases separadas da avaliação, não versões concorrentes do experimento. A Bahia está completa; o M5 permanece em execução e não recebe conclusões quantitativas parciais.
+A avaliação distingue qualidade dos controladores e utilidade da seleção. A Bahia examina o PSE por perfil em 145 séries; o piloto M5 examina as duas abordagens em 30 séries e três origens. As bases permanecem separadas, com seus próprios denominadores e calibrações. O piloto também serve ao desenvolvimento do seletor, sem representar confirmação independente da extensão com recuo.
 
 \input{bahia_20261015}
+\input{m5_pse_20261015}
 
 \section{Esforço computacional das políticas}
+
 \label{sec:computational_results}
 
 Tempo de ajuste é uma dimensão adicional da comparação, apresentada na Tabela~\ref{tab:fit_time}. Cada ajuste é contado uma vez, sem duplicar seus registros de validação e teste. Ajustes reaproveitados são excluídos desta amostra de tempos. O registro mede a duração do ajuste no ambiente de execução, sob concorrência e carga variável; não equivale a um teste controlado de velocidade entre processadores nem ao tempo total decorrido da rodada.
@@ -25,18 +27,17 @@ sSCycle & 284 & 0,00 & 0,00\\
 
 O tempo deve ser interpretado junto ao desempenho: maior esforço não comprova melhor recomendação. GA--DQN reúne busca, demonstrações e aprendizado, enquanto as referências analíticas têm ajuste simples. Uma comparação causal de eficiência exigiria controlar hardware, carga, orçamento e repetições. Os tempos registrados permitem descrever a execução, mas não substituem esse desenho.
 
-\section{Generalização e componentes ainda não avaliados}
-\label{sec:resultados_m5}
 
-O M5 amplia a investigação para uma fonte pública de vendas. A execução utiliza 2.408 identificadores de alimentos, com elegibilidade determinada no prefixo de cada origem. A conclusão deverá apresentar custo, atendimento, escolhas e incerteza por base, sem comparar custos absolutos entre conjuntos. Enquanto a matriz não estiver completa, não é possível afirmar que o benefício observado na Bahia se mantém no M5.
+\section{Síntese das respostas e limites}
+\label{sec:threats}\label{sec:resultados_m5}
+A heterogeneidade produz escolhas diferentes, mas sua utilidade depende de período e comparador. Na Bahia, o perfil acrescenta serviço com custo pontualmente maior; na segunda origem, não diferencia a escolha global. No M5, o preditivo tem pior custo e serviço, e a informação explícita de perfil não altera as recomendações.
 
-A previsão e o PSE supervisionado integram a proposta ampla do AIPE, mas não são intervenções validadas pela comparação entre seleção global e por perfil. Sua eficácia exige desenho próprio, com características e rótulos produzidos antes do teste, referências competitivas e métricas operacionais. Resultados de desenvolvimento ficam preservados nos arquivos de pesquisa e não funcionam como evidência adicional desta matriz.
+O classificador reproduz o treino, mas tem pouco suporte por classe e rótulos que mudam entre períodos e sementes. A regra de recuo reduz a perda do preditivo; não comprova superioridade sobre global ou perfil. Isso responde parcialmente à pergunta de aprendizagem: a implementação testada não converteu suas características em vantagem operacional.
 
-\section{Alcance e limitações}
-\label{sec:threats}
+O oráculo do portfólio e o planejamento com informação perfeita mostram limites diferentes. Há espaço para melhorar seleção e controle, mas 11 casos do M5 não permitem atingir o alvo nas condições iniciais. Maior capacidade preditiva não remove essa restrição. Tampouco custo baixo com falta deve ser interpretado como aproximação do ótimo viável.
 
-A escolha por perfil melhora o atendimento agregado na Bahia com custo maior; o efeito concentra-se em uma origem. Isso responde à pergunta sobre valor incremental sob as condições avaliadas, sem demonstrar uma vantagem universal. A restrição média não assegura atendimento individual ou ponderado pelo volume. As duas janelas compartilham um ciclo e repetem séries, e a coorte foi definida retrospectivamente.
+A concentração dos perfis existe também fora da amostra: na primeira origem M5, 826/885 séries elegíveis são esparsas, 57 têm tendência e duas são do grupo de volatilidade/sazonalidade. Nas origens 64 e 78, são 1.977/2.033 e 2.360/2.408 séries esparsas. Os rótulos satisfazem a regra explícita, não resultam do perfil padrão. Ampliar o tamanho sem examinar essa cobertura não garante diversidade.
 
-As vendas podem omitir demanda censurada por falta de estoque. Custos são unidades de cenário, e o estado inicial comum depende de uma política de referência. Prazo, custos relativos, crédito terminal e extensão do horizonte podem alterar os resultados. Não foram avaliadas todas essas sensibilidades. O intervalo por loja é condicional aos controladores e escolhas fixos; não mede incerteza de novos treinamentos ou novas realizações da demanda.
+As evidências são condicionais a coortes retrospectivas, sete ciclos de teste, vendas possivelmente censuradas, custos de cenário e estados iniciais de referência. As origens repetem séries; a Bahia compartilha um ciclo. O bootstrap preserva lojas, mas não mede novos treinamentos ou toda a dependência entre produtos e lojas. A diferença de calibração da CappedBaseStock entre bases impede tratar seus contrastes como efeito puro da demanda.
 
-O fechamento da investigação depende da consolidação M5 e das análises previstas no Capítulo~\ref{cap:plano_continuidade}. Questões que exigem outros desenhos permanecem explicitamente abertas, sem preencher lacunas com valores de configurações diferentes.
+A contribuição empírica é tornar essas diferenças verificáveis. O AIPE não recebe confirmação de vantagem geral; oferece um desenho para identificar quando a seleção agrega valor e qual componente precisa melhorar. A avaliação seguinte deve reservar séries não usadas no desenvolvimento e fixar escolhas antes de examinar seus testes.

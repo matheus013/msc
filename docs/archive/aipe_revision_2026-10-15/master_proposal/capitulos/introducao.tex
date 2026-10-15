@@ -1,0 +1,86 @@
+\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
+
+Uma rede varejista precisa decidir quando e quanto repor em cada loja. O problema se torna mais difícil quando um produto vende regularmente em uma unidade, mas passa vários ciclos sem venda em outra. Uma política que preserva disponibilidade no primeiro caso pode gerar excesso de estoque no segundo. Custos, faltas e variabilidade dos pedidos dependem da relação entre a regra de reposição e o comportamento da demanda \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
+
+Esta dissertação investiga essa relação como um problema de seleção: dadas as características de uma série loja-produto e um portfólio de políticas, qual alternativa oferece menor custo sob uma exigência de serviço? A proposta recebe o nome de \textit{Adaptive Inventory Policy Engine} (AIPE). Seu componente supervisionado, o \textit{Policy Selection Engine} (PSE), permanece em desenvolvimento e validação.
+
+\section{Motivação}
+
+\subsection{Reposição em redes varejistas}
+
+Diferenças de consumo, sazonalidade e condições logísticas dificultam o ajuste manual de estoques em redes com muitas lojas. Cada unidade decide sua reposição, mas seus pedidos também afetam o armazém. Lotes elevados podem reduzir a frequência de compra e aumentar o estoque; pedidos frequentes podem preservar disponibilidade e elevar custos fixos. A decisão envolve manutenção, falta, pedido e prazo de entrega \citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}.
+
+A instabilidade dos pedidos acrescenta outra preocupação. Variações nas vendas podem produzir oscilações ainda maiores nas encomendas enviadas aos fornecedores, fenômeno conhecido como efeito chicote \citep{LeePadmanabhanWhang1997Bullwhip}. Medir essa amplificação ajuda a avaliar consequências a montante, embora não substitua a análise conjunta de custo e serviço.
+
+Considere dois históricos: um produto vende quantidades semelhantes a cada ciclo; outro apresenta a sequência ``0, 0, 0, 50, 0, 0, 30''. No segundo caso, manter estoque para cobrir todos os picos pode ser caro, enquanto dimensioná-lo pela média pode aumentar as faltas. A demanda intermitente combina intervalos sem venda com ocorrências positivas; quando estas variam muito de tamanho, o padrão é chamado de \textit{lumpy} \citep{Croston1972ForecastingIntermittentDemand,Syntetos2005Categorization,Boylan2008Intermittent}.
+
+Essas diferenças motivam comparar regras, mas não demonstram que um seletor por perfil será melhor que uma política única bem calibrada. A vantagem depende do portfólio, dos custos, do serviço exigido e da informação disponível antes da decisão. Uma escolha retrospectiva favorável pode desaparecer ao avaliar lojas ou períodos não usados no ajuste.
+
+\subsection{Da calibração à seleção de políticas}
+
+Políticas clássicas, meta-heurísticas e aprendizado por reforço oferecem formas distintas de decidir reposição. Uma meta-heurística pode ajustar o ponto de pedido e o lote de uma regra; um agente de reforço pode aprender ações a partir do estado do estoque. Antes desses ajustes, permanece a escolha de qual família utilizar \citep{Syntetos2009InventoryForecastingReview,Boute2022DRLInventoryRoadmap}.
+
+O AIPE organiza essa escolha em quatro etapas: caracterizar a demanda, comparar políticas em um simulador comum, identificar alternativas viáveis segundo custo e serviço e investigar se essas diferenças orientam recomendações para novas séries. A formulação se aproxima da seleção de algoritmos, na qual características de uma instância ajudam a escolher um método \citep{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection}.
+
+A previsão fornece informação auxiliar. Antecipar a demanda não determina automaticamente quando ou quanto pedir. Um modelo mais preciso tampouco garante menor custo de inventário. A avaliação principal deve ocorrer sobre as decisões de reposição e suas consequências operacionais.
+
+A Figura~\ref{fig:intro_problem_selection} sintetiza a proposta: partir de séries heterogêneas, comparar um portfólio e avaliar a seleção contextual. O caminho entre essas etapas é uma hipótese a testar, não uma garantia de melhoria.
+
+\input{figures/intro_problem_selection}
+
+\section{Problema e questões de pesquisa}
+
+A unidade de análise é a série de vendas de um produto em uma loja, agregada por ciclo comercial. As políticas decidem reposição sob condições comuns de demanda, custos e prazo. O critério de referência é o menor custo entre alternativas que atendam ao nível de serviço mínimo. Quando a restrição usa a média de um grupo, ela não garante atendimento mínimo para cada série.
+
+A questão principal é: \emph{características operacionais da demanda permitem selecionar políticas de reposição com melhor compromisso entre custo e serviço do que uma política única aplicada à rede?} A investigação se divide em três perguntas:
+
+\begin{enumerate}
+  \item O desempenho relativo das políticas varia entre séries e perfis operacionais?
+  \item Características observadas antes da decisão permitem aprender uma relação útil entre perfil e política?
+  \item Essa relação mantém desempenho em novas lojas, produtos ou períodos?
+\end{enumerate}
+
+A primeira pergunta trata de heterogeneidade; a segunda, de aprendizagem; a terceira, de generalização. Elas exigem evidências distintas. Encontrar vencedores diferentes na própria amostra não valida o PSE nem demonstra economia futura. Diferenças estatísticas entre políticas também não substituem a comparação entre estratégias de seleção.
+
+As hipóteses correspondentes são que existe heterogeneidade operacional relevante, que parte dela é capturada pelas características das séries e que um seletor pode aproveitar essa informação fora da amostra. As duas últimas permanecem em avaliação. Os resultados da qualificação são exploratórios e motivam testes adicionais; não autorizam concluir que a seleção contextual supera sempre a melhor política global.
+
+\section{Objetivos}
+
+\subsection*{Objetivo geral}
+
+Propor e avaliar o AIPE como abordagem de seleção contextual de políticas de reposição para séries loja-produto, considerando custo de inventário, serviço e estabilidade dos pedidos em dados de uma rede varejista brasileira e em um recorte público do M5.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+  \item Construir um ambiente comum para comparar políticas clássicas, meta-heurísticas, aprendizado por reforço e combinações desses métodos \citep{Law2015SimulationModeling,Talbi2009Metaheuristics}.
+  \item Preparar históricos e extrair características de intermitência, variabilidade, volume e comportamento temporal para análise por perfil.
+  \item Comparar política única e seleção por perfil, informando custo, serviço, casos inviáveis e sensibilidade às condições experimentais.
+  \item Desenvolver e validar o PSE com separação entre ajuste, escolha e avaliação, e comparar suas decisões com referências simples.
+  \item Examinar a validade externa em dados públicos de varejo e em recortes adicionais da base brasileira, preservando a rastreabilidade.
+\end{enumerate}
+
+O piloto da Paraíba avaliou 15 lojas e um produto; a etapa histórica da Bahia ampliou a análise para 145 séries. Uma nova execução dessa coorte acrescenta ajuste no passado e blocos separados de validação e teste. O M5 oferece uma comparação histórica com 2.408 séries, cuja renova execução permanece em andamento. Esses estudos têm protocolos próprios, identificados no capítulo de resultados. A expansão nacional não integra a execução ativa.
+
+\section{Contribuições e alcance da evidência}
+
+A contribuição metodológica é formular a escolha de políticas como seleção contextual apoiada por um portfólio avaliado em condições comuns. A contribuição empírica é estudar essa escolha em séries reais do varejo brasileiro, com forte intermitência. A contribuição computacional é integrar preparação, caracterização, simulação e análise em um fluxo configurável.
+
+GA, SA, DQN, PPO e suas combinações são métodos conhecidos. Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
+
+A infraestrutura implementada permite comparar candidatos e regras explícitas de seleção. A nova execução da Bahia avalia essas escolhas em períodos posteriores; o PSE supervisionado ainda requer avaliação própria fora da amostra. Versões distintas do portfólio e do protocolo permanecem separadas para preservar o significado de cada resultado.
+
+O protocolo histórico prevê cinco execuções por série e política, mas isso não basta para afirmar independência. Saídas determinísticas ou praticamente idênticas não aumentam a evidência empírica. A série e suas dependências por loja devem orientar a análise, como discutido nos capítulos de metodologia e resultados.
+
+\section{Escopo e delimitações}
+\label{sec:delimitacoes}
+
+A pesquisa trata cada série loja-produto como uma decisão de reposição. Não modela substituição entre produtos, capacidade conjunta nem coordenação multiagente entre lojas e armazéns. O efeito chicote é um indicador complementar de variabilidade, não evidência de otimização de toda a rede.
+
+O simulador avalia políticas sobre históricos preparados. Custos e abastecimento são parâmetros do cenário; roteamento, transporte e integração transacional com ERP ficam fora do escopo. A recomendação proposta é periódica e não troca de política a cada transação. Aprendizado por reforço multiagente, como o discutido por \citet{Liu2024HAPPO}, também não é implementado como coordenação da rede.
+
+Os dados proprietários limitam a divulgação pública. A rastreabilidade depende de código, parâmetros e identificação dos artefatos e recortes. Vendas podem não representar toda a demanda quando há falta de estoque, e ciclos ausentes exigem tratamento cuidadoso. Essas limitações impedem interpretar automaticamente a simulação como ganho econômico realizável.
+
+O Capítulo~\ref{cap:tec} apresenta os fundamentos; o Capítulo~\ref{cap:rel}, a literatura; e o Capítulo~\ref{cap:metod}, a implementação. O Capítulo~\ref{cap:results} reúne os resultados exploratórios. As conclusões estão no Capítulo~\ref{cap:conclusion}, e a continuidade no Capítulo~\ref{cap:plano_continuidade}.
+
+\newpage\lhead{\rightmark}

@@ -39,7 +39,18 @@ def main():
     baseline=json.loads((DOC/'archive/condensation_2026-10-14/baseline_counts.json').read_text())
     active=re.findall(r'\\(?:include|input)\{capitulos/([^}]+)\}',re.sub(r'(?m)%.*$','',(DOC/'tcc.tex').read_text()))
     rows={name+'.tex':{'before':baseline[name+'.tex']['words_approx'],'after':count(DOC/'capitulos'/f'{name}.tex')} for name in active}
-    for name in ['abstract_en.tex','bahia_20261015.tex','protocolo_bahia_20261015.tex']:
+    supplemental=['abstract_en.tex']
+    pending=[DOC/'capitulos'/f'{name}.tex' for name in active]
+    seen=set()
+    while pending:
+        source=pending.pop()
+        if source in seen:continue
+        seen.add(source)
+        clean=re.sub(r'(?m)(?<!\\)%.*$','',source.read_text(encoding='utf-8'))
+        for child in re.findall(r'\\(?:input|include)\{([^}]+)\}',clean):
+            name=child if child.endswith('.tex') else child+'.tex'
+            supplemental.append(name);pending.append(DOC/name)
+    for name in dict.fromkeys(supplemental):
         if (DOC/name).exists():
             rows[name]={'before':0,'after':count(DOC/name)}
     before=sum(v['words_approx'] for v in baseline.values());after=sum(v['after'] for v in rows.values())
@@ -47,7 +58,7 @@ def main():
     payload={'before_pages':118,'after_pages':pages,'page_reduction_percent':100*(118-pages)/118,
        'before_approx_source_words':before,'after_approx_source_words':after,
        'source_word_reduction_percent':100*(before-after)/before,
-       'word_count_note':'Same Unicode-word regex after removing TeX comments; includes commands, captions and tables; active chapters plus English abstract and completed Bahia section.',
+       'word_count_note':'Approximate Unicode-word count including TeX commands; active chapters, English abstract and recursively active auxiliary TeX only. Inactive protocol/archive files excluded. Page counts are the primary condensation measure.',
        'chapters':rows,'diagnostics':issues,'pdf_sha256':hashlib.sha256((build/'tcc.pdf').read_bytes()).hexdigest()}
     target=DOC/'revisao_concisao';target.mkdir(exist_ok=True)
     (target/'comparison.json').write_text(json.dumps(payload,indent=2),encoding='utf-8')

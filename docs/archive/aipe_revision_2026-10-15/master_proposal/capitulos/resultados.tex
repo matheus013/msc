@@ -1,0 +1,42 @@
+\mychapter{Resultados e Discussão}{cap:results}\lhead{RESULTADOS E DISCUSSÃO}
+
+Este capítulo organiza as evidências pelas perguntas de pesquisa. A mesma matriz permite examinar a qualidade das candidatas, o valor da escolha contextual, sua estabilidade e o esforço computacional. Bahia e M5 são bases separadas da avaliação, não versões concorrentes do experimento. A Bahia está completa; o M5 permanece em execução e não recebe conclusões quantitativas parciais.
+
+\input{bahia_20261015}
+
+\section{Esforço computacional das políticas}
+\label{sec:computational_results}
+
+Tempo de ajuste é uma dimensão adicional da comparação, apresentada na Tabela~\ref{tab:fit_time}. Cada ajuste é contado uma vez, sem duplicar seus registros de validação e teste. Ajustes reaproveitados são excluídos desta amostra de tempos. O registro mede a duração do ajuste no ambiente de execução, sob concorrência e carga variável; não equivale a um teste controlado de velocidade entre processadores nem ao tempo total decorrido da rodada.
+
+\begin{table}[htbp]\centering\small
+\caption{Duração registrada dos ajustes executados na rodada Bahia. Tempos em segundos; médias e medianas por ajuste, sem os 54 reaproveitados.}
+\label{tab:fit_time}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Política & Ajustes & Mediana (s) & Média (s)\\\midrule
+CappedBaseStock & 284 & 0,01 & 0,01\\
+DQN & 870 & 52,10 & 52,10\\
+EOQCycle & 284 & 0,00 & 0,00\\
+GA & 852 & 0,53 & 0,49\\
+GA--DQN & 870 & 52,90 & 52,90\\
+PPO & 852 & 24,37 & 26,03\\
+sSCycle & 284 & 0,00 & 0,00\\
+\bottomrule\end{tabular}\end{table}
+
+O tempo deve ser interpretado junto ao desempenho: maior esforço não comprova melhor recomendação. GA--DQN reúne busca, demonstrações e aprendizado, enquanto as referências analíticas têm ajuste simples. Uma comparação causal de eficiência exigiria controlar hardware, carga, orçamento e repetições. Os tempos registrados permitem descrever a execução, mas não substituem esse desenho.
+
+\section{Generalização e componentes ainda não avaliados}
+\label{sec:resultados_m5}
+
+O M5 amplia a investigação para uma fonte pública de vendas. A execução utiliza 2.408 identificadores de alimentos, com elegibilidade determinada no prefixo de cada origem. A conclusão deverá apresentar custo, atendimento, escolhas e incerteza por base, sem comparar custos absolutos entre conjuntos. Enquanto a matriz não estiver completa, não é possível afirmar que o benefício observado na Bahia se mantém no M5.
+
+A previsão e o PSE supervisionado integram a proposta ampla do AIPE, mas não são intervenções validadas pela comparação entre seleção global e por perfil. Sua eficácia exige desenho próprio, com características e rótulos produzidos antes do teste, referências competitivas e métricas operacionais. Resultados de desenvolvimento ficam preservados nos arquivos de pesquisa e não funcionam como evidência adicional desta matriz.
+
+\section{Alcance e limitações}
+\label{sec:threats}
+
+A escolha por perfil melhora o atendimento agregado na Bahia com custo maior; o efeito concentra-se em uma origem. Isso responde à pergunta sobre valor incremental sob as condições avaliadas, sem demonstrar uma vantagem universal. A restrição média não assegura atendimento individual ou ponderado pelo volume. As duas janelas compartilham um ciclo e repetem séries, e a coorte foi definida retrospectivamente.
+
+As vendas podem omitir demanda censurada por falta de estoque. Custos são unidades de cenário, e o estado inicial comum depende de uma política de referência. Prazo, custos relativos, crédito terminal e extensão do horizonte podem alterar os resultados. Não foram avaliadas todas essas sensibilidades. O intervalo por loja é condicional aos controladores e escolhas fixos; não mede incerteza de novos treinamentos ou novas realizações da demanda.
+
+O fechamento da investigação depende da consolidação M5 e das análises previstas no Capítulo~\ref{cap:plano_continuidade}. Questões que exigem outros desenhos permanecem explicitamente abertas, sem preencher lacunas com valores de configurações diferentes.

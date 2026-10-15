@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "pages": 17,
+  "abstract_whitespace_words": 218,
+  "cited_references": 13,
+  "highlight_characters": [
+    74,
+    71,
+    67,
+    70,
+    74
+  ],
+  "figures": [
+    "figures/aipe_conceito_v2_ptbr.pdf",
+    "figures/custo_servico.pdf",
+    "figures/escolhas_perfil.pdf",
+    "figures/aipe_m5_comparacao.pdf",
+    "figures/aipe_m5_falhas.pdf"
+  ],
+  "figure_fonts": {
+    "figures/aipe_conceito_v2_ptbr.pdf": [
+      "RTOYBR+NimbusSanL-Bold               Type 1            Custom           yes yes yes     10  0",
+      "ZKXFNJ+NimbusSanL-Regu               Type 1            Custom           yes yes yes     11  0",
+      "ASZHDD+CMSY10                        Type 1            Builtin          yes yes yes     12  0"
+    ],
+    "figures/custo_servico.pdf": [
+      "HZCAFW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/escolhas_perfil.pdf": [
+      "TCOYEX+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_comparacao.pdf": [
+      "KSUDGE+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_falhas.pdf": [
+      "LLUXMY+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ]
+  },
+  "portable_source_archive": true,
+  "no_undefined_references_or_overfull_boxes": true,
+  "manuscript_sha256": "5c33ed52f26c74d40497356bd1a749140287aa6b4e833e080a82f2d207a7f9ca",
+  "note": "Structural and artifact checks; scientific audit is recorded separately."
+}

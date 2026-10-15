@@ -1,51 +1,33 @@
-\mychapter{Plano de Continuidade}{cap:plano_continuidade}\lhead{PLANO DE CONTINUIDADE}
+\mychapter{Continuidade e Validação Final}{cap:plano_continuidade}\lhead{CONTINUIDADE E VALIDAÇÃO FINAL}
 
-A continuidade parte de uma avaliação temporal da Bahia já concluída e de uma avaliação M5 em andamento. O objetivo é consolidar evidência comparável para a seleção de políticas e, então, avaliar o PSE supervisionado. A expansão nacional foi cancelada na execução atual e não constitui requisito para concluir as etapas seguintes.
+A Bahia e o piloto M5 têm matrizes completas. O próximo passo é construir a avaliação final do seletor, e não apresentar a rodada M5 interrompida como experimento concluído. O piloto já orientou diagnóstico e recuo; integra o conjunto de desenvolvimento. A expansão nacional permanece cancelada.
 
-\section{Consolidação dos experimentos}
-
-A Bahia dispõe de manifesto, 4.350 ajustes completos e métricas de validação e teste. A análise deverá examinar a variação entre origens, os casos sem demanda e o compromisso entre custo e atendimento. As análises complementam a mesma matriz experimental, com cobertura e proveniência verificadas.
-
-\subsection{M5: avaliação pública com protocolo temporal}
+\section{Separar desenvolvimento e confirmação}
 \label{sec:estudos_caso_adicionais}
+A próxima amostra deve oferecer mais exemplos por classe e registrar suporte de cada perfil. A concentração natural do M5 em séries esparsas impede presumir cobertura equilibrada. Elegibilidade e estratificação usam somente o treino; séries reservadas não podem orientar o ajuste do seletor.
 
-A execução M5 utiliza a coorte histórica de 2.408 identificadores, sujeita à elegibilidade no prefixo de cada origem. Isso preserva uma comparação condicional à coorte, sem tornar prospectiva sua seleção inicial. O recorte local é inspirado em \citet{Zabraoui2025GaDQN}; não reproduz uma amostra publicada com identificadores e filtros numéricos integralmente especificados.
+Hiperparâmetros, critérios de recuo e eventual simplificação de rótulos devem ser definidos em validação interna por loja. O teste final fica isolado. Uma melhora encontrada no piloto não é uma segunda replicação independente \citep{CawleyTalbot2010}. Ajustes de políticas compatíveis podem ser reaproveitados após auditoria de dados, configuração e código; mudanças científicas exigem novo ajuste da candidata afetada.
 
-A comparação com a Bahia deverá usar métricas e regras de escolha comuns, mantendo separadas as escalas de custo e as propriedades da demanda. A avaliação M5 ainda não sustenta conclusões neste documento.
+\section{Harmonizar o problema de decisão}
+A calibração da CappedBaseStock precisa ser harmonizada entre bases antes de atribuir diferenças à demanda. Também é necessário comparar restrições de serviço com escopo claro: série, perfil ou rede. A meta de 0,70 e os custos atuais são parâmetros experimentais, não exigências empresariais já justificadas.
 
-\section{Validação da seleção}
+A instabilidade dos rótulos motiva examinar conjuntos de candidatas quase empatadas e alvos sensíveis ao custo de erro. Essa análise deve ocorrer no desenvolvimento, sem selecionar a formulação pelo teste reservado. GA--DQN continua acompanhado por GA e DQN, com o esforço adicional informado.
 
-O próximo desenho deverá ampliar os períodos e reduzir a sobreposição dos testes. Características, normalização, parâmetros e critérios de inclusão devem depender do passado disponível. A seleção usará validação, e o teste ficará reservado à avaliação. O comparador principal será a melhor política global viável escolhida sob a mesma informação.
-
-O PSE receberá características anteriores à decisão e rótulos produzidos apenas nos dados de ajuste. Sua avaliação incluirá custo, atendimento, déficit de serviço e arrependimento relativo à referência. Acurácia e F1 serão diagnósticos auxiliares: rótulos próximos em desempenho não têm o mesmo significado econômico que erros com grande perda de serviço. Modelos supervisionados serão comparados com política global, regras por perfil e modelos simples, respeitando tempo e agrupamento por loja.
-
-\subsection{Calibração agrupada por perfil}
+\section{Sensibilidades e eficiência}
 \label{sec:robustez_pooling}
+Prazo, custos relativos, estoque inicial, tratamento terminal e horizonte podem alterar o ranking e a viabilidade física. Seu efeito deverá ser separado do efeito do seletor. Calibração agrupada por perfil é outra hipótese: não equivale a seleção de família por perfil e exige comparação própria.
 
-Calibrar parâmetros em grupos é uma hipótese distinta de escolher políticas por perfil. Uma eventual comparação entre ajuste individual e agrupado deverá manter cortes, custos e orçamento comuns. Benefícios e inversões entre períodos serão apresentados conjuntamente, sem interpretar um recorte favorável como robustez geral.
+A escolha de CPU ou GPU deve considerar tempo total sob a carga de uso prevista. O piloto utilizou oito processos CPU; essa configuração operacional não é uma vantagem científica de uma política. Não há execução nacional ou expansão automática autorizada como requisito de conclusão desta análise.
 
-\section{Sensibilidade e eficiência}
+\section{Critérios de fechamento}
+\begin{table}[htbp]\centering\small
+\caption{Critérios de conclusão, sem datas ainda não acordadas.}\label{tab:cronograma}
+\begin{tabular}{@{}p{4cm}p{8.8cm}@{}}\toprule
+Etapa & Evidência necessária\\\midrule
+Protocolo final & Objetivo, suporte e calibrações fixados antes do teste\\
+PSE & Comparação independente com global, perfil e controles simples\\
+Robustez & Falhas físicas, portfólio, seleção e sensibilidades separadas\\
+Redação & Afirmações alinhadas à evidência e revisão dos autores\\\bottomrule
+\end{tabular}\end{table}
 
-As análises deverão variar custos, prazo, estoque inicial, tratamento terminal e exigência de serviço. Média por série, atendimento ponderado e restrições individuais serão comparados como problemas de decisão distintos. A escolha de um peso para custo e serviço deverá anteceder o teste, evitando ajustar o objetivo para favorecer um resultado observado.
-
-A revisão do portfólio combinará diversidade das regras, custo computacional e evidência nas duas bases. Métodos semelhantes não serão considerados equivalentes apenas por correlação de custo. A eventual retirada de candidatos será definida nos dados de desenvolvimento e documentada antes da avaliação final. GA--DQN continuará sendo comparado com GA e DQN, com o esforço total da combinação informado.
-
-CPU e GPU serão escolhidas por medições do tempo total e do uso de recursos. A execução M5 atual usa oito processos CPU para coexistir com o uso normal da máquina. Essa configuração operacional não altera sementes, cortes ou candidatos, nem é um resultado de qualidade das políticas.
-
-\section{Consolidação do texto e critérios de conclusão}
-
-O artigo para \textit{Supply Chain Analytics} e a dissertação compartilham resultados conferidos, mas têm funções diferentes: o artigo concentra a avaliação incremental da seleção; a dissertação explica fundamentos, percurso e limites. O material SBPO permanece arquivado. Autoria, declarações, disponibilidade de dados e adequação editorial serão consolidadas antes de submissão ou depósito.
-
-\begin{table}[htbp]
-\centering\small
-\caption{Etapas de continuidade e critérios de conclusão, sem datas ainda não acordadas.}
-\label{tab:cronograma}
-\begin{tabular}{@{}p{4.1cm}p{8.9cm}@{}}\toprule
-Etapa & Critério de conclusão\\\midrule
-Consolidação Bahia & Resultados temporais, falhas de serviço e limites documentados\\
-Conclusão M5 & Cobertura planejada, matriz completa e comparação por origem\\
-Seleção e sensibilidade & Critérios de decisão definidos e teste preservado\\
-Avaliação do PSE & Comparação fora da amostra com referências competitivas\\
-Redação e defesa & Afirmações, contribuições e pendências coerentes com a evidência\\
-\bottomrule\end{tabular}
-\end{table}
+O artigo concentra a arquitetura e sua avaliação operacional; a dissertação mantém fundamentos, formulação e limites mais amplos. O material SBPO permanece arquivado. Autoria, declarações, disponibilidade de dados e elementos institucionais precisam ser fechados pelos responsáveis antes de submissão ou depósito.

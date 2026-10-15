@@ -1,19 +1,19 @@
 {
   "before_pages": 118,
-  "after_pages": 62,
-  "page_reduction_percent": 47.45762711864407,
+  "after_pages": 52,
+  "page_reduction_percent": 55.932203389830505,
   "before_approx_source_words": 34677,
-  "after_approx_source_words": 13715,
-  "source_word_reduction_percent": 60.449289154194425,
-  "word_count_note": "Same Unicode-word regex after removing TeX comments; includes commands, captions and tables; active chapters plus English abstract and completed Bahia section.",
+  "after_approx_source_words": 11057,
+  "source_word_reduction_percent": 68.11431208005307,
+  "word_count_note": "Approximate Unicode-word count including TeX commands; active chapters, English abstract and recursively active auxiliary TeX only. Inactive protocol/archive files excluded. Page counts are the primary condensation measure.",
   "chapters": {
     "resumo.tex": {
       "before": 342,
-      "after": 235
+      "after": 229
     },
     "introducao.tex": {
       "before": 2882,
-      "after": 1405
+      "after": 1425
     },
     "conceitos.tex": {
       "before": 5103,
@@ -25,37 +25,37 @@
     },
     "proposta.tex": {
       "before": 10411,
-      "after": 4447
+      "after": 2218
     },
     "resultados.tex": {
       "before": 6044,
-      "after": 540
+      "after": 578
     },
     "conclusoes.tex": {
       "before": 1527,
-      "after": 498
+      "after": 469
     },
     "plano_continuidade.tex": {
       "before": 2490,
-      "after": 677
-    },
-    "apendice.tex": {
-      "before": 2272,
-      "after": 383
+      "after": 464
     },
     "abstract_en.tex": {
       "before": 0,
-      "after": 220
+      "after": 228
     },
     "bahia_20261015.tex": {
       "before": 0,
       "after": 988
     },
-    "protocolo_bahia_20261015.tex": {
+    "m5_pse_20261015.tex": {
       "before": 0,
-      "after": 614
+      "after": 693
+    },
+    "figures/intro_problem_selection.tex": {
+      "before": 0,
+      "after": 57
     }
   },
   "diagnostics": [],
-  "pdf_sha256": "a4e705d88d95c17d7ba6006e34fa7afb980b168329a97c52b62ca0a430c4dd4f"
+  "pdf_sha256": "8a6f96417458d67ffd1492bd8312bbb6cfc131297fd85a10c5ed74f32836d3c4"
 }

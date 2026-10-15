@@ -1,4 +1,5 @@
-Na Bahia, perfis elevam atendimento em 3,89 pp e custo médio em 1,93%.
-A diferença entre estratégias concentra-se em uma das duas origens.
-A escolha usa validação de outras lojas e teste temporal reservado.
-De 0,85 a 0,95, as duas estratégias recomendam a mesma política.
+AIPE integra caracterização, calibração e seleção contextual de políticas.
+O PSE admite associação por perfil e previsão supervisionada por série.
+Na Bahia, seleção por perfil troca custo por atendimento adicional.
+No piloto M5, sobreajuste e rótulos instáveis limitam o PSE preditivo.
+Oráculos separam erros de seleção, lacunas do portfólio e limites físicos.

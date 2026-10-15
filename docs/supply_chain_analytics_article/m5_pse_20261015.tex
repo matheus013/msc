@@ -1,0 +1,46 @@
+\section{Resultados no M5: duas abordagens do PSE}
+\label{sec:m5pse}
+\subsection{Custo e atendimento das recomendações}
+O piloto completa os 1.350 ajustes das 30 séries em três origens. As recomendações são avaliadas em 90 casos, com atendimento definido em 86. Não são 90 séries independentes. A Tabela~\ref{tab:m5_selectors} inclui dois controles: moda dos rótulos de treino e escolha individual da vencedora de validação. O último examina a transferência temporal do próprio rótulo, sem representar um limite superior para os seletores.
+
+\begin{table}[htbp]\centering\small
+\caption{M5: custo em 90 casos; atendimento e contagem de viáveis em 86 com demanda positiva. O recuo é exploratório, desenvolvido após o diagnóstico do piloto.}\label{tab:m5_selectors}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Seleção & Custo & Atendimento & Casos $\geq0{,}70$\\\midrule
+Global &1.086,97&0,7146&47\\
+PSE por perfil &1.094,02&0,7091&46\\
+PSE preditivo com perfil &1.238,30&0,6735&39\\
+PSE preditivo sem perfil &1.238,30&0,6735&39\\
+Moda dos rótulos &1.096,65&0,6885&42\\
+Individual na validação &1.185,13&0,6838&44\\
+Preditivo com recuo &1.087,26&0,6996&46\\\bottomrule
+\end{tabular}\end{table}
+
+O preditivo custa 13,9\% mais e atende 4,11 pontos percentuais menos que a global. O contraste desfavorável aparece nas três origens e nos dois perfis. WI\_3 e TX\_2 respondem por 65,4\% da diferença líquida de custo. O PSE por perfil permanece próximo da global: maior custo e serviço ligeiramente menor, sem benefício agregado neste piloto.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/aipe_m5_comparacao.pdf}
+\caption{Piloto M5: custo e atendimento médios são apresentados separadamente. Caixas descrevem o serviço nos 86 casos definidos; linha em 0,70. O recuo foi desenvolvido no piloto, sem confirmação independente.}\label{fig:m5_comparison}
+\end{figure}
+
+O recuo é acionado em 62 casos e muda a política em 48. Frente ao preditivo, reduz custo em 12,2\% e aumenta serviço em 2,62 pontos. Frente à global, custa 0,026\% mais e atende 1,49 ponto menos; o atendimento permanece abaixo de 0,70. O intervalo exploratório para a diferença de custo frente à global é $[-39{,}83;39{,}30]$ unidades do cenário; para serviço, $[-2{,}87;-0{,}23]$ pontos. Proximidade de custo não comprova equivalência.
+
+\subsection{O que explica a dificuldade do preditivo?}
+Cada fold tem 27 exemplos para até sete classes. O modelo reproduz 100\% dos rótulos do treino, mas somente 19 dos 90 rótulos de validação das lojas excluídas. Dois rótulos pertencem a classes ausentes no respectivo treinamento. Esses resultados são consistentes com sobreajuste, sem provar que mais dados, isoladamente, resolvam o problema.
+
+A vencedora nominal da validação permanece vencedora no teste em 29/90 casos; admitindo empates no objetivo completo, em 33/90. Com demanda positiva nos dois blocos, a concordância nominal é 26/83. As vencedoras diferem entre sementes em 39/90 casos. O alvo categórico é sensível tanto ao período quanto ao treinamento. Escolher individualmente na validação aumenta os casos viáveis frente ao preditivo, mas não supera a global em custo ou atendimento médio.
+
+Cada origem contém 26 séries esparsas e quatro de tendência, sem transição de perfil na amostra. As colunas de perfil têm importância por ganho zero em todos os folds; com e sem elas, as 90 recomendações coincidem. Redundância com as características numéricas e baixa diversidade ajudam a explicar a ausência de efeito, sem demonstrar inutilidade dos perfis em outras populações.
+
+\subsection{Distância aos melhores resultados e fontes das falhas}
+O preditivo iguala o menor custo viável do portfólio em 11 dos 39 casos nos quais sua recomendação é viável. Sua eficiência média condicional é 74,2\%. A global acerta 15/47 e o PSE por perfil 12/46, com eficiências de 80,8\% e 79,5\%. Os denominadores diferem: não se avalia eficiência sobre um mesmo subconjunto.
+
+Os 90 problemas com informação perfeita têm otimalidade comprovada. Nas 118 realizações de treinamento em que o preditivo satisfaz o alvo, iguala o ótimo determinístico em 14 e apresenta eficiência média de 54,6\%. As realizações repetem séries e, para políticas determinísticas, a mesma trajetória; não ampliam a amostra independente. Mede-se distância ao planejamento com demanda conhecida, não a um controlador estocástico implantável.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=.97\linewidth]{figures/aipe_m5_falhas.pdf}
+\caption{Decomposição dos 90 casos M5. Erro de seleção: outra candidata atende. Lacuna do portfólio: nenhuma candidata atende, mas o planejamento perfeito permite atender. Limite físico: condições iniciais impedem atingir 0,70. Demanda zero mantém serviço indefinido.}\label{fig:m5_failure}
+\end{figure}
+
+No preditivo, 39 casos atendem ao alvo; 21 falham apesar de existir política viável; 15 falham sem candidata viável, embora o planejamento perfeito permita atender; 11 têm restrição física inicial; e quatro têm demanda zero. O recuo reduz os erros de seleção de 21 para 14. Melhorar o seletor não resolve sozinho todas as faltas: a Figura~\ref{fig:m5_failure} separa intervenções sobre escolha, controle e abastecimento inicial.
+\FloatBarrier

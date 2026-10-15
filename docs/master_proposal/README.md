@@ -1,83 +1,32 @@
-# Proposta de Dissertação - AIPE
+# Dissertação de mestrado — AIPE
 
-**Versão revisada em 15/10/2026: 62 páginas, redução de 47,5% em relação às 118 originais.** O capítulo de resultados organiza a mesma matriz pelas perguntas de pesquisa, com quatro figuras compartilhadas com o artigo e uma tabela de tempos por política. A dissertação mantém a formulação ampla do AIPE; o artigo tem escopo delimitado.
+Versão de trabalho de 15/10/2026: **52 páginas**, ante 62 na revisão imediatamente anterior e 118 na base original. A redução total é de 55,9%. Textos, diagramas e PDFs anteriores foram preservados.
 
-A Bahia tem 145 séries, duas origens e 4.350 ajustes completos. O M5 permanece em execução, sem conclusão quantitativa parcial. Textos e PDFs anteriores estão preservados nos arquivos de revisão; resultados de configurações diferentes não são combinados. Veja [PLANO_DE_EVIDENCIAS.md](../PLANO_DE_EVIDENCIAS.md).
+Título: **Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos**.
 
-Proposta de dissertação de mestrado de Matheus Inácio Batista Santos, UFAL, Instituto de Computação.
-
-Título:
-
-**Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos**
+A dissertação mantém fundamentos, literatura, formulação, implementação e resultados do AIPE. O PSE é a camada de seleção, com abordagem por perfil e preditiva. Foram incorporados o piloto M5 concluído, seus diagnósticos, a extensão exploratória com recuo e os oráculos. O modelo preditivo não foi avaliado na Bahia; a conclusão não o apresenta como validado em ambas as bases.
 
 ## Compilação
 
-O comando abaixo, executado na raiz do repositório, usa `pdflatex` e `bibtex` diretamente; não exige Perl, ausente neste ambiente:
+Na raiz:
 
-```bash
-& experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_dissertation.py
-```
+    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_dissertation.py --sync-pdf
 
-O PDF final é gerado em:
+O comando usa pdflatex e bibtex, gera build/tcc.pdf e só atualiza tcc.pdf sem referências indefinidas ou caixas excedentes. A medição em revisao_concisao/comparison.json considera apenas fontes ativas e distingue contagem aproximada de palavras de contagem efetiva de páginas.
 
-```text
-build/tcc.pdf
-```
+## Organização
 
-A configuração está em `.latexmkrc`. Os arquivos auxiliares de compilação ficam em `build/`.
+- tcc.tex: documento raiz; ic.cls: formato institucional, identificado como versão de trabalho nos elementos pré-textuais.
+- capitulos/: introdução, fundamentos, literatura, metodologia, resultados, conclusões e continuidade.
+- bahia_20261015.tex: resultados completos Bahia.
+- m5_pse_20261015.tex: resultados do piloto, idênticos ao trecho correspondente no artigo.
+- figures/: diagrama AIPE e figuras quantitativas utilizadas.
+- referencias.bib: bibliografia.
 
-Depois de conferir o PDF, `--sync-pdf` atualiza a cópia canônica `tcc.pdf`. O comando não cria um arquivo histórico por si só; preserve a versão anterior antes de usá-lo. Nesta revisão, isso foi feito em `../scientific_writing_review_2026-10-15/before/`. `comparison.json` registra páginas e contagem aproximada das fontes, incluindo comandos, legendas e tabelas; a medição atual inclui o resumo inglês e a seção nova da Bahia.
+Rastreabilidade e parâmetros estão integrados à metodologia. Os arquivos de apêndices e figuras anteriores permanecem preservados, sem inclusão no PDF atual. Nenhuma fonte de conhecimento em PDF foi excluída.
 
-## Estrutura
+A Bahia contém 145 séries, duas origens e 4.350 ajustes. O piloto M5 contém 30 séries, dez lojas, três origens e 1.350 ajustes. A rodada maior foi interrompida para construir o protocolo final. Brasil permanece cancelado. O recuo ao perfil é desenvolvimento no piloto, não confirmação independente.
 
-```text
-master_proposal/
-|-- tcc.tex                   Documento raiz
-|-- ic.cls                    Classe UFAL/IC
-|-- lista_siglas_termos.tex   Lista de siglas e termos técnicos
-|-- referencias.bib           Bibliografia BibTeX
-|-- capitulos/
-|   |-- introducao.tex
-|   |-- conceitos.tex
-|   |-- correlatos.tex
-|   |-- proposta.tex
-|   |-- resultados.tex
-|   |-- conclusoes.tex
-|   |-- apendice.tex
-|   `-- apendice_b.tex
-|-- figures/                  Figuras em LaTeX/TikZ
-|-- img/                      Figuras em PDF
-`-- build/                    PDF e artefatos de compilação
-```
+A capa informa a data da versão; não estabelece data de defesa. Banca, elementos institucionais, declarações e revisão dos orientadores permanecem sob responsabilidade dos autores. Não se declara versão pronta para depósito.
 
-## Capítulos
-
-| Arquivo | Conteúdo |
-|---|---|
-| `capitulos/introducao.tex` | Introdução |
-| `capitulos/conceitos.tex` | Referencial Teórico |
-| `capitulos/correlatos.tex` | Trabalhos Relacionados |
-| `capitulos/proposta.tex` | Metodologia |
-| `capitulos/resultados.tex` | Resultados Preliminares |
-| `capitulos/conclusoes.tex` | Considerações Finais e Próximas Etapas |
-| `capitulos/apendice.tex` | Matriz de Parâmetros Experimentais |
-| `capitulos/apendice_b.tex` | Representações Visuais das Políticas Avaliadas |
-
-O antigo Apêndice B permanece preservado nas fontes, mas suas imagens didáticas duplicavam o referencial/metodologia e não são incluídas na versão enxuta. Nenhuma figura PDF foi apagada. O apêndice ativo conserva parâmetros, rastreabilidade e a tabela histórica do piloto.
-
-## Arquivos externos usados no texto
-
-O Capítulo 5 incorpora tabelas e figuras geradas pelo pipeline Kedro em:
-
-```text
-../../experiment/data/08_reporting/
-```
-
-Esses artefatos incluem mapas, gráficos comparativos, validação estatística, previsão e tabelas de estratégia por perfil.
-
-## Cuidados
-
-- Não editar resultados numéricos diretamente no texto sem verificar os artefatos geradores.
-- Manter figuras da introdução em `img/` ou `figures/`, conforme o tipo de inclusão.
-- Manter os artefatos de compilação dentro de `build/`.
-- Recompilar com `latexmk tcc.tex` antes de enviar nova versão.
+A versão anterior está em docs/archive/aipe_revision_2026-10-15/. Veja também docs/PLANO_DE_EVIDENCIAS.md.

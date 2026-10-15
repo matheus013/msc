@@ -2,19 +2,20 @@
   "status": "research draft; not submitted",
   "elsarticle": "3.5 2026-01-09",
   "sha256": {
-    "manuscript_ptbr.tex": "cb3aac9a9514305ca806e77360e5a07d07c9a71406188be541c8f732e7b52901",
-    "manuscript_ptbr.bbl": "fc4a0e7fe6d67aa162da48faa9fab697aa5e2a03c1efe2f2f21991329c8dc41d",
-    "references_ptbr.bib": "7d457c998489279bb5e2159cbe641c03bd0ec0fddce5ce42a1adf24b19de3975",
+    "manuscript_ptbr.tex": "769c7c56285e0f4566552dfeeb30e86b3144ed1a22d3964200fb48b1153bfd83",
+    "manuscript_ptbr.bbl": "432f071593e56f0dc68b57eceab7a8a3de029444f22de627fbd3b3a0b5fcff85",
+    "references_ptbr.bib": "89ca2b90bfc36187ff409cda3878cf9f6895e7c03ab3746b5b80c9a4b17239ed",
     "elsarticle.cls": "40af0200a8ad6777126f93bf7be6ab3046fa7c3ef1073307f0809703602e59da",
     "elsarticle-num.bst": "f04dfa2f78d0198ab8e4055b609dc0b91bdb730743cbbd549d84270f20d11394",
-    "highlights_ptbr.txt": "9eb699c2ecb9e09013caef10a7da4c8fdb7ffb9149b3f9320cc26ea6cc4cd6c9",
-    "bahia_20261015.tex": "0bad75af4dbd9a6c4a4373f4f864ad9936501a41bc91824f99e90bec254e8305",
-    "protocolo_bahia_20261015.tex": "e7206080a9c302678af302af458492c2a3881de750160c41c569a869d6d953ff",
-    "figures/fluxo_experimental.pdf": "5957246386b6f027a37df37eca4b51461473ee8a0cf800f6c0d3c985da88ea1c",
+    "highlights_ptbr.txt": "2b05136c10b00c5a254edad669369c0ecd30c755f4caac751e6bb8c05e6e7c86",
+    "aipe_bahia_resultados.tex": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc",
+    "m5_pse_20261015.tex": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2",
+    "figures/aipe_conceito_v2_ptbr.pdf": "860c0877af045d63fbfd88a8da31cd2c8557f1dfafc0f7c8c74f705008bddfc5",
+    "figures/aipe_m5_comparacao.pdf": "fb6216c8b3d34f60e04bfcb5b63dcbbf2195e2122dba704ad2377d06f2a85a22",
+    "figures/aipe_m5_falhas.pdf": "2c387ebbe5a07bde7f2031d2bfc31fdb4451c14da1e401748b4fb6cf3bb37bcf",
     "figures/custo_servico.pdf": "5c92244d77fc38c1983ad2cad04b8c8121fa9f0555de379997d9a78013a31781",
     "figures/escolhas_perfil.pdf": "3ca0df438de386ebd5d2401a2f11aa8c95cf9839aa9e85afe76a94f94e82adb6",
-    "figures/distribuicao_atendimento.pdf": "11d318b4e9bf35b3a02c8ee4ca1cc8cdc3981f649227e0aa6061f8eb280c8c23",
-    "manuscript_ptbr.pdf": "850a124f77fad6e4d58b2533e88d0b7531f35aa6988c7441e2615e13ea3a6747",
-    "article_sources_ptbr_draft.zip": "ce74ab7e7ccc4ac4c23e5bf75fb0aa66f17819ad32622bef14eefac4d45e1121"
+    "manuscript_ptbr.pdf": "5c33ed52f26c74d40497356bd1a749140287aa6b4e833e080a82f2d207a7f9ca",
+    "article_sources_ptbr_draft.zip": "92fae67f8a936357641f56b0f430657edfaf62dd5f661e356f4467dac227616d"
   }
 }

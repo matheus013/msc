@@ -1,29 +1,28 @@
-# Artigo para Supply Chain Analytics
+# Artigo AIPE para Supply Chain Analytics
 
-Manuscrito de trabalho em português, 19 páginas, sem apêndice. Nenhuma submissão foi realizada.
+Manuscrito de trabalho em português: **17 páginas, cinco figuras vetoriais e 13 referências citadas**, sem apêndice. Nenhuma submissão foi realizada.
 
-**Pergunta central:** selecionar a política por perfil melhora o compromisso entre custo e atendimento frente à seleção global, usando a mesma informação passada?
+O artigo apresenta o AIPE com duas abordagens do PSE: associação por perfil e previsão supervisionada da política por série. Examina seu valor frente à seleção global, o efeito do perfil explícito e a distância a oráculos retrospectivos.
 
-O artigo se concentra nessa pergunta. A dissertação contém a formulação ampla do AIPE e as questões complementares. O [plano de evidências](../PLANO_DE_EVIDENCIAS.md) registra a ligação entre perguntas, análises e lacunas.
+- manuscript_ptbr.tex / manuscript_ptbr.pdf: versão atual.
+- aipe_bahia_resultados.tex: síntese das 145 séries e 4.350 ajustes Bahia.
+- m5_pse_20261015.tex: piloto M5 completo, com 30 séries e 1.350 ajustes.
+- figures/: diagrama AIPE, duas figuras Bahia e duas figuras M5.
+- article_sources_ptbr_draft.zip: fontes e figuras efetivamente incluídas.
+- reviews/aipe_revision_2026-10-15/: verificações estruturais e numéricas.
 
-- `manuscript_ptbr.tex` / `manuscript_ptbr.pdf`: fontes e PDF atual.
-- `protocolo_bahia_20261015.tex`: desenho experimental, métricas e fluxo da informação.
-- `bahia_20261015.tex`: resultados completos das 145 séries Bahia em duas origens.
-- `figures/`: fluxo, custo × atendimento, distribuição de atendimento e escolhas por perfil.
-- `article_sources_ptbr_draft.zip`: pacote das fontes utilizadas, incluindo figuras.
+A comparação da Bahia oferece serviço adicional com custo pontualmente maior. No piloto M5, o preditivo é inferior à global; o recuo ao perfil melhora esse preditivo, mas permanece exploratório. Não se afirma vantagem geral, confirmação externa ou equivalência plena de calibração entre bases.
 
-Os 4.350 ajustes da Bahia estão completos. A seleção por perfil aumenta o custo em 1,93% e o atendimento médio em 3,89 pontos percentuais; o efeito concentra-se na primeira origem. Há 283 casos com atendimento definido e sete casos sem demanda no teste. A coorte é retrospectiva e os testes compartilham um ciclo.
+O piloto integra o desenvolvimento. A rodada maior M5 foi interrompida e Brasil permanece cancelado; nenhuma delas é apresentada como matriz completa. O PSE preditivo não foi avaliado na Bahia. Custos absolutos das duas bases não são reunidos.
 
-O M5 responde à mesma pergunta em dados públicos. Sua matriz está em execução; valores parciais ou resultados de outros protocolos não preenchem esse espaço. Versões anteriores, `historical_ptbr.tex` e todos os PDFs permanecem preservados para rastreabilidade, sem integrar o manuscrito atual.
+Compilação e conferência, na raiz:
 
-Compilação a partir da raiz:
+    & experiment/.venv/Scripts/python.exe experiment/scripts/literature/build_sca_article.py --ptbr
+    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/verify_article_package.py
+    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/audit_aipe_documents.py
 
-```powershell
-& experiment/.venv/Scripts/python.exe experiment/scripts/literature/build_sca_article.py --ptbr
-```
+As figuras M5 são geradas por build_aipe_results_figures.py, em experiment/scripts/documents/, sem ajustar políticas. O texto M5 é compartilhado, byte a byte, com a dissertação.
 
-A revisão fina, a auditoria de 2.900 escolhas e os itens pendentes para submissão estão em [PARECER_E_ALTERACOES.md](reviews/fine_review_2026-10-15/PARECER_E_ALTERACOES.md). O manuscrito tem quatro figuras vetoriais, doze referências citadas e sensibilidade aos cinco limiares.
+As versões anteriores, inclusive o manuscrito inglês manuscript.tex, estão preservadas. O texto português atual é a base da próxima tradução, não uma tradução já concluída. A revisão anterior foi arquivada em docs/archive/aipe_revision_2026-10-15/.
 
-As figuras são reproduzidas por `experiment/scripts/documents/article_research_figures.py`, com a matriz completa e as escolhas auditadas na validação. A rotina não treina políticas nem altera a execução M5.
-
-Antes da submissão, ainda são necessários consolidação M5, revisão humana, confirmação de autoria e declarações e adequação ao idioma editorial. Dados ficam fora do Git e seguem o [backup no Google Drive](../operations/BACKUP_GOOGLE_DRIVE.md).
+Antes da submissão: confirmação independente do protocolo final, harmonização das calibrações, revisão humana, autoria e declarações, tradução e conferência editorial. Dados e modelos permanecem fora do Git e seguem o backup autorizado.

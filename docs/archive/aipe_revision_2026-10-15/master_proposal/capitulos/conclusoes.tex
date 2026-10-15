@@ -1,0 +1,23 @@
+\mychapter{Conclusões}{cap:conclusion}\lhead{CONCLUSÕES}
+
+Esta dissertação investiga se características da demanda ajudam a escolher políticas de reposição com melhor compromisso entre custo e atendimento. O AIPE organiza essa avaliação em preparação, caracterização e comparação de candidatos. Os resultados disponíveis sustentam examinar a utilidade incremental da escolha por perfil; ainda não demonstram economia geral nem validam o PSE supervisionado.
+
+\section{Respostas às questões de pesquisa}
+
+O desempenho das candidatas e o benefício de selecionar entre elas são questões distintas. Os 4.350 ajustes cobrem as 145 séries em duas origens, com escolha na validação das demais lojas e avaliação no teste da loja reservada. Em conjunto, selecionar por perfil aumenta o custo em 1,93\% e o atendimento médio em 3,89 pontos percentuais. Os casos abaixo da meta passam de 119 para 100 entre os 283 com demanda positiva no teste. O resultado representa serviço adicional com custo maior. Na segunda origem, as estratégias fazem escolhas idênticas.
+
+Essas observações ainda não respondem integralmente às perguntas sobre aprendizagem e generalização. A escolha explícita por perfil foi avaliada temporalmente, mas o PSE supervisionado requer treinamento e teste próprios. A coorte continua selecionada retrospectivamente; as duas janelas são curtas, compartilham um ciclo e repetem as mesmas séries. A transferência para outros produtos, períodos e fontes de dados permanece aberta.
+
+\section{Contribuições e limites}
+
+A contribuição metodológica é distinguir três problemas: calibrar uma política, escolher uma candidata do portfólio e avaliar a recomendação em dados posteriores. A contribuição empírica é examinar essa distinção em dados reais do varejo brasileiro e preparar sua avaliação complementar no conjunto público M5. A infraestrutura integrada permite rastrear dados, configurações, sementes e saídas da avaliação.
+
+Os métodos do portfólio e a arquitetura GA--DQN já existem na literatura. Seu uso não constitui novidade algorítmica. Na Bahia, o híbrido melhora custo e atendimento frente ao DQN, mas não frente ao GA na média dos testes. Como também consome busca genética e demonstrações, a comparação não isola um ganho causal da combinação. A avaliação temporal M5 deverá complementar essa leitura antes de uma decisão definitiva sobre o portfólio.
+
+O ajuste utiliza informação passada e sementes independentes de treinamento, que não equivalem a novas lojas ou novas realizações de demanda. Custos simulados, vendas possivelmente censuradas e estados iniciais de referência delimitam a interpretação operacional.
+
+\section{Implicações e continuidade}
+
+A definição do serviço antecede a escolha do controlador. Média por série, atendimento ponderado pela demanda e garantia individual produzem exigências distintas. Na Bahia, as médias das estratégias superam 0,70 quando as origens são reunidas, mas o atendimento ponderado permanece abaixo desse alvo e há numerosas violações individuais. A média global, portanto, é insuficiente para julgar a adequação empresarial.
+
+O avanço seguinte é consolidar o M5 sob o protocolo temporal, examinar estabilidade temporal e definir o valor econômico do atendimento adicional antes de treinar o PSE. O plano do Capítulo~\ref{cap:plano_continuidade} organiza essas dependências. A conclusão atual é delimitada: perfis podem alterar o compromisso entre custo e serviço, mas seu benefício precisa ser demonstrado frente a uma política global competitiva em períodos reservados.
