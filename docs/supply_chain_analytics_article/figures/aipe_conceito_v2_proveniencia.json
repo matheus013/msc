@@ -1,0 +1,11 @@
+{
+  "generator": "experiment\\scripts\\documents\\build_aipe_concept_figure.py",
+  "generator_sha256": "c7bfa18b71010e29eeb20490212b889f130af5034b5538f8815142dc9981924d",
+  "kind": "Conceptual vector illustration; no measured results",
+  "original_preserved": "aipe_conceito_referencia_original.png",
+  "outputs": [
+    "aipe_conceito_v2_ptbr",
+    "aipe_conceito_v2_en"
+  ],
+  "manuscript_modified": false
+}
