@@ -17,6 +17,30 @@ from simulation.research.oracles import efficiency_percent
 CASE=['origin','warehouse','store_id','item_id']
 
 
+def fit_predict_fold(train,held,with_profile=True):
+    """Fit one fold and expose scores/importances for auditable diagnostics.
+
+    Class scores are not calibrated probabilities of operational success.
+    """
+    transforms=[('numeric',make_pipeline(SimpleImputer(strategy='median',keep_empty_features=True)),FEATURE_COLS)]
+    if with_profile:transforms.append(('profile',OneHotEncoder(handle_unknown='ignore',sparse_output=False),['operational_profile']))
+    encoder=LabelEncoder().fit(train.label)
+    learner=DummyClassifier(strategy='most_frequent') if len(encoder.classes_)==1 else XGBClassifier(
+        n_estimators=200,max_depth=3,learning_rate=.05,subsample=1,colsample_bytree=1,
+        n_jobs=1,random_state=20261015,verbosity=0)
+    preprocessing=ColumnTransformer(transforms)
+    model=make_pipeline(preprocessing,learner)
+    model.fit(train,encoder.transform(train.label))
+    prediction=encoder.inverse_transform(model.predict(held).astype(int))
+    scores=np.asarray(model.predict_proba(held))
+    names=preprocessing.get_feature_names_out()
+    importance=getattr(learner,'feature_importances_',np.zeros(len(names)))
+    return {'policy':prediction,'max_class_score':scores.max(axis=1),
+            'class_support':np.array([int(train.label.eq(p).sum()) for p in prediction]),
+            'feature_importance':dict(zip(names,importance.astype(float))),
+            'model':model,'classes':encoder.classes_}
+
+
 def best_policy(frame, alpha=.7):
     """Mean metrics per policy; undefined service never becomes 100%."""
     mean=frame.groupby('policy',sort=True)[['TIC','NS']].mean().reset_index()
@@ -40,15 +64,7 @@ def predict_loso(features, validation, alpha=.7):
             mode=train.label.value_counts().sort_index().sort_values(ascending=False,kind='stable').index[0]
             chosen={}
             for strategy,with_profile in [('AIPE_PSE',True),('PSE_sem_perfil',False)]:
-                transforms=[('numeric',make_pipeline(SimpleImputer(strategy='median',keep_empty_features=True)),FEATURE_COLS)]
-                if with_profile:transforms.append(('profile',OneHotEncoder(handle_unknown='ignore',sparse_output=False),['operational_profile']))
-                encoder=LabelEncoder().fit(train.label)
-                learner=DummyClassifier(strategy='most_frequent') if len(encoder.classes_)==1 else XGBClassifier(
-                    n_estimators=200,max_depth=3,learning_rate=.05,subsample=1,colsample_bytree=1,
-                    n_jobs=1,random_state=20261015,verbosity=0)
-                model=make_pipeline(ColumnTransformer(transforms),learner)
-                model.fit(train,encoder.transform(train.label))
-                chosen[strategy]=encoder.inverse_transform(model.predict(held).astype(int))
+                chosen[strategy]=fit_predict_fold(train,held,with_profile)['policy']
             for pos,(_,case) in enumerate(held.iterrows()):
                 profile_train=valid_train.merge(train[CASE+['operational_profile']],on=CASE)
                 profile_train=profile_train[profile_train.operational_profile.eq(case.operational_profile)]
