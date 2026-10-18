@@ -1,0 +1,49 @@
+{
+  "completed_utc": "2026-10-16T21:08:16.086848+00:00",
+  "article_pages": 25,
+  "dissertation_pages": 67,
+  "dissertation_original_pages": 118,
+  "dissertation_reduction_percent": 43.220338983050844,
+  "presentation_slides": 1,
+  "article_pdf_sha256": "e6f489a6a3a33cdede256c82ac8f06121e5ccd9883cc599c2ab1ebfc9156ce86",
+  "dissertation_pdf_sha256": "8d25a99727bc32fd0dd2a33814d1d873c8967a1bf326154c14f447370afb0f2c",
+  "presentation_sha256": "cd62066d775793f7545bee5e25e46de9546ad86935d6e9c84c41a4ada275f30a",
+  "reviewers": {
+    "contribution": {
+      "sha256": "117fcc1fe2403804eefd39ab94750a0548c271cf0ea0b5e0b24b068f7a169522",
+      "counts": {
+        "critical": 0,
+        "major": 0,
+        "minor": 0
+      },
+      "path": "docs\\academic_contributions_revision_2026-10-16\\round_03\\review_contribution.json"
+    },
+    "methods": {
+      "sha256": "1eeebd5e5bb4fdd7836eb069143fd4f68a27ace872c69ec9c5304a0c5de91d4b",
+      "counts": {
+        "CRITICAL": 0,
+        "MAJOR": 0,
+        "MINOR": 0
+      },
+      "path": "docs\\academic_contributions_revision_2026-10-16\\round_03\\review_methods.json"
+    },
+    "editorial": {
+      "sha256": "ae61e78cc9815f69e5cf5763376bab07fe4fd690ae0596b8bb5ac9a43851f247",
+      "counts": {
+        "critical": 0,
+        "major": 0,
+        "minor": 0
+      },
+      "path": "docs\\academic_contributions_revision_2026-10-16\\round_03\\review_editorial.json"
+    }
+  },
+  "reviewed_hashes_matching_final_files": 27,
+  "protected_artifacts_unchanged": 50,
+  "active_quantitative_fragments_matching_preserved_prior_baseline": 6,
+  "scientific_code_matching_frozen_plan": 61,
+  "editorial_closed": true,
+  "scientific_submission_ready": false,
+  "training_or_simulation_started": false,
+  "visual_review": "All article and final dissertation pages rendered; contact sheets inspected and changed introduction pages inspected at higher resolution. Final editable presentation rendered and inspected. Residual navigation-only dissertation page removed.",
+  "review_round01_snapshot_note": "Snapshot was captured near the round1/round2 edit boundary; individual reviewer hashes remain the source of truth for round1. Round3 contains final edited sources and manifest."
+}

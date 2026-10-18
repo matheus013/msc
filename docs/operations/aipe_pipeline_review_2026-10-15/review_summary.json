@@ -1,0 +1,7 @@
+{
+  "python_files": 123,
+  "lines": 21457,
+  "syntax_errors": 0,
+  "full_suite_passed": 67,
+  "cleanup_note": "17 import statements cleaned in 13 files; one 132-nonempty-line initial pilot archived; active code gains canonical orchestration and full selector evaluation, so total lines are not claimed to decrease."
+}

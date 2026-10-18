@@ -1,0 +1,20 @@
+{
+  "reviewer": "contract_review_contribution",
+  "round": 2,
+  "date": "2026-10-16",
+  "scope": "restricted_contribution_nonregression",
+  "manifest_sha256": "6ef254a370a791bbdb0891dfd102af0d5c0e98f0ca67bcb90eac49088df4baf0",
+  "manifest_verified": {"files": 36, "mismatches": []},
+  "changed_files_match_declared": true,
+  "article_unchanged": true,
+  "article_pdf_sha256": "7b91697d9b18147d1c64663a9f8df3569d5044809c9309452727e882ca9c8a9a",
+  "dissertation_pdf_sha256": "c63aa7a64a336b9e550d5587a34990ec76a6a9e30d76c77a3d3d7ea9ed426ae6",
+  "editorial_status": "approved_for_contract_scope",
+  "contribution_regression": false,
+  "scientific_submission_ready": false,
+  "scientific_gaps_from_round01_preserved": true,
+  "critical": [], "major": [], "minor": [],
+  "source_edits": false,
+  "new_experiments": false,
+  "broad_review_reopened": false
+}

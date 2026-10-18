@@ -1,0 +1,69 @@
+{
+  "scope": "Read-only controller matrix audit; no new controller fitting, no selectors fitted by this script",
+  "datasets": {
+    "BA": {
+      "run": "aipe_ba145_unified_2026-10-15",
+      "state": "completed",
+      "planned_fits": 4350,
+      "kpi_rows": 8700,
+      "complete_cases": 290,
+      "unique_series": 145,
+      "stores": 115,
+      "cohorts": [
+        {
+          "origin": 17,
+          "series": 145,
+          "stores": 115
+        },
+        {
+          "origin": 23,
+          "series": 145,
+          "stores": 115
+        }
+      ],
+      "undefined_service_test_cases": 7,
+      "defined_service_test_cases": 283,
+      "zero_service_by_origin": {
+        "17": 1,
+        "23": 6
+      },
+      "kpis_sha256": "9d2edcf712fd3417b3535f08a1dc1a2badd398ffce312ae09131fa0b1fde5121",
+      "selector_summary_available": true
+    },
+    "M5": {
+      "run": "aipe_m5_2408_unified_2026-10-15",
+      "state": "controllers_completed",
+      "planned_fits": 79890,
+      "kpi_rows": 159780,
+      "complete_cases": 5326,
+      "unique_series": 2408,
+      "stores": 10,
+      "cohorts": [
+        {
+          "origin": 50,
+          "series": 885,
+          "stores": 10
+        },
+        {
+          "origin": 64,
+          "series": 2033,
+          "stores": 10
+        },
+        {
+          "origin": 78,
+          "series": 2408,
+          "stores": 10
+        }
+      ],
+      "undefined_service_test_cases": 188,
+      "defined_service_test_cases": 5138,
+      "zero_service_by_origin": {
+        "50": 69,
+        "64": 106,
+        "78": 13
+      },
+      "kpis_sha256": "59dc596681d1c79ed5ecd55adb84fcc97078856d84fedf00e20d4f3406b0ea8e",
+      "selector_summary_available": false
+    }
+  }
+}

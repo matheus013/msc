@@ -39,8 +39,8 @@ def main():
     baseline=json.loads((DOC/'archive/condensation_2026-10-14/baseline_counts.json').read_text())
     active=re.findall(r'\\(?:include|input)\{capitulos/([^}]+)\}',re.sub(r'(?m)%.*$','',(DOC/'tcc.tex').read_text()))
     rows={name+'.tex':{'before':baseline[name+'.tex']['words_approx'],'after':count(DOC/'capitulos'/f'{name}.tex')} for name in active}
-    supplemental=['abstract_en.tex']
-    pending=[DOC/'capitulos'/f'{name}.tex' for name in active]
+    supplemental=['abstract_en.tex','instanciacao_aipe.tex']
+    pending=[DOC/'capitulos'/f'{name}.tex' for name in active]+[DOC/'instanciacao_aipe.tex']
     seen=set()
     while pending:
         source=pending.pop()

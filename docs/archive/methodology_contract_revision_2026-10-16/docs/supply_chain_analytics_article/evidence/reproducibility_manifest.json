@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-14",
+  "files": {
+    "experiment/scripts/analysis/sca_validation.py": "f4d688e6fb9dc4ac09703ab478bd68968115e9f122635ed39bb7ce3dddf2357f",
+    "experiment/scripts/analysis/sca_temporal.py": "bf0d8210227198e0e377eace416231d6015e931691d0bcf6124e1c3176c40efd",
+    "experiment/scripts/analysis/sca_figures.py": "1fcdaa4f557e97e6d30fa8752eb96314f7f179d9f4791e54e23daf296d3dfab8",
+    "experiment/src/simulation/core/inventory_env.py": "3d8e92d4e1bf713b1bb7f697c319857d600124d56bb228112d21d160569da853",
+    "experiment/src/simulation/core/policies.py": "5d644f4cc26bfa5e4167432e7e0e66153f4ba284b3a01eeca1cd56d5ec9e9fa5",
+    "experiment/src/simulation/core/policies_zabraoui.py": "39f1e67be1fa5966637d14757e1f1fe29807ff6e6be41661494f0d1918d508b5",
+    "experiment/src/simulation/pipelines/demand_profiling/nodes.py": "f80cc5e147dc38a64e0a3b975f1e176fe4c1990b9391eac9164e7faf8b95b803"
+  },
+  "packages": {
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "torch": "2.8.0+cu128",
+    "matplotlib": "3.11.2",
+    "pyarrow": "23.0.1"
+  },
+  "private_data_released": false
+}

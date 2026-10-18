@@ -1,0 +1,26 @@
+{
+  "round": 1,
+  "reviewer": "editorial",
+  "source_manifest_sha256": "4c414eaa3eace3739b6e8e4fcb5a7b8d531ac263e85c639547644e25dcc0e097",
+  "source_sha256": "e918dff752219856d8ce62754403e4e10da681a4fa81b3b8ee6b1ad607dc7d06",
+  "dissertation_root_sha256": "7912edd25149d40b3c8ebbcfe089a7453531b594454015cb2b4073d066185768",
+  "hash_check": "all_manifest_files_match",
+  "editorial_decision": "minor_revision",
+  "document_decisions": {
+    "article": "approve",
+    "dissertation": "minor_revision"
+  },
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "EDC-01",
+      "severity": "minor",
+      "document": "dissertation",
+      "location": "capitulos/introducao.tex:82; instanciacao_aipe.tex:27,47,148; capitulos/conceitos.tex:75,139,164,169; capitulos/plano_continuidade.tex:25",
+      "evidence": "ERP, IQR, OLS e MILP aparecem sem expansão no corpo e sem entrada na lista; CPU/GPU também. No referencial, SARSA, MAPE, RMSE e KPIs são usados sem glosa suficiente da sigla. MBE é explicado como viés médio, mas a expansão inglesa permanece implícita. GA/DQN/PPO constam da lista anterior ao corpo e não constituem bloqueio equivalente.",
+      "requested_change": "Preferir termos por extenso para siglas de uso único: sistemas de gestão empresarial, intervalo interquartil, mínimos quadrados ordinários, indicadores. Expandir MILP e CPU/GPU na primeira ocorrência; glosar SARSA/MAPE/RMSE onde introduzidos, sem ampliar discussão tutorial ou modificar fórmulas. MBE pode receber expansão inglesa local ou manter a descrição de viés médio. Verificar compilações e resumos sem alterar quantitativos.",
+      "kind": "writing",
+      "status": "open"
+    }
+  ]
+}

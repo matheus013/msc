@@ -1,0 +1,37 @@
+[
+  {
+    "name": "academic-paper-reviewer",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\academic-paper-reviewer\\SKILL.md",
+    "type": "local_equivalent"
+  },
+  {
+    "name": "cite-style-converter",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\cite-style-converter\\SKILL.md",
+    "type": "local_equivalent"
+  },
+  {
+    "name": "scholarly-writing-refiner",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\scholarly-writing-refiner\\SKILL.md",
+    "type": "local_equivalent"
+  },
+  {
+    "name": "sci-paper",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\sci-paper\\SKILL.md",
+    "type": "local_equivalent"
+  },
+  {
+    "name": "astro-observation-report",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\astro-observation-report\\SKILL.md",
+    "type": "local_equivalent"
+  },
+  {
+    "name": "academic-codex-bridge",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\academic-codex-bridge\\SKILL.md",
+    "type": "runtime_adapter"
+  },
+  {
+    "name": "scientific-skills-catalog",
+    "path": "C:\\Users\\mathe\\.codex\\skills\\scientific-skills-catalog\\SKILL.md",
+    "type": "catalog_adapter"
+  }
+]

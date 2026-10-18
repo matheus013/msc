@@ -1,0 +1,36 @@
+{
+  "round": 1,
+  "reviewer": "editorial",
+  "source_sha256": "250a815d12b444dbc36ebcff15a2e8def56e40f8fb8d9989b42d6c231eefd6e3",
+  "editorial_decision": "minor_revision",
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "ED-01",
+      "severity": "minor",
+      "location": "manuscript_ptbr.tex:87–95,133,155 (seções 3.3,4.2,4.4)",
+      "evidence": "A equação apresenta h,p,K,c e só informa seus valores. Mu e sigma aparecem nas fórmulas EOQCycle sem definição textual. C* na eficiência é implícito e pode indicar o oráculo do portfólio ou o ótimo MILP.",
+      "requested_change": "Definir os quatro componentes de custo por unidade/pedido/ciclo; definir mu e sigma como estatísticas do treino; explicitar que C* é o custo da referência retrospectiva considerada, identificando cada oráculo. Acrescentar que barras representam médias entre casos definidos. Preservar valores e fórmulas.",
+      "kind": "writing",
+      "status": "open"
+    },
+    {
+      "id": "ED-02",
+      "severity": "minor",
+      "location": "aipe_bahia_resultados.tex:3–29; m5_pse_20261015.tex:19–26",
+      "evidence": "Os rótulos fig:cost_service, tab:ba2026_selection e fig:m5_comparison aparecem somente em suas definições: Figuras 2 e 4 e Tabela 3 não possuem chamadas explícitas no corpo. Os parágrafos interpretam resultados, mas a ligação precisa ser inferida pelo leitor.",
+      "requested_change": "Acrescentar referências explícitas aos três objetos nos parágrafos que já interpretam seus resultados, indicando a comparação relevante. Não repetir os dados apenas para introduzir a chamada.",
+      "kind": "writing",
+      "status": "open"
+    },
+    {
+      "id": "ED-03",
+      "severity": "minor",
+      "location": "aipe_consequencias_resultados.tex:8–12 e tabelas 3–5 do PDF",
+      "evidence": "Tabelas 3 e 4 apresentam atendimento como fração (0,7146); Tabela 5 muda para percentagem (71,72%) e também troca o título para Serviço. São valores equivalentes, mas a comparação imediata entre variantes exige conversão mental.",
+      "requested_change": "Uniformizar a escala e o nome da coluna de atendimento nas três tabelas, preferencialmente fração com quatro casas para preservar o padrão existente; alternativamente converter todas para percentagem identificada no cabeçalho. Não alterar valores substantivos nem confundir diferença percentual com pontos percentuais.",
+      "kind": "writing",
+      "status": "open"
+    }
+  ]
+}

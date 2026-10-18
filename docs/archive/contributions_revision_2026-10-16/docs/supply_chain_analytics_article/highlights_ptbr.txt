@@ -1,0 +1,5 @@
+AIPE propõe apoio modular ao gerente na seleção de políticas de reposição.
+Contratos separam contexto, evidência, seleção e avaliação da recomendação.
+Sete candidatas e variantes do PSE exercitam interfaces do procedimento.
+Bahia e M5 delimitam benefícios, falhas e uso de recuo à referência.
+A comparação reduzida permanece exploratória e exige confirmação.

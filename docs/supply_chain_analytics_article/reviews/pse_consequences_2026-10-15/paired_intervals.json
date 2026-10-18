@@ -1,0 +1,202 @@
+[
+  {
+    "strategy": "AIPE_PSE",
+    "metric": "cost_difference",
+    "mean": 151.32653718650212,
+    "ci95_low": 42.50259753062845,
+    "ci95_high": 291.1476041057233,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "AIPE_PSE",
+    "metric": "service_difference",
+    "mean": -0.04109149181946013,
+    "ci95_low": -0.0630154522454258,
+    "ci95_high": -0.01460311795247666,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Classe_floresta_controle",
+    "metric": "cost_difference",
+    "mean": -12.801644849882269,
+    "ci95_low": -65.98531507467776,
+    "ci95_high": 35.80802784479616,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Classe_floresta_controle",
+    "metric": "service_difference",
+    "mean": -0.024862750521285715,
+    "ci95_low": -0.0420901266239312,
+    "ci95_high": -0.010674024661685292,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia",
+    "metric": "cost_difference",
+    "mean": -3.6182955857024215,
+    "ci95_low": -43.8425585048842,
+    "ci95_high": 34.08346413755639,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia",
+    "metric": "service_difference",
+    "mean": -0.020855425828959696,
+    "ci95_low": -0.045059125292652706,
+    "ci95_high": -0.003883575541200641,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia_recuo",
+    "metric": "cost_difference",
+    "mean": -16.94063898869261,
+    "ci95_low": -48.099148571898425,
+    "ci95_high": 0.0,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia_recuo",
+    "metric": "service_difference",
+    "mean": 0.0026764400505670002,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0073357348612357555,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia_sem_perfil",
+    "metric": "cost_difference",
+    "mean": 61.11782728263787,
+    "ci95_low": -28.48426633074891,
+    "ci95_high": 189.5389965743489,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Consequencia_sem_perfil",
+    "metric": "service_difference",
+    "mean": -0.022042278073936657,
+    "ci95_low": -0.04572716727094243,
+    "ci95_high": -0.004728084305012544,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Escolha_validacao_individual",
+    "metric": "cost_difference",
+    "mean": 98.15772979096232,
+    "ci95_low": -69.9215829298554,
+    "ci95_high": 348.68146334971055,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Escolha_validacao_individual",
+    "metric": "service_difference",
+    "mean": -0.03081047013854269,
+    "ci95_low": -0.058920903133218246,
+    "ci95_high": -0.005122616039667563,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Global",
+    "metric": "cost_difference",
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Global",
+    "metric": "service_difference",
+    "mean": 0.0,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Modo_rotulos",
+    "metric": "cost_difference",
+    "mean": 9.677893930586464,
+    "ci95_low": -56.63338738547868,
+    "ci95_high": 67.64097726270266,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Modo_rotulos",
+    "metric": "service_difference",
+    "mean": -0.026049596871421516,
+    "ci95_low": -0.05127121192652504,
+    "ci95_high": -0.00466518505583919,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "PSE_sem_perfil",
+    "metric": "cost_difference",
+    "mean": 151.32653718650212,
+    "ci95_low": 41.512281394591966,
+    "ci95_high": 282.72357786752207,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "PSE_sem_perfil",
+    "metric": "service_difference",
+    "mean": -0.04109149181946013,
+    "ci95_low": -0.06324505199934576,
+    "ci95_high": -0.014976658789106527,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Perfil",
+    "metric": "cost_difference",
+    "mean": 7.049129410953412,
+    "ci95_low": -41.563340388766896,
+    "ci95_high": 51.49487340894108,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  },
+  {
+    "strategy": "Perfil",
+    "metric": "service_difference",
+    "mean": -0.005425532337441335,
+    "ci95_low": -0.012600847083854927,
+    "ci95_high": 0.002495426911292006,
+    "stores": 10,
+    "draws": 5000,
+    "conditional_exploratory": true
+  }
+]

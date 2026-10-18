@@ -1,32 +1,29 @@
-# Dissertação de mestrado — AIPE
+# Dissertação AIPE
 
-Versão de trabalho de 15/10/2026: **52 páginas**, ante 62 na revisão imediatamente anterior e 118 na base original. A redução total é de 55,9%. Textos, diagramas e PDFs anteriores foram preservados.
+Versão de trabalho em português. A contribuição central é uma metodologia modular e rastreável de apoio ao gerente de logística e estoques. As implementações do PSE e as aplicações Bahia/M5 avaliam condições de uso e limites dessa proposta; não representam avaliação de eficiência das lojas ou dos gerentes.
 
-Título: **Um Framework Adaptativo para Seleção de Políticas de Reposição em Regimes Operacionais Heterogêneos**.
+## Organização e evidência
 
-A dissertação mantém fundamentos, literatura, formulação, implementação e resultados do AIPE. O PSE é a camada de seleção, com abordagem por perfil e preditiva. Foram incorporados o piloto M5 concluído, seus diagnósticos, a extensão exploratória com recuo e os oráculos. O modelo preditivo não foi avaliado na Bahia; a conclusão não o apresenta como validado em ambas as bases.
+- `tcc.tex` / `tcc.pdf`: documento raiz e PDF canônico, com formato institucional `ic.cls`.
+- `capitulos/`: introdução, fundamentos, literatura, metodologia, resultados, conclusões e continuidade.
+- `instanciacao_aipe.tex`: desenho experimental separado da metodologia geral.
+- `resultados_unificados_20261017.tex`: tabelas e figuras de resultados compartilhadas com o artigo.
+- `diagnosticos_unificados_20261017.tex`: resultados detalhados adicionais da dissertação.
+- `figures/`: figura conceitual com contexto opcional e gráficos quantitativos; versões anteriores preservadas.
+- `referencias.bib`: bibliografia.
+
+Bahia: 145 séries, 115 revendedores, duas origens, 290 casos e 4.350 ajustes. M5: coorte histórica de 2.408 identificadores, dez lojas, três origens, 5.326 casos e 79.890 ajustes. A expansão nacional permanece cancelada. A ampliação do M5 não transforma o piloto de desenvolvimento em confirmação independente. Custo inclui todos os casos; atendimento médio considera 283 casos definidos na Bahia e 5.138 no M5.
+
+Os fragmentos de resultados anteriores ficam preservados para reprodução histórica, sem serem somados à evidência corrente. O módulo opcional de dados adicionais possui estudos próprios em `experiment/data/context_extension/`, documentação em `docs/operations/context_rounds_2026-10-17/` e não exige novo treinamento de controladores.
 
 ## Compilação
 
 Na raiz:
 
-    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_dissertation.py --sync-pdf
+```powershell
+& experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_dissertation.py --sync-pdf
+```
 
-O comando usa pdflatex e bibtex, gera build/tcc.pdf e só atualiza tcc.pdf sem referências indefinidas ou caixas excedentes. A medição em revisao_concisao/comparison.json considera apenas fontes ativas e distingue contagem aproximada de palavras de contagem efetiva de páginas.
+O comando usa pdflatex e bibtex e só atualiza o PDF canônico sem referências indefinidas ou caixas excedentes. `revisao_concisao/comparison.json` distingue contagem aproximada de palavras de páginas efetivas. A auditoria da atualização está em `docs/operations/m5_final_2026-10-17/`.
 
-## Organização
-
-- tcc.tex: documento raiz; ic.cls: formato institucional, identificado como versão de trabalho nos elementos pré-textuais.
-- capitulos/: introdução, fundamentos, literatura, metodologia, resultados, conclusões e continuidade.
-- bahia_20261015.tex: resultados completos Bahia.
-- m5_pse_20261015.tex: resultados do piloto, idênticos ao trecho correspondente no artigo.
-- figures/: diagrama AIPE e figuras quantitativas utilizadas.
-- referencias.bib: bibliografia.
-
-Rastreabilidade e parâmetros estão integrados à metodologia. Os arquivos de apêndices e figuras anteriores permanecem preservados, sem inclusão no PDF atual. Nenhuma fonte de conhecimento em PDF foi excluída.
-
-A Bahia contém 145 séries, duas origens e 4.350 ajustes. O piloto M5 contém 30 séries, dez lojas, três origens e 1.350 ajustes. A rodada maior foi interrompida para construir o protocolo final. Brasil permanece cancelado. O recuo ao perfil é desenvolvimento no piloto, não confirmação independente.
-
-A capa informa a data da versão; não estabelece data de defesa. Banca, elementos institucionais, declarações e revisão dos orientadores permanecem sob responsabilidade dos autores. Não se declara versão pronta para depósito.
-
-A versão anterior está em docs/archive/aipe_revision_2026-10-15/. Veja também docs/PLANO_DE_EVIDENCIAS.md.
+Custos não estão calibrados financeiramente e a avaliação é de desenvolvimento. Parâmetros e trajetórias ainda têm limitações de persistência; uso por gerentes e confirmação independente continuam necessários. A capa informa a data da versão, não uma data de defesa. Elementos institucionais, banca e aprovação permanecem sob responsabilidade dos autores e orientadores. Não se declara versão pronta para depósito. Nenhum artigo em PDF foi removido.

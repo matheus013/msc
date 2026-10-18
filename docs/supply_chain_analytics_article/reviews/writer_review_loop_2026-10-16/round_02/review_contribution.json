@@ -1,0 +1,27 @@
+{
+  "round": 2,
+  "reviewer": "contribution",
+  "source_sha256": "7e6f1127d57348806b8339eab6d038818847d7306ce45d31d902e6e4ed22ad62",
+  "editorial_decision": "approve",
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "C-W01",
+      "severity": "minor",
+      "location": "manuscript_ptbr.tex, Trabalhos relacionados, linha 48",
+      "evidence": "O parágrafo final agora define a contribuição como procedimento verificável que registra referência calibrada, autorização de intervenção e diagnóstico seleção/portfólio/viabilidade; identifica classificação, previsão de consequências e recuo como métodos constituintes e mantém a ausência de confronto empírico com integrações próximas.",
+      "requested_change": "Nenhum reparo adicional necessário para este item. Manter essa delimitação nas revisões posteriores.",
+      "kind": "writing",
+      "status": "resolved"
+    },
+    {
+      "id": "C-E01",
+      "severity": "major",
+      "location": "manuscript_ptbr.tex, Trabalhos relacionados, linha 48; Limitações e próximos testes; aipe_consequencias_resultados.tex",
+      "evidence": "Antecedentes diretamente ligados à integração classificação+política não entram na comparação empírica. A regra por consequências foi desenvolvida no mesmo piloto em que é pontuada; muda 3/90 decisões e concentra cerca de 92% da economia em uma série. O próprio texto reconhece essas condições.",
+      "requested_change": "Antes de afirmar prontidão científica para submissão, apresentar validação independente da intervenção e justificar a contribuição frente aos antecedentes mais próximos, por confronto metodológico verificável e, quando comparável, comparação empírica. Manter a linguagem exploratória e os resultados negativos durante este ciclo; não é necessário executar novos experimentos para o fechamento editorial do manuscrito de trabalho.",
+      "kind": "experiment",
+      "status": "open"
+    }
+  ]
+}

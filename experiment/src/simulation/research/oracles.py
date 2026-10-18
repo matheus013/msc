@@ -70,7 +70,14 @@ def perfect_information_plan(demand, cfg, alpha=.7, time_limit=30):
          'mip_gap':None if getattr(result,'mip_gap',None) is None else float(result.mip_gap)}
     if result.x is None:return out
     orders=np.maximum(result.x[q],0.)
-    orders[np.abs(orders)<1e-8]=0.
+    # HiGHS may return tiny positive q with an effectively zero binary y.
+    # The simulator charges K for ANY positive order, so use the binary
+    # decision to reconstruct the schedule, rather than a quantity cutoff
+    # that would also discard legitimate small orders with y=1.
+    inactive=result.x[y]<.5
+    if (orders[inactive]>1e-6*max(1.,total)).any():
+        raise ValueError('MILP inactive order exceeds numerical feasibility tolerance')
+    orders[inactive]=0.
     metrics,_=simulate(d,cfg,lambda state,env:float(orders[env.t]))
     if not np.isclose(metrics['TIC'],result.fun,rtol=1e-6,atol=1e-5):
         raise ValueError('MILP objective does not match inventory simulator')

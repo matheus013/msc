@@ -1,0 +1,56 @@
+\section{Dados e protocolo temporal da Bahia}
+\label{sec:ba2026_methods}
+
+A avaliação utiliza 145 séries loja--produto da Bahia, em 115 lojas e nove produtos, com 38 ciclos comerciais disponíveis, identificados de 202301 a 202504. Os ciclos são unidades comerciais da fonte; não representam observações diárias. O objetivo é comparar uma política global com a escolha por perfil em períodos posteriores aos usados no ajuste e na seleção. A coorte foi definida retrospectivamente; os ajustes e a seleção, porém, utilizam apenas a informação disponível antes do teste. Essa distinção limita a generalização para séries ainda não observadas.
+
+\subsection{Protocolo e cobertura}
+
+Os registros complementares de vendas são somados por chave, sem descartar transações apenas por compartilharem loja, produto e ciclo. A coorte tem identificadores fixos; em cada origem, exige ao menos três ciclos positivos no treino. As 145 séries são elegíveis nos dois prefixos, de 17 e 23 ciclos. Cada prefixo é seguido por sete ciclos de validação e sete de teste. Na numeração iniciada em um, os testes abrangem os ciclos 25--31 e 31--37: compartilham um ciclo e representam medidas repetidas das mesmas séries.
+
+Perfis, escalas dos estados e parâmetros são calculados no treino. O prazo efetivo de entrega é de dois ciclos, e EOQCycle utiliza demanda e manutenção na mesma unidade temporal. Custos de manutenção, falta, emissão e quantidade permanecem, respectivamente, em 1 por unidade e ciclo, 5 por unidade não atendida, 50 por pedido e 0,5 por unidade pedida. São unidades do cenário, sem equivalência monetária calibrada. O custo soma manutenção, falta e pedidos no bloco de teste, sem crédito pelo estoque final. Estados iniciais comuns são obtidos por uma política EOQ de referência: um aquecimento no passado precede a validação, e sua trajetória na validação determina o estado inicial do teste. O teste não continua o estoque particular de cada candidata.
+
+O portfólio contém EOQCycle, sSCycle, CappedBaseStock, GA, PPO, GA--DQN e DQN. O último é o controle do híbrido e também está disponível à regra de seleção. As três primeiras políticas têm um ajuste por série e origem. GA, PPO, GA--DQN e DQN usam sementes 11, 29 e 47, totalizando 4.350 ajustes e 8.700 registros de validação ou teste. A matriz está completa, sem casos excluídos por falta de política ou semente. O GA usa população de 100 indivíduos e 50 gerações. DQN e PPO têm orçamento mínimo de 20 mil transições, arredondado para episódios completos: 20.009 e 20.010 nas duas origens. GA--DQN acrescenta busca genética e mil transições de demonstração; seu esforço total é maior que o do DQN isolado. A variante avaliada mantém o mesmo gatilho e piso de pedido nas demonstrações, no treinamento e na inferência.
+
+As sementes são primeiro promediadas dentro de cada série, origem e política. Para cada loja excluída, as políticas global e por perfil são escolhidas na validação das demais lojas e avaliadas no teste da loja reservada. O limiar principal é 0,70. Escolher uma alternativa viável na validação não garante repetir seu atendimento no futuro. Se nenhuma candidata cumpre a meta, a escolha de maior serviço é registrada como alternativa de contingência, sem classificá-la como viável.
+
+
+\subsection{Sistema de estoque, métricas e candidatas}
+
+Cada série é simulada separadamente em um sistema de vendas perdidas: demanda não atendida no ciclo não se transforma em pedido pendente. Não há estoque compartilhado entre lojas, capacidade conjunta ou transbordo. O simulador admite quantidades não negativas sem impor arredondamento a unidades inteiras ou lotes mínimos de compra. A política decide com o estado anterior ao recebimento do ciclo; a entrega respeita o prazo exato de dois ciclos. O recebimento precede a demanda, e manutenção incide sobre o saldo após o atendimento.
+
+Para o teste de sete ciclos, o custo é
+\begin{equation}
+C=\sum_t\left[hI_t+p(d_t-v_t)+K\mathbf{1}(q_t>0)+cq_t\right],
+\end{equation}
+em que $I_t$ é o estoque após a demanda, $d_t$ a demanda observada, $v_t$ a quantidade atendida e $q_t$ o pedido emitido. Os coeficientes são $h=1$, $p=5$, $K=50$ e $c=0{,}5$. Pedidos em trânsito não atendem demanda antes da chegada. O custo reportado não contém as penalidades auxiliares usadas no treino.
+
+\begin{table}[htbp]\centering\small
+\caption{Candidatas e decisões implementadas. Parâmetros e escalas usam somente o treino da própria série.}
+\label{tab:implemented_policies}
+\begin{tabular}{@{}p{3.2cm}p{7.6cm}@{}}\toprule
+Candidata & Regra e ajuste\\\midrule
+EOQCycle & Lote fixo ao atingir o ponto de pedido; lote EOQ por ciclo e proteção com $z=1{,}28$.\\
+sSCycle & Mesmo ponto de pedido, com reposição até o ponto acrescido do lote EOQ; parâmetros analíticos, sem otimização exata de $(s,S)$.\\
+CappedBaseStock & Reposição até um alvo com teto de quantidade; busca determinística em grade de $20\times12$ pares.\\
+GA & Busca evolutiva de ponto de pedido, lote e proteção adicional.\\
+DQN & Rede Q profunda, variante Double DQN com arquitetura dueling, para escolher entre 20 quantidades discretas.\\
+PPO & Otimização proximal de políticas, com 20 ações discretas e estimação generalizada de vantagem.\\
+GA--DQN & DQN com demonstrações, gatilho e piso de pedido derivados do GA.\\
+\bottomrule\end{tabular}
+\end{table}
+\FloatBarrier
+
+A Tabela~\ref{tab:implemented_policies} identifica as implementações que compõem o portfólio. Nas referências analíticas, $Q=\max(1,\sqrt{2\mu K/h})$ e $r=2\mu+1{,}28\sigma\sqrt{2}$, em que $\mu$ e $\sigma$ são média e desvio-padrão populacional do treino. EOQCycle pede $Q$ quando a posição de estoque não excede $r$; sSCycle repõe até $r+Q$. CappedBaseStock usa $q_t=\min(u,\max(0,S-\mathrm{IP}_t))$, com alvo $S$, teto $u$ e posição de estoque $\mathrm{IP}_t$.
+
+DQN e PPO usam duas camadas de 64 unidades. O estado tem seis componentes: estoque, previsão ingênua, pedidos em trânsito, média e dispersão dos últimos seis ciclos e posição no horizonte. As escalas vêm do treino e o estado usa apenas observações passadas. No híbrido, a quantidade é zero acima do gatilho genético; abaixo dele, é o máximo entre a ação da rede e metade do lote genético. Essa transformação é mantida em demonstração, treino e aplicação.
+
+Os objetivos de calibração não são idênticos. GA minimiza custo acrescido de penalidade pelo déficit de atendimento frente a 0,70. Os agentes usam recompensa de custo negativo e penalidade terminal pelo mesmo déficit. A escala da penalidade é $30\max(5\sum_t d_t,1)$. CappedBaseStock acrescenta termos de frequência de ruptura e amplificação da variância dos pedidos, com peso unitário, que não são usados pelo GA. Essa diferença precisa acompanhar a leitura do ranking: a avaliação compara as candidatas configuradas, sem isolar a qualidade de suas famílias ou igualar todos os esforços de ajuste.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fluxo_experimental.pdf}
+\caption{Fluxo da avaliação e separação da informação. Cada candidata é ajustada no treino da própria série. A estratégia de seleção usa a validação das demais lojas e é avaliada no teste da loja reservada. Os dois testes compartilham um ciclo; as origens são medidas repetidas.}
+\label{fig:experimental_flow}
+\end{figure}
+
+O fluxo da Figura~\ref{fig:experimental_flow} mantém separadas duas decisões: ajustar o controlador e escolher qual controlador recomendar. Para cada caso, o atendimento é $F=\sum_t v_t/\sum_t d_t$, em que $v_t$ é a demanda atendida e $d_t$ a demanda observada. Quando o denominador é zero, $F$ permanece indefinido. A média por caso atribui peso igual às séries com demanda; o atendimento ponderado usa a razão entre todas as unidades atendidas e demandadas. Ambos acompanham o custo total, para evitar que baixo atendimento seja interpretado como eficiência econômica.

@@ -1,0 +1,38 @@
+{
+  "completed_utc": "2026-10-18T02:22:07.493475+00:00",
+  "status": "completed",
+  "article_pages": 26,
+  "thesis_pages": 67,
+  "thesis_page_reduction_percent": 43.220338983050844,
+  "canonical_runs_completed": [
+    "BA",
+    "M5"
+  ],
+  "context_outer_folds_completed": {
+    "BA": 460,
+    "M5": 60
+  },
+  "new_inventory_controller_fits_for_context": 0,
+  "review_findings_addressed": [
+    "positive-demand physical feasibility excludes zero-demand cases",
+    "obsolete ongoing M5 and pilot conclusions removed",
+    "context study has own heading and matched learner comparison",
+    "optional module figure badge and captions updated",
+    "long matrix paths typeset without overflow"
+  ],
+  "validation": [
+    "article portable archive and hashes verified",
+    "both documents compiled without undefined references or overfull boxes",
+    "six article figures have embedded outline fonts",
+    "rendered article results/context and thesis diagnostics inspected",
+    "numeric reconstruction and conditional bootstrap audits preserved"
+  ],
+  "sha256": {
+    "docs/supply_chain_analytics_article/manuscript_ptbr.pdf": "0168230e7cf95aff549fbbbdd616c9089c026d45d153fda7271f53e5358c666a",
+    "docs/supply_chain_analytics_article/article_sources_ptbr_draft.zip": "94f7787aa2cd59adefed2d4c4ebabb58e4952bdfce3484d82c0dfefae43c375d",
+    "docs/master_proposal/tcc.pdf": "05a3a81f0607311cdccb341917f88e716c8d121390c27d3628c436ade5e468c0",
+    "docs/supply_chain_analytics_article/resultados_unificados_20261017.tex": "2ea4916127adde55ae3f446dffb692d06fbc776f897b0daeb13b94f4717593ed",
+    "docs/master_proposal/diagnosticos_unificados_20261017.tex": "b6f3c482f2530eae87c608b21bb5c36b88a61649fdc523379050b5cb41d5eb96",
+    "docs/supply_chain_analytics_article/context_results_20261017.tex": "f5c0cdc0749ccd032ca59e3e6c8454d4b2786cd6333c3d4f0b94749d95537174"
+  }
+}

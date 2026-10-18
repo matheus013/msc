@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "comments_addressed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "minimum_arrow_layout_length": 28.0,
+  "parallel_routes_separation_layout_units": 32,
+  "article_package_checks": "passed",
+  "thesis_compile_diagnostics": [],
+  "article_figure_page": 6,
+  "thesis_figure_pdf_page": 14,
+  "previous_version_preserved_in": "before/",
+  "simulation_unchanged": true,
+  "sha256": {
+    "docs\\supply_chain_analytics_article\\figures\\aipe_conceito_v3_contexto_ptbr.pdf": "ee57416933bea5758643056e8936737514c8dd70c8e80f9b17a2a56837df93df",
+    "docs\\supply_chain_analytics_article\\manuscript_ptbr.pdf": "294664e917586a97423a5220f0582cd47cd08cf3f9076f1a1da4d5170e5aa236",
+    "docs\\master_proposal\\tcc.pdf": "a119eecacc562ff06c3b58789a13709e826b0ad78b13934aeecc9a1857221623"
+  }
+}

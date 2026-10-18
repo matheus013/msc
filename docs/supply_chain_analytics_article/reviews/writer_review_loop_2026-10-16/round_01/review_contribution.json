@@ -1,0 +1,27 @@
+{
+  "round": 1,
+  "reviewer": "contribution",
+  "source_sha256": "250a815d12b444dbc36ebcff15a2e8def56e40f8fb8d9989b42d6c231eefd6e3",
+  "editorial_decision": "minor_revision",
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "C-W01",
+      "severity": "minor",
+      "location": "manuscript_ptbr.tex, Trabalhos relacionados, linhas 40 e 48; Introdução, linha 35",
+      "evidence": "O artigo identifica classificação+seleção, rejeição e diagnóstico como antecedentes e componentes. Contudo, encerra o posicionamento com “originalidade frente às integrações mais próximas [...] exige evidência adicional”, sem sintetizar qual contribuição própria, estritamente delimitada, é defendida neste manuscrito. O leitor recebe uma boa arquitetura, mas precisa reconstruir a distinção entre contribuição proposta e novidade ainda não estabelecida.",
+      "requested_change": "Substituir a frase de autoavaliação genérica por uma delimitação positiva: procedimento verificável de seleção de famílias em vendas perdidas que registra referência, autorização de intervenção e diagnóstico seletor/portfólio/viabilidade. Distinguir isso de inventar classificação, rejeição ou garantia de melhoria. Manter explícita a ausência de confronto empírico com integrações próximas. Se útil, reunir a comparação em um parágrafo curto ou quadro; não inventar atributos ausentes nos antecedentes.",
+      "kind": "writing",
+      "status": "open"
+    },
+    {
+      "id": "C-E01",
+      "severity": "major",
+      "location": "Trabalhos relacionados, linhas 40 e 48; Limitações e próximos testes; resultados M5 por consequências",
+      "evidence": "Antecedentes diretamente ligados à integração classificação+política não entram na comparação empírica. A regra por consequências foi desenvolvida no mesmo piloto em que é pontuada; muda 3/90 decisões e concentra cerca de 92% da economia em uma série. O próprio texto reconhece essas condições.",
+      "requested_change": "Antes de afirmar prontidão científica para submissão, apresentar validação independente da intervenção e justificar a contribuição frente aos antecedentes mais próximos, por confronto metodológico verificável e, quando comparável, comparação empírica. Manter a linguagem exploratória e os resultados negativos durante este ciclo; não é necessário executar novos experimentos para o fechamento editorial do manuscrito de trabalho.",
+      "kind": "experiment",
+      "status": "open"
+    }
+  ]
+}

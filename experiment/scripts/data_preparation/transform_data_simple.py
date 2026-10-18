@@ -14,7 +14,6 @@ if __name__ == "__main__":
 import json
 import os
 import csv
-from datetime import datetime
 from collections import defaultdict
 
 def load_json_safely(filepath):

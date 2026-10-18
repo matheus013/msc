@@ -1,5 +1,4 @@
 """Build a reproducible runtime report from completed, isolated trials."""
-from pathlib import Path
 import json
 from benchmark_parallel_fits import ROOT, compare_results, write_json
 import pandas as pd

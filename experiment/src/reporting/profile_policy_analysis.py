@@ -23,8 +23,6 @@ Uso:
   ou como módulo: from reporting.profile_policy_analysis import run
 """
 
-import os
-import sys
 import logging
 from pathlib import Path
 from datetime import datetime

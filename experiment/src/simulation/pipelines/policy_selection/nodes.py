@@ -17,7 +17,6 @@ Critério de rótulo ("melhor política"):
   Se nenhuma política atinge NS mínimo, escolhe a de maior NS.
 """
 import logging
-import pickle
 from typing import Dict, Tuple
 
 import numpy as np

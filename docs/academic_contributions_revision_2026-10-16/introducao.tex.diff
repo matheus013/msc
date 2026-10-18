@@ -1,0 +1,32 @@
+--- docs/master_proposal/capitulos/introducao.tex baseline
+
++++ docs/master_proposal/capitulos/introducao.tex revised
+
+@@ -2,7 +2,7 @@
+
+ 
+ Uma rede varejista precisa decidir quando e quanto repor em cada loja. O problema se torna mais difícil quando um produto vende regularmente em uma unidade, mas passa vários ciclos sem venda em outra. Uma política que preserva disponibilidade no primeiro caso pode gerar excesso de estoque no segundo. Custos, faltas e variabilidade dos pedidos dependem da relação entre a regra de reposição e o comportamento da demanda \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
+ 
+-Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular de apoio ao gerente de logística e estoques para reduzir custos evitáveis sem deterioração relevante do atendimento. A seleção de políticas conforme o contexto de cada série loja--produto organiza esse apoio. O AIPE organiza a especificação da decisão, a representação do contexto, a construção de evidência comparável, a recomendação e a avaliação de suas consequências. Seu \textit{Policy Selection Engine} (PSE) é o componente que realiza a escolha, por associação a um perfil informado ou por estimação supervisionada. Bahia e M5 constituem aplicações para avaliar o procedimento; não definem sua identidade metodológica.
++Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular e rastreável de apoio ao gerente de logística e estoques na escolha de políticas de reposição, buscando reduzir custos evitáveis sem deterioração relevante do atendimento. A seleção de políticas conforme o contexto de cada série loja--produto organiza esse apoio. O AIPE organiza a especificação da decisão, a representação do contexto, a construção de evidência comparável, a recomendação e a avaliação de suas consequências. Seu \textit{Policy Selection Engine} (PSE) é o componente que realiza a escolha, por associação a um perfil informado ou por estimação supervisionada. Bahia e M5 constituem aplicações para avaliar o procedimento; não definem sua identidade metodológica.
+ 
+ \section{Motivação}
+ 
+@@ -64,9 +64,14 @@
+
+ 
+ \section{Contribuições e alcance da evidência}
+ 
+-A contribuição principal é formular a seleção contextual como um procedimento com compromissos verificáveis. O AIPE encadeia cinco etapas, admite associação por perfil e estimação por série e exige uma referência competitiva para julgar a intervenção. O diagnóstico liga cada perda à decisão que pode corrigi-la: melhorar a escolha, ampliar o portfólio ou rever as condições operacionais. A metodologia torna essas decisões explícitas e passíveis de avaliação.
++A contribuição metodológica do AIPE se apoia em três eixos:
++\begin{enumerate}
++  \item \textbf{Seleção contextual:} integrar as abordagens do PSE por perfil e por estimação com contratos de informação, referência e escopo da restrição de serviço explícitos.
++  \item \textbf{Diagnóstico das limitações:} distinguir falha de seleção, insuficiência do portfólio e inviabilidade física do atendimento, orientando quais componentes ou condições revisar.
++  \item \textbf{Avaliação empírica:} examinar utilidade, condições de uso e limitações em vendas reais da Bahia e no referencial público M5, com análises separadas.
++\end{enumerate}
+ 
+-A contribuição empírica é delimitar a utilidade dessas escolhas em duas aplicações complementares. As vendas de uma rede varejista brasileira preservam heterogeneidade empresarial observada; o piloto público M5 permite examinar implementações preditivas e suas falhas. Código, matrizes e oráculos sustentam a rastreabilidade da avaliação. Como as consequências são simuladas, o uso de dados reais oferece relevância aplicada, mas não comprova ganho financeiro de implantação.
++A implementação exercita substituições no portfólio e no PSE; a portabilidade dos demais módulos e a rastreabilidade completa da entrega gerencial permanecem pendentes. O diagnóstico é retrospectivo e condicional ao simulador, sem identificar causas de rupturas na empresa. As bases complementares sustentam a avaliação do procedimento, mas as consequências simuladas não comprovam ganho financeiro de implantação. A comparação empírica com integrações próximas da literatura também permanece necessária para delimitar o diferencial do AIPE.
+ 
+ O algoritmo genético (\textit{genetic algorithm}, GA) e a rede Q profunda (\textit{deep Q-network}, DQN) são métodos conhecidos. Também o é a otimização proximal de políticas (\textit{proximal policy optimization}, PPO). Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
+ 

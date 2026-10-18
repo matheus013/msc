@@ -1,33 +1,39 @@
 \mychapter{Continuidade e Validação Final}{cap:plano_continuidade}\lhead{CONTINUIDADE E VALIDAÇÃO FINAL}
 
-A Bahia e o piloto M5 têm matrizes completas. O próximo passo é construir a avaliação final do seletor, e não apresentar a rodada M5 interrompida como experimento concluído. O piloto já orientou diagnóstico e recuo; integra o conjunto de desenvolvimento. A expansão nacional permanece cancelada.
+A metodologia AIPE está formulada e possui duas aplicações experimentais consolidadas. Bahia e M5 têm matrizes completas de controladores, seletores e oráculos, com 4.350 e 79.890 ajustes, respectivamente. Os resultados sustentam a execução do procedimento e delimitam a utilidade das implementações avaliadas. O piloto anterior orientou diagnóstico e recuo e integra o desenvolvimento; concluir a avaliação ampliada não estabelece confirmação independente. O estudo adicional de atributos também é de desenvolvimento. A continuidade deve examinar transferência, sensibilidades e uso gerencial, sem apresentar essas etapas como resultados já obtidos. A avaliação nacional permanece fora do escopo experimental desta versão.
 
 \section{Separar desenvolvimento e confirmação}
 \label{sec:estudos_caso_adicionais}
-A próxima amostra deve oferecer mais exemplos por classe e registrar suporte de cada perfil. A concentração natural do M5 em séries esparsas impede presumir cobertura equilibrada. Elegibilidade e estratificação usam somente o treino; séries reservadas não podem orientar o ajuste do seletor.
+Uma avaliação independente deverá reservar novas unidades ou períodos antes de examinar seus resultados e registrar suporte de cada perfil e classe. A concentração natural do M5 em séries esparsas impede presumir cobertura equilibrada. Elegibilidade e estratificação usam somente o treino; séries reservadas não podem orientar o ajuste do seletor.
 
-Hiperparâmetros, critérios de recuo e eventual simplificação de rótulos devem ser definidos em validação interna por loja. O teste final fica isolado. Uma melhora encontrada no piloto não é uma segunda replicação independente \citep{CawleyTalbot2010}. Ajustes de políticas compatíveis podem ser reaproveitados após auditoria de dados, configuração e código; mudanças científicas exigem novo ajuste da candidata afetada.
+O pipeline unificado usa cinco grupos internos por loja para escolher a margem de recuo, mantendo a loja externa excluída em cada origem. Outros hiperparâmetros e eventual simplificação de rótulos devem ser definidos somente no desenvolvimento. O teste de confirmação deverá ficar isolado dessas escolhas. Uma melhora encontrada no piloto ou na avaliação consolidada de desenvolvimento não é uma replicação independente \citep{CawleyTalbot2010}. Ajustes de políticas compatíveis podem ser reaproveitados após auditoria de dados, configuração e código; mudanças científicas exigem novo ajuste da candidata afetada.
 
-\section{Harmonizar o problema de decisão}
-A calibração da CappedBaseStock precisa ser harmonizada entre bases antes de atribuir diferenças à demanda. Também é necessário comparar restrições de serviço com escopo claro: série, perfil ou rede. A meta de 0,70 e os custos atuais são parâmetros experimentais, não exigências empresariais já justificadas.
+\section{Preservar o problema de decisão}
+A avaliação unificada aplica pesos zero de ruptura e amplificação à calibração da CappedBaseStock nas duas bases. As tabelas e figuras desta versão apresentam as matrizes consolidadas. Novas comparações devem conservar o escopo da restrição de serviço: série, perfil ou rede. A meta de 0,70 e os custos atuais são parâmetros experimentais, não exigências empresariais já justificadas.
 
-A instabilidade dos rótulos motiva examinar conjuntos de candidatas quase empatadas e alvos sensíveis ao custo de erro. Essa análise deve ocorrer no desenvolvimento, sem selecionar a formulação pelo teste reservado. GA--DQN continua acompanhado por GA e DQN, com o esforço adicional informado.
+A previsão por consequências com recuo modifica 679 das 5.326 escolhas M5 e apresenta benefício médio, acompanhado de 19 novas violações e 43 recuperações do alvo. Na Bahia, conserva a referência nos 290 casos. Esses resultados justificam avaliar as condições de uso e as deteriorações, sem extrapolar uma vantagem universal. A instabilidade dos rótulos também motiva examinar conjuntos de candidatas quase empatadas e alvos sensíveis ao custo de erro. Essa análise deve ocorrer no desenvolvimento, sem selecionar a formulação pelo teste reservado. GA--DQN continua acompanhado por GA e DQN, com o esforço adicional informado.
+
+\section{Entrega gerencial e avaliação sequencial}
+A próxima etapa de desenvolvimento deve completar o contrato de recomendação: origem e qualidade das entradas, família e parâmetros finais, alternativas, consequências esperadas, hipóteses e ligação com a avaliação posterior. A prévia da Bahia reaproveita indicadores persistidos; parâmetros e trajetórias ausentes não podem ser inferidos dos totais. Sua recuperação requer execução adicional quando não houver artefato exato, preservando a matriz de origem. O julgamento humano e a efetividade do apoio exigem estudo com usuários ou em campo.
+
+A cadência informada para a empresa-fonte é uma revisão por ciclo comercial. Uma avaliação dessa rotina deve fixar período de ação, agregação, revisão do PSE, horizonte, janela e atualização dos modelos. Cada estratégia conserva seu próprio estoque e pedidos em trânsito; mudanças de família não reinicializam o sistema. O calendário físico e as convenções de custo precisam permanecer comparáveis ao testar outras cadências. A execução por blocos continua válida em seu escopo e não deve ser modificada silenciosamente para representar esse novo desenho.
 
 \section{Sensibilidades e eficiência}
 \label{sec:robustez_pooling}
 Prazo, custos relativos, estoque inicial, tratamento terminal e horizonte podem alterar o ranking e a viabilidade física. Seu efeito deverá ser separado do efeito do seletor. Calibração agrupada por perfil é outra hipótese: não equivale a seleção de família por perfil e exige comparação própria.
 
-A escolha de CPU ou GPU deve considerar tempo total sob a carga de uso prevista. O piloto utilizou oito processos CPU; essa configuração operacional não é uma vantagem científica de uma política. Não há execução nacional ou expansão automática autorizada como requisito de conclusão desta análise.
+A escolha da unidade central de processamento (\textit{central processing unit}, CPU) ou da unidade de processamento gráfico (\textit{graphics processing unit}, GPU) deve considerar tempo total sob a carga de uso prevista. A execução consolidada utilizou paralelismo CPU com quantidade de processos ajustável; essa configuração operacional não é uma vantagem científica de uma política. A eficiência computacional deve ser relatada como propriedade da execução, separada da qualidade das recomendações. A relevância prática será discutida por magnitude, incerteza, deteriorações e contexto, sem impor economia percentual universal. Inferência de não inferioridade do atendimento, se pretendida, exigirá margem justificada e desenho específico.
 
-\section{Critérios de fechamento}
+\section{Critérios para a continuidade e a confirmação}
 \begin{table}[htbp]\centering\small
-\caption{Critérios de conclusão, sem datas ainda não acordadas.}\label{tab:cronograma}
+\caption{Compromissos de continuidade e confirmação independente, sem datas ainda não acordadas.}\label{tab:cronograma}
 \begin{tabular}{@{}p{4cm}p{8.8cm}@{}}\toprule
 Etapa & Evidência necessária\\\midrule
+Formulação do AIPE & Entradas, etapas, saídas e limites explicitados independentemente das bases\\
 Protocolo final & Objetivo, suporte e calibrações fixados antes do teste\\
 PSE & Comparação independente com global, perfil e controles simples\\
 Robustez & Falhas físicas, portfólio, seleção e sensibilidades separadas\\
 Redação & Afirmações alinhadas à evidência e revisão dos autores\\\bottomrule
 \end{tabular}\end{table}
 
-O artigo concentra a arquitetura e sua avaliação operacional; a dissertação mantém fundamentos, formulação e limites mais amplos. O material SBPO permanece arquivado. Autoria, declarações, disponibilidade de dados e elementos institucionais precisam ser fechados pelos responsáveis antes de submissão ou depósito.
+A comparação com as integrações mais próximas da literatura deverá explicitar o que o AIPE acrescenta em formulação, responsabilidades dos módulos e evidência, sem atribuir originalidade aos métodos constituintes. O artigo concentra a metodologia e sua avaliação operacional; a dissertação mantém fundamentos, formulação e limites mais amplos. Os responsáveis precisam confirmar autoria, declarações, disponibilidade de dados e elementos institucionais antes de submissão ou depósito.

@@ -1,128 +1,64 @@
 # AIPE — projeto Python integrado
 
-Este projeto concentra todos os experimentos, scripts, configurações e geração de resultados. O pacote interno `simulation` foi mantido para preservar imports e modelos serializados; não há um segundo projeto Python.
+O pipeline de pesquisa atual usa uma entrada única, com fases separadas de planejamento, ajustes dos controladores e avaliação dos seletores. Bahia e M5 são execuções independentes. Brasil permanece cancelado. Os documentos estão em `../docs/` e os dados brutos em `../data/`.
 
-## Ambiente
+## Pipeline atual
 
-O ambiente local já está em `.venv/`, com PyTorch CUDA instalado e dependências declaradas em `pyproject.toml`. No PowerShell:
+1. Conferir coorte, painéis congelados e configuração científica.
+2. Auditar checkpoints por código, configuração, identidade e dados.
+3. Reutilizar ajustes compatíveis e executar somente os faltantes.
+4. Extrair características do prefixo de treino.
+5. Comparar global, perfil, classe vencedora e consequências com/sem recuo.
+6. Escolher margens em cinco grupos internos por loja; reservar a loja externa.
+7. Fixar recomendações antes de pontuar o teste.
+8. Gerar indicadores pareados, cinco análises visuais, oráculos e causas das falhas.
 
-```powershell
-cd experiment
-.\.venv\Scripts\Activate.ps1
-python run.py device
-```
+CPU, oito processos, uma thread por processo e prioridade reduzida. Parâmetros dos controladores permanecem os da produção: sete candidatas incluindo DQN como controle, três sementes nos estocásticos e 20 mil transições nos agentes. Os resultados são separados por base e origem; o piloto já observado é desenvolvimento.
 
-Para criar um ambiente novo:
+## Planejamento e execução
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128
-.\.venv\Scripts\python.exe -m pip install -e ".[test,documents]"
-```
+Na raiz do repositório, com o ambiente existente:
 
-Mapas geográficos completos requerem o extra `maps`: `pip install -e ".[maps]"`. `requirements.txt` aponta para o mesmo projeto; as dependências não são duplicadas.
+    experiment/.venv/Scripts/python.exe experiment/run.py research-aipe plan --dataset BA --run aipe_ba145_unified_2026-10-15
+    experiment/.venv/Scripts/python.exe experiment/run.py research-aipe plan --dataset M5 --run aipe_m5_2408_unified_2026-10-15
 
-## Entrada única
+Planejar não treina nem inicia processos de simulação. O plano informa reaproveitamento e tarefas restantes. Depois da apresentação do plano:
 
-Os exemplos partem de `experiment/`. Da raiz, usar `python experiment/run.py`.
+    experiment/.venv/Scripts/python.exe experiment/run.py research-aipe execute --dataset BA --run aipe_ba145_unified_2026-10-15
+    experiment/.venv/Scripts/python.exe experiment/run.py research-aipe execute --dataset M5 --run aipe_m5_2408_unified_2026-10-15
 
-```bash
-python run.py --help
-python run.py device
-python run.py run --pipeline data_ingestion
-python run.py run --params "data_ingestion.states=['BA']"
-python run.py run --pipeline reporting
-python run.py run --pipeline benchmark_m5 --env m5
-python run.py run --pipeline benchmark_bot --env bot
-```
+O launcher `scripts/operations/start_scoped_experiments.ps1` apenas planeja por padrão; `-Execute` executa Bahia e depois M5, em janelas ocultas, evitando duas filas concorrentes de oito processos. A fase `execute` retoma SQLite e chama a avaliação ao completar os controladores. A fase `evaluate` refaz apenas seleção e análise, sem novos ajustes de estoque. Não modificar o código de uma rodada iniciada; hashes são conferidos.
 
-Preparação de vendas usa um único conversor DuckDB, com filtro por UF, agregação entre arquivos e escrita sem materializar a base inteira em pandas:
+Para status:
 
-```bash
-python run.py prepare-sales --states PB
-python run.py prepare-sales --states BA PB --output data/legacy/vendas_ba_pb.csv
-python run.py prepare-pb
-python run.py check-pb
-python run.py pb --config conf/pb/config.yaml --out data/legacy/outputs/pb_new
-python run.py plot-pb
-```
+    experiment/.venv/Scripts/python.exe experiment/run.py research-status --run aipe_m5_2408_unified_2026-10-15
 
-O conversor não sobrescreve uma saída existente sem `--overwrite`. `pb` usa os mesmos ambientes, previsores e políticas do Kedro. Sua configuração de custos e recorte permanece em `conf/pb/config.yaml`; novas execuções usam os algoritmos corrigidos e não são reprodução literal da implementação antiga.
+## Módulos e contratos
 
-Outros comandos: `sample-data`, `prepare-json`, `analyze-pdf`, `maps`, `maps-full`, `maps-national` e `segment-plot`. `analyze-pdf` usa por padrão o PDF da qualificação. Os scripts são acessados pelo comando correspondente para evitar diferenças de diretório de trabalho.
+- `simulation/research/protocol.py`: cenário de estoque, simulação e estado comum.
+- `production.py`, `hybrid.py`, `parallel.py`: ajuste das políticas e fila CPU.
+- `pse.py`: pré-processamento compartilhado, seleção e pontuação.
+- `pse_consequences.py`: classe de controle, previsão de consequências e recuo.
+- `evaluation.py`: matriz completa, seleção, comparações pareadas e oráculos.
+- `visualizations.py`: fronteira, escolhas por perfil, distribuição do serviço, heatmap e demanda.
+- `scripts/analysis/run_aipe_pipeline.py`: planejamento, reaproveitamento e execução por base.
 
-## Dados e resultados
+Os runners anteriores de produção continuam como dependências de fila ou para reproduzir resultados congelados. Não são a entrada recomendada para novas execuções. O piloto inicial `run_research_v2.py` foi arquivado em `../docs/archive/pipeline_cleanup_2026-10-15/`; seu orçamento curto e sua mistura de escopos não definem o protocolo atual.
 
-- `../data/source/`: fontes brutas internas, incluindo vendas por UF.
-- `../data/m5_walmart/`: fonte bruta externa M5.
-- `data/02_intermediate/` até `data/08_reporting/`: artefatos do Kedro.
-- `data/legacy/`: dados preparados e resultados preservados dos experimentos anteriores.
-- `../docs/qualification_presentation/`: versão atual dos resultados apresentados.
+Os pipelines Kedro e as configurações `base`, `m5` e `bot` são interfaces históricas e auxiliares. Previsão e mapas continuam disponíveis, mas não integram automaticamente o experimento de seleção atual. A modularidade não implica que todo método existente tenha sido validado como opção intercambiável.
 
-Os catálogos `base`, `bot` e `m5` continuam isolando seus resultados. As fontes originais são compartilhadas e permanecem fora dos diretórios de saída.
+## Dados e ambiente
 
-## GPU e mudanças de implementação
+As fontes ficam em `../data/source/` e `../data/m5_walmart/`. Artefatos intermediários, bancos e resultados ficam em `experiment/data/`, fora do Git. PDFs de referência e versões documentais são preservados. As coortes atuais são 145 séries Bahia e a coorte histórica M5 de 2.408 IDs, com elegibilidade por origem; não se confunde essa coorte com todas as FOODS.
 
-`auto` prioriza CUDA, depois MPS e CPU. Meta-heurísticas vetorizadas, DQN, PPO e LSTM PyTorch usam a GPU disponível. XGBoost usa `hist` com `device=cuda` quando CUDA está disponível; MPS usa CPU nesse componente. SARSA tabular, scikit-learn, tratamento de dados e figuras continuam em CPU.
-
-Nos pipelines Kedro, um processo GPU é usado por padrão para evitar que vários processos dupliquem o uso de VRAM. `simulation.gpu_workers` permite ajuste explícito; em CPU vale `simulation.n_workers`. O executor `research-production` tem configuração própria, descrita abaixo.
-
-A LSTM atual usa PyTorch/autograd, com treinamento completo da rede. Para o backend histórico, configurar `forecasting.lstm.backend: numpy` (ou `FORECASTING.LSTM.backend` no experimento PB). Não comparar novas execuções como se fossem idênticas aos resultados da qualificação. GPU não garante ganho em todos os tamanhos de lote; para medir em CPU:
-
-```powershell
-$env:AIPE_DEVICE = "cpu"
-python run.py device
-Remove-Item Env:AIPE_DEVICE
-```
-
-A seleção segue as interfaces oficiais de [PyTorch](https://pytorch.org/get-started/locally/) e [XGBoost](https://xgboost.readthedocs.io/en/stable/gpu/index.html). A variável `AIPE_DEVICE` é compartilhada por todos os componentes compatíveis.
+Dependências estão em `pyproject.toml`; `requirements.txt` referencia o projeto. Para um ambiente novo, usar `python -m venv .venv` e `pip install -e ".[test,documents]"`. O ambiente local já está disponível.
 
 ## Verificação
 
-### Executor de pesquisa com retomada
+    experiment/.venv/Scripts/python.exe -m pytest experiment/tests -q
 
-`research-production` usa CPU, 8 processos independentes, uma thread de cálculo por processo e prioridade reduzida por padrão, para coexistir com o uso normal da máquina. O processo principal confirma cada treino em SQLite; a fila mantém no máximo duas tarefas pendentes por processo. Dispositivo, número de processos e prioridade ficam registrados no manifesto; uma mudança exige outro nome de rodada.
+O inventário de código, a limpeza, os testes e a decisão de reaproveitamento estão em `../docs/operations/aipe_pipeline_review_2026-10-15/`. O README anterior, com os comandos e detalhes históricos, foi preservado no arquivo da revisão.
 
-```powershell
-python run.py research-production --run NOVA_RODADA --device cpu --workers 8 --priority below-normal
-```
+## Contexto adicional opcional
 
-Esse comando inicia a rodada completa. A rodada `census_2026-10-14` permanece interrompida por solicitação do usuário. Os testes de desempenho ficam separados dos resultados de pesquisa; a comparação de CPU/GPU está em `../docs/supply_chain_analytics_article/DESEMPENHO_CPU_GPU.md`.
-
-### Filas independentes após conferência de escopo
-
-`scripts/analysis/run_scoped_production.py` mantém Bahia145, M5 de referência e Brasil nacional em rodadas independentes. Por solicitação do usuário em 15/10/2026, o Brasil foi cancelado e removido do launcher `scripts/operations/start_scoped_experiments.ps1`. A Bahia já concluída é pulada, e apenas o M5 continua, por padrão com 8 processos CPU e prioridade reduzida. As duas coortes de referência incluem DQN como controle além das seis políticas principais.
-
-`--resume-execution-profile` permite uma migração explícita de processos/prioridade mantendo os checkpoints, desde que os hashes científicos, políticas, dados e regras de importação não mudem. O histórico operacional fica no manifesto; uma rodada com `cancelled_by_user.json` recusa inicialização. O identificador do M5 ainda contém `cpu16` por continuidade dos arquivos, mas o número de processos atual vem de `status.json` e do manifesto.
-
-Os manifestos congelam os IDs, as origens, o critério de informação passada e a versão `ga_gated_dqn_consistent_v2`. Essa variante treina e avalia com o mesmo gatilho/piso do GA e calcula a mesma penalidade terminal nas demonstrações e no treino. Os resultados antigos do híbrido são preservados, mas não reutilizados na variante corrigida. Os demais checkpoints só entram após auditoria do código científico, da configuração e dos dados. Consulte `../docs/supply_chain_analytics_article/CONFERENCIA_ESCOPO_E_TEMPO_2026-10-15.md` para quantidades e estimativas.
-
-### Cinco análises geradas
-
-Os pipelines `reporting`, `profile_analysis`, `final_report`, `benchmark_final`, `benchmark_m5` e `benchmark_bot` incluem o nó `generate_experiment_diagnostics`: fronteira custo–serviço/Pareto, políticas por perfil, distribuição do fill rate, heatmap perfil–limiar e caracterização da demanda. Figuras PNG/SVG, tabelas e manifesto são gravados em `data/08_reporting/experiment_diagnostics/`, ou no diretório equivalente do ambiente `m5`/`bot`. O portfólio vem dos resultados, sem fixar 12 políticas.
-
-Para executar somente essas análises sobre os artefatos existentes, sem treinar políticas:
-
-```powershell
-python run.py run --pipelines experiment_diagnostics
-python run.py run --pipelines experiment_diagnostics --env m5
-```
-
-A configuração `reporting.diagnostics` controla ativação, base, meta principal (70%), limiares (70%, 80%, 85%, 90%, 95%) e pasta de saída. Os KPIs planos do Kedro permitem uma análise retrospectiva com exclusão de loja, identificada como tal. No executor `research-production`, as mesmas figuras são geradas após a etapa Bahia/M5 com seleção na validação das outras lojas e avaliação no teste da loja excluída; entram somente casos completos de todas as políticas e sementes. Séries sem demanda no teste conservam fill rate indefinido.
-
-Também é possível gerar as figuras a partir de uma rodada interrompida, sem retomá-la, ou da reanálise histórica preservada:
-
-```powershell
-python run.py research-visualizations --run census_2026-10-14
-python run.py historical-visualizations
-```
-
-Nas rodadas novas, as distribuições de demanda usam os painéis elegíveis, enquanto a contagem de prefixos sem demanda vem de todas as candidatas no manifesto. Na reanálise histórica, ambas descrevem apenas a coorte preservada. CV² usa demandas positivas, distinguindo-se do CV² de todos os ciclos usado pelos perfis legados.
-
-### Testes automatizados
-
-```bash
-python -m pytest tests -q
-```
-
-Os testes usam dados sintéticos e diretórios temporários, verificam a equivalência numérica entre simuladores CPU/GPU e exercitam ingestão, otimização, agentes RL e previsão.
+O pacote `src/aipe_context` acrescenta atributos opcionais ao PSE preditivo, com escolhas fixas/candidatas/excluídas, junção temporal e seleção por consequências operacionais. Está desligado por padrão e não é importado pela fila corrente. Sua avaliação reutiliza matrizes concluídas, sem ajustar controladores, e é bloqueada enquanto BA/M5 estiverem em execução. Configuração: `conf/aipe_context_extension_v1.json`; comandos: `scripts/operations/context_extension.py`. Contratos, limites e exemplos estão em [Módulo de contexto opcional](../docs/operations/MODULO_CONTEXTO_OPCIONAL_AIPE.md).

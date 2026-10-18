@@ -1,0 +1,35 @@
+{
+  "reviewer": "contract_review_contribution",
+  "round": 1,
+  "date": "2026-10-16",
+  "scope": "contribution_and_methodological_contract",
+  "source_read_only": true,
+  "manifest_verified": {"files": 36, "mismatches": []},
+  "article_source_sha256": "e918dff752219856d8ce62754403e4e10da681a4fa81b3b8ee6b1ad607dc7d06",
+  "article_pdf_sha256": "7b91697d9b18147d1c64663a9f8df3569d5044809c9309452727e882ca9c8a9a",
+  "dissertation_pdf_sha256": "725f9bdd7c6819311d6d2eda29768b3e189973da25a5cce8cf9257346ae7a17f",
+  "editorial_status": "approved_for_contract_scope",
+  "scientific_submission_ready": false,
+  "critical": [],
+  "major": [],
+  "minor": [],
+  "claims_checked": [
+    "methodology_supporting_inventory_manager",
+    "no_store_or_manager_efficiency_ranking",
+    "contextual_human_relevance_without_universal_savings_cutoff",
+    "profile_and_estimated_pse",
+    "input_origin_and_partial_output_contract",
+    "modularity_without_arbitrary_substitution_guarantee",
+    "proposed_temporal_parameters_vs_tested_seven_cycle_family",
+    "managerial_use_and_financial_benefit_not_validated"
+  ],
+  "unresolved_scientific_evidence": [
+    "human_and_field_evaluation",
+    "independent_confirmation_and_close_external_comparators",
+    "complete_persisted_parameters_and_trajectories",
+    "sequential_revision_with_continuous_state",
+    "financial_calibration_and_harmonized_sensitivity"
+  ],
+  "requires_new_experiments_for_editorial_approval": false,
+  "notes": "No source changes. This is an independent editorial scope review, not numerical revalidation, PDF visual QA, or a journal acceptance prediction."
+}

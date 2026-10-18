@@ -1,0 +1,20 @@
+\mychapter{Conclusões}{cap:conclusion}\lhead{CONCLUSÕES}
+
+Esta dissertação propõe o AIPE para selecionar políticas de reposição conforme o contexto da demanda. Seu PSE admite associação por perfil e previsão supervisionada da política por série. A investigação distingue calibração dos controladores, escolha entre candidatas e avaliação futura da recomendação. Essa separação é a contribuição metodológica central; a utilidade operacional depende dos resultados, não da complexidade da arquitetura.
+
+\section{Respostas às questões de pesquisa}
+O desempenho varia entre séries e períodos, mas a heterogeneidade não basta para justificar a seleção contextual. Na Bahia, 4.350 ajustes cobrem 145 séries em duas origens. O PSE por perfil acrescenta 3,89 pontos percentuais de atendimento com aumento pontual de custo de 1,93\%. As violações individuais passam de 119 para 100 entre 283 casos com demanda. Na segunda origem, não há diferenciação frente à global.
+
+O piloto M5 completa 1.350 ajustes em 30 séries, dez lojas e três origens. O preditivo apresenta custo 13,9\% maior e atendimento 4,11 pontos menor que a global. Sua reprodução perfeita dos rótulos de treino não se transfere às lojas excluídas. O perfil explícito não é utilizado nas divisões das árvores, e as previsões coincidem com e sem essa entrada. A evidência identifica limites da implementação, sem provar impossibilidade da abordagem preditiva.
+
+A relação entre características e política também é instável no tempo: apenas 29/90 vencedoras nominais da validação permanecem vencedoras no teste, ou 33/90 admitindo empates no objetivo. O recuo exploratório ao perfil reduz a perda do preditivo, mas não supera as referências e ainda requer confirmação em séries reservadas.
+
+\section{Contribuições e interpretação}
+O AIPE reúne duas implementações do seletor em uma infraestrutura rastreável. O estudo oferece evidência proprietária brasileira e pública M5, preservando diferenças de cobertura, escala e calibração. Portfólio e GA--DQN são fundamentados na literatura; não constituem novidades algorítmicas próprias.
+
+A avaliação por oráculos acrescenta uma distinção prática. No M5, 21 falhas do preditivo poderiam ser evitadas por outra candidata; 15 exigem melhorar o portfólio ou sua calibração; 11 decorrem de restrições físicas iniciais; quatro casos não têm demanda. Seleção mais precisa não resolve todas essas causas. A distância ao planejamento com informação perfeita também não representa um ganho operacional disponível sem conhecimento futuro.
+
+Os achados não demonstram economia geral nem implantação validada do AIPE. São condicionais a custos de cenário, vendas possivelmente censuradas, estados iniciais comuns e janelas curtas. Sementes e origens repetidas não ampliam a população independente. Os objetivos de serviço por série e por grupo também diferem entre abordagens.
+
+\section{Implicações}
+Antes de recomendar um controlador, é necessário definir o serviço pretendido: média por série, atendimento ponderado por unidades ou garantia individual. A comparação deve manter referências simples competitivas e informar falhas, não somente médias. No estado atual, a contextualização oferece benefício condicionado na Bahia e expõe dificuldades de aprendizagem no piloto público. A continuidade deve testar quando essa diferenciação se sustenta em novas séries, preservando a separação entre desenvolvimento e confirmação.

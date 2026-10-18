@@ -1,0 +1,13 @@
+--- docs/master_proposal/instanciacao_aipe.tex baseline
+
++++ docs/master_proposal/instanciacao_aipe.tex revised
+
+@@ -1,6 +1,6 @@
+
+ \mychapter{Desenho da Avaliação Experimental}{cap:experimental}\lhead{AVALIAÇÃO EXPERIMENTAL}
+ 
+-Este capítulo instancia a metodologia AIPE nas aplicações Bahia e M5. Dados, custos, prazos, políticas, modelos e janelas descritos a seguir são escolhas experimentais; não definem requisitos universais da metodologia. O protocolo separa o ajuste dos controladores, a construção do seletor e a avaliação das recomendações.
++Este capítulo instancia a metodologia AIPE nas aplicações Bahia e M5. Dados, custos, prazos, políticas, modelos e janelas descritos a seguir são escolhas experimentais; não definem requisitos universais da metodologia. O protocolo separa o ajuste dos controladores, a construção do seletor e a avaliação das recomendações. A comparação entre abordagens do PSE examina a seleção contextual; os oráculos delimitam falhas de seleção, insuficiência do portfólio e inviabilidade física. As duas aplicações fornecem evidência sobre condições de uso, sem validar toda configuração admitida pela metodologia.
+ 
+ \section{Sistema de estoque e objetivo}
+ \label{sec:instanciacao_ambiente}\label{sec:ambiente_simulacao}

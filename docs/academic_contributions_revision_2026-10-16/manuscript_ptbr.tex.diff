@@ -1,0 +1,60 @@
+--- docs/supply_chain_analytics_article/manuscript_ptbr.tex baseline
+
++++ docs/supply_chain_analytics_article/manuscript_ptbr.tex revised
+
+@@ -15,7 +15,7 @@
+
+ \author[ufal]{Matheus Inácio Batista Santos}
+ \affiliation[ufal]{organization={Instituto de Computação, Universidade Federal de Alagoas},country={Brasil}}
+ \begin{abstract}
+-Gerentes de logística e estoques precisam conciliar custo e atendimento sob demandas heterogêneas. Propomos o Adaptive Inventory Policy Engine (AIPE), uma metodologia modular de apoio à decisão que vincula contexto, evidência operacional, seleção e avaliação. Seu Policy Selection Engine (PSE) associa perfis a famílias de políticas ou estima recomendações por série, com uma regra explícita para substituir ou conservar a referência. Avaliamos sete candidatas em duas aplicações separadas. Na Bahia, 145 séries em duas origens totalizam 4.350 ajustes; a seleção por perfil aumenta o atendimento em 3,89 pontos percentuais e o custo em 1,93\% frente à referência global. No piloto Walmart M5, 30 séries de dez lojas em três origens totalizam 1.350 ajustes. O preditivo por classe apresenta custo 13,9\% maior e atendimento 4,11 pontos inferior. Uma extensão exploratória por consequências previstas, com recuo à referência, reduz custo em 1,56\% e aumenta atendimento em 0,27 ponto; apenas três de 90 decisões mudam, e uma série concentra cerca de 92\% da economia. A metodologia permite distinguir ganhos da seleção, limitações do portfólio e restrições físicas do atendimento. As aplicações mostram compromissos distintos entre custo e serviço, sem estabelecer superioridade geral; a extensão desenvolvida no piloto exige confirmação independente.
++Gerentes de logística e estoques precisam conciliar custo e atendimento sob demandas heterogêneas. Propomos o Adaptive Inventory Policy Engine (AIPE), uma metodologia modular e rastreável de apoio ao gerente na escolha de políticas de reposição, buscando reduzir custos evitáveis sem deterioração relevante do atendimento. Seu Policy Selection Engine (PSE) associa perfis a famílias de políticas ou estima recomendações por série, com uma regra explícita para substituir ou conservar a referência. Avaliamos sete candidatas em duas aplicações separadas. Na Bahia, 145 séries em duas origens totalizam 4.350 ajustes; a seleção por perfil aumenta o atendimento em 3,89 pontos percentuais e o custo em 1,93\% frente à referência global. No piloto Walmart M5, 30 séries de dez lojas em três origens totalizam 1.350 ajustes. O preditivo por classe apresenta custo 13,9\% maior e atendimento 4,11 pontos inferior. Uma extensão exploratória por consequências previstas, com recuo à referência, reduz custo em 1,56\% e aumenta atendimento em 0,27 ponto; apenas três de 90 decisões mudam, e uma série concentra cerca de 92\% da economia. A contribuição central articula contexto, evidência, recomendação e avaliação; seleção por perfil ou estimação, diagnóstico retrospectivo e aplicações complementares sustentam essa proposta. As aplicações mostram compromissos distintos entre custo e serviço, sem estabelecer superioridade geral; a extensão desenvolvida no piloto exige confirmação independente.
+ 
+ \end{abstract}
+ \begin{keyword}
+@@ -32,7 +32,13 @@
+
+ 
+ Propomos o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular para organizar essa decisão. O procedimento especifica o problema, representa o contexto, constrói uma matriz comparável de consequências, recomenda pelo \textit{Policy Selection Engine} (PSE) e avalia a escolha em dados reservados. O PSE admite associação por perfil ou estimação por série. Uma regra de intervenção explicita quando a candidata substitui a referência. Contratos de entrada, saída e informação permitem substituir métodos e reavaliar suas consequências mantendo o problema de decisão definido.
+ 
+-A contribuição do AIPE é formular essa sequência como um procedimento verificável: a evidência sustenta a recomendação, a regra de intervenção define sua aplicação e o diagnóstico identifica onde aperfeiçoá-la. Os controladores e seletores concretizam responsabilidades substituíveis dentro desse procedimento. Avaliamos tanto a compatibilidade entre essas implementações quanto sua utilidade incremental frente à referência global. A integração entre classificação e inventário possui antecedentes; o posicionamento do trabalho depende da articulação proposta e das decisões que ela permite examinar.
++A contribuição principal é o AIPE como metodologia modular e rastreável de apoio ao gerente na escolha de políticas de reposição. O objetivo operacional é reduzir custos evitáveis sem deterioração relevante do atendimento. Três contribuições sustentam essa formulação:
++\begin{enumerate}
++ \item \textbf{Seleção contextual.} Integrar o PSE por perfil e por estimação com contratos de informação, referência e escopo da restrição de serviço explícitos.
++ \item \textbf{Diagnóstico das limitações.} Distinguir falhas de seleção, insuficiência do portfólio e inviabilidade física do atendimento por limites retrospectivos condicionais ao cenário.
++ \item \textbf{Avaliação empírica.} Examinar a utilidade e as limitações do procedimento em vendas reais brasileiras e no referencial público M5, analisados separadamente.
++\end{enumerate}
++Essas contribuições se apoiam em métodos conhecidos. A integração entre classificação e inventário possui antecedentes; a comparação empírica com as integrações mais próximas permanece necessária para avaliar o diferencial do AIPE.
+ 
+ Examinamos o procedimento em vendas de uma rede varejista brasileira e em um piloto da base pública Walmart M5. A Bahia permite avaliar a seleção por perfil com vendas empresariais observadas sob condições simuladas; o M5 permite comparar implementações preditivas em um referencial público. As duas aplicações são analisadas separadamente, com consequências simuladas e calibrações identificadas. Os resultados revelam atendimento adicional com custo maior na Bahia, deterioração do preditivo por classe no M5 e melhoria concentrada quando a previsão de consequências é combinada com recuo à referência. Esse conjunto orienta a análise de quando intervir e de qual componente revisar.
+ 
+@@ -79,7 +85,7 @@
+
+ \subsection{Substituição dos métodos e decisão de intervenção}
+ A modularidade permite avaliar uma alternativa em uma etapa mantendo definido o problema das demais. Um controlador recebe o estado disponível e produz um pedido válido; um descritor resume o histórico anterior à escolha; um seletor recomenda uma família do portfólio. A comparação preserva custos, definição do serviço, cronologia e unidades de análise. Quando uma alternativa exige outras ações ou informações, a adaptação de seu contrato precisa ser verificada antes da comparação.
+ 
+-Seja $\Pi$ o portfólio, $x_i$ a descrição do treino e $g_i$ o perfil. O PSE por perfil recomenda $m(g_i)$; o preditivo recomenda $f(x_i,g_i)$ ou $f(x_i)$. Ele pode aprender um rótulo ou estimar consequências por candidata. A referência global mantém a família, com parâmetros calibrados individualmente. A regra de intervenção escolhe entre candidata $\widehat\pi_i$ e referência $\pi_i^{\mathrm{ref}}$:
++Seja $\Pi$ o portfólio, $x_i$ a descrição do treino e $g_i$ o perfil. O PSE por perfil recomenda $m(g_i)$; o preditivo recomenda $f(x_i,g_i)$ ou $f(x_i)$. Aprender um rótulo ou estimar consequências por candidata são variantes da abordagem por estimação, não abordagens adicionais do PSE. A referência global mantém a família, com parâmetros calibrados individualmente. A regra de intervenção escolhe entre candidata $\widehat\pi_i$ e referência $\pi_i^{\mathrm{ref}}$:
+ \[
+  \pi_i^{\mathrm{AIPE}}=
+  \begin{cases}\widehat\pi_i,&a_i=1,\\\pi_i^{\mathrm{ref}},&a_i=0.\end{cases}
+@@ -182,7 +188,7 @@
+
+ 
+ A regra de intervenção torna explícito quanto o PSE modifica a referência e com que consequência. A variante por consequências conserva a global em 87/90 casos, melhora pontualmente custo e serviço e concentra cerca de 92\% da economia em uma série. A média favorável, portanto, depende de poucas decisões e deve ser lida junto à concentração do ganho e às deteriorações individuais. Esse resultado exploratório sustenta testar intervenções seletivas em dados externos ao desenvolvimento.
+ 
+-Os oráculos mostram que corrigir o seletor é apenas uma das intervenções possíveis. Havendo candidata viável, a escolha pode ser aprimorada; sem candidata viável, deve-se examinar o portfólio e sua calibração; diante de inviabilidade física, é necessário rever as condições do sistema. A distinção orienta qual componente do AIPE merece revisão e evita atribuir toda ruptura ao modelo preditivo.
++O diagnóstico retrospectivo distingue falhas de seleção, insuficiência do portfólio e inviabilidade física, sob as hipóteses do simulador. Essa classificação identifica oportunidades de revisão; não estabelece causas de rupturas observadas na empresa. Havendo candidata viável, cabe revisar a escolha; sem candidata viável, deve-se examinar o portfólio e sua calibração; diante de inviabilidade física, é necessário rever as condições do sistema. A distinção orienta qual componente do AIPE merece revisão e evita atribuir toda ruptura ao modelo preditivo.
+ 
+ O suporte do contexto também limita a transferência das recomendações. Na primeira origem M5, 826/885 séries elegíveis são esparsas, 57 têm tendência e duas pertencem ao grupo volatilidade/sazonalidade. Uma amostra maior pode manter essa concentração. A avaliação deve considerar o suporte de cada grupo e o objetivo de atendimento adotado: meta média, atendimento ponderado e garantia por série expressam exigências distintas. A comparação entre módulos só é interpretável quando conserva essa definição.
+ 
+@@ -196,7 +202,7 @@
+
+ Uma avaliação ampliada, ainda fora dos resultados deste artigo, conserva as 145 séries brasileiras e os 2.408 identificadores históricos do M5. Nesse recorte, 885, 2.033 e 2.408 séries são elegíveis nas respectivas origens. O desenho usa pesos zero para ruptura e amplificação na calibração da CappedBaseStock em ambas as bases e cinco grupos internos de lojas na escolha da margem de recuo. Essas mudanças podem alterar as recomendações e exigem nova análise. Separar as séries do piloto das demais identifica o uso prévio dos dados, sem estabelecer independência por si só.
+ 
+ \section{Conclusão}
+-O AIPE propõe uma metodologia modular de apoio ao gerente de logística e estoques para examinar custos evitáveis e atendimento. Organiza a seleção contextual em cinco etapas, desde a especificação do problema até o diagnóstico dos resultados. A metodologia vincula a representação da série loja--produto à evidência de validação, à recomendação do PSE e à decisão de substituir a referência. Essa estrutura permite localizar tanto o benefício de uma implementação quanto o componente a revisar quando o atendimento falha.
++O AIPE propõe uma metodologia modular de apoio ao gerente de logística e estoques para examinar custos evitáveis e atendimento. Organiza a seleção contextual em cinco etapas, desde a especificação do problema até o diagnóstico dos resultados. A metodologia vincula a representação da série loja--produto à evidência de validação, à recomendação do PSE e à decisão de substituir a referência. A seleção por perfil e por estimação, o diagnóstico retrospectivo e as aplicações complementares sustentam essa contribuição central. Os resultados exercitam a substituição de controladores e seletores; a rastreabilidade completa da entrega gerencial permanece pendente.
+ 
+ A avaliação delimita onde essas escolhas ajudam. Na Bahia, o perfil acrescenta 3,89 pontos de atendimento com aumento de custo de 1,93\%. No piloto M5, a estimação por classe perde para a global; consequências com recuo reduzem custo em 1,56\% e acrescentam 0,27 ponto de atendimento, com apenas três intervenções e benefício concentrado. Assim, a evidência sustenta a execução e a utilidade diagnóstica do procedimento, enquanto seu benefício operacional permanece condicionado à instanciação.
+ 

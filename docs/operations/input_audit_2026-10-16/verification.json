@@ -1,0 +1,11 @@
+{
+  "report_local_links_checked": 9,
+  "all_links_exist": true,
+  "integrity_checks": 22,
+  "all_integrity_checks_passed": true,
+  "scientific_source_modified_by_this_audit": false,
+  "training_started_by_this_audit": false,
+  "m5_state_at_finish": "running",
+  "m5_completed_fits_at_finish": 32040,
+  "m5_updated_utc": "2026-10-16T15:31:43.284408+00:00"
+}

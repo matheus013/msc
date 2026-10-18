@@ -1,0 +1,27 @@
+{
+  "capitulos/introducao.tex": {
+    "display_math_unchanged": true,
+    "brace_balance": 0,
+    "citations_unchanged": true
+  },
+  "instanciacao_aipe.tex": {
+    "display_math_unchanged": true,
+    "brace_balance": 0,
+    "citations_unchanged": true
+  },
+  "capitulos/conceitos.tex": {
+    "display_math_unchanged": true,
+    "brace_balance": 0,
+    "citations_unchanged": true
+  },
+  "capitulos/plano_continuidade.tex": {
+    "display_math_unchanged": true,
+    "brace_balance": 0,
+    "citations_unchanged": true
+  },
+  "lista_siglas_termos.tex": {
+    "display_math_unchanged": true,
+    "brace_balance": 0,
+    "citations_unchanged": true
+  }
+}

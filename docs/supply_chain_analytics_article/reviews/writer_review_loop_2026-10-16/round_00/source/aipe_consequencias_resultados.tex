@@ -1,0 +1,22 @@
+\subsection{Instanciação do PSE por consequências e recuo}
+\label{sec:consequencias_compacto}
+A substituição do seletor na mesma matriz permite comparar implementações sem refazer os controladores (Tabela~\ref{tab:consequencias_compacto}). A floresta por consequências sem recuo reduz o custo em 0,33\%, mas perde 2,09 pontos de atendimento frente à global. O controle por classe vencedora também reduz custo e perde serviço, limitando atribuir a melhora frente ao XGBoost somente ao alvo de aprendizagem.
+
+\begin{table}[htbp]\centering\small
+\caption{Variantes do PSE na mesma matriz M5: 90 casos de custo e 86 de serviço definido. Referências global, por perfil e preditiva por classe constam da Tabela~\ref{tab:m5_selectors}.}\label{tab:consequencias_compacto}
+\begin{tabular}{@{}p{5.2cm}rrr@{}}\toprule
+Variante & Custo & Serviço & Casos $\geq0{,}70$\\\midrule
+Classe vencedora: floresta de controle & 1.074,17 & 68,97\% & 40\\
+Consequências sem recuo & 1.083,36 & 69,37\% & 38\\
+Consequências sem perfil e sem recuo & 1.148,09 & 69,25\% & 38\\
+Consequências com recuo & 1.070,03 & 71,72\% & 47\\\bottomrule
+\end{tabular}\end{table}
+
+Com recuo, o custo médio fica 1,56\% abaixo da global e o serviço 0,27 ponto acima (Figura~\ref{fig:consequencias_compacto}). Somente três decisões mudam: uma de CappedBaseStock para GA em CA\_2 e duas de EOQCycle para sSCycle em TX\_2. Uma série concentra aproximadamente 92\% da economia. Duas intervenções permanecem abaixo de 70\% apesar de viabilidade prevista. São mantidos os mesmos 47 casos que atendem ao alvo, sem novas falhas ou recuperações frente à global.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/aipe_consequencias_comparacao.pdf}
+\caption{Diferenças médias frente à global. O recuo limita intervenções, mas o benefício observado concentra-se em duas lojas e não demonstra transferência.}\label{fig:consequencias_compacto}
+\end{figure}
+
+Intervalos exploratórios de 95\%, por bootstrap pareado de dez lojas, são $[-48{,}10;0{,}00]$ para diferença de custo e $[0{,}000;0{,}734]$ ponto para serviço. Alcançam zero, condicionam-se aos ajustes fixos e não corrigem multiplicidade. A comparação favorece investigar intervenção seletiva, com confirmação em dados que não tenham orientado essa revisão.

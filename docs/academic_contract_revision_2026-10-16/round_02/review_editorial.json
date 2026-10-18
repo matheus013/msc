@@ -1,0 +1,28 @@
+{
+  "round": 2,
+  "reviewer": "editorial",
+  "source_manifest_sha256": "6ef254a370a791bbdb0891dfd102af0d5c0e98f0ca67bcb90eac49088df4baf0",
+  "source_sha256": "e918dff752219856d8ce62754403e4e10da681a4fa81b3b8ee6b1ad607dc7d06",
+  "dissertation_root_sha256": "7912edd25149d40b3c8ebbcfe089a7453531b594454015cb2b4073d066185768",
+  "article_pdf_sha256": "7b91697d9b18147d1c64663a9f8df3569d5044809c9309452727e882ca9c8a9a",
+  "dissertation_pdf_sha256": "c63aa7a64a336b9e550d5587a34990ec76a6a9e30d76c77a3d3d7ea9ed426ae6",
+  "hash_check": "all_manifest_files_match",
+  "editorial_decision": "approve",
+  "document_decisions": {
+    "article": "approve",
+    "dissertation": "approve"
+  },
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "EDC-01",
+      "severity": "minor",
+      "document": "dissertation",
+      "location": "capitulos/introducao.tex:82; instanciacao_aipe.tex:27,47,148; capitulos/conceitos.tex:75,139,164,169; capitulos/plano_continuidade.tex:25",
+      "evidence": "Conferidas expansões ERP/IQR/OLS/MILP/CPU/GPU/SARSA/MAPE/RMSE/MBE no corpo e na lista atual, KPIs substituído por indicadores, GA/DQN/PPO também definidos na introdução. Fontes e manifest conferidos; PDF final inspecionado nas páginas 11,16,23,39.",
+      "requested_change": "Preferir termos por extenso para siglas de uso único: sistemas de gestão empresarial, intervalo interquartil, mínimos quadrados ordinários, indicadores. Expandir MILP e CPU/GPU na primeira ocorrência; glosar SARSA/MAPE/RMSE onde introduzidos, sem ampliar discussão tutorial ou modificar fórmulas. MBE pode receber expansão inglesa local ou manter a descrição de viés médio. Verificar compilações e resumos sem alterar quantitativos.",
+      "kind": "writing",
+      "status": "resolved"
+    }
+  ]
+}

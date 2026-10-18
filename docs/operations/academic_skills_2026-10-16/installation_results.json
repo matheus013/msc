@@ -1,0 +1,299 @@
+[
+  {
+    "repo": "andrehuang/academic-writing-agents",
+    "branch": "main",
+    "path": "skills/academic",
+    "name": "academic",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\academic",
+    "status": "installed",
+    "output": "Installed academic to C:\\Users\\mathe/.codex\\skills\\academic\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-download",
+    "name": "sci-download",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-download",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-extract",
+    "name": "sci-extract",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-extract",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-figure",
+    "name": "sci-figure",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-figure",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-html",
+    "name": "sci-html",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-html",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-polish",
+    "name": "sci-polish",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-polish",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-ppt",
+    "name": "sci-ppt",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-ppt",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-review",
+    "name": "sci-review",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-review",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-search",
+    "name": "sci-search",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-search",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "path": "skills/sci-zotero",
+    "name": "sci-zotero",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\sci-zotero",
+    "status": "installed",
+    "output": "Installed sci-download to C:\\Users\\mathe/.codex\\skills\\sci-download\nInstalled sci-extract to C:\\Users\\mathe/.codex\\skills\\sci-extract\nInstalled sci-figure to C:\\Users\\mathe/.codex\\skills\\sci-figure\nInstalled sci-html to C:\\Users\\mathe/.codex\\skills\\sci-html\nInstalled sci-polish to C:\\Users\\mathe/.codex\\skills\\sci-polish\nInstalled sci-ppt to C:\\Users\\mathe/.codex\\skills\\sci-ppt\nInstalled sci-review to C:\\Users\\mathe/.codex\\skills\\sci-review\nInstalled sci-search to C:\\Users\\mathe/.codex\\skills\\sci-search\nInstalled sci-zotero to C:\\Users\\mathe/.codex\\skills\\sci-zotero\n"
+  },
+  {
+    "repo": "hanlulong/econ-writing-skill",
+    "branch": "main",
+    "path": "skills/econ-write",
+    "name": "econ-write",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\econ-write",
+    "status": "installed",
+    "output": "Installed econ-write to C:\\Users\\mathe/.codex\\skills\\econ-write\n"
+  },
+  {
+    "repo": "WantongC/journal-adapt-writing-skill",
+    "branch": "main",
+    "path": "skill",
+    "name": "journal-adapt",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\journal-adapt",
+    "status": "installed",
+    "output": "Installed journal-adapt to C:\\Users\\mathe/.codex\\skills\\journal-adapt\n"
+  },
+  {
+    "repo": "lishix520/academic-paper-skills",
+    "branch": "main",
+    "path": "composer",
+    "name": "academic-paper-composer",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\academic-paper-composer",
+    "status": "installed",
+    "output": "Installed academic-paper-composer to C:\\Users\\mathe/.codex\\skills\\academic-paper-composer\n"
+  },
+  {
+    "repo": "lishix520/academic-paper-skills",
+    "branch": "main",
+    "path": "strategist",
+    "name": "academic-paper-strategist",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\academic-paper-strategist",
+    "status": "installed",
+    "output": "Installed academic-paper-strategist to C:\\Users\\mathe/.codex\\skills\\academic-paper-strategist\n"
+  },
+  {
+    "repo": "SNL-UCSB/paper-writing-skill",
+    "branch": "main",
+    "path": ".",
+    "name": "paper-writing",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\paper-writing",
+    "status": "installed",
+    "output": "Installed paper-writing to C:\\Users\\mathe/.codex\\skills\\paper-writing\n"
+  },
+  {
+    "repo": "blader/humanizer",
+    "branch": "main",
+    "path": ".",
+    "name": "humanizer",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\humanizer",
+    "status": "installed",
+    "output": "Installed humanizer to C:\\Users\\mathe/.codex\\skills\\humanizer\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/gap-to-topic",
+    "name": "gap-to-topic",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\gap-to-topic",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/literature-triage-matrix",
+    "name": "literature-triage-matrix",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\literature-triage-matrix",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/notebooklm-brief-verifier",
+    "name": "notebooklm-brief-verifier",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\notebooklm-brief-verifier",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/paper-memory-builder",
+    "name": "paper-memory-builder",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\paper-memory-builder",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/paper-summarize",
+    "name": "paper-summarize",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\paper-summarize",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-context-compressor",
+    "name": "research-context-compressor",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-context-compressor",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-design-helper",
+    "name": "research-design-helper",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-design-helper",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-hub-multi-ai",
+    "name": "research-hub-multi-ai",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-hub-multi-ai",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-hub",
+    "name": "research-hub",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-hub",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-project-orienter",
+    "name": "research-project-orienter",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-project-orienter",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/research-workflow-orchestrator",
+    "name": "research-workflow-orchestrator",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\research-workflow-orchestrator",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "path": "skills/zotero-library-curator",
+    "name": "zotero-library-curator",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\zotero-library-curator",
+    "status": "installed",
+    "output": "Installed gap-to-topic to C:\\Users\\mathe/.codex\\skills\\gap-to-topic\nInstalled literature-triage-matrix to C:\\Users\\mathe/.codex\\skills\\literature-triage-matrix\nInstalled notebooklm-brief-verifier to C:\\Users\\mathe/.codex\\skills\\notebooklm-brief-verifier\nInstalled paper-memory-builder to C:\\Users\\mathe/.codex\\skills\\paper-memory-builder\nInstalled paper-summarize to C:\\Users\\mathe/.codex\\skills\\paper-summarize\nInstalled research-context-compressor to C:\\Users\\mathe/.codex\\skills\\research-context-compressor\nInstalled research-design-helper to C:\\Users\\mathe/.codex\\skills\\research-design-helper\nInstalled research-hub-multi-ai to C:\\Users\\mathe/.codex\\skills\\research-hub-multi-ai\nInstalled research-hub to C:\\Users\\mathe/.codex\\skills\\research-hub\nInstalled research-project-orienter to C:\\Users\\mathe/.codex\\skills\\research-project-orienter\nInstalled research-workflow-orchestrator to C:\\Users\\mathe/.codex\\skills\\research-workflow-orchestrator\nInstalled zotero-library-curator to C:\\Users\\mathe/.codex\\skills\\zotero-library-curator\n"
+  },
+  {
+    "repo": "WenyuChiou/academic-writing-skills",
+    "branch": "main",
+    "path": "skills/academic-writing-skills",
+    "name": "academic-writing-skills",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\academic-writing-skills",
+    "status": "installed",
+    "output": "Installed academic-writing-skills to C:\\Users\\mathe/.codex\\skills\\academic-writing-skills\nInstalled paper-review to C:\\Users\\mathe/.codex\\skills\\paper-review\n"
+  },
+  {
+    "repo": "WenyuChiou/academic-writing-skills",
+    "branch": "main",
+    "path": "skills/paper-review",
+    "name": "paper-review",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\paper-review",
+    "status": "installed",
+    "output": "Installed academic-writing-skills to C:\\Users\\mathe/.codex\\skills\\academic-writing-skills\nInstalled paper-review to C:\\Users\\mathe/.codex\\skills\\paper-review\n"
+  },
+  {
+    "repo": "WenyuChiou/zotero-skills",
+    "branch": "master",
+    "path": "skills/zotero-skills",
+    "name": "zotero-skills",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\zotero-skills",
+    "status": "installed",
+    "output": "Installed zotero-skills to C:\\Users\\mathe/.codex\\skills\\zotero-skills\n"
+  },
+  {
+    "repo": "WenyuChiou/codex-delegate",
+    "branch": "master",
+    "path": "skills/codex-delegate",
+    "name": "codex-delegate",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\codex-delegate",
+    "status": "installed",
+    "output": "Installed codex-delegate to C:\\Users\\mathe/.codex\\skills\\codex-delegate\n"
+  },
+  {
+    "repo": "WenyuChiou/antigravity-delegate",
+    "branch": "master",
+    "path": "skills/antigravity-delegate",
+    "name": "antigravity-delegate",
+    "destination": "C:\\Users\\mathe\\.codex\\skills\\antigravity-delegate",
+    "status": "installed",
+    "output": "Installed antigravity-delegate to C:\\Users\\mathe/.codex\\skills\\antigravity-delegate\n"
+  }
+]

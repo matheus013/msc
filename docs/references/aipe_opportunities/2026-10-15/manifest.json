@@ -1,0 +1,43 @@
+[
+  {
+    "id": "selectivenet",
+    "url": "https://proceedings.mlr.press/v97/geifman19a/geifman19a.pdf",
+    "status": "downloaded",
+    "pages": 9,
+    "path": "docs\\references\\aipe_opportunities\\2026-10-15\\selectivenet.pdf"
+  },
+  {
+    "id": "safe",
+    "url": "https://proceedings.mlr.press/v97/laroche19a/laroche19a.pdf",
+    "status": "downloaded",
+    "pages": 10,
+    "path": "docs\\references\\aipe_opportunities\\2026-10-15\\safe.pdf"
+  },
+  {
+    "id": "spo",
+    "url": "https://arxiv.org/pdf/1710.08005",
+    "status": "downloaded",
+    "pages": 46,
+    "path": "docs\\references\\aipe_opportunities\\2026-10-15\\spo.pdf"
+  },
+  {
+    "id": "risk",
+    "url": "https://arxiv.org/pdf/2208.02814",
+    "status": "downloaded",
+    "pages": 19,
+    "path": "docs\\references\\aipe_opportunities\\2026-10-15\\risk.pdf"
+  },
+  {
+    "id": "selection",
+    "url": "https://arxiv.org/pdf/1811.11597",
+    "status": "downloaded",
+    "pages": 47,
+    "path": "docs\\references\\aipe_opportunities\\2026-10-15\\selection.pdf"
+  },
+  {
+    "id": "inventory2026",
+    "url": "https://www.mdpi.com/1999-4893/19/5/415/pdf",
+    "status": "error",
+    "error": "403 Client Error: Forbidden for url: https://www.mdpi.com/1999-4893/19/5/415/pdf"
+  }
+]

@@ -1,0 +1,148 @@
+{
+  "docs/supply_chain_analytics_article/manuscript_ptbr.tex": {
+    "chars_before": 35368,
+    "chars_after": 38710,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/capitulos/proposta.tex": {
+    "chars_before": 12068,
+    "chars_after": 15477,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/capitulos/introducao.tex": {
+    "chars_before": 10808,
+    "chars_after": 11273,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/instanciacao_aipe.tex": {
+    "chars_before": 18879,
+    "chars_after": 20362,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/capitulos/resumo.tex": {
+    "chars_before": 1773,
+    "chars_after": 2060,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/abstract_en.tex": {
+    "chars_before": 1876,
+    "chars_after": 2153,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/capitulos/conclusoes.tex": {
+    "chars_before": 4337,
+    "chars_after": 5026,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "docs/master_proposal/capitulos/plano_continuidade.tex": {
+    "chars_before": 4023,
+    "chars_after": 5417,
+    "display_math_unchanged": true,
+    "citations_unchanged": true,
+    "figures_unchanged": true,
+    "inputs_unchanged": true,
+    "labels_unchanged": true,
+    "brace_balance": 0,
+    "style_hits": {
+      "unicode_dash": 0,
+      "decorative_contrast": 0,
+      "filler": 0,
+      "english_hype": 0,
+      "english_passive": 0
+    }
+  },
+  "article_abstract_words": 197,
+  "protected_fragments": {
+    "docs\\master_proposal\\bahia_20261015.tex": true,
+    "docs\\master_proposal\\consequencias_20261015.tex": true,
+    "docs\\master_proposal\\m5_pse_20261015.tex": true,
+    "docs\\supply_chain_analytics_article\\aipe_bahia_resultados.tex": true,
+    "docs\\supply_chain_analytics_article\\aipe_consequencias_resultados.tex": true,
+    "docs\\supply_chain_analytics_article\\bahia_20261015.tex": true,
+    "docs\\supply_chain_analytics_article\\m5_pse_20261015.tex": true
+  }
+}

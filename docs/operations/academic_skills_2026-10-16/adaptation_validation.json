@@ -1,0 +1,37 @@
+[
+  {
+    "name": "academic-paper-reviewer",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "cite-style-converter",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "scholarly-writing-refiner",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "sci-paper",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "astro-observation-report",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "academic-codex-bridge",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  },
+  {
+    "name": "scientific-skills-catalog",
+    "passed": true,
+    "output": "Skill is valid!\n"
+  }
+]

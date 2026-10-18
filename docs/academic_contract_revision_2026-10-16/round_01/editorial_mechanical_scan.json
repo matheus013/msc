@@ -1,0 +1,96 @@
+{
+  "M1_dashes": {
+    "count": 1,
+    "hits": [
+      {
+        "file": "docs\\supply_chain_analytics_article\\manuscript_ptbr.tex",
+        "line": 11,
+        "hit": " -- "
+      }
+    ]
+  },
+  "M2_decorative_contrast": {
+    "count": 1,
+    "hits": [
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 67,
+        "hit": "em vez de"
+      }
+    ]
+  },
+  "M3_M4_M8_M9_filler": {
+    "count": 0,
+    "hits": []
+  },
+  "M6_openers": {
+    "count": 0,
+    "hits": []
+  },
+  "M5_M16_promotional": {
+    "count": 0,
+    "hits": []
+  },
+  "M10_vague_hype": {
+    "count": 0,
+    "hits": []
+  },
+  "M11_English_passive": {
+    "count": 0,
+    "hits": []
+  },
+  "M12_wordiness": {
+    "count": 0,
+    "hits": []
+  },
+  "M13_qualifiers": {
+    "count": 0,
+    "hits": []
+  },
+  "M14_false_ordinals": {
+    "count": 0,
+    "hits": []
+  },
+  "M15_exclamations": {
+    "count": 5,
+    "hits": [
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 42,
+        "hit": "!"
+      },
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 42,
+        "hit": "!"
+      },
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 42,
+        "hit": "!"
+      },
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 43,
+        "hit": "!"
+      },
+      {
+        "file": "docs\\master_proposal\\capitulos\\proposta.tex",
+        "line": 43,
+        "hit": "!"
+      }
+    ]
+  },
+  "M17_showy_verbs": {
+    "count": 0,
+    "hits": []
+  },
+  "M18_empty_openers": {
+    "count": 0,
+    "hits": []
+  },
+  "B_precision_pairs": {
+    "count": 0,
+    "hits": []
+  }
+}

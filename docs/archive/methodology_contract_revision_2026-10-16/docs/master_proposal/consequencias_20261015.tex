@@ -1,0 +1,31 @@
+\section{Comparação reduzida: consequências e decisão de intervenção}
+\label{sec:comparacao_consequencias}
+A comparação reduzida reutiliza a matriz do piloto M5 e testa uma implementação adicional da metodologia, sem novos ajustes de controladores. O objeto é a escolha: prever custo e serviço por família ajuda mais que prever uma vencedora? O recuo evita intervenções desfavoráveis? Os resultados respondem a essas perguntas no desenvolvimento, não em uma amostra independente.
+
+\begin{table}[htbp]\centering\small
+\caption{Comparação no piloto M5. Custo inclui 90 casos; serviço usa 86 com demanda positiva.}\label{tab:consequencias_aipe}
+\begin{tabular}{@{}p{5.6cm}rrr@{}}\toprule
+Implementação ou referência & Custo médio & NS médio & Casos $\geq0{,}70$\\\midrule
+Global & 1.086,97 & 71,46\% & 47\\
+PSE por perfil & 1.094,02 & 70,91\% & 46\\
+Preditivo original & 1.238,30 & 67,35\% & 39\\
+Classe vencedora: floresta de controle & 1.074,17 & 68,97\% & 40\\
+Consequências sem recuo & 1.083,36 & 69,37\% & 38\\
+Consequências sem perfil e sem recuo & 1.148,09 & 69,25\% & 38\\
+Consequências com recuo & 1.070,03 & 71,72\% & 47\\\bottomrule
+\end{tabular}\end{table}
+
+A previsão de consequências sem recuo reduz o custo médio em 0,33\%, mas perde 2,09 pontos de serviço frente à global. O controle de classificação por floresta também reduz custo e perde atendimento. Logo, a melhora frente ao XGBoost original não pode ser atribuída exclusivamente ao alvo de aprendizagem: modelo e regularização também importam.
+
+Com recuo, o custo médio fica 1,56\% abaixo da global e o atendimento 0,27 ponto acima. Contudo, somente três de 90 decisões mudam. Na origem 50, CA\_2/FOODS\_1\_096 passa de CappedBaseStock para GA; na origem 78, duas séries de TX\_2 passam de EOQCycle para sSCycle. Uma delas, FOODS\_3\_135, concentra aproximadamente 92\% da economia líquida. A Figura~\ref{fig:consequencias_aipe} apresenta as diferenças médias; a concentração impede interpretá-las como ganho disseminado.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\textwidth]{figures/aipe_consequencias_comparacao.pdf}
+\caption{Diferenças frente à global na comparação reduzida. Menor custo e maior serviço são favoráveis. A variante com recuo intervém em apenas três casos.}\label{fig:consequencias_aipe}
+\end{figure}
+
+As três intervenções reduzem custo e aumentam serviço nos casos em que ocorreram. Entretanto, duas permanecem abaixo de 70\%, embora o seletor tenha previsto viabilidade. A variante conserva os mesmos 47 casos que atendem ao alvo, sem novas falhas nem recuperações em relação à referência. O ganho médio não equivale a resolver o atendimento individual.
+
+O bootstrap pareado por dez lojas, com cinco mil sorteios, produz intervalo exploratório de 95\% de $[-48{,}10;0{,}00]$ para diferença de custo médio e $[0{,}000;0{,}734]$ ponto percentual para diferença de serviço. Os intervalos alcançam zero. Mantêm-se fixos os ajustes e as escolhas; não se modela toda a incerteza de treinamento nem se corrige multiplicidade. Dependência temporal, concentração em duas lojas e desenvolvimento no piloto limitam a inferência.
+
+O resultado sugere que restringir intervenções merece mais investigação do que simplesmente recomendar uma candidata para toda série. A metodologia permite tornar essa decisão explícita e avaliar suas consequências, mas o pequeno número de trocas não demonstra transferência. A próxima avaliação deve preservar controles, harmonizar objetivos e reservar séries que não tenham orientado a regra.

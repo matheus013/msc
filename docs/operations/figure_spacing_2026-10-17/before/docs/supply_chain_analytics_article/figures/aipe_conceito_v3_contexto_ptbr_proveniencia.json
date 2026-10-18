@@ -1,0 +1,15 @@
+{
+  "kind": "Conceptual vector diagram; optional extension has no empirical results yet",
+  "generator": "experiment\\scripts\\documents\\build_aipe_context_figure.py",
+  "generator_sha256": "7d88dccabe3f164956236d3c0c5dfc9010b8c92a1670ddbbcad9459b1672ff70",
+  "preserved": [
+    "aipe_conceito_v2_ptbr.pdf",
+    "aipe_conceito_v2_ptbr.svg",
+    "aipe_conceito_v2_ptbr.png"
+  ],
+  "outputs_sha256": {
+    "aipe_conceito_v3_contexto_ptbr.pdf": "e09f5f2fffef49e8c28aa82c4ceff3f3a75b32453e1474645ba0f9341bc9747e",
+    "aipe_conceito_v3_contexto_ptbr.svg": "8b449e2de4542687addc4e97569ba8164466b53082393664e73d0e92f50d8544",
+    "aipe_conceito_v3_contexto_ptbr.png": "c6d8f57d7939bec3b69d7610c2b1fc91d27c2bdc0058fa9c0ae772e9f9d10431"
+  }
+}

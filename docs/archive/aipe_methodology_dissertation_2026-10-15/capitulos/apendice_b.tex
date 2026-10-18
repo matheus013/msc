@@ -1,0 +1,68 @@
+% apendice_b.tex: Apêndice B: Representações Visuais das Políticas Avaliadas
+
+\chapter{Representações Visuais das Políticas Avaliadas}
+\label{ap:representacoes_politicas}
+\lhead{APÊNDICE B}
+
+Este apêndice reúne representações visuais complementares das políticas do portfólio final avaliadas no experimento (Seção~\ref{sec:benchmark_massivo}). As figuras têm caráter explicativo e servem para detalhar a lógica operacional de políticas clássicas, meta-heurística, agente de aprendizado por reforço e política híbrida, sem alterar a formulação metodológica apresentada no Capítulo~\ref{cap:metod}. As representações incluem as políticas clássicas EOQ, $(s,S)$ e Jornaleiro (Figura~\ref{fig:ap_classicas}), o Algoritmo Genético (Figura~\ref{fig:ap_ga_cromossomo}), os agentes DQN e PPO (Figura~\ref{fig:ap_rl}) e a política híbrida GA-DQN (Figura~\ref{fig:ap_ga_dqn}).
+
+A organização deste apêndice acompanha as famílias de métodos avaliadas na dissertação. Primeiro são apresentadas políticas clássicas, em seguida a meta-heurística, depois os agentes de aprendizado por reforço e, por fim, uma representação complementar de política híbrida GA-RL.
+
+Enquanto o EOQ enfatiza o equilíbrio entre custo de pedido e custo de manutenção, a política $(s,S)$ explicita uma regra operacional de revisão (quando a posição de estoque atinge o ponto de reposição \(s\), emite-se pedido para recompor o nível-alvo \(S\)), e o Jornaleiro considera explicitamente o equilíbrio entre risco de excesso e risco de falta. A Figura~\ref{fig:ap_classicas} reúne as três representações.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/política_eoq_lote_econômico_de_compra.pdf}\\
+        \footnotesize (a) EOQ
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/política_de_reposição_de_estoques.pdf}\\
+        \footnotesize (b) $(s,S)$
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/política_do_jornaleiro_infográfico_explicativo.pdf}\\
+        \footnotesize (c) Jornaleiro
+    \end{minipage}
+    \caption{Representações das políticas clássicas: (a) lote econômico de compra (EOQ); (b) regra de revisão $(s,S)$; (c) decisão de reposição sob incerteza de demanda (Jornaleiro).}
+    \label{fig:ap_classicas}
+\end{figure}
+
+A meta-heurística do portfólio final usa uma representação contínua para buscar parâmetros de reposição com bom desempenho operacional. No Algoritmo Genético, cada cromossomo codifica uma parametrização candidata da política de reposição, como mostra a Figura~\ref{fig:ap_ga_cromossomo}. SA compartilha a mesma representação de solução $(s,Q)$ e a mesma função de avaliação, diferindo apenas no mecanismo de busca (vizinhança com aceitação probabilística, em vez de população evolutiva).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.86\textwidth]{img/representação_do_cromossomo_no_ag.pdf}
+    \caption{Representação do cromossomo no Algoritmo Genético para parametrização de políticas de reposição.}
+    \label{fig:ap_ga_cromossomo}
+\end{figure}
+
+Nos agentes de aprendizado por reforço, a decisão de reposição é tratada como interação sequencial entre agente e ambiente. Na política \(\epsilon\)-greedy do DQN, a escolha aleatória de uma ação corresponde à etapa de exploração, enquanto a seleção da ação com maior valor \(Q(s,a)\) corresponde ao aproveitamento da melhor ação estimada; o PPO compartilha a mesma abstração de interação sequencial, mas atualiza a política por estrutura ator-crítico com retorno multi-passo (GAE) em vez do \textit{bootstrap} de 1 passo do DQN. A Figura~\ref{fig:ap_rl} resume os dois agentes.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/representação_do_agente_dqn.pdf}\\
+        \footnotesize (a) DQN
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/representação_do_agente_ppo_em_detalhes.pdf}\\
+        \footnotesize (b) PPO
+    \end{minipage}
+    \caption{Representações dos agentes de aprendizado por reforço: (a) Deep Q-Network (DQN), estimação de valores de ação por \textit{bootstrap} de 1 passo; (b) Proximal Policy Optimization (PPO), estrutura ator-crítico com retorno multi-passo (GAE).}
+    \label{fig:ap_rl}
+\end{figure}
+
+Por fim, a política híbrida GA-DQN complementa a família GA-RL ao combinar busca evolutiva com refinamento por aprendizado por reforço. A Figura~\ref{fig:ap_ga_dqn} ilustra a lógica de inicialização evolutiva e refinamento por DQN. Essa representação reforça que a política híbrida é tratada como especialista do portfólio avaliado, mantendo o AIPE e o PSE como contribuição metodológica central.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.86\textwidth]{img/representação_da_política_híbrida_ga_dqn.pdf}
+    \caption{Representação da política híbrida GA-DQN no portfólio avaliado.}
+    \label{fig:ap_ga_dqn}
+\end{figure}

@@ -1,0 +1,14 @@
+{
+  "round": 2,
+  "reviewer": "methods",
+  "source_sha256": "7e6f1127d57348806b8339eab6d038818847d7306ce45d31d902e6e4ed22ad62",
+  "editorial_decision": "approve",
+  "scientific_submission_ready": false,
+  "issues": [
+    {"id":"MTH-01","severity":"minor","location":"manuscript_ptbr.tex; Simulador, portfólio e calibração","evidence":"Objetivos efetivos, peso 30 e escalas estão explícitos e correspondem aos snapshots históricos; 16 hashes conferidos.","requested_change":"Concluído: manter distinção entre penalização de calibração, custo reportado e viabilidade de validação.","kind":"writing","status":"resolved"},
+    {"id":"MTH-02","severity":"minor","location":"manuscript_ptbr.tex; Substituição dos métodos e decisão de intervenção","evidence":"Texto afirma calibração exclusivamente no prefixo de treino das séries avaliadas.","requested_change":"Concluído: preservar cronologia explícita.","kind":"writing","status":"resolved"},
+    {"id":"MTH-03","severity":"minor","location":"manuscript_ptbr.tex; Custo, serviço e escolha; Avaliação e desenvolvimento do piloto","evidence":"Médias por caso após sementes, serviço indefinido e global específica à partição/origem agora definidos explicitamente.","requested_change":"Concluído: manter a ausência de garantia individual e possibilidade de variar família entre partições/origens.","kind":"writing","status":"resolved"},
+    {"id":"MTH-04","severity":"major","location":"Desenho experimental; consequências com recuo; conclusão","evidence":"Regra foi desenvolvida com o piloto; benefício concentra-se em três decisões, sem confirmação independente; limitação preservada.","requested_change":"Fixar implementação e protocolo antes de confirmação em unidades/períodos reservados; manter resultado atual exploratório.","kind":"experiment","status":"open"},
+    {"id":"MTH-05","severity":"major","location":"Calibração; limitações","evidence":"Calibração Capped distinta, orçamento não equivalente e sensibilidades ausentes continuam limitando generalização e estão reconhecidos.","requested_change":"Harmonizar calibração e avaliar sensibilidades justificadas antes de conclusões amplas, sem antecipar resultados.","kind":"experiment","status":"open"}
+  ]
+}

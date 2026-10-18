@@ -1,0 +1,193 @@
+\documentclass[preprint,12pt]{elsarticle}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,booktabs,graphicx,xurl,placeins}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{2em}
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\journal{Supply Chain Analytics -- manuscrito de trabalho em português}
+\begin{document}
+\begin{frontmatter}
+\title{AIPE: uma metodologia modular para seleção contextual de políticas de reposição}
+\author[ufal]{Matheus Inácio Batista Santos}
+\affiliation[ufal]{organization={Instituto de Computação, Universidade Federal de Alagoas},country={Brasil}}
+\begin{abstract}
+A seleção de políticas de reposição exige conectar características da demanda, condições de estoque e consequências operacionais. Propomos o Adaptive Inventory Policy Engine (AIPE), uma metodologia modular que explicita entradas, etapas, interfaces e critérios para construir e avaliar recomendações. O Policy Selection Engine (PSE) admite associação por perfil ou estimação por série; políticas, representações e seletores podem ser substituídos respeitando os contratos do procedimento. Avaliamos instanciações com sete candidatas e separação entre calibração, seleção e teste. Na Bahia, 145 séries em duas origens totalizam 4.350 ajustes; a escolha por perfil aumenta o atendimento em 3,89 pontos percentuais e o custo em 1,93\% frente à referência global. No piloto M5, 30 séries em dez lojas e três origens totalizam 1.350 ajustes. O preditivo por classe apresenta custo 13,9\% maior e atendimento 4,11 pontos inferior. Uma extensão exploratória por custo e serviço previstos, com recuo à referência, reduz o custo médio em 1,56\% e aumenta o atendimento em 0,27 ponto, mas muda apenas três de 90 decisões. A contribuição é o procedimento AIPE, instanciado e avaliado por consequências verificáveis. A diversidade de métodos demonstra execução de alternativas sob um protocolo comum; não comprova superioridade de toda combinação. Benefícios concentrados, calibrações específicas e desenvolvimento no piloto exigem confirmação independente.
+\end{abstract}
+\begin{keyword}
+Inventory methodology \sep Modular decision support \sep Policy selection \sep Demand heterogeneity \sep Service level
+\end{keyword}
+\end{frontmatter}
+
+\section{Introdução}
+Uma rede varejista decide quando e quanto repor para muitas combinações de loja e produto. Vendas frequentes, longos intervalos sem demanda e picos ocasionais impõem necessidades diferentes. Essas diferenças motivam contextualizar a decisão, mas não demonstram que uma regra por grupo ou um modelo supervisionado supere uma política única bem calibrada. O benefício precisa aparecer no custo e no atendimento em períodos posteriores à escolha \cite{Axsater2006InventoryControl}.
+
+Comparar controladores e selecionar entre eles são problemas distintos. Uma política pode ser competitiva em média e inadequada para algumas séries. Reciprocamente, a existência de vencedoras diferentes não garante que suas identidades sejam previsíveis. A seleção de algoritmos fornece a formulação pertinente: características de uma instância orientam a escolha de um método de um portfólio \cite{rice1976,Kotthoff2014AlgorithmSelection}. Aqui, a instância é a série loja--produto e a decisão é a família de política, com parâmetros calibrados no histórico da própria série.
+
+Propomos o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular que organiza especificação da decisão, representação do contexto, construção de evidência comparável, recomendação e avaliação. Seu componente de escolha, o \textit{Policy Selection Engine} (PSE), recebe perfil informado ou estima uma recomendação por série. Cada módulo possui uma responsabilidade e um contrato de entrada e saída; os métodos que o preenchem são escolhas de instanciação. A metodologia permite examinar uma combinação sem redefinir todo o procedimento.
+
+A pergunta central é como estruturar essa seleção para que diferentes métodos produzam recomendações comparáveis e verificáveis. Avaliamos também quando as implementações agregam valor frente a uma referência e quais perdas dependem do seletor, do portfólio ou das condições físicas. A contribuição é a formulação e instanciação do procedimento AIPE, com decisão explícita de intervenção e diagnóstico de resultados. Não se reivindica a invenção de classificação de inventário, seleção de algoritmos ou dos controladores utilizados.
+
+As aplicações Bahia e M5 cumprem papéis complementares. A primeira avalia associação por perfil em uma base brasileira; o piloto público examina implementações preditivas e recuo. O portfólio heterogêneo e as variantes do PSE verificam a execução de alternativas sob um protocolo comum. A avaliação operacional verifica se essas escolhas ajudam; resultados desfavoráveis delimitam seu uso. Não se presume que qualquer combinação seja vantajosa nem se apresenta o piloto de desenvolvimento como confirmação externa.
+
+\section{Trabalhos relacionados}
+A classificação ADI--CV$^2$ organiza padrões de frequência e tamanho da demanda \cite{syntetos2005}. Entretanto, classes estatísticas não determinam sozinhas a melhor reposição: custos, prazo, estoque inicial e atendimento também importam. Mohammaditabar et al.\ \cite{Mohammaditabar2012Integrated} integram classificação e escolha de políticas; Sheikh-Zadeh et al.\ \cite{SheikhZadeh2021PBIC} propõem classificação orientada ao desempenho em sistemas de múltiplos itens e escalões. Esses antecedentes fundamentam a metodologia e impedem reivindicar prioridade na integração entre classificação e inventário. Seus métodos não foram reproduzidos como comparadores.
+
+Na literatura da revista, Tadayonrad e Ndiaye \cite{sca_f81ad2b3e023} aproximam previsão e consequências operacionais. Theunissen et al.\ \cite{sca_c5c06dcbc9e5} discutem a informação decisória preservada pela classificação. Essa perspectiva orienta nossa avaliação: reconhecer um perfil ou acertar o nome de uma política só tem utilidade se melhorar a decisão. Não implementamos o método topológico desses autores.
+
+Zabraoui et al.\ \cite{sca_27e994c54848} comparam algoritmos de inventário e combinações de busca genética e aprendizado por reforço com dados M5. A arquitetura GA--DQN integra nosso portfólio, com GA e DQN como controles, sem ser apresentada como contribuição algorítmica. Granularidade, filtros, custos e implementação local impedem uma reprodução exata de seu ranking.
+
+Políticas limitadas de estoque-base oferecem outra referência para vendas perdidas \cite{Xin2021CappedBaseStock}. Suas propriedades teóricas não garantem desempenho para nossa calibração. Os resultados de reforço também dependem do estado, da recompensa e do orçamento \cite{Boute2022DRLInventoryRoadmap}. O AIPE separa essas implementações da escolha entre candidatas. A avaliação do seletor precisa, ainda, separar desenvolvimento e teste para evitar otimismo após escolher configurações \cite{CawleyTalbot2010}.
+
+Francuz e Bányai \cite{FrancuzBanyai2026Selection} integram escolha de família e parâmetros em otimização multiobjetivo, usando aprendizado para aproximar o simulador. A aplicação tem demanda sintética sazonal e pedidos pendentes. Aprendizado orientado à consequência \cite{ElmachtoubGrigas2022SPO}, predição com rejeição \cite{GeifmanElYaniv2019SelectiveNet} e recuo à referência em RL \cite{Laroche2019SPIBB} também possuem antecedentes. O AIPE articula esses fundamentos na seleção de famílias de reposição; a revisão não demonstra ineditismo universal dessa articulação nem transfere garantias teóricas para o ambiente avaliado.
+
+\section{AIPE: metodologia modular}
+\subsection{Objeto e procedimento}
+O objeto é escolher uma família para a série loja--produto a partir da informação disponível antes da decisão. As entradas são históricos e contexto, portfólio, ambiente de estoque, objetivo operacional e desenho de avaliação. A saída é uma recomendação acompanhada de referência, parâmetros de aplicação, suporte e identificação da configuração. Ausência de candidata viável deve ser registrada; uma contingência não certifica atendimento do alvo.
+
+O procedimento tem cinco etapas: (1) especificar unidade, ambiente, objetivo e referência; (2) preparar históricos e representar o contexto; (3) calibrar candidatas e construir evidência de validação; (4) recomendar pelo PSE e aplicar a regra de intervenção; (5) avaliar em dados reservados e diagnosticar perdas. A Figura~\ref{fig:aipe} sintetiza a motivação; a Tabela~\ref{tab:modules} explicita os contratos metodológicos. São responsabilidades do procedimento, não nomes de funções de uma API universal já disponibilizada.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/aipe_conceito_v2_ptbr.pdf}
+\caption{AIPE: o contexto orienta a seleção de políticas. O PSE associa um perfil informado a uma família ou estima uma recomendação por série. Famílias A/B/C são ilustrativas; o benefício é avaliado operacionalmente.}\label{fig:aipe}
+\end{figure}
+
+\begin{table}[htbp]\centering\small
+\caption{Contratos dos módulos do AIPE. Trocar o método preserva a responsabilidade e as restrições de informação.}\label{tab:modules}
+\begin{tabular}{@{}p{2.4cm}p{4.0cm}p{4.8cm}@{}}\toprule
+Módulo & Entrada e saída & Contrato e instanciação avaliada\\\midrule
+Especificação & Requisitos $\to$ cenário e regra & Definir custo, serviço e referência; aqui, vendas perdidas e prazo fixo\\
+Contexto & Histórico $\to$ características ou perfil & Usar informação anterior à escolha; descritores e regras fixas\\
+Evidência & Cenário e candidatas $\to$ consequências & Ajustar no treino e medir na validação; sete candidatas clássicas, GA e RL\\
+PSE & Contexto e evidência $\to$ recomendação & Preservar objetivo e corte temporal; perfil, classe vencedora ou consequências previstas\\
+Avaliação & Recomendação fixada $\to$ comparação e diagnóstico & Teste reservado, referência competitiva e perdas identificáveis\\\bottomrule
+\end{tabular}\end{table}
+
+\subsection{Substituição dos métodos e decisão de intervenção}
+A modularidade significa substituir um método dentro de uma responsabilidade sem alterar o significado dos demais resultados. Um controlador recebe o estado admitido e produz pedido válido; um descritor usa o histórico disponível; um seletor retorna uma família pertencente ao portfólio. Custos, serviço, cronologia e identidade das unidades devem permanecer compatíveis. Métodos com ações ou informações diferentes exigem adaptação e nova verificação, não apenas troca de nome.
+
+Seja $\Pi$ o portfólio, $x_i$ a descrição do treino e $g_i$ o perfil. O PSE por perfil recomenda $m(g_i)$; o preditivo recomenda $f(x_i,g_i)$ ou $f(x_i)$. Ele pode aprender um rótulo ou estimar consequências por candidata. A referência global mantém a família, com parâmetros calibrados individualmente. A regra de intervenção escolhe entre candidata $\widehat\pi_i$ e referência $\pi_i^{\mathrm{ref}}$:
+\[
+ \pi_i^{\mathrm{AIPE}}=
+ \begin{cases}\widehat\pi_i,&a_i=1,\\\pi_i^{\mathrm{ref}},&a_i=0.\end{cases}
+\]
+A implementação direta admite a recomendação sem recuo; a conservadora exige evidência de benefício. Critérios são definidos no desenvolvimento. Confiança de classe e serviço previsto não garantem atendimento realizado.
+
+As sete candidatas verificam diferentes implementações do módulo de evidência; os seletores verificam alternativas do PSE. Os experimentos mantêm a mesma representação de contexto e o mesmo simulador: não validam a substituição de todos os módulos nem toda combinação possível. No uso pretendido, evidências anteriores orientam a família a calibrar. No teste experimental, todas as candidatas são ajustadas para avaliar escolhas e oráculos; não se demonstrou economia computacional de implantação. A adaptação refere-se à escolha por contexto e à reavaliação documentada, sem troca online de controlador já validada.
+
+\subsection{Custo, serviço e escolha}
+Para demanda $d_t$, quantidade atendida $v_t$, saldo $I_t$ e pedido $q_t$, avaliamos
+\begin{equation}
+ C=\sum_t[hI_t+p(d_t-v_t)+K\mathbf1(q_t>0)+cq_t],
+ \qquad F=\frac{\sum_t v_t}{\sum_t d_t}.
+ \label{eq:metrics}
+\end{equation}
+O atendimento $F$ é \textit{fill rate}, não probabilidade de ciclo sem falta. Com demanda zero, permanece indefinido; o custo continua contabilizado. Na instanciação, usamos $h=1$, $p=5$, $K=50$ e $c=0{,}5$, sem equivalência monetária calibrada.
+
+Na validação $A$, a regra global minimiza $\bar C_{\pi,A}$ entre candidatas com $\bar F_{\pi,A}\geq\alpha$, com $\alpha=0{,}70$. O PSE por perfil aplica essa regra a cada grupo $A_g$. Casos sem demanda não entram na média de serviço. Sem candidata viável, escolhe-se maior serviço e menor custo, registrando contingência. Perfis sem suporte usam a global. Na Bahia, empate no custo viável prefere maior serviço e depois identificador; no M5, prefere identificador. Contingências empatadas em serviço preferem menor custo. Essas convenções são preservadas por base e registradas no código.
+
+O rótulo supervisionado aplica a restrição à própria série de validação: menor custo viável ou, sem viável, maior serviço e menor custo. Se todas as opções têm serviço indefinido, utiliza menor custo e mantém a marcação de demanda zero. Classificador e seletores agregados não impõem a mesma distribuição da restrição. Incluímos a moda dos rótulos como controle para não atribuir toda diferença à capacidade preditiva.
+
+\subsection{Características e perfis}
+O preditivo recebe 17 descritores: ADI, CV$^2$, intermitência, proporção de zeros, maior e média das sequências de zeros, \textit{burstiness}, assimetria, curtose, entropia, tendência, autocorrelação, média, desvio-padrão, CV, extensão e número de ciclos positivos. O perfil categórico deriva desses descritores, sem constituir informação independente.
+
+Os perfis usam regras ordenadas e fixas: esparso (ADI $\geq1{,}32$, CV$^2\geq0{,}49$, sequência de zeros $\geq5$); volatilidade/sazonalidade (autocorrelação $\geq0{,}25$ ou burstiness $\geq0{,}30$); tendência instável (tendência absoluta $\geq0{,}05$ ou entropia $\geq2$); baixo volume estável (média $\leq2$ e CV$^2<0{,}49$); e venda frequente (ADI $<1{,}32$). A primeira regra satisfeita define o perfil; o residual é esparso. ADI é $n/\max(n_+,1)$ e CV$^2$ inclui zeros, diferindo da taxonomia original baseada em tamanhos positivos. Os nomes são heurísticos.
+
+Burstiness compara o desvio e a média dos intervalos positivos pela razão de sua diferença e soma, com regularização numérica. Tendência é a inclinação OLS dividida pela média; entropia usa dez classes de mesma largura. A autocorrelação na defasagem 17 recebe zero com até 18 ciclos ou variância desprezível. Essa convenção denota estimativa indisponível, não ausência de sazonalidade; com 23 ciclos, há somente seis pares.
+
+\section{Desenho experimental}
+\subsection{Bases e unidades de análise}
+A Tabela~\ref{tab:datasets} distingue as avaliações. Na Bahia, transações complementares são somadas por loja, produto e ciclo; ciclos sem venda recebem zero. A coorte retrospectiva contém 145 séries, 115 lojas e nove produtos. Os 38 ciclos disponíveis, de 202301 a 202504, são unidades comerciais da fonte, não meses.
+
+O M5 é uma fonte pública de vendas associada a uma competição de previsão \cite{Makridakis2022M5Accuracy}. O piloto sorteia 30 séries FOODS, três por loja nas dez lojas. Na primeira origem, o volume médio do treino define três estratos por loja, com uma escolha em cada estrato e semente 20261015. As séries são mantidas nas três origens. Usamos ciclos completos de 21 dias, sem aparar picos por IQR.
+
+\begin{table}[htbp]\centering\small
+\caption{Matrizes completas analisadas. Casos série--origem e sementes não são séries independentes.}\label{tab:datasets}
+\begin{tabular}{@{}lrr@{}}\toprule
+Dimensão & Bahia & Piloto M5\\\midrule
+Séries / lojas & 145 / 115 & 30 / 10\\
+Origens de treino (ciclos) & 17 e 23 & 50, 64 e 78\\
+Validação / teste por origem & 7 / 7 & 7 / 7\\
+Casos série--origem & 290 & 90\\
+Ajustes de políticas & 4.350 & 1.350\\
+Testes sem demanda & 7 & 4\\
+Seletores & Global e por perfil & Global, por perfil e preditivo\\\bottomrule
+\end{tabular}\end{table}
+
+A elegibilidade exige três ciclos positivos no prefixo. O sorteio M5 usa 885 séries elegíveis na primeira origem de uma coorte histórica de 2.408 identificadores. Não representa todas as FOODS nem séries elegíveis somente depois. O recorte é inspirado no contexto de Zabraoui et al., sem afirmar identidade com sua amostra. A rodada maior interrompida não fornece conclusões deste artigo.
+
+\subsection{Simulador, portfólio e calibração}
+O prazo exato é de dois ciclos. A política observa o estado anterior ao recebimento; entregas chegam antes da demanda. Quantidades podem ser fracionárias. Faltas são vendas perdidas, sem pedidos pendentes. Manutenção incide no saldo após demanda e o pedido é custeado na emissão, sem crédito terminal.
+
+Validação e teste começam em estados comuns às candidatas, produzidos por uma referência EOQ: seis ciclos passados aquecem o sistema, e sua trajetória na validação determina estoque e pipeline do teste. Esses estados usam o passado, mas não representam a continuação particular de cada candidata. Escalas são calculadas no treino.
+
+O portfólio contém EOQCycle, sSCycle, CappedBaseStock, GA, PPO, GA--DQN e DQN. EOQCycle usa lote $\max(1,\sqrt{2\mu K/h})$ e ponto de pedido $2\mu+1{,}28\sigma\sqrt2$; sSCycle repõe até o ponto acrescido do lote. CappedBaseStock limita a quantidade da reposição até um alvo e calibra alvo e teto em grade $20\times12$. GA ajusta gatilho, lote e proteção com população 100 e 50 gerações. DQN usa Double DQN dueling; PPO usa otimização proximal. Ambos têm duas camadas de 64 unidades, 20 ações e no mínimo 20 mil transições, arredondadas ao episódio completo. GA--DQN acrescenta busca genética e mil demonstrações, mantendo gatilho e piso iguais nas demonstrações, treino e inferência.
+
+Os quatro métodos estocásticos usam sementes 11, 29 e 47; as três referências determinísticas têm um ajuste. As sementes são promediadas antes da avaliação por caso. O híbrido tem esforço superior ao DQN, sem equivalência de orçamento. A calibração pode penalizar déficit de serviço. Na Bahia, CappedBaseStock também penaliza frequência de ruptura e amplificação dos pedidos com pesos unitários; no M5, ambos os pesos são zero. Essa diferença impede atribuir contrastes entre bases somente à demanda. Cada matriz e código arquivado identificam a instanciação avaliada.
+
+\subsection{Avaliação e desenvolvimento do piloto}
+Em cada origem, uma loja inteira fica fora do conjunto que define a escolha. O PSE usa a validação das demais lojas e recomenda para o teste da loja reservada. Controladores continuam calibrados no histórico da própria série: avaliamos transferência do seletor com histórico disponível, não implantação sem dados prévios.
+
+No M5, XGBoost tem 200 árvores, profundidade três, taxa 0,05, sem subamostragem e com semente fixa. Imputação, codificação categórica e classes são ajustadas dentro de cada fold. Classes raras não são removidas; treinos de classe única usam classificador constante. Cada treinamento reúne 27 exemplos. A ablação sem perfil mantém os demais componentes. Não se usam origens posteriores para recomendar em uma origem anterior.
+
+Uma implementação com recuo usa o PSE por perfil se o maior escore de classe for inferior a 0,60 ou a classe prevista tiver menos de três exemplos de treino. Não há busca de limiares no teste, mas a motivação veio dos resultados observados. Seu desempenho é exploratório, e o piloto passa a ser conjunto de desenvolvimento \cite{CawleyTalbot2010}. O escore não é probabilidade calibrada de viabilidade.
+
+A comparação reduzida adicional reutiliza a matriz M5 e substitui a implementação do PSE. Duas florestas ExtraTrees estimam custo e serviço por candidata: 64 árvores, profundidade quatro, mínimo de três observações por folha e semente fixa. Custo usa $\log(1+C)$, transformado de volta; serviço exclui alvos indefinidos. A seleção direta escolhe o menor custo previsto viável; sem viável, prioriza serviço e depois custo.
+
+A variante com recuo à global exige serviço previsto $\geq0{,}70$, não inferior ao previsto da referência, e economia acima de uma margem em $\{0;0{,}02;0{,}05;0{,}10;\infty\}$. A margem minimiza custo em validação interna por loja, sujeita a serviço médio não inferior à referência. Cada origem exclui uma loja externa; dentro das nove restantes, ajusta em oito e valida na nona. A margem é fixada antes da recomendação externa. Um classificador ExtraTrees com a mesma regularização controla a aprendizagem por rótulo, e uma ablação retira perfil do seletor por consequências sem recuo. Recomendações são gravadas antes da pontuação do teste, mas o piloto já orientou o desenvolvimento: a comparação permanece exploratória.
+
+Na Bahia, os testes compartilham um ciclo; no M5, ocupam os ciclos 58--64, 72--78 e 86--92, sem sobreposição. Origens repetem séries. Intervalos exploratórios usam bootstrap pareado por loja, preservando séries e origens: 5.000 sorteios na Bahia, 2.000 na comparação de perfil e classe no M5 e 5.000 na comparação por consequências. Seletores e controladores permanecem fixos; a incerteza é condicional, sem novos treinamentos. Dez lojas do piloto limitam sua precisão.
+
+\subsection{Oráculos e informação perfeita}
+O melhor controlador único no teste é um diagnóstico retrospectivo. O oráculo do portfólio escolhe, por série--origem, a candidata de menor custo viável nas médias de teste entre sementes. Essas escolhas não fornecem rótulos ao treinamento. O acerto exige serviço mínimo e empate numérico no menor custo; concordância nominal é informada separadamente.
+
+No M5, um programa linear inteiro misto conhece toda a demanda de teste e otimiza pedidos sob os mesmos custos, prazo e condições iniciais. Quantidades são contínuas; variáveis binárias representam emissão e complementaridade entre saldo e falta. É um ótimo determinístico condicional, não um controlador estocástico implantável. Se 0,70 for fisicamente impossível antes das primeiras entregas, maximiza atendimento e depois minimiza custo. Soluções são reexecutadas no simulador e somente as comprovadamente ótimas recebem essa denominação.
+
+A eficiência de custo é $100C^*/C_{\mathrm{PSE}}$, apenas quando referência e recomendação satisfazem o mesmo critério de serviço; ambos os custos zero equivalem a 100\%. Serviço insuficiente não recebe crédito por custo baixo. A comparação com o MILP usa cada realização de treinamento viável: uma média entre sementes pode satisfazer o alvo sem que todas o satisfaçam. Repetir políticas determinísticas nessa análise não gera novas observações independentes.
+
+\input{aipe_bahia_resultados}
+\input{m5_pse_20261015}
+\input{aipe_consequencias_resultados}
+
+\section{Discussão}
+A avaliação oferece dois tipos de evidência sobre o AIPE. A execução de políticas e seletores distintos sob o mesmo procedimento verifica sua instanciação modular nas interfaces exercitadas. A comparação com a global avalia utilidade: trocar um método é operacionalmente possível, mas nem sempre vantajoso. Essas conclusões não são intercambiáveis.
+
+Na Bahia, a associação por perfil troca custo por serviço e diferencia escolhas em uma origem. No M5, o classificador XGBoost perde em ambos. A substituição por previsão de consequências com recuo conserva a referência em 87/90 casos e apresenta melhora pontual concentrada. Isso demonstra a utilidade do protocolo para revisar uma implementação sem alterar a pergunta de decisão, mas não superioridade geral da metodologia ou de qualquer método encaixado em seus módulos.
+
+A contribuição investigada está em tornar explícitos contexto, evidência, recomendação, intervenção e diagnóstico. Um usuário pode alterar a representação ou o seletor, desde que respeite os contratos e reavalie as consequências. A ampliação para outro simulador, outra restrição de serviço ou informações adicionais exige nova verificação de compatibilidade. Trocar a configuração não dispensa validação nem transforma um teste observado em evidência independente.
+
+A instabilidade dos rótulos mostra por que preservar consequências é útil. Com sete classes e 27 exemplos por fold, acertar a vencedora é difícil e ignora a magnitude do erro. Entretanto, o controle por floresta também muda os resultados: não se isola todo ganho como efeito da nova representação do alvo. O recuo é o mecanismo mais promissor nesta comparação, mas a economia depende fortemente de uma série.
+
+A decomposição de falhas orienta qual componente revisar. Havendo candidata viável, pode-se melhorar o seletor; sem candidata, é preciso examinar portfólio e calibração; diante de inviabilidade física, mudar apenas a recomendação não resolve. Um procedimento capaz de localizar essas limitações oferece informação de decisão mesmo quando a referência é mantida. Essa utilidade diagnóstica não substitui a demonstração de benefício operacional.
+
+Perfis também exigem suporte. Na primeira origem M5, 826/885 séries elegíveis são esparsas, 57 têm tendência e duas pertencem ao grupo volatilidade/sazonalidade. Aumentar a amostra não garante diversidade. Meta média, atendimento ponderado e garantia por série são objetivos diferentes: a definição precisa anteceder a seleção e permanecer explícita ao substituir métodos.
+
+\section{Limitações e próximos testes}
+Vendas podem omitir demanda censurada por falta. Coortes históricas, elegibilidade na primeira origem e horizontes de sete ciclos restringem população e período. Produtos compartilhados entre lojas podem gerar dependência não capturada inteiramente pelo bootstrap.
+
+Não se trata de experimento causal de implantação. Custos não são financeiramente calibrados, não há suprimento conjunto e o estado inicial comum não reproduz trajetórias particulares. A calibração distinta da CappedBaseStock e os esforços desiguais limitam comparações entre algoritmos e bases.
+
+As extensões com recuo foram desenvolvidas no piloto; suas métricas não confirmam independentemente a melhoria. A substituição foi exercitada nas candidatas e no PSE, sem ablação de todas as representações e ambientes. Assim, a portabilidade integral permanece uma hipótese de uso. A próxima avaliação exige mais exemplos por classe, suporte para perfis raros, restrições de serviço comparáveis e validação interna por loja para ajustes do seletor. Séries reservadas devem ficar fora dessas decisões. Harmonização da calibração e sensibilidades de custo, prazo e horizonte precedem conclusões mais amplas.
+
+\section{Conclusão}
+Propomos o AIPE como metodologia modular para seleção contextual de políticas de reposição. Seu procedimento define responsabilidades, interfaces e separação entre construção e avaliação; o PSE pode associar perfis ou estimar recomendações por série. Os algoritmos utilizados são instanciações, não a identidade da proposta.
+
+Bahia e M5 mostram que alternativas podem ser executadas e comparadas sob o procedimento, com resultados condicionais. Na Bahia, o perfil acrescenta 3,89 pontos de serviço e 1,93\% de custo. No piloto, a implementação por classe perde para a global; consequências com recuo reduzem o custo em 1,56\% e acrescentam 0,27 ponto de atendimento, com três intervenções e benefício concentrado. Esses resultados sustentam a execução e o diagnóstico da metodologia, sem comprovar vantagem universal ou confirmar a extensão independentemente.
+
+O próximo passo é harmonizar objetivos e calibrações e avaliar a regra de intervenção em séries reservadas. O valor pretendido do AIPE é permitir escolher, substituir e avaliar métodos com critérios explícitos, identificando quando uma recomendação contextual se justifica e quando conservar a referência.
+
+\section*{Disponibilidade de dados e código}
+Os dados brasileiros são proprietários e não são redistribuídos; o M5 é público. Código, configurações e fontes estão em \url{https://github.com/matheus013/msc}. Dados, bancos e modelos ficam fora da versão atual do repositório. Manifestos e snapshots locais identificam as matrizes; pacote arquivado e derivados autorizados deverão acompanhar a submissão. Não se promete acesso aos registros restritos mediante solicitação.
+
+\section*{Autoria, financiamento e interesses}
+Autoria, contribuições CRediT, financiamento, agradecimentos e interesses devem ser confirmados pelos autores responsáveis. O manuscrito em português requer tradução, revisão humana e fechamento das declarações antes da submissão.
+
+\section*{Uso de inteligência artificial na preparação do manuscrito}
+OpenAI Codex auxiliou organização bibliográfica, leitura de código, análise, visualização e redação. A figura conceitual usa desenhos vetoriais programáticos; os gráficos quantitativos derivam das matrizes identificadas. Conferência e responsabilidade pelo texto final cabem aos autores humanos. Sistemas de IA não são autores.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{references_ptbr}
+\end{document}

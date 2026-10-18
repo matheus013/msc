@@ -1,0 +1,142 @@
+[
+  {
+    "path": "docs\\master_proposal\\abstract_en.tex",
+    "sha256": "aef6057893947406d4bdb6023584be25f6b72f91d0f7ce5153a7322613eeac84"
+  },
+  {
+    "path": "docs\\master_proposal\\bahia_20261015.tex",
+    "sha256": "d8cdb749741414c6d458510d7f44d1e384593e66d72c9d9efc67fa5bb1e78d3f"
+  },
+  {
+    "path": "docs\\master_proposal\\consequencias_20261015.tex",
+    "sha256": "a82d92345279203cf548f7d7a2c61b71a97cdb75d4ef54188b0c2d3ea2dfa22e"
+  },
+  {
+    "path": "docs\\master_proposal\\instanciacao_aipe.tex",
+    "sha256": "b74dd1d49d9fe17540ff2e53d03680170d63ef64159d60ea5121c280ec50a885"
+  },
+  {
+    "path": "docs\\master_proposal\\lista_siglas_termos.tex",
+    "sha256": "d2bc1fd953eaf715bc09dd65c6758b0800ba755dbe650cb9e1b7e10fe16b0f36"
+  },
+  {
+    "path": "docs\\master_proposal\\m5_pse_20261015.tex",
+    "sha256": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2"
+  },
+  {
+    "path": "docs\\master_proposal\\protocolo_bahia_20261015.tex",
+    "sha256": "e4f250e829f450647af0d6e5dedc81f398a9f7fa0baa8618f41a3ffe6056804e"
+  },
+  {
+    "path": "docs\\master_proposal\\tcc.tex",
+    "sha256": "0309c86a11cafece2e7c40688c93afa7ac3b9799f4bd1a08ec609007abf75be9"
+  },
+  {
+    "path": "docs\\master_proposal\\referencias.bib",
+    "sha256": "56e7765c97aea534b90388dc72654ec46bbf33080b4c9cbe30f9c0b58cd6e729"
+  },
+  {
+    "path": "docs\\master_proposal\\IC-eps-converted-to.pdf",
+    "sha256": "00fad57fe1efdf673e3504ee0dfe74f7444987340941b5198554754b82212f9f"
+  },
+  {
+    "path": "docs\\master_proposal\\tcc.pdf",
+    "sha256": "6f164195c5bd4219c7ba59729810e07c097536e7990b595e392b207e8d560635"
+  },
+  {
+    "path": "docs\\master_proposal\\README.md",
+    "sha256": "9aed4ca2ec3ea043345085f74cd891819fad38748adfa5de0580b3668f23443b"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\apendice.tex",
+    "sha256": "02a0c367234288e59a88d6a292b8d00ccd8aa3227db327485d3d31a81e5b73a3"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\apendice_b.tex",
+    "sha256": "a5aba193f20d57c0665eb4104f41ac42eb926bdfdea5e9b7e00ac8cde67367d8"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\conceitos.tex",
+    "sha256": "605e0f657010518ba8efec1ba2b54af3fa31cbdb9188e37ffaf43bd2df891037"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\conclusoes.tex",
+    "sha256": "6f6b0e6b0cc37b677ab861d41a91f055202681a47a597cf88ff0b892cb929c05"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\correlatos.tex",
+    "sha256": "cf6968c1bf428e29edc6f555cd57adce3b74397f46c0b87a5db4eeda230612f9"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\introducao.tex",
+    "sha256": "917336ca1f679f57b70223e5b1f3476b2930aec0b5a0488c824a45342b16f4b3"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\plano_continuidade.tex",
+    "sha256": "e0439bcb07e91c5bc96c9f125b4346a2885462785611083a7e71f9bc5680fd0b"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\proposta.tex",
+    "sha256": "632803aa672bc1b7aeb1857771b74d061908bb16da11732d22b03aac014c7938"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\resultados.tex",
+    "sha256": "25c0e0c504ee79fe3b20ff5fb9ca71208c73a534fbe6786c2ae58f0b337b55a0"
+  },
+  {
+    "path": "docs\\master_proposal\\capitulos\\resumo.tex",
+    "sha256": "a66586aa2400461bb9ae5c18a62aa68ade82b9afe5fc970f544ad558c4d1bcc8"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\aipe_bahia_resultados.tex",
+    "sha256": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\aipe_consequencias_resultados.tex",
+    "sha256": "cf3689d97b7e70295058da7f31c9e843c0be5dac8d594748b707d50acc452db7"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\bahia_20261015.tex",
+    "sha256": "0bad75af4dbd9a6c4a4373f4f864ad9936501a41bc91824f99e90bec254e8305"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\historical_ptbr.tex",
+    "sha256": "9b0cd5cb3d2ac45fe5ae330d2f1d73719977679a7aea35330d2f1618c19e765b"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\m5_pse_20261015.tex",
+    "sha256": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\manuscript.tex",
+    "sha256": "20baeab53fd49a2487e82554f3a9cbd633c53debb16b91a67e49461f78551f67"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\manuscript_ptbr.tex",
+    "sha256": "277a60afe424509c16f616e6c2db575d2ace212b71b70b0a3be6dc0995c7bf19"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\protocolo_bahia_20261015.tex",
+    "sha256": "e7206080a9c302678af302af458492c2a3881de750160c41c569a869d6d953ff"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\references.bib",
+    "sha256": "006e8944044ffda94960ef190f5f84337afbd4b6b0d73034e0f51421fc119ea2"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\references_ptbr.bib",
+    "sha256": "8c63d9fbf63f3e491288dbc6e928c63478a472da421438a4455dffe17b2ca5f5"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\manuscript.pdf",
+    "sha256": "1c47a1e25a565a0c700257b6e914f48ef58c93164ec933dbe466ae249e123e1b"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\manuscript_ptbr.pdf",
+    "sha256": "b9709968d0b46641dfee0ee8d2e7502a382231f4661fd082c7af05920f97417b"
+  },
+  {
+    "path": "docs\\supply_chain_analytics_article\\README.md",
+    "sha256": "58d0d0450675254fd2df21269dd73530f4070efc480581039b3053efbdaeff97"
+  }
+]

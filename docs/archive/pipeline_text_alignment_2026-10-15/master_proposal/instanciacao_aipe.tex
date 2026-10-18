@@ -1,0 +1,154 @@
+\mychapter{Desenho da Avaliação Experimental}{cap:experimental}\lhead{AVALIAÇÃO EXPERIMENTAL}
+
+Este capítulo instancia a metodologia AIPE nas aplicações Bahia e M5. Dados, custos, prazos, políticas, modelos e janelas descritos a seguir são escolhas experimentais; não definem requisitos universais da metodologia. O protocolo separa o ajuste dos controladores, a construção do seletor e a avaliação das recomendações.
+
+\section{Sistema de estoque e objetivo}
+\label{sec:instanciacao_ambiente}\label{sec:ambiente_simulacao}
+O ambiente simula vendas perdidas com prazo exato de dois ciclos. A política decide antes do recebimento; entregas chegam antes da demanda. Faltas não são acumuladas como pedidos pendentes. Quantidades não negativas podem ser fracionárias. Não há restrição conjunta de transporte, transbordo ou disputa entre lojas por estoque.
+
+O custo da Equação~\ref{eq:obj_inv_control} soma manutenção do saldo após atendimento, falta, emissão e quantidade pedida. Os valores são $h=1$, $c_s=5$, $c_o^{\mathrm{fix}}=50$ e $c_o^{\mathrm{var}}=0{,}5$, sem crédito terminal. São unidades de cenário, sem calibração financeira. Pedidos em trânsito não atendem demanda antes da chegada.
+
+\subsection{Métricas e definição do serviço}
+\label{sec:metricas_avaliacao}
+Registram-se custo total de inventário (CTI), atendimento (NS), taxa de ruptura (TR), frequência de pedidos (FP) e amplificação de variância (BE):
+\[
+ \mathrm{NS}=\frac{\sum_t(D_t-S_t)}{\sum_tD_t},\qquad
+ \mathrm{TR}=\frac{\#\{t:S_t>0\}}T,\qquad
+ \mathrm{FP}=\frac{\#\{t:Q_t>0\}}T.
+\]
+Aqui, $S_t$ é falta e BE é $\mathrm{Var}(Q)/\mathrm{Var}(D)$, com convenção registrada para variância nula. NS é fração de unidades atendidas, não probabilidade de um ciclo sem falta. Demanda total zero mantém NS indefinido; o custo continua na análise.
+
+O limiar é 0,70. A média por série, a razão entre unidades totais atendidas e demandadas e a garantia de 0,70 em cada série não são equivalentes. Por isso, reportamos custo, média de NS, atendimento ponderado quando disponível e contagem de violações. Custo baixo com pouco atendimento não caracteriza eficiência operacional.
+
+\section{Dados, preparo e cobertura}
+\label{sec:pipeline_experimental}\label{sec:ba2026_methods}
+A avaliação proprietária utiliza 145 séries da Bahia, em 115 lojas e nove produtos, com 38 ciclos de 202301 a 202504. Registros complementares são somados por armazém, loja, produto e ciclo; ciclos sem venda recebem zero. A coorte mantém identificadores históricos. Em cada origem, exige-se pelo menos três ciclos positivos no treino. Esse requisito é passado-dependente, mas não torna prospectiva a seleção inicial dos identificadores.
+
+O piloto M5 utiliza 30 séries FOODS das dez lojas, com três por loja. O sorteio usa três estratos de volume médio do prefixo de 50 ciclos, com uma escolha por estrato e semente 20261015. As 30 séries permanecem nas origens 50, 64 e 78. São ciclos completos de 21 dias, sem corte de picos por IQR. O sorteio parte das 885 elegíveis na primeira origem da coorte histórica local de 2.408 IDs, sem representar todas as FOODS ou séries elegíveis somente depois.
+
+\begin{table}[htbp]\centering\small
+\caption{Matrizes completas incluídas na avaliação. Sementes e origens são medidas repetidas.}\label{tab:temporal_coverage}
+\begin{tabular}{@{}lrr@{}}\toprule
+Dimensão & Bahia & Piloto M5\\\midrule
+Séries / lojas & 145 / 115 & 30 / 10\\
+Origens do treino & 17 e 23 & 50, 64 e 78\\
+Validação / teste & 7 / 7 ciclos & 7 / 7 ciclos\\
+Casos série--origem & 290 & 90\\
+Ajustes de políticas & 4.350 & 1.350\\
+Testes com demanda positiva & 283 & 86\\\bottomrule
+\end{tabular}\end{table}
+
+Vendas podem omitir demanda censurada por ruptura. Reindexar ausência de venda como zero pressupõe cobertura da fonte, não prova ausência de procura. Os dados brasileiros são restritos; M5 é público. O recorte local é inspirado no contexto de \citet{Zabraoui2025GaDQN}, sem identidade comprovada de filtros, amostra ou implementação.
+
+\section{Características e perfis}
+\label{sec:carac_series}
+O preditivo recebe 17 características: ADI, CV$^2$, intermitência, proporção de zeros, maior e média das sequências de zeros, burstiness, assimetria, curtose, entropia, tendência, autocorrelação, média, desvio-padrão, CV, extensão e número de ciclos positivos. Todas usam somente o treino; perfil e metadados não alteram essa restrição temporal.
+
+A característica CV$^2$ inclui zeros, diferindo da taxonomia original baseada em tamanhos positivos (Seção~\ref{sec:sb_taxa}). Burstiness é $(s_\tau-\bar\tau)/(s_\tau+\bar\tau+10^{-9})$ nos intervalos entre ocorrências positivas, recebendo zero com menos de dois intervalos \citep{GohBarabasi2008Burstiness}. Tendência é a inclinação OLS dividida pela média regularizada; entropia usa dez classes de mesma largura. Autocorrelação na defasagem 17 recebe zero com até 18 ciclos ou variância desprezível. Zero nessa condição significa estimativa indisponível.
+
+\begin{table}[htbp]\centering\small
+\caption{Perfis: primeira regra satisfeita determina a classe.}\label{tab:pod}
+\begin{tabular}{@{}p{4.2cm}p{8.2cm}@{}}\toprule
+Perfil & Condição\\\midrule
+Sparse High Impact & ADI $\geq1{,}32$, CV$^2\geq0{,}49$, sequência de zeros $\geq5$\\
+High Volatility Seasonal & Autocorrelação $\geq0{,}25$ ou burstiness $\geq0{,}30$\\
+Unstable Trend & Tendência absoluta $\geq0{,}05$ ou entropia $\geq2$\\
+Low Volume Stable & Média $\leq2$, CV$^2<0{,}49$\\
+Fast Moving & ADI $<1{,}32$\\\bottomrule
+\end{tabular}\end{table}
+
+Os nomes são heurísticos; casos não cobertos recebem Sparse High Impact. Não se assume sazonalidade ou impacto econômico empiricamente comprovados. A coluna de política previamente associada aos nomes no código não gera os rótulos do experimento: custos e serviço na validação definem a escolha.
+
+\section{Portfólio e calibração}
+\label{sec:benchmark_massivo}\label{sec:portfolio_ampliado}
+EOQCycle, sSCycle, CappedBaseStock, GA, PPO, GA--DQN e DQN compõem o portfólio. DQN é controle necessário do híbrido. Outros métodos preservados no projeto não são resultados adicionais desta matriz. A composição privilegia diversidade de regras; sua retirada do escopo não estabelece inferioridade universal.
+
+\subsection{Referências e busca de parâmetros}
+\label{sec:sinais_previsao}\label{sec:redundancia_portfolio}
+Com média $\hat\mu$ e desvio populacional $\hat\sigma$ do treino, as escalas são
+\begin{align}
+ I_0&=\hat\mu L+1{,}28\hat\sigma\sqrt L,\label{eq:I0_metod}\\
+ Q_{\mathrm{ref}}&=\max(1,\sqrt{2\hat\mu c_o^{\mathrm{fix}}/h}),\label{eq:qref_metod}\\
+ s_{\mathrm{ref}}&=\hat\mu L+1{,}28\hat\sigma\sqrt L.\label{eq:sref_metod}
+\end{align}
+EOQCycle pede lote fixo ao atingir o ponto; sSCycle repõe até $s_{\mathrm{ref}}+Q_{\mathrm{ref}}$. Não se alega otimização exata de $(s,S)$. CappedBaseStock calibra alvo e teto em grade $20\times12$, motivada pela família de \citet{Xin2021CappedBaseStock}.
+
+GA ajusta gatilho, lote e proteção adicional com 100 indivíduos e 50 gerações. Seu objetivo acrescenta penalidade pelo déficit de serviço à referência
+\begin{equation}
+ \boldsymbol\theta_i^*=\arg\min_{\boldsymbol\theta\in\Theta_i}\mathrm{CTI}(\pi_{\boldsymbol\theta},i)
+ \quad\text{sujeito a }\mathrm{NS}(\pi_{\boldsymbol\theta},i)\geq0{,}70.
+ \label{eq:obj_metaheuristicas}
+\end{equation}
+Penalização não garante viabilidade; o serviço observado deve ser conferido. Na Bahia, a calibração da CappedBaseStock também utiliza ruptura e amplificação dos pedidos com pesos unitários; no M5, esses pesos são zero. As matrizes representam instanciações específicas, sem equivalência plena entre objetivos de treino.
+
+\subsection{Reforço e híbrido}
+DQN utiliza Double DQN dueling e PPO utiliza otimização proximal, com duas camadas de 64 unidades e 20 ações discretas. O estado reúne estoque, referência ingênua de demanda, pedidos em trânsito, média e dispersão dos últimos seis ciclos e posição no horizonte. Escalas vêm do treino; observações são passadas. Previsores especializados disponíveis no projeto não alimentam os resultados reportados.
+
+O orçamento mínimo é de 20 mil transições, arredondado ao episódio completo. GA--DQN acrescenta a busca genética e mil demonstrações. Acima do gatilho genético, pede zero; abaixo, executa o máximo entre a ação da rede e metade do lote genético. Essa transformação é igual em demonstração, treino e aplicação. O esforço excede o do DQN; não se isola causalmente o benefício da combinação \citep{Zabraoui2025GaDQN}.
+
+GA, PPO, DQN e GA--DQN usam sementes 11, 29 e 47; as referências determinísticas têm um ajuste. Primeiro promediamos as sementes dentro de série, origem e política. Elas representam variação do treinamento, não novas realizações de demanda.
+
+\section{Separação temporal e comparação}
+\label{sec:simulacao_benchmark}\label{sec:wf_protocol}
+Em cada origem $o$, o desenho é
+\begin{equation}
+ \underbrace{1,\ldots,o}_{\text{treino}}\ ;\
+ \underbrace{o+1,\ldots,o+7}_{\text{validação}}\ ;\
+ \underbrace{o+8,\ldots,o+14}_{\text{teste}}.
+ \label{eq:wf_splits}
+\end{equation}
+Na Bahia, os testes compartilham um ciclo; no M5, ocupam 58--64, 72--78 e 86--92, sem sobreposição. Não se combinam origens posteriores para recomendar em uma anterior.
+
+A validação começa após seis ciclos de aquecimento com referência EOQ. A trajetória dessa referência na validação fornece estoque e pipeline comuns no teste. O estado usa apenas o passado e não continua o estoque próprio de cada candidata. Essa convenção isola comparações no mesmo ponto inicial, sem simular implantação contínua de cada política.
+
+Uma loja inteira é excluída do conjunto que define o seletor, separadamente em cada origem. As outras lojas fornecem resultados de validação; a loja reservada fornece o teste. O controlador conserva o treino no histórico da própria série. Avalia-se transferência do seletor com histórico disponível, não generalização para lojas sem observações.
+
+\section{Instanciação dos seletores}
+\label{sec:selecao_contextual}
+\subsection{Associação e rótulos}
+Para um conjunto $A$ de casos de validação, a regra global escolhe
+\begin{equation}
+ \hat\pi_A=\arg\min_{\pi:\bar F_{\pi,A}\geq0{,}70}\bar C_{\pi,A}.
+ \label{eq:policy_selector}
+\end{equation}
+O PSE por perfil aplica a regra a cada $A_g$. Sem viável, escolhe maior NS e menor custo; perfis sem suporte usam a global. O rótulo preditivo usa o mesmo critério na série individual. Serviço inteiramente indefinido leva a menor custo, com marcação de demanda zero. Empates restantes usam convenção determinística registrada na análise.
+
+As restrições por série e por grupo diferem; a moda dos rótulos é um controle adicional com o mesmo alvo categórico. Todos os seletores são avaliados pelas consequências de suas escolhas. Acurácia é auxiliar: errar entre políticas quase empatadas difere de perder muito serviço.
+
+\subsection{Aprendizado e recuo conservador}
+O piloto utiliza XGBoost com 200 árvores, profundidade três, taxa 0,05, semente fixa e sem subamostragem. Imputação, codificação do perfil e classes são ajustadas dentro de cada fold. Classes raras não são removidas; uma classe única leva a classificador constante. Cada treinamento tem 27 exemplos.
+
+A ablação retira somente a entrada de perfil. Após o diagnóstico, uma extensão recua ao PSE por perfil quando o maior escore é menor que 0,60 ou a classe prevista tem menos de três exemplos no treino. A regra não observa o teste ao decidir, mas foi motivada pelos resultados do piloto: é desenvolvimento, não confirmação independente \citep{CawleyTalbot2010}. O escore não é probabilidade calibrada de serviço.
+
+\subsection{Comparação reduzida por consequências}
+A extensão usa a mesma matriz M5, sem repetir ajustes de controladores. Duas florestas ExtraTrees estimam custo e serviço das sete candidatas: 64 árvores, profundidade máxima quatro e mínimo de três observações por folha. O custo é aprendido como $\log(1+C)$ e transformado de volta. O serviço usa casos definidos, sem transformar demanda zero em atendimento completo. A recomendação direta escolhe menor custo previsto entre candidatas com serviço previsto de pelo menos 0,70; sem candidata viável, prioriza serviço e depois custo.
+
+A variante com recuo usa a global como referência e exige serviço previsto de pelo menos 0,70, serviço previsto não inferior ao da referência e economia acima de uma margem. A margem pertence a $\{0;0{,}02;0{,}05;0{,}10;\infty\}$, sendo $\infty$ o recuo permanente. Ela minimiza custo na validação interna sujeita a serviço médio não inferior à referência. Cada origem mantém uma loja externa reservada; dentro das outras nove, exclui-se uma loja por vez para ajustar em oito. Depois da escolha da margem, o modelo externo é ajustado em nove lojas e recomenda para a décima.
+
+Um classificador ExtraTrees com a mesma regularização oferece um controle por rótulo vencedor; outra ablação remove o perfil da previsão de consequências sem recuo. As recomendações são persistidas antes da pontuação do teste. Ainda assim, o piloto já motivou o desenho: a análise é exploratória. O critério empírico não garante atendimento futuro, e a diferença entre objetivos individuais previstos e objetivos médios dos comparadores permanece uma limitação.
+
+\subsection{Aplicação e reavaliação}
+\label{sec:aplicacao_aipe}
+O resultado é uma recomendação acompanhada de evidências de custo, serviço e suporte da escolha. Recalcular descritores entre janelas não equivale a retreinar o modelo. Frequência de atualização, integração operacional e supervisão humana ainda exigem desenho próprio; não foram validadas como implantação contínua.
+
+\section{Oráculos e decomposição das falhas}
+O melhor controlador único no teste e a melhor candidata por caso são referências retrospectivas. Não fornecem rótulos para a escolha. O oráculo do portfólio usa as médias entre sementes e a regra de menor custo viável. Empates numéricos contam como acerto sem exigir identidade nominal.
+
+No M5, o planejamento com informação perfeita conhece a demanda do horizonte. Seu MILP mantém custos, prazo e estado inicial, com quantidades contínuas e variáveis binárias de emissão e saldo. Para falta $u_t$, chegada inicial $a_t$ e pedido $q_{t-L}$:
+\[
+ I_t-u_t=I_{t-1}+a_t+q_{t-L}-d_t,\quad
+ I_tu_t=0,\quad \sum_tu_t\leq(1-\alpha)\sum_td_t.
+\]
+A complementaridade é linearizada com variáveis binárias e limites suficientes para o horizonte. Pedidos sem chegada antes do fim recebem zero, sem crédito terminal. Quando o alvo é fisicamente impossível nas primeiras entregas, maximiza-se atendimento antes de minimizar custo. Cada solução é conferida no simulador e recebe status de otimalidade.
+
+Esse ótimo é determinístico e condicional, não o melhor controlador estocástico implantável. A eficiência $100C^*/C_{\mathrm{AIPE}}$ só é calculada sob o mesmo critério de serviço, com ambos os custos zero equivalendo a 100\%. Compara-se o MILP com cada realização de treinamento viável, pois cumprir o alvo na média das sementes não implica cumpri-lo em cada uma.
+
+A decomposição distingue atendimento do alvo, erro de seleção com alternativa viável, ausência de candidata viável apesar de possibilidade física, limite inicial do sistema e demanda zero. Assim, uma falta não é atribuída automaticamente ao seletor.
+
+\section{Incerteza e rastreabilidade}
+\label{sec:protocolo_exp}\label{sec:reporting}\label{app:reproducibility}
+Bootstrap pareado preserva produtos e origens de cada loja: 5.000 sorteios na Bahia, 2.000 na avaliação original M5 e 5.000 na comparação reduzida por consequências. Ajustes e escolhas permanecem fixos; os intervalos são condicionais. Dependência entre lojas que compartilham produtos e a pequena quantidade de lojas do piloto limitam a inferência.
+
+Manifestos, snapshots, sementes e bancos transacionais identificam a implementação de cada matriz. Os resultados derivam de \nolinkurl{bahia145_cpu16_2026-10-15} e \nolinkurl{m5_pse_pilot30_v2_2026-10-15}, em \nolinkurl{experiment/data/08_reporting/research_v2}. O diagnóstico registra predições reproduzidas e regras exploratórias. A comparação por consequências está em \nolinkurl{m5_pse_consequences30_v2_2026-10-15}. Dados não integram o Git e possuem backup separado; código e fontes documentais estão versionados.
+
+Os estudos brasileiros anteriores, incluindo a qualificação, motivam a investigação. A evidência quantitativa deste capítulo usa somente as matrizes descritas, sem misturar configurações. A expansão nacional está cancelada e a rodada maior M5 foi interrompida; ambas ficam fora das conclusões.

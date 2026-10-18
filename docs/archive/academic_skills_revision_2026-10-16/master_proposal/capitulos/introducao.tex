@@ -1,0 +1,88 @@
+\mychapter{Introdução}{cap:intro}\lhead{INTRODUÇÃO}
+
+Uma rede varejista precisa decidir quando e quanto repor em cada loja. O problema se torna mais difícil quando um produto vende regularmente em uma unidade, mas passa vários ciclos sem venda em outra. Uma política que preserva disponibilidade no primeiro caso pode gerar excesso de estoque no segundo. Custos, faltas e variabilidade dos pedidos dependem da relação entre a regra de reposição e o comportamento da demanda \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
+
+Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia para selecionar políticas de reposição conforme o contexto de cada série loja--produto. O AIPE organiza a especificação da decisão, a representação do contexto, a construção de evidência comparável, a recomendação e a avaliação de suas consequências. Seu \textit{Policy Selection Engine} (PSE) é o componente que realiza a escolha, por associação a um perfil informado ou por estimação supervisionada. Bahia e M5 constituem aplicações para avaliar o procedimento; não definem sua identidade metodológica.
+
+\section{Motivação}
+
+\subsection{Reposição em redes varejistas}
+
+Diferenças de consumo, sazonalidade e condições logísticas dificultam o ajuste manual de estoques em redes com muitas lojas. Cada unidade decide sua reposição, mas seus pedidos também afetam o armazém. Lotes elevados podem reduzir a frequência de compra e aumentar o estoque; pedidos frequentes podem preservar disponibilidade e elevar custos fixos. A decisão envolve manutenção, falta, pedido e prazo de entrega \citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}.
+
+A instabilidade dos pedidos acrescenta outra preocupação. Variações nas vendas podem produzir oscilações ainda maiores nas encomendas enviadas aos fornecedores, fenômeno conhecido como efeito chicote \citep{LeePadmanabhanWhang1997Bullwhip}. Medir essa amplificação ajuda a avaliar consequências a montante, embora não substitua a análise conjunta de custo e serviço.
+
+Na demanda intermitente, intervalos sem venda alternam com ocorrências positivas; quando estas variam muito de tamanho, o padrão é chamado de \textit{lumpy} \citep{Croston1972ForecastingIntermittentDemand,Syntetos2005Categorization,Boylan2008Intermittent}.
+
+Essas diferenças motivam comparar regras, mas não demonstram que um seletor por perfil será melhor que uma política única bem calibrada. A vantagem depende do portfólio, dos custos, do serviço exigido e da informação disponível antes da decisão. Uma escolha retrospectiva favorável pode desaparecer ao avaliar lojas ou períodos não usados no ajuste.
+
+\subsection{Da calibração à seleção de políticas}
+
+Políticas clássicas, meta-heurísticas e aprendizado por reforço oferecem formas distintas de decidir reposição. Uma meta-heurística pode ajustar o ponto de pedido e o lote de uma regra; um agente de reforço pode aprender ações a partir do estado do estoque. Antes desses ajustes, permanece a escolha de qual família utilizar \citep{Syntetos2009InventoryForecastingReview,Boute2022DRLInventoryRoadmap}.
+
+O AIPE organiza essa escolha em quatro etapas: caracterizar a demanda, comparar políticas em um simulador comum, identificar alternativas viáveis segundo custo e serviço e investigar se essas diferenças orientam recomendações para novas séries. A formulação se aproxima da seleção de algoritmos, na qual características de uma instância ajudam a escolher um método \citep{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection}.
+
+A previsão fornece informação auxiliar: sua precisão não determina automaticamente quando pedir nem garante menor custo de inventário.
+
+A Figura~\ref{fig:intro_problem_selection} sintetiza a proposta: partir de séries heterogêneas, comparar um portfólio e avaliar a seleção contextual. O caminho entre essas etapas é uma hipótese a testar, não uma garantia de melhoria.
+
+\input{figures/intro_problem_selection}
+
+\section{Problema e questões de pesquisa}
+
+A unidade de análise é a série de vendas de um produto em uma loja, agregada por ciclo comercial. As políticas decidem reposição sob condições comuns de demanda, custos e prazo. O critério de referência é o menor custo entre alternativas que atendam ao nível de serviço mínimo. Quando a restrição usa a média de um grupo, ela não garante atendimento mínimo para cada série.
+
+A questão principal é: \emph{como estruturar uma metodologia de seleção contextual de políticas de reposição que produza recomendações verificáveis e permita avaliar quando substituir uma referência?} A investigação se desdobra em três perguntas:
+
+\begin{enumerate}
+  \item Como articular contexto, calibração, seleção e avaliação em um procedimento com entradas, decisões e saídas explícitas?
+  \item Em que condições as implementações do PSE oferecem melhor compromisso entre custo e serviço do que uma referência global?
+  \item Quais limites da representação, da aprendizagem, do portfólio e do sistema restringem a transferência das recomendações?
+\end{enumerate}
+
+A primeira pergunta trata da formulação metodológica; a segunda, de sua utilidade operacional; a terceira, de seus limites. A construção do procedimento responde à primeira, mas não demonstra as demais. Encontrar famílias vencedoras diferentes não prova que possam ser previstas nem que valha trocar a referência.
+
+As hipóteses empíricas são que existe heterogeneidade operacional aproveitável, que o contexto disponível antes da decisão captura parte dela e que uma regra de intervenção pode reduzir escolhas desfavoráveis. São hipóteses de avaliação, não pressupostos necessários para obter uma recomendação. Os experimentos podem delimitá-las ou contrariá-las. O procedimento precisa registrar esses resultados sem transformar reprodução computacional em prova de utilidade.
+
+\section{Objetivos}
+
+\subsection*{Objetivo geral}
+
+Propor, implementar e avaliar o AIPE como metodologia de seleção contextual de políticas de reposição para séries loja--produto, explicitando o procedimento de recomendação, suas condições de aplicação e seu benefício incremental em custo e serviço frente a referências competitivas.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+  \item Definir as entradas, etapas, critérios e saídas do AIPE, distinguindo o procedimento geral das escolhas específicas de aplicação.
+  \item Implementar o PSE por perfil e o PSE preditivo, separando escolha da família e calibração dos parâmetros.
+  \item Estabelecer um protocolo que preserve a informação disponível antes da decisão e compare recomendações sob condições operacionais compatíveis.
+  \item Avaliar custo, serviço, deteriorações e frequência de intervenção nas aplicações Bahia e M5.
+  \item Diagnosticar limites de representação, aprendizagem, cobertura do portfólio e viabilidade física, identificando o alcance da evidência e a validação ainda necessária.
+\end{enumerate}
+
+Os estudos da Paraíba e da qualificação motivaram o desenvolvimento. A evidência quantitativa consolidada compreende 145 séries da Bahia em duas origens e um piloto M5 com 30 séries nas dez lojas, em três origens. O capítulo de resultados separa as bases e suas condições. A rodada maior do M5 foi interrompida durante a construção do protocolo; sua continuidade foi organizada no pipeline unificado e ainda não integra os resultados desta versão. A expansão nacional permanece cancelada.
+
+\section{Contribuições e alcance da evidência}
+
+A contribuição principal é o procedimento AIPE, que conecta contexto, evidência operacional e recomendação em cinco etapas explícitas. Ele acomoda duas abordagens do PSE e torna a substituição de uma referência uma decisão avaliável, em vez de assumir que toda contextualização é vantajosa. O diagnóstico distingue erros do seletor de limitações que exigem outras intervenções.
+
+A implementação oferece os meios computacionais para executar e auditar esse procedimento. A contribuição empírica consiste em avaliar suas instanciações em vendas de uma rede varejista brasileira e no piloto público, incluindo resultados negativos e concentração dos benefícios. A aplicação empresarial e o referencial público são complementares; usar vendas reais não equivale a observar os ganhos de uma implantação. Código, matrizes de resultados e oráculos são instrumentos de sustentação da contribuição metodológica, não substitutos dela.
+
+GA, DQN, PPO e suas combinações são métodos conhecidos. Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
+
+O procedimento permite avaliar separadamente controladores e seletores. Na Bahia, o PSE por perfil é confrontado com a global; no M5, a avaliação inclui o preditivo e uma extensão exploratória de recuo. O piloto não demonstra vantagem do modelo supervisionado e passa a integrar o desenvolvimento do protocolo final.
+
+As três sementes das políticas estocásticas descrevem variação do treinamento, sem representar novas lojas ou demandas. A análise preserva as dependências por série e loja.
+
+\section{Escopo e delimitações}
+\label{sec:delimitacoes}
+
+A pesquisa trata cada série loja-produto como uma decisão de reposição. Não modela substituição entre produtos, capacidade conjunta nem coordenação multiagente entre lojas e armazéns. O efeito chicote é um indicador complementar de variabilidade, não evidência de otimização de toda a rede.
+
+O simulador avalia políticas sobre históricos preparados. Custos e abastecimento são parâmetros do cenário; roteamento, transporte e integração transacional com ERP ficam fora do escopo. A recomendação proposta é periódica e não troca de política a cada transação. Aprendizado por reforço multiagente, como o discutido por \citet{Liu2024HAPPO}, também não é implementado como coordenação da rede.
+
+Os dados proprietários limitam a divulgação pública. A rastreabilidade depende de código, parâmetros e identificação dos artefatos e recortes. Vendas podem não representar toda a demanda quando há falta de estoque, e ciclos ausentes exigem tratamento cuidadoso. Essas limitações impedem interpretar automaticamente a simulação como ganho econômico realizável.
+
+O Capítulo~\ref{cap:tec} apresenta os fundamentos; o Capítulo~\ref{cap:rel}, a literatura; e o Capítulo~\ref{cap:metod}, a metodologia AIPE. O Capítulo~\ref{cap:experimental} descreve sua instanciação experimental. O Capítulo~\ref{cap:results} reúne as avaliações e seus diagnósticos. As conclusões estão no Capítulo~\ref{cap:conclusion}, e a continuidade no Capítulo~\ref{cap:plano_continuidade}.
+
+\newpage\lhead{\rightmark}

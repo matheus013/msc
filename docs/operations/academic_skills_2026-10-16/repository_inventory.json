@@ -1,0 +1,230 @@
+[
+  {
+    "repo": "andrehuang/academic-writing-agents",
+    "branch": "main",
+    "commit": "d4d9d3a21afbccd4aee9237a70611429e7df4fba",
+    "skills": [
+      "skills/academic/SKILL.md"
+    ],
+    "roots": [
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      "marketplace.json"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/ai-research-skills",
+    "branch": "main",
+    "commit": "84f1be27519229797f0bea89d2f62313d4c93343",
+    "skills": [],
+    "roots": [
+      ".gitignore",
+      "AGENTS.md",
+      "CHANGELOG.md",
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "README.md",
+      "README.zh-TW.md"
+    ]
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "branch": "main",
+    "commit": "357766f90bd42f4f982d054be55c687c27202f22",
+    "skills": [
+      "skills/sci-download/SKILL.md",
+      "skills/sci-extract/SKILL.md",
+      "skills/sci-figure/SKILL.md",
+      "skills/sci-html/SKILL.md",
+      "skills/sci-polish/SKILL.md",
+      "skills/sci-ppt/SKILL.md",
+      "skills/sci-review/SKILL.md",
+      "skills/sci-search/SKILL.md",
+      "skills/sci-zotero/SKILL.md"
+    ],
+    "roots": [
+      ".dockerignore",
+      ".gitignore",
+      ".npmignore",
+      "Aut_Sci_Write_Docker_Deployment_Guide_EN.md",
+      "Aut_Sci_Write_Docker\u90e8\u7f72\u5b8c\u6574\u6307\u5357.md",
+      "Dockerfile",
+      "LICENSE",
+      "README.md",
+      "docker-compose.yml",
+      "docker-entrypoint.sh",
+      "index.js",
+      "init-env.js",
+      "package-lock.json",
+      "package.json",
+      "requirements.txt",
+      "ruff.toml",
+      "skills-cli.js"
+    ]
+  },
+  {
+    "repo": "hanlulong/econ-writing-skill",
+    "branch": "main",
+    "commit": "f2bf7a22c5e3b37921a5e6c73bd1fb380a5e00e8",
+    "skills": [
+      ".agents/skills/econ-write/SKILL.md",
+      ".claude/skills/econ-write/SKILL.md",
+      "skills/econ-write/SKILL.md"
+    ],
+    "roots": [
+      ".gitignore",
+      "INSTALL.md",
+      "LICENSE",
+      "README.md"
+    ]
+  },
+  {
+    "repo": "WantongC/journal-adapt-writing-skill",
+    "branch": "main",
+    "commit": "cc79265b0acc21bc488c4c3004d89113cf19335a",
+    "skills": [
+      "skill/SKILL.md"
+    ],
+    "roots": [
+      ".gitignore",
+      "LICENSE",
+      "README.md"
+    ]
+  },
+  {
+    "repo": "InternScience/Awesome-Scientific-Skills",
+    "branch": "main",
+    "commit": "e67760e2081508773a59398f72bf808f3ac3217c",
+    "skills": [],
+    "roots": [
+      ".gitignore",
+      ".gitmodules",
+      "LICENSE",
+      "MIT License.md",
+      "fig.jpg",
+      "readme.md",
+      "readme_CN.md"
+    ]
+  },
+  {
+    "repo": "lishix520/academic-paper-skills",
+    "branch": "main",
+    "commit": "c325557646e9418939ccc7b99171b149ad6314f1",
+    "skills": [
+      "composer/SKILL.md",
+      "strategist/SKILL.md"
+    ],
+    "roots": [
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "README.md",
+      "README_CN.md"
+    ]
+  },
+  {
+    "repo": "SNL-UCSB/paper-writing-skill",
+    "branch": "main",
+    "commit": "676f8520bba54208eb4fe1d41620e365d9af6a24",
+    "skills": [
+      "SKILL.md"
+    ],
+    "roots": [
+      ".DS_Store",
+      ".gitignore",
+      "CHANGELOG.md",
+      "CLAUDE.md",
+      "DESIGN.md",
+      "LICENSE",
+      "README.md",
+      "SKILL.md",
+      "brainstorming_guide.md",
+      "figure_synthesis_guide.md",
+      "loop_mode.md",
+      "red_team_protocol.md",
+      "setup"
+    ]
+  },
+  {
+    "repo": "blader/humanizer",
+    "branch": "main",
+    "commit": "225a6f39ac85f76ee48dbad772ea4abe4ed6c9d8",
+    "skills": [
+      "SKILL.md"
+    ],
+    "roots": [
+      "AGENTS.md",
+      "CHANGELOG.md",
+      "LICENSE",
+      "README.md",
+      "SKILL.md"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "branch": "master",
+    "commit": "5ab68053b9f024c69ef7e89d37311db30be7967c",
+    "skills": [
+      "SKILL.md",
+      "skills/gap-to-topic/SKILL.md",
+      "skills/literature-triage-matrix/SKILL.md",
+      "skills/notebooklm-brief-verifier/SKILL.md",
+      "skills/paper-memory-builder/SKILL.md",
+      "skills/paper-summarize/SKILL.md",
+      "skills/research-context-compressor/SKILL.md",
+      "skills/research-design-helper/SKILL.md",
+      "skills/research-hub-multi-ai/SKILL.md",
+      "skills/research-hub/SKILL.md",
+      "skills/research-project-orienter/SKILL.md",
+      "skills/research-workflow-orchestrator/SKILL.md",
+      "skills/zotero-library-curator/SKILL.md",
+      "src/research_hub/skill/SKILL.md",
+      "src/research_hub/skills_data/gap-to-topic/SKILL.md",
+      "src/research_hub/skills_data/literature-triage-matrix/SKILL.md",
+      "src/research_hub/skills_data/notebooklm-brief-verifier/SKILL.md",
+      "src/research_hub/skills_data/paper-memory-builder/SKILL.md",
+      "src/research_hub/skills_data/paper-summarize/SKILL.md",
+      "src/research_hub/skills_data/research-context-compressor/SKILL.md",
+      "src/research_hub/skills_data/research-design-helper/SKILL.md",
+      "src/research_hub/skills_data/research-hub-multi-ai/SKILL.md",
+      "src/research_hub/skills_data/research-hub/SKILL.md",
+      "src/research_hub/skills_data/research-project-orienter/SKILL.md",
+      "src/research_hub/skills_data/research-workflow-orchestrator/SKILL.md",
+      "src/research_hub/skills_data/zotero-library-curator/SKILL.md"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/academic-writing-skills",
+    "branch": "main",
+    "commit": "06fbdfd75b5f92165d9dd3b832d7382ab37a095f",
+    "skills": [
+      "skills/academic-writing-skills/SKILL.md",
+      "skills/paper-review/SKILL.md"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/zotero-skills",
+    "branch": "master",
+    "commit": "f5772f8b62410858d41436efe11e85529b5dee8c",
+    "skills": [
+      "skills/zotero-skills/SKILL.md"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/codex-delegate",
+    "branch": "master",
+    "commit": "30f6d4ae63935f5b71bd38d4d13466fcff5f33d8",
+    "skills": [
+      "skills/codex-delegate/SKILL.md"
+    ]
+  },
+  {
+    "repo": "WenyuChiou/antigravity-delegate",
+    "branch": "master",
+    "commit": "c3afa59263ea02e40df99097ba5a9c4452e887a8",
+    "skills": [
+      "SKILL.md",
+      "skills/antigravity-delegate/SKILL.md"
+    ]
+  }
+]

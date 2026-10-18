@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "pages": 22,
+  "abstract_whitespace_words": 202,
+  "cited_references": 17,
+  "highlight_characters": [
+    74,
+    75,
+    72,
+    68,
+    65
+  ],
+  "figures": [
+    "figures/aipe_conceito_v2_ptbr.pdf",
+    "figures/custo_servico.pdf",
+    "figures/escolhas_perfil.pdf",
+    "figures/aipe_m5_comparacao.pdf",
+    "figures/aipe_m5_falhas.pdf",
+    "figures/aipe_consequencias_comparacao.pdf"
+  ],
+  "figure_fonts": {
+    "figures/aipe_conceito_v2_ptbr.pdf": [
+      "RTOYBR+NimbusSanL-Bold               Type 1            Custom           yes yes yes     10  0",
+      "ZKXFNJ+NimbusSanL-Regu               Type 1            Custom           yes yes yes     11  0",
+      "ASZHDD+CMSY10                        Type 1            Builtin          yes yes yes     12  0"
+    ],
+    "figures/custo_servico.pdf": [
+      "HZCAFW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/escolhas_perfil.pdf": [
+      "TCOYEX+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_comparacao.pdf": [
+      "KSUDGE+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_falhas.pdf": [
+      "LLUXMY+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_consequencias_comparacao.pdf": [
+      "GZJYDH+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     15  0",
+      "CPUQYB+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     22  0"
+    ]
+  },
+  "portable_source_archive": true,
+  "no_undefined_references_or_overfull_boxes": true,
+  "manuscript_sha256": "755abf718f81c0b3da56b2bd4816c2ac43fa20c3da2886f885958e8973ba38cf",
+  "note": "Structural and artifact checks; scientific audit is recorded separately."
+}

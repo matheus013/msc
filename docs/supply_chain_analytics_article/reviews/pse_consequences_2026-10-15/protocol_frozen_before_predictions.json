@@ -1,0 +1,32 @@
+{
+  "source": "m5_pse_pilot30_v2_2026-10-15",
+  "scope": "30 series, 10 stores, 3 origins; development only",
+  "controller_fits_repeated": 0,
+  "alpha": 0.7,
+  "reference": "Global from other stores validation",
+  "model": "Separate fixed ExtraTrees forests: 64 trees, depth 4, leaf 3, seed 20261015; log1p cost and service",
+  "margin_grid": [
+    0.0,
+    0.02,
+    0.05,
+    0.1,
+    "always_reference"
+  ],
+  "selection": "Nested leave-one-store-out, same origin only; minimize inner cost subject to inner mean service >= reference",
+  "guard": "predicted service >= .7 and >= predicted reference service; cost improvement exceeds selected margin",
+  "limitations": [
+    "Previously inspected pilot: exploratory, not independent confirmation",
+    "Reference/profile use group mean service; consequence decision uses individual predicted service",
+    "No calibrated safety guarantee; no hyperparameter search beyond inner margin",
+    "Seeds averaged, origins dependent, only ten store clusters"
+  ],
+  "input_sha256": {
+    "features.csv": "6ed364693836ff66f5595153bafddf327cce94abb6b8869f0c2bc4a7656e0036",
+    "kpis.csv": "6c85292f3e87e91db3726add5985ac50f6fbdde56c10c3e27ada4bcc23b7ebda",
+    "predictions_frozen_before_test.csv": "d653999ad6c8cc414062cf3994889ceccc67ef3949b85258c6d6c87c5f5eb0c0"
+  },
+  "code_sha256": {
+    "experiment\\scripts\\analysis\\compare_pse_consequences.py": "65d11c062b9b7893f7b3b72c5617d382256cf4d918bef0732fece2fe6295c59a",
+    "experiment\\src\\simulation\\research\\pse_consequences.py": "0710894e385246cf1c82a7b944b1ddb81ebb4c9d6cbcc694d1bbe17093288e85"
+  }
+}

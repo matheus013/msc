@@ -1,0 +1,14 @@
+{
+  "round": 1,
+  "reviewer": "methods",
+  "source_sha256": "250a815d12b444dbc36ebcff15a2e8def56e40f8fb8d9989b42d6c231eefd6e3",
+  "editorial_decision": "minor_revision",
+  "scientific_submission_ready": false,
+  "issues": [
+    {"id":"MTH-01","severity":"minor","location":"manuscript_ptbr.tex:133-135","evidence":"A calibração pode penalizar déficit é vaga; snapshots históricos mostram penalização efetiva de GA, RL/híbrido e Capped, com escalas distintas.","requested_change":"Explicitar penalidades e peso/escala efetivos, conferidos no código congelado; distinguir aptidão de calibração, custo reportado e viabilidade na seleção. Penalidade não garante serviço mínimo.","kind":"writing","status":"open"},
+    {"id":"MTH-02","severity":"minor","location":"manuscript_ptbr.tex:82","evidence":"Todas as candidatas são ajustadas nas unidades de teste pode ser lido como ajuste no bloco de teste, embora o método descreva corretamente prefixos.","requested_change":"Explicitar que cada candidata é calibrada somente no prefixo de treino da série avaliada e depois medida no teste.","kind":"writing","status":"open"},
+    {"id":"MTH-03","severity":"minor","location":"manuscript_ptbr.tex:95-97,138","evidence":"Global é específica ao fold/origem; barras de médias não explicitam imediatamente ponderação por caso após agregação de sementes.","requested_change":"Precisar alcance fold/origem da família global e média aritmética por caso após sementes, excluindo serviço indefinido, sem garantia individual.","kind":"writing","status":"open"},
+    {"id":"MTH-04","severity":"major","location":"Desenho experimental; consequências com recuo; conclusão","evidence":"As variantes foram desenvolvidas após observar o piloto e o ganho depende de três decisões, concentrado em poucas unidades; limitação já explícita.","requested_change":"Fixar implementação e protocolo antes de confirmação em unidades/períodos reservados; manter resultado atual exploratório. Não executar experimentos neste ciclo editorial.","kind":"experiment","status":"open"},
+    {"id":"MTH-05","severity":"major","location":"Simulador, portfólio e calibração; limitações","evidence":"Calibração da Capped difere entre bases, orçamento não equivalente e sensibilidades de custo/prazo/horizonte ausentes, todos reconhecidos no texto.","requested_change":"Harmonizar calibração e avaliar sensibilidades justificadas antes de conclusões amplas; preservar limitações e aguardar evidência, sem antecipar resultados.","kind":"experiment","status":"open"}
+  ]
+}

@@ -1,0 +1,991 @@
+      AIPE: uma metodologia modular para seleção
+
+             contextual de políticas de reposição
+
+
+                       Matheus Inácio Batista Santosa
+         a Instituto de Computação, Universidade Federal de Alagoas, Brasil
+
+
+
+
+Abstract
+A heterogeneidade da demanda motiva selecionar políticas de reposição por
+contexto, mas a diversidade de vencedoras não assegura recomendações me-
+lhores. Propomos o Adaptive Inventory Policy Engine (AIPE), uma metodo-
+logia modular que vincula representação do contexto, evidência operacional,
+seleção e avaliação. Seu Policy Selection Engine (PSE) associa pers a famí-
+lias de políticas ou estima recomendações por série, com uma regra explícita
+para substituir ou conservar a referência. Avaliamos sete candidatas em duas
+aplicações separadas. Na Bahia, 145 séries em duas origens totalizam 4.350
+ajustes; a seleção por perl aumenta o atendimento em 3,89 pontos percentu-
+ais e o custo em 1,93% frente à referência global. No piloto Walmart M5, 30
+séries de dez lojas em três origens totalizam 1.350 ajustes. O preditivo por
+classe apresenta custo 13,9% maior e atendimento 4,11 pontos inferior. Uma
+extensão exploratória por consequências previstas, com recuo à referência,
+reduz custo em 1,56% e aumenta atendimento em 0,27 ponto; apenas três
+de 90 decisões mudam, e uma série concentra cerca de 92% da economia. A
+metodologia permite distinguir ganhos da seleção, limitações do portfólio e
+restrições físicas do atendimento. As aplicações mostram compromissos dis-
+tintos entre custo e serviço, sem estabelecer superioridade geral; a extensão
+desenvolvida no piloto exige conrmação independente.
+Keywords: Inventory methodology, Modular decision support, Policy
+selection, Demand heterogeneity, Service level
+
+
+1. Introdução
+   Selecionar uma política de reposição para cada combinação de loja e pro-
+duto exige conciliar custo e atendimento sob demandas heterogêneas. Vendas
+frequentes, intervalos sem demanda e picos ocasionais podem favorecer re-
+gras diferentes. A vantagem de contextualizar a escolha, porém, depende
+de reconhecer essas diferenças antes da decisão e convertê-las em resultados
+operacionais posteriores [1].
+    A escolha da família de política constitui uma decisão distinta da calibra-
+ção de seus parâmetros. Uma referência global pode usar a mesma família
+em toda a rede e ainda ajustar lotes e limiares ao histórico de cada série. A
+seleção de algoritmos fornece uma formulação para ir além dessa referência:
+características da instância orientam a escolha de um método de um portfólio
+[2, 3]. No inventário, essa escolha precisa considerar tanto o custo quanto a
+viabilidade do atendimento.
+    A seleção contextual exige conectar três decisões: como representar a
+demanda, que evidência usar para recomendar e quando substituir a política
+de referência. Comparar candidatas retrospectivamente esclarece o potencial
+do portfólio; antecipar a melhor escolha requer informação disponível antes
+do teste. A avaliação também precisa identicar a origem de uma falha: erro
+do seletor, ausência de candidata viável ou impossibilidade física de atender
+ao alvo. Esse diagnóstico determina se a revisão deve incidir sobre a escolha,
+o portfólio ou as condições do sistema.
+    Propomos o Adaptive Inventory Policy Engine (AIPE), uma metodologia
+modular para organizar essa decisão. O procedimento especica o problema,
+representa o contexto, constrói uma matriz comparável de consequências,
+recomenda pelo Policy Selection Engine (PSE) e avalia a escolha em da-
+dos reservados. O PSE admite associação por perl ou estimação por série.
+Uma regra de intervenção explicita quando a candidata substitui a referên-
+cia. Contratos de entrada, saída e informação permitem substituir métodos
+e reavaliar suas consequências mantendo o problema de decisão denido.
+    A contribuição do AIPE é formular essa sequência como um procedi-
+mento vericável: a evidência sustenta a recomendação, a regra de inter-
+venção dene sua aplicação e o diagnóstico identica onde aperfeiçoá-la. Os
+controladores e seletores concretizam responsabilidades substituíveis dentro
+desse procedimento. Avaliamos tanto a compatibilidade entre essas imple-
+mentações quanto sua utilidade incremental frente à referência global. A
+integração entre classicação e inventário possui antecedentes; o posiciona-
+mento do trabalho depende da articulação proposta e das decisões que ela
+permite examinar.
+    Examinamos o procedimento em vendas de uma rede varejista brasileira e
+em um piloto da base pública Walmart M5. A Bahia permite avaliar a seleção
+
+                                      2
+por perl em condições empresariais observadas; o M5 permite comparar
+implementações preditivas em um referencial público. As duas aplicações
+são analisadas separadamente, com consequências simuladas e calibrações
+identicadas. Os resultados revelam atendimento adicional com custo maior
+na Bahia, deterioração do preditivo por classe no M5 e melhoria concentrada
+quando a previsão de consequências é combinada com recuo à referência.
+Esse conjunto orienta a análise de quando intervir e de qual componente
+revisar.
+
+2. Trabalhos relacionados
+    O intervalo médio entre demandas (average demand interval, ADI) e o
+coeciente de variação (CV) fundamentam a classicação ADICV2 , em que
+CV2 é o quadrado do coeciente. Essa classicação organiza padrões de
+frequência e tamanho da demanda [4]. Entretanto, classes estatísticas não
+determinam sozinhas a melhor reposição: custos, prazo, estoque inicial e
+atendimento também importam. Mohammaditabar et al. [5] integram clas-
+sicação e escolha de políticas; Sheikh-Zadeh et al. [6] propõem classicação
+orientada ao desempenho em sistemas de múltiplos itens e escalões. O AIPE
+parte dessa relação entre classicação e desempenho e integra em seu pro-
+cedimento uma regra explícita de intervenção e um diagnóstico das perdas
+frente ao portfólio e à viabilidade física. A avaliação deste artigo compara
+suas implementações internas; os métodos desses antecedentes permanecem
+fora da comparação empírica.
+    Na literatura da revista, Tadayonrad e Ndiaye [7] aproximam previsão e
+consequências operacionais. Theunissen et al. [8] discutem a informação de-
+cisória preservada pela classicação. Essa perspectiva orienta nossa avaliação
+pelo custo e pelo atendimento obtidos, em complemento à concordância en-
+tre famílias recomendadas. O método topológico discutido por esses autores
+oferece um antecedente conceitual, sem implementação nesta avaliação.
+    Zabraoui et al. [9] comparam algoritmos de inventário e combinações de
+busca genética e aprendizado por reforço com dados M5. A combinação
+de algoritmo genético (genetic algorithm, GA) e rede Q profunda (deep Q-
+network, DQN), denominada GADQN, integra nosso portfólio, com seus
+componentes como controles, sem ser apresentada como contribuição algo-
+rítmica. Granularidade, ltros, custos e implementação local impedem uma
+reprodução exata de seu ranking.
+
+
+                                      3
+    Políticas limitadas de estoque-base oferecem outra referência para vendas
+perdidas [10]. Suas propriedades teóricas não garantem desempenho para
+nossa calibração. Os resultados de reforço também dependem do estado,
+da recompensa e do orçamento [11]. O AIPE separa essas implementações
+da escolha entre candidatas. A avaliação do seletor precisa, ainda, separar
+desenvolvimento e teste para evitar otimismo após escolher congurações
+[12].
+    Francuz e Bányai [13] integram escolha de família e parâmetros em oti-
+mização multiobjetivo, usando aprendizado para aproximar o simulador. A
+aplicação tem demanda sintética sazonal e pedidos pendentes. Aprendizado
+orientado à consequência [14], predição com rejeição [15] e recuo à referên-
+cia em aprendizado por reforço (reinforcement learning, RL) [16] também
+possuem antecedentes. O AIPE reúne essas ideias em um procedimento de
+seleção de famílias sob vendas perdidas, com referência calibrada e decompo-
+sição retrospectiva das falhas. A contribuição proposta é um procedimento
+vericável que registra a referência calibrada, a autorização para intervir e o
+diagnóstico das falhas de seleção, do portfólio e da viabilidade física. Classi-
+cação, predição de consequências e recuo fornecem os métodos constituintes.
+As aplicações examinam essa articulação na reposição com vendas perdidas;
+seus resultados não demonstram superioridade frente às integrações próxi-
+mas, que permanecem sem confronto empírico neste estudo.
+
+3. AIPE: metodologia modular
+3.1. Objeto e procedimento
+    O AIPE organiza a escolha de uma família de reposição para a série
+lojaproduto a partir da informação disponível antes da decisão. A aplica-
+ção começa pela denição de históricos e contexto, portfólio, ambiente de
+estoque, objetivo operacional e desenho de avaliação. Ao nal, produz uma
+recomendação acompanhada da referência, dos parâmetros de aplicação, do
+suporte da escolha e da identicação da conguração. Quando nenhuma
+candidata é viável, o registro conserva essa condição mesmo que uma contin-
+gência permita emitir a recomendação.
+    O procedimento tem cinco etapas: (1) especicar unidade, ambiente, ob-
+jetivo e referência; (2) preparar históricos e representar o contexto; (3) ca-
+librar candidatas e construir evidência de validação; (4) recomendar pelo
+PSE e aplicar a regra de intervenção; (5) avaliar em dados reservados e di-
+agnosticar perdas. A Figura 1 sintetiza a motivação; a Tabela 1 explicita
+
+                                       4
+os contratos metodológicos. Cada contrato dene o que uma implementação
+recebe, o que entrega e quais informações pode usar.
+
+                                AIPE: seleção contextual de políticas de reposição
+                                          Da heterogeneidade da demanda à decisão por série loja–produto
+
+  1     Caracterizar a demanda                 2   Selecionar com o AIPE                                      3    Recomendar e avaliar
+                                                                                                                    Exemplos de recomendações
+                                                           Características e perfil observado
+      Loja A · produto 1       Regular                                                                                Série A → política A
+                                                         Portfólio de políticas candidatas
+                                                         Ajuste no treino · avaliação na validação
+                                                                                                                      Série B → política C
+                                                                Duas abordagens do PSE
+
+                                                    PSE por perfil                    PSE preditivo                   Série C → política B
+      Loja B · produto 1   Intermitente
+                                                                                  Características da série
+                                                    Perfil informado
+                                                                            ou       + perfil opcional               Quando e quanto repor
+
+                                                      Associação                      Modelo estima               Avaliação em teste reservado
+      Loja C · produto 2    Com picos               perfil → política                   a política                     Custo · atendimento
+                                                                                                                    estabilidade das escolhas
+
+                                                               Política recomendada
+                                                                                                                  Comparação com a seleção global
+                                                            para cada série loja–produto
+             Volume · variabilidade
+                                                             Seleção antes de observar o teste                      Adaptive Inventory Policy Engine
+           intermitência · tendência
+
+
+                                            A mesma política pode ter desempenhos distintos entre séries.
+                                           O AIPE permite avaliar quando a seleção contextual agrega valor.
+
+
+
+                                                                             1
+Figura 1: AIPE: o contexto orienta a seleção de políticas. O PSE associa um perl
+informado a uma família ou estima uma recomendação por série. Famílias A/B/C são
+ilustrativas; o benefício é avaliado operacionalmente.
+
+
+
+3.2. Substituição dos métodos e decisão de intervenção
+    A modularidade permite avaliar uma alternativa em uma etapa mantendo
+denido o problema das demais. Um controlador recebe o estado disponível e
+produz um pedido válido; um descritor resume o histórico anterior à escolha;
+um seletor recomenda uma família do portfólio. A comparação preserva
+custos, denição do serviço, cronologia e unidades de análise. Quando uma
+alternativa exige outras ações ou informações, a adaptação de seu contrato
+precisa ser vericada antes da comparação.
+    Seja Π o portfólio, xi a descrição do treino e gi o perl. O PSE por
+perl recomenda m(gi ); o preditivo recomenda f (xi , gi ) ou f (xi ). Ele pode
+aprender um rótulo ou estimar consequências por candidata. A referência
+global mantém a família, com parâmetros calibrados individualmente. A
+
+
+
+
+                                                                             5
+Tabela 1: Contratos dos módulos do AIPE. Trocar o método preserva a responsabilidade
+e as restrições de informação.
+     Módulo           Entrada e saída            Contrato e instanciação ava-
+                                                 liada
+     Especicação     Requisitos → cenário e     Denir custo, serviço e refe-
+                      regra                      rência; aqui, vendas perdidas
+                                                 e prazo xo
+     Contexto         Histórico → caracterís-    Usar informação anterior à
+                      ticas ou perl             escolha; descritores e regras
+                                                 xas
+     Evidência        Cenário e candidatas →     Ajustar no treino e medir
+                      consequências              na validação; sete candidatas
+                                                 clássicas, GA e RL
+     PSE              Contexto e evidência →     Preservar objetivo e corte
+                      recomendação               temporal; perl, classe ven-
+                                                 cedora ou consequências pre-
+                                                 vistas
+     Avaliação        Recomendação xada         Teste reservado, referência
+                      → comparação e diag-       competitiva e perdas identi-
+                      nóstico                    cáveis
+
+
+regra de intervenção escolhe entre candidata π  bi e referência πiref :
+                                   (
+                                     bi ,
+                                     π       ai = 1,
+                          πiAIPE =
+                                     πiref , ai = 0.
+
+O indicador ai registra a decisão de intervir. Na implementação direta, toda
+recomendação é aplicada; na conservadora, a substituição exige o critério
+de benefício denido no desenvolvimento. Essa separação permite avaliar
+a candidata proposta e a regra que autoriza seu uso. Conança de classe
+e serviço previsto são sinais para decidir, sujeitos a erro no atendimento
+realizado.
+    A avaliação exercita a substituição de controladores e seletores, mantendo
+a representação de contexto e o simulador. Nas séries avaliadas, todas as can-
+didatas são calibradas exclusivamente no prexo de treino. Suas trajetórias
+posteriores no teste permitem medir as recomendações e construir os orácu-
+los retrospectivos. Essa despesa experimental difere do uso pretendido, em
+que evidências anteriores orientariam a família a calibrar; eventual econo-
+
+                                         6
+mia computacional de implantação requer avaliação própria. A adaptação
+aqui estudada é a escolha por contexto e sua reavaliação documentada, com
+alcance restrito às interfaces exercitadas.
+    A integridade da comparação exige uma matriz completa de candida-
+tas, sementes e blocos. Imputação e codicação usam somente a partição
+de treinamento; recomendações, referências e intervenções são xadas antes
+de medir o teste. A identicação de dados, conguração e código permite
+vericar quais resultados pertencem à mesma avaliação.
+
+3.3. Custo, serviço e escolha
+   Para demanda dt , quantidade atendida vt , saldo It e pedido qt , avaliamos
+                                                               P
+           X                                                         vt
+      C=      [hIt + p(dt − vt ) + K1(qt > 0) + cqt ],    F = Pt .          (1)
+            t                                                     t d t
+
+
+Os coecientes h e p representam, respectivamente, custo de manutenção por
+unidade e ciclo e custo por unidade não atendida. O custo de emissão é K
+por pedido, acrescido de c por unidade pedida. O atendimento F corres-
+ponde ao ll rate, a fração da demanda atendida. Diferenças entre taxas
+de atendimento são expressas em pontos percentuais (p.p.). Com demanda
+zero, permanece indenido; o custo continua contabilizado. Na instancia-
+ção, usamos h = 1, p = 5, K = 50 e c = 0,5, sem equivalência monetária
+calibrada.
+    As barras indicam médias aritméticas por caso sérieorigem, após agregar
+as sementes de cada candidata; serviços indenidos são excluídos da média de
+atendimento. Na validação A, a regra global minimiza C̄π,A entre candidatas
+com F̄π,A ≥ α, com α = 0,70. A meta média permite casos individualmente
+abaixo do alvo. O PSE por perl aplica essa regra a cada grupo Ag . Casos
+sem demanda não entram na média de serviço. Sem candidata viável, escolhe-
+se maior serviço e menor custo, registrando contingência. Pers sem suporte
+usam a global. Na Bahia, empate no custo viável prefere maior serviço e
+depois identicador; no M5, prefere identicador. Contingências empatadas
+em serviço preferem menor custo. Essas convenções são preservadas por base
+e registradas no código.
+    O rótulo supervisionado aplica a restrição à própria série de validação:
+menor custo viável ou, sem viável, maior serviço e menor custo. Se todas
+as opções têm serviço indenido, utiliza menor custo e mantém a marcação
+de demanda zero. Classicador e seletores agregados não impõem a mesma
+
+                                      7
+distribuição da restrição. Incluímos a moda dos rótulos como controle para
+não atribuir toda diferença à capacidade preditiva.
+
+3.4. Características e pers
+    O preditivo recebe 17 descritores: ADI, CV2 , intermitência, proporção de
+zeros, maior e média das sequências de zeros, burstiness, assimetria, curtose,
+entropia, tendência, autocorrelação, média, desvio-padrão, CV, extensão e
+número de ciclos positivos. O perl categórico deriva desses descritores, sem
+constituir informação independente.
+    Os pers usam regras ordenadas e xas: esparso (ADI ≥ 1,32, CV2 ≥
+0,49, sequência de zeros ≥ 5); volatilidade/sazonalidade (autocorrelação ≥
+0,25 ou burstiness ≥ 0,30); tendência instável (tendência absoluta ≥ 0,05
+ou entropia ≥ 2); baixo volume estável (média ≤ 2 e CV2 < 0,49); e venda
+frequente (ADI < 1,32). A primeira regra satisfeita dene o perl; o residual
+é esparso. ADI é n/ max(n+ , 1) e CV2 inclui zeros, diferindo da taxonomia
+original baseada em tamanhos positivos. Os nomes são heurísticos.
+    Burstiness compara o desvio e a média dos intervalos positivos pela ra-
+zão de sua diferença e soma, com regularização numérica. Tendência é a
+inclinação ajustada por mínimos quadrados ordinários dividida pela média;
+entropia usa dez classes de mesma largura. A autocorrelação na defasagem
+17 recebe zero com até 18 ciclos ou variância desprezível. Essa convenção
+denota estimativa indisponível, não ausência de sazonalidade; com 23 ciclos,
+há somente seis pares.
+
+4. Desenho experimental
+    A avaliação acompanha as decisões do AIPE em três perguntas. A se-
+leção por perl melhora o compromisso entre custo e atendimento frente à
+referência global? A estimação por série acrescenta valor e a regra de inter-
+venção preserva esse valor? As falhas de atendimento decorrem da seleção,
+do portfólio ou de restrições físicas? A Bahia investiga a primeira pergunta; o
+piloto M5 permite examinar as três, incluindo a substituição do preditivo por
+classe por um seletor de consequências na mesma matriz de controladores.
+
+4.1. Bases e unidades de análise
+   A Tabela 2 distingue as avaliações. Na Bahia, transações complementares
+são somadas por loja, produto e ciclo; ciclos sem venda recebem zero. A
+coorte retrospectiva contém 145 séries, 115 lojas e nove produtos. Os 38
+
+                                      8
+ciclos disponíveis, de 202301 a 202504, são unidades comerciais da fonte, não
+meses.
+    O M5 é uma fonte pública de vendas associada a uma competição de
+previsão [17]. Os códigos de lojas preservados do M5 combinam o estado
+e um identicador local: CA designa Califórnia, TX designa Texas e WI
+designa Wisconsin; por exemplo, CA_2 identica uma loja da Califórnia. O
+piloto sorteia 30 séries da categoria de alimentos (FOODS), três por loja nas
+dez lojas. Na primeira origem, o volume médio do treino dene três estratos
+por loja, com uma escolha em cada estrato e semente 20261015. As séries são
+mantidas nas três origens. Usamos ciclos completos de 21 dias, sem remover
+picos por regras baseadas no intervalo interquartil.
+
+Tabela 2: Matrizes completas analisadas. Casos sérieorigem e sementes não são séries
+independentes.
+Dimensão                                      Bahia                       Piloto M5
+Séries / lojas                           145 / 115                          30 / 10
+Origens de treino (ciclos)                 17 e 23                      50, 64 e 78
+Validação / teste por origem                 7/7                              7/7
+Casos sérieorigem                             290                               90
+Ajustes de políticas                         4.350                            1.350
+Testes sem demanda                               7                                4
+Seletores                       Global e por perl    Global, por perl e preditivo
+
+    A elegibilidade exige três ciclos positivos no prexo. O sorteio M5 usa 885
+séries elegíveis na primeira origem de uma coorte histórica de 2.408 identica-
+dores. Não representa todas as FOODS nem séries elegíveis somente depois.
+O recorte é inspirado no contexto de Zabraoui et al., sem armar identidade
+com sua amostra. As conclusões quantitativas deste artigo se restringem ao
+piloto descrito.
+
+4.2. Simulador, portfólio e calibração
+    O prazo exato é de dois ciclos. A política observa o estado anterior ao
+recebimento; entregas chegam antes da demanda. Quantidades podem ser
+fracionárias. Faltas são vendas perdidas, sem pedidos pendentes. Manuten-
+ção incide no saldo após demanda e o pedido é custeado na emissão, sem
+crédito terminal.
+    Validação e teste começam em estados comuns às candidatas, produzidos
+por uma referência de lote econômico de compra (economic order quantity,
+
+                                         9
+EOQ): seis ciclos passados aquecem o sistema, e sua trajetória na validação
+determina estoque e pipeline do teste. Esses estados usam o passado, mas
+não representam a continuação particular de cada candidata. Escalas são
+calculadas no treino.
+    O portfólio contém EOQCycle, sSCycle, CappedBaseStock, GA, otimi-
+zação proximal de políticas (proximal policy optimization, PPO), GADQN
+e DQN. Denotamos por µ e σ a média e o desvio-padrão          da demanda no
+prexo de√treino. EOQCycle usa lote max(1, 2µK/h) e ponto de pedido
+                                                p
+
+2µ+1,28σ 2; sSCycle repõe até o ponto acrescido do lote. CappedBaseStock
+limita a quantidade da reposição até um alvo e calibra alvo e teto em grade
+20 × 12. GA ajusta gatilho, lote e proteção com população 100 e 50 gerações.
+DQN usa Double DQN dueling; PPO usa otimização proximal. Ambos têm
+duas camadas de 64 unidades, 20 ações e no mínimo 20 mil transições, arre-
+dondadas ao episódio completo. GADQN acrescenta busca genética e mil
+demonstrações, mantendo gatilho e piso iguais nas demonstrações, treino e
+inferência.
+    Os quatro métodos estocásticos usam sementes 11, 29 e 47; as três referên-
+cias determinísticas têm um ajuste. As sementes são promediadas antes da
+avaliação por caso. O híbrido tem esforço superior ao DQN, sem equivalência
+de orçamento.
+    Os objetivos de calibração incluem penalidades de atendimento, distintas
+do custo C reportado. GA minimiza C + 30 max(0; 0,70 − F ) max(C; 1) no
+treino. DQN, PPO e GADQN recebem recompensa de custo negativo        P e pe-
+nalidade terminal 30 max(0; 0,70 − F )S , com escala xa S = max(p t dt ; 1)
+calculada na demanda do episódio de treino.
+    A CappedBaseStock minimiza custo acrescido dessa penalidade com es-
+cala xa. Na matriz Bahia reportada, acrescenta ainda S[r(1 − F ) + max(b −
+1; 0)], em que r é a fração de ciclos com falta e b a razão regularizada entre
+variâncias de pedidos e demanda. Esses dois termos têm pesos unitários na
+Bahia e zero no M5. Penalidades orientam a calibração sem garantir o alvo;
+a seleção aplica depois a viabilidade observada na validação. Essa diferença
+impede atribuir contrastes entre bases somente à demanda. Cada matriz e
+código arquivado identicam a instanciação avaliada.
+
+4.3. Avaliação e desenvolvimento do piloto
+    Em cada origem, uma loja inteira ca fora do conjunto que dene a esco-
+lha. O PSE usa a validação das demais lojas e recomenda para o teste da loja
+reservada. A família global é comum às séries recomendadas nessa partição
+
+                                     10
+e origem; pode mudar entre lojas reservadas e entre origens. Controladores
+continuam calibrados no histórico da própria série: avaliamos transferência
+do seletor com histórico disponível, não implantação sem dados prévios.
+    No M5, XGBoost tem 200 árvores, profundidade três, taxa 0,05, sem suba-
+mostragem e com semente xa. Imputação, codicação categórica e denição
+das classes são ajustadas dentro de cada partição de treinamento. Classes
+raras não são removidas; treinos de classe única usam classicador constante.
+Cada treinamento reúne 27 exemplos. A ablação sem perl mantém os de-
+mais componentes. Não se usam origens posteriores para recomendar em
+uma origem anterior.
+    Uma implementação com recuo usa o PSE por perl se o maior escore de
+classe for inferior a 0,60 ou a classe prevista tiver menos de três exemplos
+de treino. Não há busca de limiares no teste, mas a motivação veio dos
+resultados observados. Seu desempenho é exploratório, e o piloto passa a ser
+conjunto de desenvolvimento [12]. O escore não é probabilidade calibrada de
+viabilidade.
+    A comparação reduzida adicional reutiliza a matriz M5 e substitui a im-
+plementação do PSE. Duas orestas ExtraTrees estimam custo e serviço por
+candidata: 64 árvores, profundidade quatro, mínimo de três observações por
+folha e semente xa. Custo usa log(1+C), transformado de volta; serviço ex-
+clui alvos indenidos. A seleção direta escolhe o menor custo previsto viável;
+sem viável, prioriza serviço e depois custo.
+    A variante com recuo à global exige serviço previsto ≥ 0,70, não in-
+ferior ao previsto da referência, e economia acima de uma margem em
+{0; 0,02; 0,05; 0,10; ∞}. A margem minimiza custo em validação interna por
+loja, sujeita a serviço médio não inferior à referência. Cada origem exclui
+uma loja externa; dentro das nove restantes, ajusta em oito e valida na
+nona. A margem é xada antes da recomendação externa. Um classica-
+dor ExtraTrees com a mesma regularização controla a aprendizagem por
+rótulo, e uma ablação retira perl do seletor por consequências sem recuo.
+Recomendações são gravadas antes da pontuação do teste, mas o piloto já
+orientou o desenvolvimento: a comparação permanece exploratória.
+    Na Bahia, os testes compartilham um ciclo; no M5, ocupam os ciclos
+5864, 7278 e 8692, sem sobreposição. Origens repetem séries. Intervalos
+exploratórios usam bootstrap pareado por loja, preservando séries e origens:
+5.000 sorteios na Bahia, 2.000 na comparação de perl e classe no M5 e 5.000
+na comparação por consequências. Seletores e controladores permanecem
+xos; a incerteza é condicional, sem novos treinamentos. Dez lojas do piloto
+
+                                     11
+limitam sua precisão.
+
+4.4. Oráculos e informação perfeita
+    O melhor controlador único no teste é um diagnóstico retrospectivo. O
+oráculo do portfólio escolhe, por sérieorigem, a candidata de menor custo
+viável nas médias de teste entre sementes. Essas escolhas não fornecem ró-
+tulos ao treinamento. O acerto exige serviço mínimo e empate numérico no
+menor custo; concordância nominal é informada separadamente.
+    No M5, um programa linear inteiro misto (mixed-integer linear program-
+ming, MILP) conhece toda a demanda de teste e otimiza pedidos sob os
+mesmos custos, prazo e condições iniciais. Quantidades são contínuas; vari-
+áveis binárias representam emissão e complementaridade entre saldo e falta.
+É um ótimo determinístico condicional, não um controlador estocástico im-
+plantável. Se 0,70 for sicamente impossível antes das primeiras entregas,
+maximiza atendimento e depois minimiza custo. Soluções são reexecutadas
+no simulador e somente as comprovadamente ótimas recebem essa denomi-
+nação.
+    A eciência de custo é 100C ∗ /CPSE . Aqui, C ∗ denota o custo da referência
+retrospectiva considerada: o mínimo viável do portfólio ou o ótimo do MILP,
+conforme a comparação. Calculamos a razão apenas quando referência e
+recomendação satisfazem o mesmo critério de serviço; ambos os custos zero
+equivalem a 100%. Serviço insuciente não recebe crédito por custo baixo.
+A comparação com o MILP usa cada realização de treinamento viável: uma
+média entre sementes pode satisfazer o alvo sem que todas o satisfaçam.
+Repetir políticas determinísticas nessa análise não gera novas observações
+independentes.
+
+5. Resultados na Bahia: PSE por perl
+    As sete candidatas foram avaliadas em 290 casos sérieorigem. O custo
+médio usa todos os casos e o atendimento os 283 com demanda positiva;
+sete têm serviço indenido. Somente EOQCycle e sSCycle superam 0,70 em
+média; nenhuma supera esse alvo no atendimento ponderado pelas unidades
+demandadas.
+    PPO tem menor custo e menor atendimento. GADQN reduz custo em
+11,60% frente ao DQN e eleva atendimento de 0,5718 para 0,6802; frente ao
+GA, custa 1,32% mais e atende menos. O híbrido não domina seu componente
+
+
+                                      12
+                                 0.85
+                                                                    sSCycle
+                                 0.80
+    Atendimento médio por caso
+
+
+
+                                                                       EOQCycle
+                                 0.75
+                                             GA
+                                 0.70
+                                                                                            CappedBaseStock
+                                                    GA-DQN
+                                 0.65
+
+                                 0.60
+                                                                    DQN
+                                 0.55                                                     Fronteira descritiva
+                                             PPO
+                                                                                          Referência de atendimento: 0,70
+                                 0.50
+                                              140           160                 180               200                 220
+                                                         Custo médio no teste (unidades do cenário)
+
+
+Figura 2: Portfólio na Bahia: custo médio1 em 290 casos e atendimento em 283 com
+demanda positiva. A fronteira é retrospectiva e descritiva; não é usada para escolher no
+teste.
+
+
+evolutivo no agregado, e seu esforço adicional impede atribuir o contraste
+apenas à combinação algorítmica.
+
+Tabela 3: Escolha na validação das demais lojas; teste da loja reservada. Custo em 145
+casos por linha; atendimento em 144 casos na origem 17 e 139 na origem 23.
+                                 Treino        Seleção            Custo       Atendimento        Abaixo de 0,70
+                                 17 ciclos     Global            180,58              0,5711                      101
+                                 17 ciclos     PSE por perl     186,79              0,6475                       82
+                                 23 ciclos     Global            142,03              0,9073                       18
+                                 23 ciclos     PSE por perl     142,03              0,9073                       18
+
+
+   Na primeira origem, a global escolhe GA em todos os casos. O PSE por
+perl escolhe GA em 65, sSCycle em 75 e EOQCycle em cinco. Na segunda,
+ambos escolhem sSCycle nos 145 casos. A Figura 3 localiza essa diferenciação:
+pers distintos não implicam recomendações distintas em todo período.
+   Reunindo origens, o custo passa de 161,31 para 164,41, aumento de 1,93%;
+o atendimento cresce de 0,7362 para 0,7751, diferença de 3,89 pontos per-
+centuais. O ponderado passa de 0,5750 para 0,6395. Casos abaixo de 0,70
+
+                                                                       13
+                          Treino: 17 ciclos                                               Treino: 23 ciclos
+                                                                 Volatilidade/
+                                                                                     16
+  Demanda esparsa             65                                 sazonalidade
+
+
+                                                             Demanda esparsa                 60
+
+
+ Tendência instável            75             5
+                                                            Tendência instável                69
+
+                      0           50                                             0                50
+                           Número de séries                                                Número de séries
+
+
+                                    GA            sSCycle            EOQCycle
+
+
+Figura 3: Escolhas do PSE por perl na Bahia,
+                                          1     com meta 0,70. Há 145 recomendações
+por origem. A segunda reproduz a seleção global.
+
+
+diminuem de 119 para 100 entre 283 denidos. O resultado é serviço adicional
+com custo pontualmente maior, concentrado na primeira origem.
+    O bootstrap condicional de 115 lojas produz intervalos de 95% de
+[−0,32; 4,16]% para custo e [2,78; 5,07] pontos para atendimento. Incluir
+zero no intervalo de custo não prova equivalência. Variar o limiar sem recali-
+brar o portfólio também não preserva o benefício: em 0,80, o PSE por perl
+custa mais e atende ligeiramente menos; em 0,85, ambos escolhem sSCycle
+em todos os casos; em 0,90 e 0,95, todas as escolhas são contingências na
+validação.
+    A fronteira da Figura 2 situa o compromisso do portfólio, enquanto a
+Tabela 3 mostra como a seleção por perl modica esse compromisso entre
+origens. A coincidência das recomendações na segunda origem delimita o
+período em que a segmentação acrescenta atendimento.
+
+6. Resultados no M5: duas abordagens do PSE
+6.1. Custo e atendimento das recomendações
+   O piloto completa os 1.350 ajustes das 30 séries em três origens. As
+recomendações são avaliadas em 90 casos, com atendimento denido em 86.
+Não são 90 séries independentes. A Tabela 4 inclui dois controles: moda
+dos rótulos de treino e escolha individual da vencedora de validação. O
+
+                                                    14
+último examina a transferência temporal do próprio rótulo, sem representar
+um limite superior para os seletores.
+
+Tabela 4: M5: custo em 90 casos; atendimento e contagem de viáveis em 86 com demanda
+positiva. O recuo é exploratório, desenvolvido após o diagnóstico do piloto.
+          Seleção                                    Custo       Atendimento                                  Casos ≥ 0,70
+          Global                                   1.086,97                                        0,7146                  47
+          PSE por perl                            1.094,02                                        0,7091                  46
+          PSE preditivo com perl                  1.238,30                                        0,6735                  39
+          PSE preditivo sem perl                  1.238,30                                        0,6735                  39
+          Moda dos rótulos                         1.096,65                                        0,6885                  42
+          Individual na validação                  1.185,13                                        0,6838                  44
+          Preditivo com recuo                      1.087,26                                        0,6996                  46
+
+    O preditivo custa 13,9% mais e atende 4,11 pontos percentuais menos que
+a global. O contraste desfavorável aparece nas três origens e nos dois pers.
+WI_3 e TX_2 respondem por 65,4% da diferença líquida de custo. O PSE
+por perl permanece próximo da global: maior custo e serviço ligeiramente
+menor, sem benefício agregado neste piloto.
+
+                              Custo no teste                                                             Distribuição do serviço
+                                                                                             100
+        Global                                     1087
+                                                                  Atendimento por caso (%)
+
+
+
+
+                                                                                              80
+
+ PSE por perfil                                    1094
+                                                                                              60
+
+
+ PSE preditivo                                            1238                                40
+
+
+                                                                                              20
+    Com recuo                                      1087
+
+                                                                                               0
+                  0   250    500    750    1000     1250                                             Global   Perfil   Pred.    Recuo
+                            Custo médio por caso
+
+
+Figura 4: Piloto M5: custo e atendimento médios
+                                           1    são apresentados separadamente. Caixas
+descrevem o serviço nos 86 casos denidos; linha em 0,70. O recuo foi desenvolvido no
+piloto, sem conrmação independente.
+
+    O recuo é acionado em 62 casos e muda a política em 48. Frente ao pre-
+
+                                                           15
+ditivo, reduz custo em 12,2% e aumenta serviço em 2,62 pontos. Frente à
+global, custa 0,026% mais e atende 1,49 ponto menos; o atendimento perma-
+nece abaixo de 0,70. O intervalo exploratório para a diferença de custo frente
+à global é [−39,83; 39,30] unidades do cenário; para serviço, [−2,87; −0,23]
+pontos. Proximidade de custo não comprova equivalência.
+
+6.2. O que explica a diculdade do preditivo?
+    Cada fold tem 27 exemplos para até sete classes. O modelo reproduz
+100% dos rótulos do treino, mas somente 19 dos 90 rótulos de validação
+das lojas excluídas. Dois rótulos pertencem a classes ausentes no respectivo
+treinamento. Esses resultados são consistentes com sobreajuste, sem provar
+que mais dados, isoladamente, resolvam o problema.
+    A vencedora nominal da validação permanece vencedora no teste em
+29/90 casos; admitindo empates no objetivo completo, em 33/90. Com de-
+manda positiva nos dois blocos, a concordância nominal é 26/83. As vence-
+doras diferem entre sementes em 39/90 casos. O alvo categórico é sensível
+tanto ao período quanto ao treinamento. Escolher individualmente na vali-
+dação aumenta os casos viáveis frente ao preditivo, mas não supera a global
+em custo ou atendimento médio.
+    Cada origem contém 26 séries esparsas e quatro de tendência, sem tran-
+sição de perl na amostra. As colunas de perl têm importância por ganho
+zero em todos os folds; com e sem elas, as 90 recomendações coincidem.
+Redundância com as características numéricas e baixa diversidade ajudam a
+explicar a ausência de efeito, sem demonstrar inutilidade dos pers em outras
+populações.
+
+6.3. Distância aos melhores resultados e fontes das falhas
+    O preditivo iguala o menor custo viável do portfólio em 11 dos 39 casos
+nos quais sua recomendação é viável. Sua eciência média condicional é
+74,2%. A global acerta 15/47 e o PSE por perl 12/46, com eciências de
+80,8% e 79,5%. Os denominadores diferem: não se avalia eciência sobre um
+mesmo subconjunto.
+    Os 90 problemas com informação perfeita têm otimalidade comprovada.
+Nas 118 realizações de treinamento em que o preditivo satisfaz o alvo, iguala
+o ótimo determinístico em 14 e apresenta eciência média de 54,6%. As rea-
+lizações repetem séries e, para políticas determinísticas, a mesma trajetória;
+não ampliam a amostra independente. Mede-se distância ao planejamento
+com demanda conhecida, não a um controlador estocástico implantável.
+
+                                     16
+         Global                         47                                      13             15        11   4
+
+
+  PSE por perfil                        46                                      14             15        11   4
+
+
+  PSE preditivo                    39                                      21                  15        11   4
+
+
+     Com recuo                          46                                      14             15        11   4
+
+                   0   10          20         30         40          50                60           70   80       90
+                                                       Casos série–origem
+                            Atende a 0,70          Lacuna do portfólio               Demanda zero
+                            Erro de seleção        Limite físico inicial
+
+
+
+Figura 5: Decomposição dos 90 casos M5.1 Erro de seleção: outra candidata atende.
+Lacuna do portfólio: nenhuma candidata atende, mas o planejamento perfeito permite
+atender. Limite físico: condições iniciais impedem atingir 0,70. Demanda zero mantém
+serviço indenido.
+
+
+    No preditivo, 39 casos atendem ao alvo; 21 falham apesar de existir polí-
+tica viável; 15 falham sem candidata viável, embora o planejamento perfeito
+permita atender; 11 têm restrição física inicial; e quatro têm demanda zero.
+O recuo reduz os erros de seleção de 21 para 14. Melhorar o seletor não
+resolve sozinho todas as faltas: a Figura 5 separa intervenções sobre escolha,
+controle e abastecimento inicial.
+    A Figura 4 permite relacionar as médias das estratégias à distribuição do
+atendimento por caso: o recuo aproxima o custo da referência, mas conserva
+falhas individuais. Esse contraste motiva examinar a previsão das consequên-
+cias operacionais como outra implementação do PSE.
+
+6.4. Instanciação do PSE por consequências e recuo
+    A substituição do seletor na mesma matriz permite comparar implemen-
+tações sem refazer os controladores (Tabela 5). A oresta por consequências
+sem recuo reduz o custo em 0,33%, mas perde 2,09 pontos de atendimento
+frente à global. O controle por classe vencedora também reduz custo e perde
+serviço, limitando atribuir a melhora frente ao XGBoost somente ao alvo de
+aprendizagem.
+    Com recuo, o custo médio ca 1,56% abaixo da global e o serviço 0,27
+ponto acima (Figura 6). Somente três decisões mudam: uma de CappedBa-
+seStock para GA em CA_2 e duas de EOQCycle para sSCycle em TX_2.
+Uma série concentra aproximadamente 92% da economia. Duas intervenções
+permanecem abaixo de 70% apesar de viabilidade prevista. São mantidos
+
+                                                        17
+Tabela 5: Variantes do PSE na mesma matriz M5: 90 casos de custo e 86 de serviço
+denido. Referências global, por perl e preditiva por classe constam da Tabela 4.
+       Variante                                                              Custo      Atendimento                      Casos ≥ 0,70
+       Classe vencedora: oresta de                                        1.074,17                      0,6897                                40
+       controle
+       Consequências sem recuo                                             1.083,36                      0,6937                                38
+       Consequências sem perl e sem                                       1.148,09                      0,6925                                38
+       recuo
+       Consequências com recuo                                             1.070,03                      0,7172                                47
+
+
+os mesmos 47 casos que atendem ao alvo, sem novas falhas ou recuperações
+frente à global.
+                                                        Custo                                                    Atendimento
+
+
+             Por perfil                       +0,65                                                                                -0,54
+
+
+
+
+   Preditivo por classe                                                       +13,92        -4,11
+
+
+
+
+      Classe: controle          -1,18                                                                        -2,49
+
+
+
+
+       Consequências              -0,33                                                                          -2,09
+
+
+
+
+Consequências + recuo          -1,56                                                                                                            +0,27
+
+
+
+                          −5              0             5             10      15       −5           −4     −3         −2          −1       0            1
+                                                 Diferença de custo (%)                                    Diferença de fill rate (p.p.)
+
+
+
+
+Figura 6: Diferenças médias frente à global. O recuo limita intervenções, mas o benefício
+observado concentra-se em duas lojas e não demonstra transferência.
+
+   Intervalos exploratórios de 95%, por bootstrap pareado de dez lojas, são
+[−48,10; 0,00] para diferença de custo e [0,000; 0,734] ponto para serviço. Al-
+cançam zero, condicionam-se aos ajustes xos e não corrigem multiplicidade.
+A comparação favorece investigar intervenção seletiva, com conrmação em
+dados que não tenham orientado essa revisão.
+
+7. Discussão
+   As duas aplicações mostram por que o AIPE avalia a seleção contex-
+tual frente a uma referência calibrada por série. A variação das vencedoras
+do portfólio oferece oportunidades de escolha, enquanto os resultados dos
+
+                                                                            18
+seletores revelam quanto desse potencial é efetivamente aproveitado. A com-
+patibilidade entre módulos permite realizar essas comparações; o benefício
+operacional depende das consequências da recomendação em dados reserva-
+dos.
+    Na Bahia, a seleção por perl acrescenta atendimento com custo pon-
+tualmente maior; na segunda origem, coincide com a escolha global. Esse
+comportamento mostra que a utilidade da segmentação depende da janela e
+do critério operacional. A base brasileira fortalece a relevância aplicada da
+avaliação ao preservar heterogeneidade observada em vendas empresariais,
+enquanto a simulação e a possível censura por ruptura delimitam a interpre-
+tação econômica.
+    O piloto M5 evidencia a diculdade de aprender a identidade da melhor
+família com pouco suporte. O XGBoost perde para a referência em custo e
+atendimento. A previsão de consequências preserva a magnitude operacional
+dos erros de escolha, mas sua implementação direta também perde serviço;
+o controle por classe com outra oresta altera os resultados. Portanto, a
+comparação não isola todo o efeito do alvo de aprendizagem.
+    A regra de intervenção torna explícito quanto o PSE modica a referência
+e com que consequência. A variante por consequências conserva a global em
+87/90 casos, melhora pontualmente custo e serviço e concentra cerca de 92%
+da economia em uma série. A média favorável, portanto, depende de poucas
+decisões e deve ser lida junto à concentração do ganho e às deteriorações
+individuais. Esse resultado exploratório sustenta testar intervenções seletivas
+em dados externos ao desenvolvimento.
+    Os oráculos mostram que corrigir o seletor é apenas uma das interven-
+ções possíveis. Havendo candidata viável, a escolha pode ser aprimorada;
+sem candidata viável, deve-se examinar o portfólio e sua calibração; diante
+de inviabilidade física, é necessário rever as condições do sistema. A distin-
+ção orienta qual componente do AIPE merece revisão e evita atribuir toda
+ruptura ao modelo preditivo.
+    O suporte do contexto também limita a transferência das recomendações.
+Na primeira origem M5, 826/885 séries elegíveis são esparsas, 57 têm ten-
+dência e duas pertencem ao grupo volatilidade/sazonalidade. Uma amostra
+maior pode manter essa concentração. A avaliação deve considerar o suporte
+de cada grupo e o objetivo de atendimento adotado: meta média, aten-
+dimento ponderado e garantia por série expressam exigências distintas. A
+comparação entre módulos só é interpretável quando conserva essa denição.
+
+
+                                      19
+8. Limitações e próximos testes
+    Vendas podem omitir demanda censurada por falta. Coortes históricas,
+elegibilidade na primeira origem e horizontes de sete ciclos restringem popula-
+ção e período. Produtos compartilhados entre lojas podem gerar dependência
+não capturada inteiramente pelo bootstrap.
+    Não se trata de experimento causal de implantação. Custos não são nan-
+ceiramente calibrados, não há suprimento conjunto e o estado inicial comum
+não reproduz trajetórias particulares. A calibração distinta da CappedBa-
+seStock e os esforços desiguais limitam comparações entre algoritmos e bases.
+    As extensões com recuo foram desenvolvidas no piloto; suas métricas não
+conrmam independentemente a melhoria. A substituição foi exercitada nas
+candidatas e no PSE, sem ablação de todas as representações e ambientes.
+Assim, a portabilidade integral permanece uma hipótese de uso. A avaliação
+ampliada precisa examinar suporte por perl e classe, restrições de serviço
+comparáveis e validação interna por loja para ajustes do seletor. Séries re-
+servadas devem car fora dessas decisões. Harmonização da calibração e
+sensibilidades de custo, prazo e horizonte precedem conclusões mais amplas.
+    Uma avaliação ampliada, ainda fora dos resultados deste artigo, conserva
+as 145 séries brasileiras e os 2.408 identicadores históricos do M5. Nesse
+recorte, 885, 2.033 e 2.408 séries são elegíveis nas respectivas origens. O
+desenho usa pesos zero para ruptura e amplicação na calibração da Cap-
+pedBaseStock em ambas as bases e cinco grupos internos de lojas na escolha
+da margem de recuo. Essas mudanças podem alterar as recomendações e
+exigem nova análise. Separar as séries do piloto das demais identica o uso
+prévio dos dados, sem estabelecer independência por si só.
+
+9. Conclusão
+    O AIPE organiza a seleção contextual de políticas de reposição em cinco
+etapas, desde a especicação do problema até o diagnóstico dos resultados.
+A metodologia vincula a representação da série lojaproduto à evidência de
+validação, à recomendação do PSE e à decisão de substituir a referência. Essa
+estrutura permite localizar tanto o benefício de uma implementação quanto
+o componente a revisar quando o atendimento falha.
+    A avaliação delimita onde essas escolhas ajudam. Na Bahia, o perl
+acrescenta 3,89 pontos de atendimento com aumento de custo de 1,93%. No
+piloto M5, a estimação por classe perde para a global; consequências com
+
+
+                                      20
+recuo reduzem custo em 1,56% e acrescentam 0,27 ponto de atendimento,
+com apenas três intervenções e benefício concentrado. Assim, a evidência
+sustenta a execução e a utilidade diagnóstica do procedimento, enquanto seu
+benefício operacional permanece condicionado à instanciação.
+    A conrmação requer calibrações harmonizadas e avaliação da regra de
+intervenção em dados reservados, excluídos do desenvolvimento. O critério
+decisivo será a capacidade de reconhecer quando uma recomendação contex-
+tual compensa e quando preservar a referência, considerando serviço, custo
+e deteriorações.
+
+Disponibilidade de dados e código
+   Os dados brasileiros são proprietários e não são redistribuídos; o M5 é
+público. Código, congurações e fontes estão em https://github.com/m
+atheus013/msc. Dados, bancos e modelos cam fora da versão atual do
+repositório. Manifestos e snapshots locais identicam as matrizes; pacote
+arquivado e derivados autorizados deverão acompanhar a submissão. Não se
+promete acesso aos registros restritos mediante solicitação.
+
+Autoria, nanciamento e interesses
+    Autoria, contribuições dos autores, nanciamento, agradecimentos e in-
+teresses devem ser conrmados pelos autores responsáveis. O manuscrito
+em português requer tradução, revisão humana e fechamento das declarações
+antes da submissão.
+
+Uso de inteligência articial na preparação do manuscrito
+    OpenAI Codex auxiliou organização bibliográca, leitura de código, aná-
+lise, visualização e redação. A gura conceitual usa desenhos vetoriais progra-
+máticos; os grácos quantitativos derivam das matrizes identicadas. Con-
+ferência e responsabilidade pelo texto nal cabem aos autores humanos. Sis-
+temas de inteligência articial não são autores.
+
+Referências
+ [1] S. Axsäter, Inventory Control, 2nd Edition, Vol. 90 of International
+     Series in Operations Research & Management Science, Springer US,
+     New York, NY, USA, 2006. doi:10.1007/0-387-33331-2.
+
+                                      21
+ [2] J. R. Rice, The algorithm selection problem, in: Advances in Computers,
+     Vol. 15, Academic Press, 1976, pp. 65118. doi:10.1016/S0065-245
+     8(08)60520-3.
+ [3] L. Kottho, Algorithm selection for combinatorial search problems: A
+     survey, AI Magazine 35 (3) (2014) 4860. doi:10.1609/aimag.v35i3.
+     2460.
+ [4] A. A. Syntetos, J. E. Boylan, J. D. Croston, On the categorization
+     of demand patterns, J. Oper. Res. Soc. 56 (5) (2005) 495503. doi:
+     10.1057/palgrave.jors.2601841.
+ [5] D. Mohammaditabar, S. H. Ghodsypour, C. O'Brien, Inventory control
+     system design by integrating inventory classication and policy selection,
+     International Journal of Production Economics 140 (2) (2012) 655659.
+     doi:10.1016/j.ijpe.2011.03.012.
+ [6] A. Sheikh-Zadeh, M. D. Rossetti, M. A. Scott, Performance-based inven-
+     tory classication methods for large-scale multi-echelon replenishment
+     systems, Omega 101 (2021) 102276. doi:10.1016/j.omega.2020.102
+     276.
+ [7] Y. Tadayonrad, A. B. Ndiaye, A new key performance indicator mo-
+     del for demand forecasting in inventory management considering sup-
+     ply chain reliability and seasonality, Supply Chain Analytics 3 (2023)
+     100026. doi:10.1016/j.sca.2023.100026.
+
+ [8] F. M. Theunissen, S. Alam, A. Sajjad, A topological analytics framework
+     for preserving decision structure in supply chain inventory classication,
+     Supply Chain Analytics 15 (2026) 100229. doi:10.1016/j.sca.2026
+     .100229.
+ [9] O. Zabraoui, Y. Hmamou, A. Cha, S. Kammouri Alami, A comparative
+     study of multi-algorithm optimization for inventory analytics in supply
+     chains, Supply Chain Analytics 12 (2025) 100154. doi:10.1016/j.sc
+     a.2025.100154.
+[10] L. Xin, Technical noteunderstanding the performance of capped base-
+     stock policies in lost-sales inventory models, Operations Research 69 (1)
+     (2021) 6170. doi:10.1287/opre.2020.2019.
+
+
+                                      22
+[11] R. N. Boute, J. Gijsbrechts, W. van Jaarsveld, N. Vanvuchelen, Deep re-
+     inforcement learning for inventory control: A roadmap, European Jour-
+     nal of Operational Research 298 (2) (2022) 401412. doi:10.1016/j.
+     ejor.2021.07.016.
+[12] G. C. Cawley, N. L. C. Talbot, On over-tting in model selection and
+     subsequent selection bias in performance evaluation, Journal of Machine
+     Learning Research 11 (2010) 20792107.
+     URL https://www.jmlr.org/papers/v11/cawley10a.html
+
+[13] Á. Francuz, T. Bányai, Metaheuristic-based model selection framework
+     for eoq and inventory policies using machine learning and multi-objective
+     optimization, Algorithms 19 (5) (2026) 415. doi:10.3390/a19050415.
+
+[14] A. N. Elmachtoub, P. Grigas, Smart predict, then optimize, Manage-
+     ment Science (2022). doi:10.1287/mnsc.2020.3922.
+
+[15] Y. Geifman, R. El-Yaniv, Selectivenet: A deep neural network with
+     an integrated reject option, in: Proceedings of the 36th International
+     Conference on Machine Learning, Vol. 97, 2019, pp. 21512159.
+     URL https://proceedings.mlr.press/v97/geifman19a.html
+
+[16] R. Laroche, P. Trichelair, R. Tachet des Combes, Safe policy improve-
+     ment with baseline bootstrapping, in: Proceedings of the 36th Interna-
+     tional Conference on Machine Learning, Vol. 97, 2019, pp. 36523661.
+     URL https://proceedings.mlr.press/v97/laroche19a.html
+
+[17] S. Makridakis, E. Spiliotis, V. Assimakopoulos, M5 accuracy competi-
+     tion: Results, ndings, and conclusions, International Journal of Fore-
+     casting 38 (4) (2022) 13461364. doi:10.1016/j.ijforecast.2021.
+     11.013.
+
+
+
+
+                                     23
+

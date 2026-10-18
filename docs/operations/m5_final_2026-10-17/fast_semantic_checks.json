@@ -1,0 +1,33 @@
+{
+  "status": "all_exact",
+  "helper_sha256": "d91f668d20cb69cceff76bddf69240b5994dbc179b171df42d9364a2c45ba42f",
+  "test_sha256": "c65b0ce29dbd1b48c6e4c2f78ed11b32fc44f90216388f18648f2eb061f1152f",
+  "checks": [
+    "ties, all-NaN service, tolerance boundary, duplicate policy rows/first raw row, inf/NaN/negative/unit margins",
+    "Real BA/M5 class/PSE bookkeeping, exact labels, fixed estimator parameters, training/held row order; no estimator fitting"
+  ],
+  "real_subsets": [
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "cases": 6,
+      "stores": 4,
+      "exact_output_rows": 2,
+      "fit_calls": 0,
+      "train_held_order_identical": true,
+      "estimator_parameters_identical": true
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "cases": 40,
+      "stores": 4,
+      "exact_output_rows": 10,
+      "fit_calls": 0,
+      "train_held_order_identical": true,
+      "estimator_parameters_identical": true
+    }
+  ],
+  "controller_fits": 0,
+  "selector_fits": 0
+}

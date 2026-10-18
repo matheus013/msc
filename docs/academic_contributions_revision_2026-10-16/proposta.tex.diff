@@ -1,0 +1,14 @@
+--- docs/master_proposal/capitulos/proposta.tex baseline
+
++++ docs/master_proposal/capitulos/proposta.tex revised
+
+@@ -29,7 +29,7 @@
+
+ \section{Princípios e contribuição investigada}
+ O AIPE distingue seleção da família e calibração de parâmetros; exige comparação operacional compatível; impede informação futura na recomendação; e avalia o benefício incremental frente a uma referência competitiva. Esses princípios se apoiam em seleção de algoritmos e avaliação de modelos \citep{Rice1976AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection,CawleyTalbot2010}.
+ 
+-A contribuição investigada é a articulação desses princípios em um procedimento de reposição que vincula duas abordagens do PSE à decisão de intervir e ao diagnóstico das perdas. A associação entre contexto e escolha possui antecedentes; a avaliação do AIPE examina como essa articulação define responsabilidades, permite comparar implementações e orienta a revisão dos componentes. Coerência do procedimento, utilidade operacional e transferência entre aplicações constituem critérios distintos de avaliação.
++A contribuição central é a metodologia modular e rastreável de apoio à escolha de políticas. A integração das duas abordagens do PSE, o diagnóstico das limitações e a avaliação em contextos complementares sustentam essa proposta. A associação entre contexto e escolha possui antecedentes; a avaliação do AIPE examina como essa articulação define responsabilidades, permite comparar implementações e orienta a revisão dos componentes. Coerência do procedimento, utilidade operacional e transferência entre aplicações constituem critérios distintos de avaliação.
+ 
+ A aplicação requer históricos com cobertura identificável, candidatas executáveis sob convenções comuns e uma definição de serviço. Se vendas estiverem censuradas ou custos forem ilustrativos, a validade da recomendação permanece condicionada a essas limitações. A adaptação refere-se à escolha conforme o contexto e à reavaliação documentada; não significa troca contínua de controlador já validada em produção.
+ 

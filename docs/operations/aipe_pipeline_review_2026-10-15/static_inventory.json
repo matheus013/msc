@@ -1,0 +1,726 @@
+{
+  "files": {
+    "experiment\\src\\reporting\\cti_adjusted_analysis.py": {
+      "lines": 711,
+      "functions": 17
+    },
+    "experiment\\src\\reporting\\kpi_por_segmento.py": {
+      "lines": 77,
+      "functions": 1
+    },
+    "experiment\\src\\reporting\\pooling_statistical_analysis.py": {
+      "lines": 226,
+      "functions": 7
+    },
+    "experiment\\src\\reporting\\presentation_visuals.py": {
+      "lines": 1063,
+      "functions": 12
+    },
+    "experiment\\src\\reporting\\profile_policy_analysis.py": {
+      "lines": 557,
+      "functions": 11
+    },
+    "experiment\\src\\reporting\\strategy_cost_comparison.py": {
+      "lines": 928,
+      "functions": 21
+    },
+    "experiment\\src\\reporting\\__init__.py": {
+      "lines": 0,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\commands.py": {
+      "lines": 56,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\paths.py": {
+      "lines": 8,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipeline_registry.py": {
+      "lines": 104,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\settings.py": {
+      "lines": 26,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\__init__.py": {
+      "lines": 0,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\core\\data_loader.py": {
+      "lines": 230,
+      "functions": 9
+    },
+    "experiment\\src\\simulation\\core\\device.py": {
+      "lines": 116,
+      "functions": 7
+    },
+    "experiment\\src\\simulation\\core\\forecasting.py": {
+      "lines": 293,
+      "functions": 22
+    },
+    "experiment\\src\\simulation\\core\\forecasting_torch.py": {
+      "lines": 62,
+      "functions": 5
+    },
+    "experiment\\src\\simulation\\core\\inventory_env.py": {
+      "lines": 241,
+      "functions": 6
+    },
+    "experiment\\src\\simulation\\core\\inventory_env_torch.py": {
+      "lines": 395,
+      "functions": 14
+    },
+    "experiment\\src\\simulation\\core\\metaheuristics_torch.py": {
+      "lines": 532,
+      "functions": 20
+    },
+    "experiment\\src\\simulation\\core\\policies.py": {
+      "lines": 234,
+      "functions": 9
+    },
+    "experiment\\src\\simulation\\core\\policies_sota.py": {
+      "lines": 467,
+      "functions": 18
+    },
+    "experiment\\src\\simulation\\core\\policies_zabraoui.py": {
+      "lines": 203,
+      "functions": 8
+    },
+    "experiment\\src\\simulation\\core\\rl_torch.py": {
+      "lines": 679,
+      "functions": 37
+    },
+    "experiment\\src\\simulation\\core\\visualizations.py": {
+      "lines": 1176,
+      "functions": 28
+    },
+    "experiment\\src\\simulation\\core\\__init__.py": {
+      "lines": 14,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\__init__.py": {
+      "lines": 0,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\preprocessing\\sales.py": {
+      "lines": 76,
+      "functions": 2
+    },
+    "experiment\\src\\simulation\\preprocessing\\__init__.py": {
+      "lines": 1,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\research\\hybrid.py": {
+      "lines": 63,
+      "functions": 7
+    },
+    "experiment\\src\\simulation\\research\\oracles.py": {
+      "lines": 88,
+      "functions": 3
+    },
+    "experiment\\src\\simulation\\research\\parallel.py": {
+      "lines": 126,
+      "functions": 7
+    },
+    "experiment\\src\\simulation\\research\\portfolio.py": {
+      "lines": 19,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\research\\production.py": {
+      "lines": 55,
+      "functions": 3
+    },
+    "experiment\\src\\simulation\\research\\protocol.py": {
+      "lines": 75,
+      "functions": 5
+    },
+    "experiment\\src\\simulation\\research\\pse.py": {
+      "lines": 116,
+      "functions": 5
+    },
+    "experiment\\src\\simulation\\research\\pse_consequences.py": {
+      "lines": 149,
+      "functions": 5
+    },
+    "experiment\\src\\simulation\\research\\visualizations.py": {
+      "lines": 305,
+      "functions": 11
+    },
+    "experiment\\src\\simulation\\research\\__init__.py": {
+      "lines": 1,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\duckdb_loader.py": {
+      "lines": 158,
+      "functions": 2
+    },
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\m5_loader.py": {
+      "lines": 258,
+      "functions": 3
+    },
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\nodes.py": {
+      "lines": 650,
+      "functions": 8
+    },
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\pipeline.py": {
+      "lines": 68,
+      "functions": 2
+    },
+    "experiment\\src\\simulation\\pipelines\\data_ingestion\\__init__.py": {
+      "lines": 6,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\nodes.py": {
+      "lines": 408,
+      "functions": 8
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\pipeline.py": {
+      "lines": 29,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_forecasting\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\nodes.py": {
+      "lines": 308,
+      "functions": 10
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\pipeline.py": {
+      "lines": 22,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\demand_profiling\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\final_report\\nodes.py": {
+      "lines": 315,
+      "functions": 7
+    },
+    "experiment\\src\\simulation\\pipelines\\final_report\\pipeline.py": {
+      "lines": 48,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\final_report\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\nodes.py": {
+      "lines": 651,
+      "functions": 21
+    },
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\pipeline.py": {
+      "lines": 66,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\inventory_simulation\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\nodes.py": {
+      "lines": 521,
+      "functions": 8
+    },
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\pipeline.py": {
+      "lines": 43,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\policy_selection\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\reporting\\nodes.py": {
+      "lines": 727,
+      "functions": 18
+    },
+    "experiment\\src\\simulation\\pipelines\\reporting\\pipeline.py": {
+      "lines": 123,
+      "functions": 3
+    },
+    "experiment\\src\\simulation\\pipelines\\reporting\\__init__.py": {
+      "lines": 7,
+      "functions": 0
+    },
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\nodes.py": {
+      "lines": 292,
+      "functions": 6
+    },
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\pipeline.py": {
+      "lines": 36,
+      "functions": 1
+    },
+    "experiment\\src\\simulation\\pipelines\\statistical_validation\\__init__.py": {
+      "lines": 3,
+      "functions": 0
+    },
+    "experiment\\scripts\\analysis\\assess_policy_pruning.py": {
+      "lines": 97,
+      "functions": 2
+    },
+    "experiment\\scripts\\analysis\\benchmark_background_profile.py": {
+      "lines": 43,
+      "functions": 1
+    },
+    "experiment\\scripts\\analysis\\benchmark_parallel_fits.py": {
+      "lines": 136,
+      "functions": 6
+    },
+    "experiment\\scripts\\analysis\\benchmark_rl_acceleration.py": {
+      "lines": 208,
+      "functions": 12
+    },
+    "experiment\\scripts\\analysis\\collect_policy_review_sources.py": {
+      "lines": 57,
+      "functions": 2
+    },
+    "experiment\\scripts\\analysis\\compare_pse_consequences.py": {
+      "lines": 123,
+      "functions": 3
+    },
+    "experiment\\scripts\\analysis\\diagnose_pse_pilot.py": {
+      "lines": 285,
+      "functions": 8
+    },
+    "experiment\\scripts\\analysis\\generate_historical_visualizations.py": {
+      "lines": 51,
+      "functions": 1
+    },
+    "experiment\\scripts\\analysis\\generate_research_visualizations.py": {
+      "lines": 22,
+      "functions": 1
+    },
+    "experiment\\scripts\\analysis\\research_status.py": {
+      "lines": 27,
+      "functions": 1
+    },
+    "experiment\\scripts\\analysis\\reuse_production_checkpoints.py": {
+      "lines": 108,
+      "functions": 4
+    },
+    "experiment\\scripts\\analysis\\run_production_v2.py": {
+      "lines": 365,
+      "functions": 13
+    },
+    "experiment\\scripts\\analysis\\run_pse_pilot.py": {
+      "lines": 205,
+      "functions": 6
+    },
+    "experiment\\scripts\\analysis\\run_research_v2.py": {
+      "lines": 145,
+      "functions": 3
+    },
+    "experiment\\scripts\\analysis\\run_scoped_production.py": {
+      "lines": 254,
+      "functions": 7
+    },
+    "experiment\\scripts\\analysis\\sca_dual_dataset.py": {
+      "lines": 110,
+      "functions": 2
+    },
+    "experiment\\scripts\\analysis\\sca_dual_figures.py": {
+      "lines": 37,
+      "functions": 0
+    },
+    "experiment\\scripts\\analysis\\sca_figures.py": {
+      "lines": 59,
+      "functions": 0
+    },
+    "experiment\\scripts\\analysis\\sca_temporal.py": {
+      "lines": 159,
+      "functions": 2
+    },
+    "experiment\\scripts\\analysis\\sca_validation.py": {
+      "lines": 123,
+      "functions": 3
+    },
+    "experiment\\scripts\\analysis\\summarize_parallel_validation.py": {
+      "lines": 103,
+      "functions": 2
+    },
+    "experiment\\scripts\\data_preparation\\check_vendas_pb.py": {
+      "lines": 33,
+      "functions": 0
+    },
+    "experiment\\scripts\\data_preparation\\generate_sample_data.py": {
+      "lines": 73,
+      "functions": 0
+    },
+    "experiment\\scripts\\data_preparation\\transform_data_simple.py": {
+      "lines": 204,
+      "functions": 5
+    },
+    "experiment\\scripts\\documents\\analyze_pdf.py": {
+      "lines": 143,
+      "functions": 0
+    },
+    "experiment\\scripts\\documents\\article_research_figures.py": {
+      "lines": 131,
+      "functions": 1
+    },
+    "experiment\\scripts\\documents\\audit_aipe_documents.py": {
+      "lines": 93,
+      "functions": 2
+    },
+    "experiment\\scripts\\documents\\audit_article_evidence.py": {
+      "lines": 108,
+      "functions": 1
+    },
+    "experiment\\scripts\\documents\\build_aipe_concept_figure.py": {
+      "lines": 175,
+      "functions": 4
+    },
+    "experiment\\scripts\\documents\\build_aipe_results_figures.py": {
+      "lines": 54,
+      "functions": 1
+    },
+    "experiment\\scripts\\documents\\build_dissertation.py": {
+      "lines": 71,
+      "functions": 3
+    },
+    "experiment\\scripts\\documents\\plot_dissertation_consequences.py": {
+      "lines": 24,
+      "functions": 0
+    },
+    "experiment\\scripts\\documents\\verify_article_package.py": {
+      "lines": 57,
+      "functions": 0
+    },
+    "experiment\\scripts\\literature\\build_sca_article.py": {
+      "lines": 73,
+      "functions": 2
+    },
+    "experiment\\scripts\\literature\\collect_sca.py": {
+      "lines": 203,
+      "functions": 10
+    },
+    "experiment\\scripts\\literature\\fetch_elsevier_template.py": {
+      "lines": 31,
+      "functions": 0
+    },
+    "experiment\\scripts\\literature\\search_aipe_opportunities.py": {
+      "lines": 61,
+      "functions": 1
+    },
+    "experiment\\scripts\\operations\\drive_backup.py": {
+      "lines": 232,
+      "functions": 20
+    },
+    "experiment\\scripts\\operations\\repair_status_io_checkpoint.py": {
+      "lines": 54,
+      "functions": 2
+    },
+    "experiment\\scripts\\pb\\plot_pb_results.py": {
+      "lines": 170,
+      "functions": 0
+    },
+    "experiment\\scripts\\pb\\prepare_pb_data.py": {
+      "lines": 98,
+      "functions": 1
+    },
+    "experiment\\scripts\\pb\\run_pb_experiment.py": {
+      "lines": 517,
+      "functions": 6
+    },
+    "experiment\\scripts\\reporting\\generate_maps.py": {
+      "lines": 191,
+      "functions": 0
+    },
+    "experiment\\scripts\\reporting\\generate_maps_full.py": {
+      "lines": 265,
+      "functions": 0
+    },
+    "experiment\\scripts\\reporting\\generate_maps_nacional.py": {
+      "lines": 268,
+      "functions": 0
+    },
+    "experiment\\scripts\\reporting\\regen_seg_plot.py": {
+      "lines": 97,
+      "functions": 0
+    },
+    "experiment\\tests\\test_corrected_hybrid.py": {
+      "lines": 68,
+      "functions": 7
+    },
+    "experiment\\tests\\test_drive_backup.py": {
+      "lines": 66,
+      "functions": 9
+    },
+    "experiment\\tests\\test_execution_profile.py": {
+      "lines": 35,
+      "functions": 3
+    },
+    "experiment\\tests\\test_experiment_diagnostics.py": {
+      "lines": 75,
+      "functions": 7
+    },
+    "experiment\\tests\\test_integration.py": {
+      "lines": 131,
+      "functions": 8
+    },
+    "experiment\\tests\\test_production_queue.py": {
+      "lines": 138,
+      "functions": 11
+    },
+    "experiment\\tests\\test_pse_consequences.py": {
+      "lines": 42,
+      "functions": 4
+    },
+    "experiment\\tests\\test_pse_diagnostics.py": {
+      "lines": 45,
+      "functions": 4
+    },
+    "experiment\\tests\\test_pse_oracles.py": {
+      "lines": 60,
+      "functions": 8
+    },
+    "experiment\\tests\\test_pse_pilot.py": {
+      "lines": 84,
+      "functions": 5
+    },
+    "experiment\\tests\\test_research_protocol.py": {
+      "lines": 92,
+      "functions": 7
+    }
+  },
+  "syntax_errors": [],
+  "unused_import_candidates": [
+    [
+      "experiment\\src\\reporting\\cti_adjusted_analysis.py",
+      33,
+      "iterproduct"
+    ],
+    [
+      "experiment\\src\\reporting\\kpi_por_segmento.py",
+      17,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\reporting\\pooling_statistical_analysis.py",
+      26,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\reporting\\profile_policy_analysis.py",
+      26,
+      "os"
+    ],
+    [
+      "experiment\\src\\reporting\\profile_policy_analysis.py",
+      27,
+      "sys"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\device.py",
+      19,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\inventory_env_torch.py",
+      27,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\metaheuristics_torch.py",
+      29,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "TorchGA"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "TorchSA"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "TorchPSO"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "TorchDE"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "GAPolicyOptimizer"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "SimulatedAnnealingPolicy"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "PSOPolicy"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      183,
+      "DEPolicy"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      212,
+      "HybridGADQN"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies.py",
+      212,
+      "HybridGAPPO"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies_sota.py",
+      35,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\policies_zabraoui.py",
+      48,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\core\\rl_torch.py",
+      33,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\research\\production.py",
+      5,
+      "np"
+    ],
+    [
+      "experiment\\src\\simulation\\research\\production.py",
+      6,
+      "DETERMINISTIC"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\data_ingestion\\duckdb_loader.py",
+      48,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\data_ingestion\\m5_loader.py",
+      38,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\demand_profiling\\nodes.py",
+      16,
+      "Any"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\final_report\\nodes.py",
+      16,
+      "annotations"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\inventory_simulation\\nodes.py",
+      33,
+      "Dict"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\inventory_simulation\\nodes.py",
+      33,
+      "Any"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\policy_selection\\nodes.py",
+      20,
+      "pickle"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\policy_selection\\nodes.py",
+      21,
+      "Dict"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\statistical_validation\\nodes.py",
+      14,
+      "Dict"
+    ],
+    [
+      "experiment\\src\\simulation\\pipelines\\statistical_validation\\nodes.py",
+      14,
+      "Any"
+    ],
+    [
+      "experiment\\scripts\\analysis\\benchmark_background_profile.py",
+      5,
+      "Path"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_pse_pilot.py",
+      10,
+      "time"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_research_v2.py",
+      9,
+      "deepcopy"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_research_v2.py",
+      14,
+      "np"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_scoped_production.py",
+      12,
+      "sys"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_scoped_production.py",
+      14,
+      "np"
+    ],
+    [
+      "experiment\\scripts\\analysis\\run_scoped_production.py",
+      19,
+      "STOCHASTIC"
+    ],
+    [
+      "experiment\\scripts\\analysis\\summarize_parallel_validation.py",
+      2,
+      "Path"
+    ],
+    [
+      "experiment\\scripts\\data_preparation\\transform_data_simple.py",
+      17,
+      "datetime"
+    ],
+    [
+      "experiment\\scripts\\pb\\plot_pb_results.py",
+      12,
+      "np"
+    ],
+    [
+      "experiment\\scripts\\pb\\prepare_pb_data.py",
+      21,
+      "np"
+    ],
+    [
+      "experiment\\scripts\\reporting\\generate_maps_nacional.py",
+      12,
+      "os"
+    ],
+    [
+      "experiment\\scripts\\reporting\\regen_seg_plot.py",
+      11,
+      "np"
+    ],
+    [
+      "experiment\\tests\\test_research_protocol.py",
+      2,
+      "deepcopy"
+    ]
+  ]
+}

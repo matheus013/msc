@@ -1,0 +1,46 @@
+\mychapter{Resultados e Discussão}{cap:results}\lhead{RESULTADOS E DISCUSSÃO}
+
+Este capítulo avalia as instanciações da metodologia AIPE, distinguindo qualidade dos controladores, utilidade da seleção e limites da recomendação. A Bahia examina o PSE por perfil em 145 séries; o piloto M5 examina as duas abordagens em 30 séries e três origens. As bases permanecem separadas, com seus próprios denominadores e calibrações. O piloto também serve ao desenvolvimento do seletor, sem representar confirmação independente da extensão com recuo.
+
+Os números a seguir pertencem às matrizes e protocolos identificados no Capítulo~\ref{cap:experimental}. A avaliação unificada amplia os seletores da Bahia e harmoniza uma calibração, mas suas saídas ainda precisam de consolidação e auditoria antes de atualizar tabelas, figuras ou conclusões. Assim, os resultados do piloto não são atribuídos à validação interna em cinco grupos adotada nessa ampliação.
+
+\input{bahia_20261015}
+\input{m5_pse_20261015}
+\input{consequencias_20261015}
+
+\section{Esforço computacional das políticas}
+
+\label{sec:computational_results}
+
+Tempo de ajuste é uma dimensão adicional da comparação, apresentada na Tabela~\ref{tab:fit_time}. Cada ajuste é contado uma vez, sem duplicar seus registros de validação e teste. Ajustes reaproveitados são excluídos desta amostra de tempos. O registro mede a duração do ajuste no ambiente de execução, sob concorrência e carga variável; não equivale a um teste controlado de velocidade entre processadores nem ao tempo total decorrido da rodada.
+
+\begin{table}[htbp]\centering\small
+\caption{Duração registrada dos ajustes executados na rodada Bahia. Tempos em segundos; médias e medianas por ajuste, sem os 54 reaproveitados.}
+\label{tab:fit_time}
+\begin{tabular}{@{}lrrr@{}}\toprule
+Política & Ajustes & Mediana (s) & Média (s)\\\midrule
+CappedBaseStock & 284 & 0,01 & 0,01\\
+DQN & 870 & 52,10 & 52,10\\
+EOQCycle & 284 & 0,00 & 0,00\\
+GA & 852 & 0,53 & 0,49\\
+GA--DQN & 870 & 52,90 & 52,90\\
+PPO & 852 & 24,37 & 26,03\\
+sSCycle & 284 & 0,00 & 0,00\\
+\bottomrule\end{tabular}\end{table}
+
+O tempo deve ser interpretado junto ao desempenho: maior esforço não comprova melhor recomendação. GA--DQN reúne busca, demonstrações e aprendizado, enquanto as referências analíticas têm ajuste simples. Uma comparação causal de eficiência exigiria controlar hardware, carga, orçamento e repetições. Os tempos registrados permitem descrever a execução, mas não substituem esse desenho.
+
+
+\section{Síntese das respostas e limites}
+\label{sec:threats}\label{sec:resultados_m5}
+A heterogeneidade produz escolhas diferentes, mas sua utilidade depende de período e comparador. Na Bahia, o perfil acrescenta serviço com custo pontualmente maior; na segunda origem, não diferencia a escolha global. No M5, o preditivo tem pior custo e serviço, e a informação explícita de perfil não altera as recomendações.
+
+O classificador reproduz o treino, mas tem pouco suporte por classe e rótulos que mudam entre períodos e sementes. A primeira regra de recuo ao perfil reduz a perda do preditivo, sem superar global ou perfil. A extensão por consequências com recuo à global apresenta melhora pontual concentrada em três intervenções, com intervalos que alcançam zero. Isso responde parcialmente à pergunta de aprendizagem: a implementação testada não converteu suas características em vantagem operacional.
+
+O oráculo do portfólio e o planejamento com informação perfeita mostram limites diferentes. Há espaço para melhorar seleção e controle, mas 11 casos do M5 não permitem atingir o alvo nas condições iniciais. Maior capacidade preditiva não remove essa restrição. Tampouco custo baixo com falta deve ser interpretado como aproximação do ótimo viável.
+
+A concentração dos perfis existe também fora da amostra: na primeira origem M5, 826/885 séries elegíveis são esparsas, 57 têm tendência e duas são do grupo de volatilidade/sazonalidade. Nas origens 64 e 78, são 1.977/2.033 e 2.360/2.408 séries esparsas. Os rótulos satisfazem a regra explícita, não resultam do perfil padrão. Ampliar o tamanho sem examinar essa cobertura não garante diversidade.
+
+As evidências são condicionais a coortes retrospectivas, sete ciclos de teste, vendas possivelmente censuradas, custos de cenário e estados iniciais de referência. As origens repetem séries; a Bahia compartilha um ciclo. O bootstrap preserva lojas, mas não mede novos treinamentos ou toda a dependência entre produtos e lojas. A diferença de calibração da CappedBaseStock entre bases impede tratar seus contrastes como efeito puro da demanda.
+
+A aplicação torna verificáveis as etapas e os diagnósticos da metodologia. A contribuição empírica é delimitar os resultados de suas implementações. O AIPE não recebe confirmação de vantagem geral; oferece um desenho para identificar quando a seleção agrega valor e qual componente precisa melhorar. A avaliação seguinte deve reservar séries não usadas no desenvolvimento e fixar escolhas antes de examinar seus testes.

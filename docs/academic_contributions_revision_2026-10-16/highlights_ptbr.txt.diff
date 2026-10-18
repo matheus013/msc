@@ -1,0 +1,16 @@
+--- docs/supply_chain_analytics_article/highlights_ptbr.txt baseline
+
++++ docs/supply_chain_analytics_article/highlights_ptbr.txt revised
+
+@@ -1,5 +1,5 @@
+
+-AIPE propõe apoio modular ao gerente na seleção de políticas de reposição.
+-Contratos separam contexto, evidência, seleção e avaliação da recomendação.
+-Sete candidatas e variantes do PSE exercitam interfaces do procedimento.
+-Bahia e M5 delimitam benefícios, falhas e uso de recuo à referência.
+-A comparação reduzida permanece exploratória e exige confirmação.
++AIPE propõe apoio modular e rastreável à escolha de políticas de reposição.
++O PSE integra seleção por perfil e por estimação sob contratos comuns.
++O diagnóstico distingue seleção, portfólio e inviabilidade física.
++Vendas reais da Bahia e o piloto M5 delimitam condições de uso.
++Métodos conhecidos sustentam a proposta; ganhos exigem confirmação.

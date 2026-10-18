@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "expanded_at_first_use": [
+    "AIPE",
+    "PSE",
+    "ADI",
+    "CV",
+    "GA",
+    "DQN",
+    "GA-DQN",
+    "RL",
+    "EOQ",
+    "PPO",
+    "MILP"
+  ],
+  "written_out_instead_of_single_use_abbreviation": [
+    "API",
+    "OLS",
+    "IQR",
+    "IA",
+    "CRediT"
+  ],
+  "clarified": [
+    "Walmart M5 in abstract and body",
+    "FOODS category",
+    "CA/TX/WI store identifiers",
+    "p.p."
+  ],
+  "pages": 22,
+  "quantitative_results_unchanged": true,
+  "pdf_sha256": "b9709968d0b46641dfee0ee8d2e7502a382231f4661fd082c7af05920f97417b",
+  "visual_pages": [
+    1,
+    3,
+    4,
+    8,
+    9,
+    11
+  ]
+}

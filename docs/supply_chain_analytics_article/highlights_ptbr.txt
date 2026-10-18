@@ -1,5 +1,5 @@
-AIPE integra caracterização, calibração e seleção contextual de políticas.
-O PSE admite associação por perfil e previsão supervisionada por série.
-Na Bahia, seleção por perfil troca custo por atendimento adicional.
-No piloto M5, sobreajuste e rótulos instáveis limitam o PSE preditivo.
-Oráculos separam erros de seleção, lacunas do portfólio e limites físicos.
+AIPE propõe apoio modular e rastreável à escolha de políticas de reposição.
+O PSE integra seleção por perfil e por estimação sob contratos comuns.
+O diagnóstico distingue seleção, portfólio e inviabilidade física.
+Vendas reais da Bahia e a coorte histórica M5 delimitam condições de uso.
+Métodos conhecidos sustentam a proposta; ganhos exigem confirmação.

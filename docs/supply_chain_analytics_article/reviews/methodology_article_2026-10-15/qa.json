@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "pages": 21,
+  "abstract_whitespace_words": 206,
+  "cited_references": 17,
+  "highlight_characters": [
+    74,
+    75,
+    72,
+    68,
+    65
+  ],
+  "figures": [
+    "figures/aipe_conceito_v2_ptbr.pdf",
+    "figures/custo_servico.pdf",
+    "figures/escolhas_perfil.pdf",
+    "figures/aipe_m5_comparacao.pdf",
+    "figures/aipe_m5_falhas.pdf",
+    "figures/aipe_consequencias_comparacao.pdf"
+  ],
+  "figure_fonts": {
+    "figures/aipe_conceito_v2_ptbr.pdf": [
+      "RTOYBR+NimbusSanL-Bold               Type 1            Custom           yes yes yes     10  0",
+      "ZKXFNJ+NimbusSanL-Regu               Type 1            Custom           yes yes yes     11  0",
+      "ASZHDD+CMSY10                        Type 1            Builtin          yes yes yes     12  0"
+    ],
+    "figures/custo_servico.pdf": [
+      "HZCAFW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/escolhas_perfil.pdf": [
+      "TCOYEX+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_comparacao.pdf": [
+      "KSUDGE+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_m5_falhas.pdf": [
+      "LLUXMY+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_consequencias_comparacao.pdf": [
+      "GZJYDH+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     15  0",
+      "CPUQYB+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     22  0"
+    ]
+  },
+  "portable_source_archive": true,
+  "no_undefined_references_or_overfull_boxes": true,
+  "manuscript_sha256": "8d021dd4d919390c2c4572db14161f8b0d00d14ab1f240a8a211c0da3526272e",
+  "note": "Structural and artifact checks; scientific audit is recorded separately.",
+  "previous_artifacts_preserved": 6,
+  "reduced_comparison_table_reconciled": true,
+  "scope": "AIPE as modular methodology; only candidate and selector substitutions empirically exercised",
+  "visual_review": "All pages reviewed in contact sheets; final pages 1,5,16 reviewed at higher resolution."
+}

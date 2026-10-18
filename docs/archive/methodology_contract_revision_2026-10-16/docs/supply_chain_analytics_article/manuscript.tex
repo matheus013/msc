@@ -1,0 +1,214 @@
+\documentclass[preprint,12pt]{elsarticle}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,booktabs,graphicx}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{2em}
+\journal{Supply Chain Analytics}
+\begin{document}
+\begin{frontmatter}
+\title{Does demand profiling improve inventory policy selection? An audited retrospective retail case study}
+\author[ufal]{Matheus In\'acio Batista Santos}
+\affiliation[ufal]{organization={Institute of Computing, Federal University of Alagoas},country={Brazil}}
+\begin{abstract}
+Demand heterogeneity motivates selecting replenishment policies by operational profile, but heterogeneous outcomes do not establish that a profile-based selector improves decisions. This study reanalyses a simulated inventory benchmark comprising 145 store--product demand series from 115 Brazilian retail stores. Twelve policy labels are compared using inventory cost and fill rate, with feasibility defined by a minimum mean service threshold. We distinguish retrospective selection from transfer to an excluded store, audit artifact consistency and add a temporally separated five-heuristic diagnostic. At a threshold of 0.70, profile-based selection reduces mean cost by 0.20\% relative to the best feasible uniform policy in sample; a store-cluster bootstrap interval spans zero. Under leave-one-store-out selection, the profile strategy instead increases cost by 0.58\%, again with an interval spanning zero. Its larger 30.65\% cost reduction relative to EOQ is accompanied by a 16.06 percentage-point fill-rate reduction. Thirty-nine of 145 series remain below the service threshold, demonstrating that group-average feasibility does not guarantee local service. In the temporal diagnostic, profile selection increases test cost by 0.17\% relative to uniform selection. A dimensional correction to the legacy EOQ comparator yields lower mean cost and higher mean service than either selector. These results do not support a cost advantage from the evaluated profiles over a strong uniform comparator. They support reporting selector validation, service trade-offs and artifact provenance explicitly before claiming the operational value of contextual inventory analytics. The analysis is conditional on historical simulated outcomes and does not validate a deployed or supervised policy-selection engine.
+\end{abstract}
+\begin{keyword}
+Inventory analytics \sep Intermittent demand \sep Policy selection \sep Service constraints \sep Simulation auditing \sep Retail
+\end{keyword}
+\end{frontmatter}
+
+\section{Introduction}
+A retailer choosing a replenishment rule faces two related decisions: which policies belong in the candidate portfolio, and whether different demand series require different members of that portfolio. The first decision has motivated comparisons of classical inventory rules, metaheuristics and reinforcement learning. Selecting a method from instance characteristics is an established algorithm-selection problem \cite{rice1976}; the use of demand features does not itself constitute a new selection principle. The second concerns the value of selection itself. A method can produce heterogeneous policy rankings without establishing that a selector transfers useful information to a new store. Moreover, a low-cost policy can achieve its apparent advantage by accepting lower service. Evaluating the selector therefore requires an appropriate uniform-policy comparator and an explicit account of service.
+
+Published work in \emph{Supply Chain Analytics} connects forecasting and inventory decisions through operational performance measures \cite{sca_f81ad2b3e023}, compares multi-algorithm inventory-control frameworks \cite{sca_27e994c54848}, and examines whether classification criteria preserve decision-relevant information \cite{sca_c5c06dcbc9e5}. These studies motivate a narrower empirical question: does a particular demand-profile stratification improve policy selection beyond selecting a strong uniform policy under the same service requirement? We address this question using the inventory benchmark developed during a master's qualification study. The present article is a retrospective reanalysis of available artifacts, rather than a claim that the broader proposed adaptive engine has already been validated.
+
+The reanalysis also addresses an evidential problem. The qualification documentation reports a twelve-policy benchmark, but its historical summary and the presently available KPI matrix contain different portfolios. The number of candidates alone therefore cannot identify an experiment. Reproducing arithmetic from a historical summary would not validate the conclusions for the current matrix. We freeze the analyzed artifacts, identify the actual policy labels and distinguish current results from earlier summaries.
+
+The study asks three questions. RQ1: does selecting the least-cost feasible policy separately within demand profiles reduce cost relative to the least-cost feasible uniform policy? RQ2: does the result persist when the evaluated store is excluded from policy selection? RQ3: how does the comparison change with the service threshold, and how often does average feasibility conceal series-level shortfalls? The contribution is an audited case-based answer to these questions. We do not introduce a new reinforcement-learning controller, establish a universal demand taxonomy or claim prospective deployment benefits.
+
+\section{Related work and positioning}
+Tadayonrad and Ndiaye \cite{sca_f81ad2b3e023} link demand-forecast evaluation to inventory performance and investigate safety-stock determination. Their operational perspective is relevant because forecast accuracy alone cannot establish that a replenishment decision improves cost and service. Similarly, Pietukhov et al.\ \cite{sca_92a549559870} evaluate predictive analytics for supply-chain KPIs in a specific empirical setting. Our outcome is inventory-policy performance rather than forecast-classification accuracy.
+
+Zabraoui et al.\ \cite{sca_27e994c54848} compare several algorithmic approaches to inventory analytics and evaluate a GA--DQN hybrid in a modular framework. That work is a close methodological comparator: a broad algorithm portfolio and hybrid controller already appear in this journal. Accordingly, the present study does not claim novelty from combining genetic search with deep Q-learning. Its focus is whether an interpretable profile layer adds measurable selection value after an adequate uniform-policy comparison.
+
+Theunissen et al.\ \cite{sca_c5c06dcbc9e5} distinguish statistical feature retention from decision-theoretic criteria validation in inventory classification. We do not implement their topological method or test its axioms. The relevant connection is the need to evaluate a representation through its decision consequences. A demand profile that is descriptively meaningful may still fail to improve the choice of replenishment rule. Our comparison operationalizes that distinction through held-out-store selection, while retaining important limitations concerning historical policy fitting and temporal information.
+
+\section{Decision problem and selection rules}
+\subsection{Unit of analysis and performance measures}
+Let $i\in\{1,\ldots,N\}$ identify a store--product series and $\pi\in\Pi$ a candidate policy label. The available matrix records total inventory cost $C_{i\pi}$ and fill rate $F_{i\pi}$, together with complementary stockout and order-variability indicators. Fill rate is a quantity-based service measure, not the probability of a stockout-free replenishment cycle. At the simulator level, the intended measures are
+\begin{align}
+ C_{i\pi}&=\sum_t\left[h_i I_{it}+p_i U_{it}+k_i\mathbf{1}(Q_{it}>0)+v_iQ_{it}\right],\\
+ F_{i\pi}&=\frac{\sum_t(D_{it}-U_{it})}{\sum_tD_{it}},
+\end{align}
+where $D_{it}$ is observed demand, $U_{it}$ unmet demand under lost sales, $I_{it}$ chargeable inventory, $Q_{it}$ an order, and $h_i,p_i,k_i,v_i$ the holding, shortage, fixed-order and variable-order coefficients. The exact within-cycle event ordering affects $I_{it}$ and $U_{it}$; the equations specify the interpretation of the stored KPIs, rather than claiming that a new independent controller experiment has been executed here. Costs are reported in the currency units of the archived benchmark, labeled Brazilian reais in the qualification. Absolute economic calibration remains an external-validity limitation.
+
+We average over series with equal weight. Consequently, the mean fill rate is not a demand-volume-weighted network fill rate. For a set of training series $A$, define
+\begin{equation}
+ \bar C_{\pi,A}=|A|^{-1}\sum_{i\in A}C_{i\pi},\qquad
+ \bar F_{\pi,A}=|A|^{-1}\sum_{i\in A}F_{i\pi}.
+\end{equation}
+A policy is feasible for $A$ when $\bar F_{\pi,A}\geq\alpha$. This is a constraint on an average across series. It does not imply $F_{i\pi}\geq\alpha$ for every series.
+
+\subsection{Uniform and profile-based selectors}
+The uniform selector chooses
+\begin{equation}
+ \widehat\pi_A=\arg\min_{\pi\in\Pi:\bar F_{\pi,A}\geq\alpha}\bar C_{\pi,A}.
+\end{equation}
+For a profile assignment $g(i)$, the profile selector applies the same rule to $A_g=\{i\in A:g(i)=g\}$. Its evaluation cost for a held-out series $j$ is $C_{j,\widehat\pi_{A_{g(j)}}}$. If no candidate meets the training-group threshold, the analysis records a fallback based on highest mean service rather than silently discarding that group. Ties favor higher service among equal-cost feasible candidates; infeasible fallbacks favor lower cost among equal-service candidates. Remaining ties use alphabetical policy labels. Appendix~\ref{app:rules} gives the full operational rules.
+
+Profile feasibility is stricter in a different sense from global feasibility: each training profile must meet the threshold in its own mean. Consequently, even the retrospective profile selector need not have lower aggregate cost than the global selector. The global winner may be infeasible within a particular profile while feasible overall. We therefore interpret each comparison jointly with service and do not assume that stratification must improve cost.
+
+The descriptive cost contrast is
+\begin{equation}
+ R=100\frac{\bar C_{\mathrm{uniform}}-\bar C_{\mathrm{profile}}}{\bar C_{\mathrm{uniform}}}.
+\end{equation}
+Positive $R$ denotes a cost reduction. Service differences are reported separately in percentage points; a reduction in cost and service is not described as dominance.
+
+\section{Data, provenance and evaluation design}
+\subsection{Qualification scope and analyzed artifacts}
+The qualification study uses proprietary sales records aggregated into commercial cycles of approximately 21 days. Its Bahia experiment contains 145 store--product series over a stated horizon of 38 cycles with configured replenishment lead time $L=2$; the simulator convention is clarified below. The analyzed profiles comprise Sparse High Impact ($n=116$), Unstable Trend ($n=18$) and High Volatility Seasonal ($n=11$). The first group accounts for 80\% of the sample; results for the two smaller groups are exploratory. Profiles are heuristic operational descriptors rather than a newly validated universal classification.
+
+The current joined artifact contains 115 distinct stores and 12 policy labels: legacy EOQ, $(s,S)$, Newsvendor, CappedBaseStock, BigDataNewsvendor, FixedInterval, VendorResponsive, GA, SA, DQN, PPO and GA--DQN. Labels describe the stored outputs; their presence does not independently certify every algorithmic implementation. In particular, the legacy EOQ heuristic uses a demand annualization factor of 17 with cycle-level holding costs, so its lot size is not a dimensionally normalized standard EOQ. The Newsvendor label denotes a mean-plus-$1.28$-standard-deviation ordering heuristic, rather than a verified empirical critical-fractile optimum. These implementation labels are retained for traceability, not as claims that textbook optima were reproduced. The previous qualification summary contains a different portfolio, including candidates absent from this matrix. We do not combine its reported 6.2\% improvement with the current results. The local analysis bundle accompanying this draft records input-file hashes, policy labels, series counts and regenerated tables.
+
+The historical matrix aggregates five nominal repetitions. However, its reported cost standard deviations are effectively zero (maximum below $10^{-12}$). Those repetitions cannot be treated as five independent sources of empirical evidence. This reanalysis therefore uses one observation per series--policy pair and treats dependence between products from the same store explicitly in uncertainty estimation. It does not interpret 8,700 nominal evaluations as 8,700 independent observations.
+
+\subsection{Selection transfer and conditional uncertainty}
+First, both selectors are fitted and summarized on the full matrix. These are retrospective in-sample results, susceptible to selection optimism. Second, a leave-one-store-out procedure excludes all series belonging to the evaluated store before determining the uniform and profile-specific policy choices. The chosen policies are then scored on that store's archived outcomes. This procedure tests transfer of the policy-choice rule across stores, conditional on the pre-existing KPI matrix.
+
+It does not establish prospective temporal generalization. Profile features, policy calibration, controller training or archived simulation outcomes may themselves depend on the complete historical series. Excluding a store from selector fitting does not remove information already embedded in its policy outcomes. A temporal experiment must separately restrict all such operations to the available prefix before evaluating later demand; the complementary diagnostic below applies this restriction to a smaller five-heuristic portfolio.
+
+We estimate descriptive uncertainty with 5,000 paired store-cluster bootstrap draws. A sampled store contributes all its series, preserving within-store dependence. Intervals are conditional on the archived matrix, profile assignments and fitted selectors; the selectors are not refitted within each bootstrap draw. They therefore quantify sampling variation in the recorded contrasts, not full training uncertainty or uncertainty under new demand processes. We report 95\% percentile intervals without converting an interval spanning zero into evidence of equivalence. The analysis also evaluates service thresholds $\alpha\in\{0.70,0.80,0.85,0.90,0.95\}$.
+
+\subsection{Complementary temporal diagnostic}
+To distinguish cross-store selection transfer from the temporal issue, we also execute a new, deliberately restricted diagnostic on the prepared 38-cycle series. The first 17 cycles calibrate five deterministic heuristics (legacy EOQ, $(s,S)$, Newsvendor, FixedInterval and VendorResponsive) and determine profiles. The next ten cycles provide policy-selection outcomes; the final eleven cycles are reserved for test evaluation. All five policies receive the same inventory simulation and cost coefficients: holding 1, shortage 5, fixed ordering 50 and variable ordering 0.5 per relevant unit. Initial stock is $2\bar d+1.28s_d\sqrt{2}$, computed from the calibration prefix only. Policies use inventory, pipeline and past fill information, rather than future-block summary statistics. These coefficients are an illustrative operational scenario, not newly estimated monetary costs.
+
+For each evaluated store, both uniform and profile choices use validation outcomes from other stores only. A profile absent from the remaining validation set falls back to global selection. The service requirement is imposed on validation performance and is not guaranteed in the test block. Validation and test episodes reset inventory and pipeline independently; there is no terminal-inventory credit. In the implemented event ordering, configured lead time $L=2$ delivers an order placed at $t$ at $t+3$. This convention is shared by all candidates, but should not be equated with a continuous two-cycle delivery model.
+
+The prefix-based profiles differ from the retrospective labels: 90 Sparse High Impact, 52 Unstable Trend, two Fast Moving and one Low Volume Stable series. Small groups are retained to expose the limits of the existing profiling procedure; they do not provide reliable subgroup evidence. This diagnostic does not regenerate or validate the historical GA or reinforcement-learning results. It also inherits the already prepared, retrospectively selected cohort and does not constitute an independent external sample. Store-cluster bootstrap intervals remain conditional on the selected strategies. One series has no demand in the test window. For analytical reporting we assign it fill rate one and retain its cost, instead of using the simulator's zero-over-epsilon value. We also report macro fill rates excluding that series: 0.7404 for uniform selection and 0.7391 for profile selection. Demand-weighted fill is unaffected. These conventions do not change policy selection because every validation window has positive total demand.
+
+A reviewer identified a mismatch between total calibration demand and cycle-level holding cost in the legacy EOQ lot size. As a separately labeled audit sensitivity, we retain its reorder point but replace its lot by $Q=\sqrt{2\bar dK/h}$, using mean demand per cycle and holding cost per cycle. This corrected-unit comparator is evaluated without tuning on test outcomes, outside the original five-policy selector. The correction and zero-demand convention were introduced after the initial diagnostic, and are documented as audit amendments rather than prospective preregistration. The seasonal lag of 17 cannot be estimated from a 17-cycle calibration prefix; its autocorrelation feature is zero by construction. No claim of validated seasonal detection is made.
+
+\section{Results}
+\subsection{The primary comparison does not establish a profile-selection advantage}
+Table~\ref{tab:primary} reports the audited current matrix at $\alpha=0.70$. VendorResponsive is the least-cost feasible uniform policy, rather than EOQ. The retrospective profile selector uses VendorResponsive for 127 series and FixedInterval for the 18-series Unstable Trend group. Its mean cost is 432.46 compared with 433.31 for the uniform selector, a reduction of only 0.20\%. The 95\% store-bootstrap interval for this relative reduction is $[-1.01,1.43]\%$.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Current historical-matrix comparison at a mean fill-rate threshold of 0.70. Cost is mean total inventory cost per series over the archived horizon. Below threshold counts individual series whose fill rate is below 0.70.}\label{tab:primary}
+\begin{tabular}{lrrr}
+\toprule
+Strategy & Mean cost & Mean fill rate & Below threshold\\
+\midrule
+Legacy EOQ reference & 628.42 & 0.9422 & 2\\
+Best uniform, in sample & 433.31 & 0.7738 & 40\\
+Profile selection, in sample & 432.46 & 0.7818 & 38\\
+Best uniform, held-out store & 433.31 & 0.7738 & 40\\
+Profile selection, held-out store & 435.80 & 0.7816 & 39\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under leave-one-store-out selection, the profile strategy assigns VendorResponsive to 130 series and FixedInterval to 15. Mean cost rises to 435.80, while the uniform choice remains VendorResponsive with mean cost 433.31. The relative cost reduction is now $-0.58\%$, with 95\% interval $[-1.43,0.19]\%$. Thus, the available observations do not support a cost advantage for the evaluated profile selector. Mean service is approximately 0.78 percentage points higher than the uniform comparator, so the numerical cost increase also accompanies a modest service difference rather than an equal-service contest.
+
+\subsection{A favorable legacy-baseline comparison conceals a substantial service trade-off}
+Against the legacy EOQ heuristic, the held-out-store profile strategy reduces cost by 30.65\%, with 95\% interval $[26.23,34.29]\%$. However, mean fill rate falls from 0.9422 to 0.7816, a reduction of 16.06 percentage points. This comparison cannot establish that profiling produces an improved cost--service frontier: the stronger uniform comparator already achieves similar cost and service without the profile layer.
+
+Furthermore, the group-average threshold is not an individual guarantee. Thirty-nine of 145 series under held-out-store profile selection have fill rates below 0.70, compared with 40 under the uniform selector and two under EOQ. A manager requiring a minimum service level for each store--product combination would therefore face a different optimization problem from the one evaluated here.
+
+\subsection{Threshold sensitivity and scope of the evidence}
+The feasible policy set changes as the required average service increases. At $\alpha=0.80$, for example, FixedInterval becomes the uniform choice, and the retrospective profile selector is more costly rather than less costly. The full sensitivity tables accompany the analysis artifacts. These comparisons should be read as conditional decisions under alternative service requirements, not as tuning the threshold until a desired conclusion appears. The low threshold of 0.70 is inherited from the qualification and is not asserted to be an appropriate commercial target.
+
+\subsection{Temporal diagnostic: the negative comparison persists}
+At $\alpha=0.70$, the calibration--validation--test diagnostic selects VendorResponsive uniformly. Its test mean cost is 218.98 and its mean fill rate is 0.7422. Profile-based selection produces mean cost 219.35 and mean fill rate 0.7409. Relative cost reduction is $-0.17\%$, with a conditional 95\% store-bootstrap interval of approximately $[-0.57,0.00]\%$. These observations again do not establish a cost advantage from the profile layer.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Eleven-cycle temporal test diagnostic at a validation mean fill-rate threshold of 0.70. Absolute costs concern this shorter reset episode and must not be compared directly with Table~\ref{tab:primary}.}\label{tab:temporal}
+\begin{tabular}{lrrrr}
+\toprule
+Strategy & Mean cost & Mean fill & Weighted fill & Below 0.70\\
+\midrule
+Uniform & 218.98 & 0.7422 & 0.6625 & 59\\
+Profile & 219.35 & 0.7409 & 0.6609 & 60\\
+Legacy EOQ & 386.76 & 0.9438 & 0.9199 & 4\\
+Cycle-unit EOQ & 167.06 & 0.8956 & 0.8283 & 19\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The volume-weighted fill rate is only 0.6609 for profile selection, below both its unweighted mean and the nominal validation threshold. Sixty series have test fill rate below 0.70. Relative to EOQ, the profile strategy costs 43.29\% less but loses 20.30 percentage points in mean fill rate. At $\alpha=0.80$, the profile strategy instead increases test cost by 3.64\% relative to the uniform selector while increasing mean fill rate by 2.83 percentage points; neither strategy attains 0.80 mean service in the test block. Thus, validation feasibility does not ensure future service feasibility. This diagnostic tests a smaller heuristic portfolio and a specific reset convention, so its outcomes complement rather than replace the historical-matrix results.
+
+The cycle-unit EOQ sensitivity achieves mean test cost 167.06 and mean fill rate 0.8956 (volume-weighted fill 0.8283), compared with 219.35 and 0.7409 for profile selection. Thus, this simple correction produces a uniform comparator that is better on both aggregate objectives. Relative to it, the profile strategy costs 31.30\% more and loses 15.47 percentage points of mean fill rate. This is not a new optimized controller; it exposes why a weak or dimensionally inconsistent reference can exaggerate apparent gains. It does not imply dominance on every individual series. We additionally repeat validation-based selector fitting with the corrected-unit EOQ available in a six-policy portfolio. At threshold 0.70, the global selector chooses it for all 145 series (cost 167.06, mean fill 0.8956), while the profile selector chooses it for 144 and Newsvendor for one (cost 167.59, mean fill 0.8929). The expanded portfolio therefore also provides no aggregate cost or service advantage from profiling. This is an audit sensitivity added after reviewing the initial experiment, not a prospectively specified primary analysis. Figure~\ref{fig:primary} shows the cost--service operating points, and Figure~\ref{fig:sensitivity} reports threshold sensitivity.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_1.png}
+\caption{Cost and service comparisons in the archived matrix and the complementary temporal diagnostic. The panels concern different portfolios and horizons; absolute cost levels across panels are not directly comparable.}
+\label{fig:primary}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{Figure_2.png}
+\caption{Sensitivity of profile-versus-uniform cost and service contrasts to the required validation service level in the temporal diagnostic. Intervals are conditional store-cluster bootstrap intervals, not uncertainty over retrained controllers.}
+\label{fig:sensitivity}
+\end{figure}
+
+\section{Discussion}
+\subsection{Heterogeneity does not by itself validate a selector}
+The qualification's motivating hypothesis remains plausible: demand processes differ, so a single policy need not perform best in every setting. The present evidence supports a more limited conclusion about the particular selection rule evaluated. Once the portfolio includes a strong feasible uniform candidate, the observed profile-specific cost gain is small, uncertain and absent under excluded-store evaluation. This distinction matters for inventory analytics: describing heterogeneity, generating labels retrospectively and validating a useful selector are different empirical steps.
+
+The concentration of 116 series in one profile limits the amount of independent information available for learning profile-specific distinctions. The remaining groups contain only 18 and 11 series, making their policy choices sensitive to a small number of outcomes. A supervised Policy Selection Engine proposed in the qualification is therefore not presented here as a trained and validated contribution. Establishing its value would require nested fitting and evaluation, suitable sample sizes and a comparison against the uniform rule and simple feature-based alternatives.
+
+\subsection{Managerial interpretation}
+A retailer should compare a profile strategy with the best available feasible uniform rule, rather than infer selection value from comparison with the legacy EOQ heuristic alone. The recorded outcomes illustrate why: the large cost reduction against EOQ largely reflects a different service operating point, while the incremental profile benefit is negligible in this dataset. Service requirements should be specified before selecting the rule, and the distinction between mean and local service should be made explicit to decision makers.
+
+The results also suggest a practical reporting standard. A policy recommendation should identify the service requirement, the training unit, the comparator portfolio, the number of individual shortfalls and whether the evidence comes from replay, excluded-series transfer or future-period evaluation. An average below a familiar baseline is insufficient when the business cost of under-service varies substantially across products and stores.
+
+\subsection{Limitations and next validation steps}
+The study is restricted to a proprietary regional retail sample, short commercial-cycle histories and a simulated decision environment. Observed sales may censor unmet demand, and filling missing cycles with zero sales can conflate genuine zero demand with incomplete recording. These issues affect both the demand representation and simulation realism. Profile construction may contain full-history information, and the pre-existing controller outputs have not been independently regenerated under a complete historical software snapshot. Recent implementation corrections cannot retrospectively validate older learned-policy outputs.
+
+The nominal repetition count provides no basis for independent-seed claims when recorded cost dispersion is effectively zero. Bootstrap intervals are conditional and do not incorporate controller-training or selector-refitting uncertainty. The small profiles and unequal product representation further restrict external validity. No result establishes national applicability, a real deployment gain, or the superiority of the proposed supervised PSE.
+
+A stronger follow-up should extend the temporal diagnostic to a frozen full-controller benchmark, with profile estimation and all policy fitting restricted to historical prefixes, selector choice on validation periods and evaluation across multiple untouched future windows. Initial inventory, terminal inventory, lead time and cost calibration require sensitivity checks. A public-data replication would allow external scrutiny. Computational acceleration, including GPU batching where appropriate, may support this work, but hardware speed is not itself evidence of a better inventory decision.
+
+\section{Conclusion}
+An audited reanalysis of 145 retail demand series does not establish that the evaluated demand-profile selector reduces inventory cost relative to a strong feasible uniform policy. The retrospective difference is small and does not persist under excluded-store selection. A complementary five-heuristic temporal diagnostic likewise finds no profile cost advantage at the primary service threshold. A much larger reduction relative to legacy EOQ accompanies substantially lower fill rate and cannot be attributed to the profile layer. A cycle-unit EOQ correction improves both aggregate cost and service over the evaluated selectors, underscoring comparator sensitivity. The case demonstrates the importance of service-aware comparators, validation of selection separately from policy fitting, and explicit experiment provenance. Prospective temporal evaluation and independent regeneration remain necessary before claiming an operationally validated adaptive selector.
+
+\appendix
+\section{Operational rules and simulator conventions}
+\label{app:rules}
+The following rules specify the newly executed temporal diagnostic. Historical profile labels are preserved as archived rather than retrospectively regenerated. Let $n$ be the calibration length, $n_+$ the number of positive observations, $\mu$ the mean over all cycles and $s$ their sample standard deviation. The implementation uses $a=n/\max(n_+,1)$ and $c^2=[s/(\mu+10^{-9})]^2$. Its variance includes zero cycles; this differs from the positive-demand-size variance in the original demand categorization of Syntetos et al.\ \cite{syntetos2005}. These operational labels should therefore not be interpreted as an exact replication of that taxonomy.
+
+Let $Z$ be the longest zero run; $B=(s_\Delta-\mu_\Delta)/(s_\Delta+\mu_\Delta+10^{-9})$ for positive-demand interarrival gaps (zero when fewer than two gaps); $b$ the OLS demand slope divided by $\mu+10^{-9}$; and $H=-\sum_j p_j\log_2(p_j+10^{-12})$ from ten equal-width demand histogram bins. The seasonal score $A_{17}$ is the lag-17 covariance divided by the full-series variance, and is set to zero when $n\leq18$ or variance is negligible. The first matching rule assigns the profile:
+\begin{enumerate}
+\item Sparse High Impact: $a\geq1.32$, $c^2\geq0.49$ and $Z\geq5$.
+\item High Volatility Seasonal: $A_{17}\geq0.25$ or $B\geq0.30$.
+\item Unstable Trend: $|b|\geq0.05$ or $H\geq2$.
+\item Low Volume Stable: $\mu\leq2$ and $c^2<0.49$.
+\item Fast Moving: $a<1.32$.
+\end{enumerate}
+An unmatched series defaults to Sparse High Impact. The code's preset mapping from a profile to a named controller is ignored: policies are selected by observed validation performance. With $n=17$, the seasonal score cannot identify seasonality; the second rule can trigger only through burstiness.
+
+For policy construction, $\sigma$ is the population standard deviation of the calibration demands, $z=1.28$, $L=2$, $K=50$, $h=1$, and $P_t$ is inventory plus all pipeline quantities at the decision instant. The legacy EOQ uses $q=\max(1,\sqrt{2n\mu K/h})$, $r=L\mu+z\sigma\sqrt L$ and orders $q$ when $P_t\leq r$. The cycle-unit sensitivity changes only $q$ to $\max(1,\sqrt{2\mu K/h})$. The legacy $(s,S)$ policy uses lower bound $r$ and upper bound $r+q$, ordering up to that bound when $P_t\leq r$. Thus, its lot component inherits the same horizon scaling; it is also a legacy implementation.
+
+The Newsvendor-labeled heuristic orders $\max(0,\mu+z\sigma)$ when $P_t\leq L\mu$. FixedInterval reviews every three cycles, including the first cycle, and orders up to $5\mu+z\sigma\sqrt5$. VendorResponsive uses $z_t=\operatorname{clip}(z[1+2(0.95-f_t)],0,4)$, where $f_t$ is past cumulative fill (one before positive demand is observed). It orders up to $3\mu+z_t\sigma\sqrt3$ when $P_t\leq2\mu+z_t\sigma\sqrt2$. These last two rules are documented operational interpretations, not exact numerical reproductions of underspecified controllers in Zabraoui et al.\ \cite{sca_27e994c54848}.
+
+Each episode starts with the stated calibration-based initial stock and an empty pipeline of length $L+1$. At each cycle: (i) the policy chooses an order from the pre-arrival state; (ii) the first pipeline quantity arrives and the new order is appended; (iii) current demand is served with available stock, with unmet units lost; (iv) post-demand inventory, shortages and the order are charged; (v) time advances. There is no salvage value for final stock or undelivered orders.
+
+Among feasible candidates, ties in cost favor higher mean fill and then alphabetical policy label. If all candidates are infeasible, highest mean fill wins, with lower cost and then alphabetical label as tie-breaks. An unseen profile uses the global selector. At threshold 0.70 the five-policy temporal profile selector differs from the global selector on only one of 145 series: 144 use VendorResponsive and one uses the Newsvendor-labeled heuristic. This sparse contrast explains the bootstrap interval's point mass at zero; it is not a high-powered equivalence test.
+
+\section*{Data and code availability}
+The raw transactions are proprietary and are not publicly released with this draft. Derived analysis scripts, input hashes and result tables are maintained in the accompanying project. Publication permissions, permitted derived-data release and an archival repository identifier remain to be confirmed by the author; this statement must be finalized before submission.
+\section*{CRediT authorship contribution statement}
+Authorship and contribution assignments are provisional pending confirmation by the responsible human author. No unconfirmed coauthors have been added.
+\section*{Funding}
+Funding information and required grant acknowledgments await author confirmation.
+\section*{Declaration of competing interest}
+The responsible author must provide the final competing-interest declaration before submission.
+\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+OpenAI Codex was used to assist with literature organization, code-supported artifact auditing, analysis preparation and drafting of this manuscript. The present version is a working draft and has not completed responsible human-author verification. Before submission, the authors must check and revise the text, sources, calculations and disclosures and take responsibility for the final manuscript. AI systems are not listed as authors.
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+\end{document}

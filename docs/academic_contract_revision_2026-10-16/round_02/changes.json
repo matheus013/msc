@@ -1,0 +1,11 @@
+{
+  "changed_from_round01": [
+    "docs\\master_proposal\\instanciacao_aipe.tex",
+    "docs\\master_proposal\\lista_siglas_termos.tex",
+    "docs\\master_proposal\\capitulos\\conceitos.tex",
+    "docs\\master_proposal\\capitulos\\introducao.tex",
+    "docs\\master_proposal\\capitulos\\plano_continuidade.tex",
+    "docs\\master_proposal\\tcc.pdf"
+  ],
+  "scope": "acronym expansions and local pagination only"
+}

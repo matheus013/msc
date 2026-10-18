@@ -1,0 +1,101 @@
+\mychapter{Trabalhos Relacionados}{cap:rel}\lhead{TRABALHOS RELACIONADOS}
+
+A literatura fornece métodos para prever demanda, calibrar regras e aprender decisões de reposição. A questão desta dissertação é como escolher entre essas alternativas para uma série loja-produto. A revisão distingue o desempenho de uma política da capacidade de um seletor de reconhecer quando utilizá-la.
+
+\section{Famílias de métodos}
+\label{sec:visao_geral_literatura}
+
+Políticas clássicas têm formulações interpretáveis e constituem referências necessárias, mesmo quando se avaliam métodos de aprendizado \citep{Axsater2006InventoryControl,Zipkin2000FoundationsInventory}. Meta-heurísticas exploram seus parâmetros; agentes de reforço aprendem ações sequenciais; e a seleção de algoritmos escolhe métodos a partir de características das instâncias. São níveis complementares, não substitutos automáticos.
+
+A Tabela~\ref{tab:sintese_metodos_literatura} resume seu papel no problema estudado. As limitações indicadas são questões de avaliação: não significam que toda implementação de uma família apresente o mesmo comportamento.
+
+\begin{table}[htb]
+\centering\small
+\caption{Papel das famílias de métodos na pesquisa.}
+\label{tab:sintese_metodos_literatura}
+\begin{tabular}{@{}p{3.0cm}p{5.1cm}p{5.0cm}@{}}
+\toprule
+Família & Decisão ou informação produzida & Questão de avaliação\\
+\midrule
+Políticas clássicas & Quando e quanto pedir por uma regra explícita & Adequação e calibração ao cenário\\
+Previsão & Estimativa de demanda ou de sua distribuição & Efeito da previsão sobre custo e serviço\\
+Meta-heurísticas & Parâmetros de uma política escolhida & Custo de busca e validade fora do ajuste\\
+Aprendizado por reforço & Ação condicionada ao estado & Recompensa, estabilidade e generalização\\
+Seleção de políticas & Escolha de um membro do portfólio & Ganho incremental frente à referência global\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Inventário e demanda intermitente}
+
+\citet{ClarkScarf1960MultiEchelon} estabelecem resultados de decomposição para sistemas multi-escalão sob hipóteses específicas. Os textos de \citet{Axsater2006InventoryControl} e \citet{Zipkin2000FoundationsInventory} consolidam políticas, custos e medidas de serviço. Para estoques de segurança em redes, o modelo de serviço garantido e suas extensões oferecem outra linha de planejamento \citep{GravesWillems2000SafetyStock,Eruguz2016GSMsurvey,Achkar2024GSMExtensions}. Esses resultados não dispensam verificar se demanda, abastecimento e coordenação correspondem ao caso aplicado.
+
+A demanda intermitente requer atenção à frequência e ao tamanho das ocorrências. \citet{Croston1972ForecastingIntermittentDemand} separam esses componentes na previsão. A classificação ADI$\times$CV$^2$ diferencia padrões suaves, erráticos, intermitentes e \textit{lumpy} \citep{Syntetos2005Categorization}. Essa descrição organiza séries, mas não determina a política de menor custo: o resultado depende também de prazo, custos e serviço exigido.
+
+A revisão de \citet{DeKok2018Typology} mostra a diversidade de estruturas consideradas na otimização multi-escalão. Nesta dissertação, porém, as séries são simuladas como decisões locais. Não se reivindica a otimização conjunta de uma rede geral, nem se transfere uma garantia teórica de otimalidade para um cenário que não atende às hipóteses originais.
+
+\section{Previsão e utilidade operacional}
+
+Históricos com muitos zeros tornam problemático o uso de erros relativos divididos pela demanda observada. O MASE permite comparação entre escalas quando seu denominador é definido, mas séries constantes também exigem tratamento \citep{Hyndman2006MASE}. Métricas de previsão devem ser acompanhadas de convenções para casos degenerados, sem substituir a avaliação de inventário.
+
+Estudos em varejo mostram que o desempenho preditivo depende da granularidade, dos dados e da forma de treinamento \citep{Makridakis2020M4Competition,Nasseri2023RetailDemandPrediction}. Não há razão para supor que uma rede LSTM será sempre superior a modelos simples em históricos curtos. Um resultado de competição de previsão tampouco demonstra vantagem em custo de reposição.
+
+\citet{TadayonradNdiaye2023KPIDemandForecasting} aproximam a avaliação preditiva de custos e serviço. Essa conexão orienta o AIPE: previsões e seus erros fornecem sinais auxiliares, mas a seleção deve ser julgada pelas consequências da decisão. Para evitar informação futura, previsão, características e calibração precisam respeitar o mesmo corte temporal da avaliação.
+
+\section{Meta-heurísticas e aprendizado por reforço}
+
+Meta-heurísticas procuram soluções em espaços de parâmetros difíceis de tratar analiticamente \citep{Talbi2009Metaheuristics}. Em inventário, permitem ajustar ponto de pedido e lote. \citet{Yuna2023IntermittentMetaheuristics} estudam otimização de parâmetros em demanda intermitente, enquanto \citet{Erkayman2025MarkovInventory} combinam modelagem da demanda e busca de parâmetros. O ganho permanece condicionado à política e ao cenário de calibração.
+
+Aprendizado por reforço formula reposição como decisão sequencial. \citet{Oroojlooyjadid2022BeerGameDQN} estudam DQN no \textit{Beer Game}; \citet{Gijsbrechts2022DRLInventoryMSOM} discutem aplicações de aprendizado profundo a inventário; e \citet{Vanvuchelen2020PPOJointReplenishment} aplicam PPO à reposição conjunta. Outros trabalhos investigam topologias e coordenação descentralizada \citep{Geevers2024MEIODRL,Liu2024HAPPO}.
+
+Esses estudos mostram possibilidades de controle adaptativo, mas a aplicação depende de estado, ação, recompensa e dinâmica do simulador. Um agente pode obter serviço elevado emitindo pedidos excessivos ou reduzir custo deixando de atender demanda. Custo, serviço e comportamento das ações precisam ser examinados em conjunto.
+
+Históricos curtos restringem a avaliação, embora o número de ciclos observados não seja igual ao número possível de interações simuladas. Repetir episódios pode ampliar treinamento sem adicionar novos processos de demanda. Comportamento degenerado em uma implementação não demonstra incapacidade geral do algoritmo: pode refletir recompensa, orçamento, parametrização ou erro de código. Essa cautela importa ao interpretar resultados antigos após correções do ambiente.
+
+\section{Seleção de políticas e meta-aprendizado}
+\label{sec:aas_literatura}
+
+\citet{Rice1976AlgorithmSelection} formalizam a escolha de um algoritmo a partir das características de uma instância. Revisões posteriores descrevem seletores supervisionados e sua avaliação \citep{Kotthoff2014AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection}. No AIPE, a instância é a série loja-produto, o portfólio reúne políticas e a medida de desempenho combina custo e viabilidade de serviço.
+
+A analogia separa três objetos: o melhor método global, o melhor método conhecido para cada instância e o método escolhido pelo seletor. O segundo é uma referência retrospectiva; não é implementável quando sua escolha exige conhecer resultados futuros. O terceiro deve ser avaliado em dados que não determinaram os rótulos ou o ajuste.
+
+O teorema \textit{No Free Lunch} trata de médias sobre classes de problemas sob condições próprias \citep{Wolpert1997NoFreeLunch}. Ele não prova que haverá troca de vencedores neste recorte varejista nem que as características escolhidas permitirão aprendê-la. Essas são questões empíricas. Características de instância podem ajudar na seleção \citep{Kerschke2019ELASelection}, mas sua utilidade precisa ser verificada no problema aplicado.
+
+Hiper-heurísticas selecionam ou geram heurísticas, inclusive durante a resolução \citep{Drake2020SelectionHyperHeuristics,Dokeroglu2024HyperHeuristics}. O AIPE tem escopo mais restrito: propõe recomendar periodicamente uma política por série. Não troca controladores a cada estado do estoque nem coordena agentes em tempo real. Trabalhos com \textit{bandits} e contexto investigam outras formas de adaptação em inventário \citep{Preil2022BanditInventory,ContextualRL2024SupplyChain}; abordagens integradas relacionam características e decisões em outros desenhos operacionais \citep{Qi2023EndToEndInventory}.
+
+A consequência prática é comparar o seletor com uma referência global forte. A avaliação deve separar o ajuste das políticas da aprendizagem da escolha entre elas. Excluir uma loja do seletor, por exemplo, não elimina informação futura já usada para gerar seus resultados de simulação.
+
+\section{Antecedentes e delimitação da contribuição}
+
+A integração entre classificação de inventário e seleção de política aparece explicitamente em \citet{Mohammaditabar2012Integrated}; classificação baseada em desempenho é objeto de \citet{SheikhZadeh2021PBIC}. Esses antecedentes situam a associação entre perfil e política como uma linha estabelecida. A comparação aqui é conceitual: a revisão dirigida verificou os metadados, mas não reproduziu os métodos nem realizou uma comparação algorítmica sustentada pela leitura integral desses estudos.
+
+\citet{FrancuzBanyai2026Selection} apresentam uma estrutura que combina escolha de família, parâmetros e otimização multiobjetivo. Seu modelo de aprendizado aproxima o simulador para reduzir avaliações; a aplicação usa demanda sintética sazonal e pedidos pendentes. Esse desenho difere de aprender uma recomendação para séries reservadas, mas já cobre integração, múltiplas políticas e eficiência por aproximação. O posicionamento do AIPE depende, portanto, de explicitar a decisão de recomendação e a evidência usada para avaliá-la, além de reunir métodos em uma arquitetura.
+
+\citet{ElmachtoubGrigas2022SPO} fundamentam aprender segundo a consequência da decisão, em vez de apenas erro preditivo. \citet{GeifmanElYaniv2019SelectiveNet} estudam predição com rejeição; \citet{Laroche2019SPIBB}, melhoria de políticas com recuo à referência sob hipóteses próprias. Esses trabalhos sustentam componentes da extensão conservadora, sem fornecer garantias automáticas para nossa seleção de famílias ou para o fill rate de cada série.
+
+O posicionamento do AIPE é, portanto, metodológico e aplicado: articular contexto, evidência operacional, seleção e decisão de intervenção em um procedimento verificável para reposição. Sua utilidade depende da comparação entre implementações e referências. A revisão não estabelece prioridade sobre toda combinação possível desses mecanismos; uma afirmação de novidade universal exigiria cobertura bibliográfica e comparação mais amplas.
+
+\section{Arquiteturas híbridas e posicionamento}
+
+\citet{Zabraoui2025GaDQN} combinam busca genética e aprendizado por reforço em um estudo de inventário com dados do Walmart M5. É uma referência próxima do portfólio adotado aqui. A arquitetura GA--DQN e combinações GA--RL não são apresentadas como invenções desta dissertação. Sua inclusão permite investigar se oferecem vantagem em determinados recortes e como se comparam a regras simples sob condições comuns.
+
+A Tabela~\ref{tab:relwork_intro} situa o foco da pesquisa sem equiparar bases, contagens de políticas ou protocolos diferentes. Uma comparação quantitativa direta exigiria reproduzir custos, horizontes, demandas e critérios de serviço.
+
+\begin{table}[htb]
+\centering\small
+\caption{Relação entre linhas da literatura e o foco da dissertação.}
+\label{tab:relwork_intro}
+\begin{tabular}{@{}p{4.2cm}p{4.4cm}p{4.5cm}@{}}
+\toprule
+Referência & Foco & Relação com esta pesquisa\\
+\midrule
+\citealt{Oroojlooyjadid2022BeerGameDQN} & Aprender controle sequencial & Política candidata, não seletor validado\\
+\citealt{Yuna2023IntermittentMetaheuristics} & Calibrar em demanda intermitente & Busca de parâmetros dentro do portfólio\\
+\citealt{Zabraoui2025GaDQN} & Comparação e combinação de algoritmos & Referência das arquiteturas avaliadas\\
+\citealt{Rice1976AlgorithmSelection,Kotthoff2014AlgorithmSelection} & Selecionar métodos por instância & Base conceitual do PSE\\
+Esta dissertação & Seleção contextual em varejo brasileiro & Comparar seleção e referência global\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O espaço de investigação está na formulação do procedimento AIPE e na avaliação de quando suas recomendações agregam valor. A evidência brasileira e pública permite examinar instâncias distintas, sem provar generalização irrestrita. A contribuição não se reduz ao portfólio nem exige inventar um novo controlador; requer justificar as decisões da metodologia e demonstrar seu alcance. O capítulo seguinte define esse procedimento antes de apresentar sua instanciação experimental.

@@ -1,0 +1,159 @@
+{
+  "reviewer": "contributions_review_editorial",
+  "round": 2,
+  "created_at": "2026-10-16T21:02:36.972882+00:00",
+  "verdict": "APPROVED_FOR_INTEGRATION",
+  "counts": {
+    "critical": 0,
+    "major": 0,
+    "minor": 0
+  },
+  "source_hashes": [
+    {
+      "path": "docs/supply_chain_analytics_article/manuscript_ptbr.tex",
+      "sha256": "aeb42a46ba047cb9a92fdc6bf6d3fc8b9ed9e7c10f9b1e8f4192d554f1bde959"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/highlights_ptbr.txt",
+      "sha256": "6218175d9bc2bb8179072a66a38a51fd94a31ca4c73acb6787592ce87f08974b"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/introducao.tex",
+      "sha256": "3293afc79d12a5d65ead9af6108f5a06418ba925db355e36ee546e209b0b6870"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/resumo.tex",
+      "sha256": "d03ea020e48add0ee4c241afdf3d06f2a7f85bbbc317c275830adeea047f4df2"
+    },
+    {
+      "path": "docs/master_proposal/abstract_en.tex",
+      "sha256": "da79e8bae784548cc613e69cf96a8cda04dac4a622e1fe224d5b566f22ce92cd"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/proposta.tex",
+      "sha256": "6dda94accc531f65b12abaa10e20217bcecf4a3ebf6e393814bb35c33f3f8716"
+    },
+    {
+      "path": "docs/master_proposal/instanciacao_aipe.tex",
+      "sha256": "8c3f1a3da3c1b3734e5dec80313f8cfd95951673769c841ee74e6b57005fde3f"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/conclusoes.tex",
+      "sha256": "2dad4485869322a71ccc6d10c192b15b8f4cfe2168d4e0321321f83499c38a9d"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/plano_continuidade.tex",
+      "sha256": "2c2c50460106972267c0f299a8f2554e14be5a436e028c0d8cb04eea523985f3"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/aipe_bahia_resultados.tex",
+      "sha256": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/m5_pse_20261015.tex",
+      "sha256": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/aipe_consequencias_resultados.tex",
+      "sha256": "e8f06ac6c936ac126b0549afe4f200c243227be01b3edfb5c2746582274e8585"
+    },
+    {
+      "path": "docs/master_proposal/tcc.tex",
+      "sha256": "7912edd25149d40b3c8ebbcfe089a7453531b594454015cb2b4073d066185768"
+    },
+    {
+      "path": "docs/master_proposal/lista_siglas_termos.tex",
+      "sha256": "f117bd30bc0cf4952fa61ab048584fc192d74462f2fa14e1b89dd1635f45469a"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/conceitos.tex",
+      "sha256": "608d0c90a21d92bb2019ff0e83d81a0f1a449eed8561cbed2975e915275f824a"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/correlatos.tex",
+      "sha256": "b1086932d172195c33c64c55f989da2ee611ec063ea7cf936eb67a35bf3312b4"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/resultados.tex",
+      "sha256": "1057ef2cc5616775c4b6e5d4441626c08a2678e00654cf096a40d53048c21084"
+    },
+    {
+      "path": "docs/master_proposal/bahia_20261015.tex",
+      "sha256": "d8cdb749741414c6d458510d7f44d1e384593e66d72c9d9efc67fa5bb1e78d3f"
+    },
+    {
+      "path": "docs/master_proposal/m5_pse_20261015.tex",
+      "sha256": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2"
+    },
+    {
+      "path": "docs/master_proposal/consequencias_20261015.tex",
+      "sha256": "a82d92345279203cf548f7d7a2c61b71a97cdb75d4ef54188b0c2d3ea2dfa22e"
+    }
+  ],
+  "changed_since_round_01": [
+    "docs/supply_chain_analytics_article/manuscript_ptbr.tex",
+    "docs/master_proposal/capitulos/introducao.tex",
+    "docs/master_proposal/abstract_en.tex"
+  ],
+  "resolved": [
+    {
+      "id": "EDC-01",
+      "status": "RESOLVED",
+      "evidence": "introducao.tex:67 agora retoma contribuição brevemente e mantém a formulação integral na abertura/objetivo geral."
+    },
+    {
+      "id": "EDC-02",
+      "status": "RESOLVED",
+      "evidence": "abstract_en.tex:3 agora usa without practically important deterioration in service, fiel à relevância prática contextual."
+    },
+    {
+      "id": "MET-01",
+      "status": "NO_EDITORIAL_REGRESSION",
+      "evidence": "As duas listas agora exigem contratos e escopo explícitos, sem sugerir igualdade indevida da restrição de serviço. A nova redação preserva fluência e hierarquia."
+    }
+  ],
+  "mechanical_scope": "Linhas alteradas finais dos nove arquivos, contra baseline preservado; scan independente por AST das expressões do gate.",
+  "mechanical_counts": {
+    "M1_em_dash": 0,
+    "M11_passive_EN": 0,
+    "M2_antithesis": 0,
+    "M3_M4_M8_M9": 0,
+    "M6_openers": 0,
+    "M5_M16_words": 1,
+    "M10_hype": 0,
+    "M17_fancy": 0,
+    "M18_empty": 0,
+    "M12_wordiness": 0,
+    "M13_qualifiers": 0,
+    "M14_adverbs": 0,
+    "M15_exclamation": 0,
+    "precision_pairs": 0,
+    "PT_passive_candidates": 0,
+    "PT_promotional": 0
+  },
+  "mechanical_hits": {
+    "M5_M16_words": [
+      {
+        "file": "docs/master_proposal/capitulos/resumo.tex",
+        "line": 1,
+        "match": "utiliz"
+      }
+    ]
+  },
+  "justification": "M5_M16=1 é falso positivo português utiliz em utiliza; demais categorias zero.",
+  "semantic_regression": {
+    "central_and_three_supports": "Coerentes em resumo do artigo, resumos PT/EN e corpo das duas obras. A retomada curta da dissertação não apaga a contribuição principal definida na abertura.",
+    "PSE": "Perfil e estimação permanecem duas abordagens, classe/consequências variantes da estimação.",
+    "diagnostic": "Distinção seleção/portfólio/físico permanece retrospectiva e condicionada.",
+    "application": "Bahia e M5 permanecem separados; resultados publicados não foram substituídos por rodada em andamento.",
+    "PT_EN": "A mudança idiomática mantém o sentido de relevância contextual, sem acrescentar garantia estatística ou limiar numérico.",
+    "decomposition": "Três suportes, cinco etapas e seis dimensões temporais continuam compatíveis.",
+    "limitations": "Rastreabilidade parcial, revisão sequencial pendente e caráter exploratório permanecem explícitos."
+  },
+  "findings": [],
+  "limits": [
+    "Releitura focada nas três fontes alteradas e regressão nas demais fontes pelo snapshot; não é nova revisão de bibliografia ou experimento.",
+    "Não compilei, editei fontes nem executei experimentos. PDF/layout e pacote ficam com coordenador.",
+    "A aprovação é editorial para esta integração, sem certificação de originalidade, publicação ou validade experimental integral."
+  ]
+}

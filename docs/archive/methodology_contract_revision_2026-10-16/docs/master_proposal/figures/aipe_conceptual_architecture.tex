@@ -1,0 +1,131 @@
+\begin{figure}[p]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    every node/.style={font=\scriptsize\sffamily},
+    layer/.style={rectangle, draw=black!55, rounded corners=4pt, fill=gray!5, inner sep=7pt},
+    title/.style={font=\bfseries\small\sffamily, align=center},
+    box/.style={rectangle, draw=black!55, rounded corners=3pt, align=center, fill=white, text width=4.05cm, minimum height=1.35cm, inner sep=4pt},
+    boxwide/.style={rectangle, draw=black!55, rounded corners=3pt, align=center, fill=white, text width=5.4cm, minimum height=1.35cm, inner sep=4pt},
+    core/.style={rectangle, draw=black!65, rounded corners=3pt, align=center, fill=gray!10, text width=4.7cm, minimum height=1.25cm, inner sep=4pt},
+    flow/.style={->, thick, black!70},
+    feedback/.style={->, thick, dashed, black!60}
+]
+
+\node[title] (adaptTitle) at (0, 0) {Camada de entrada};
+\node[box] (base) at (-2.9, -0.9) {
+    \textbf{Base transacional}\\
+    vendas; lojas; produtos;\\
+    calendário/ciclos
+};
+\node[box] (params) at (2.9, -0.9) {
+    \textbf{Parâmetros locais}\\
+    custos; \textit{lead time};\\
+    regras operacionais
+};
+\node[boxwide] (prep) at (0, -2.45) {
+    \textbf{Padronização e preparação}\\
+    série loja-produto; filtros;\\
+    tratamento de zeros; agregação temporal
+};
+\node[box] (features) at (-2.9, -4.05) {
+    \textbf{Características das séries}\\
+    ADI; CV$^2$; volume;\\
+    POD; sazonalidade
+};
+\node[box] (forecast) at (2.9, -4.05) {
+    \textbf{Sinais auxiliares}\\
+    métricas de previsão;\\
+    sinais prospectivos
+};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(adaptTitle)(base)(params)(prep)(features)(forecast)] (adaptLayer) {};
+\end{pgfonlayer}
+\node[title] at (adaptTitle) {Camada de entrada};
+\draw[flow, shorten >=2pt] (base.south) to[out=-90,in=130] ([xshift=-1.25cm]prep.north);
+\draw[flow, shorten >=2pt] (params.south) to[out=-90,in=50] ([xshift=1.25cm]prep.north);
+\draw[flow] (prep.south) to[out=-90,in=90] (features.north);
+\draw[flow] (prep.south) to[out=-90,in=90] (forecast.north);
+
+\node[title, below=1.05cm of forecast, xshift=-2.9cm] (coreTitle) {Núcleo de seleção contextual do AIPE};
+\node[core, below=0.45cm of coreTitle, xshift=-3.0cm] (portfolio) {
+    \textbf{Portfólio de políticas candidatas}\\
+    clássicas: EOQ; $(s,S)$; Jornaleiro;\\
+    parametrizadas: GA; SA; PSO; DE;\\
+    RL: DQN; PPO; SARSA; híbridas GA-RL
+};
+\node[core, below=0.45cm of coreTitle, xshift=3.0cm] (sim) {
+    \textbf{Ambiente de simulação}\\
+    dinâmica de estoque; pedidos;\\
+    \textit{lead time}; custos; falta de estoque
+};
+\node[core, below=0.50cm of portfolio, xshift=3.0cm] (eval) {
+    \textbf{Avaliação comparativa}\\
+    CTI; NS; TR; BE; FP
+};
+\node[core, below=0.50cm of sim, xshift=-3.0cm] (stats) {
+    \textbf{Validação estatística}\\
+    Wilcoxon; Friedman/Nemenyi;\\
+    Cohen's $d$
+};
+\node[core, below=0.50cm of eval] (labels) {
+    \textbf{Geração de rótulos}\\
+    perfil operacional $\rightarrow$ política dominante;\\
+    critérios de viabilidade operacional
+};
+\node[core, below=0.45cm of labels] (pse) {
+    \textbf{\textit{Policy Selection Engine}: PSE}\\
+    aprende a partir das entradas\\
+    $\rightarrow$ política recomendada
+};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(coreTitle)(portfolio)(sim)(eval)(stats)(labels)(pse)] (coreLayer) {};
+\end{pgfonlayer}
+\node[title] at (coreTitle) {Núcleo de seleção contextual do AIPE};
+
+\draw[flow] (features.south) to[out=-90,in=90] (portfolio.north);
+\draw[flow] (forecast.south) to[out=-90,in=90] (sim.north);
+\draw[flow] (features.south) to[out=-90,in=90] (sim.north);
+\draw[flow] (portfolio) -- (eval);
+\draw[flow] (sim) -- (stats);
+\draw[flow] (eval) -- (labels);
+\draw[flow] (stats) -- (labels);
+\draw[flow] (labels) -- (pse);
+
+\node[title, below=1.05cm of pse] (appTitle) {Camada de aplicação};
+\node[box, below=0.35cm of appTitle, xshift=-5.2cm] (newseries) {
+    \textbf{Nova série loja-produto}\\
+    histórico recente;\\
+    parâmetros operacionais
+};
+\node[box, below=0.35cm of appTitle] (recommendation) {
+    \textbf{Recomendação do PSE}\\
+    política recomendada; \textit{ranking};\\
+    justificativa por perfil
+};
+\node[box, below=0.35cm of appTitle, xshift=5.2cm] (reeval) {
+    \textbf{Reavaliação periódica}\\
+    novos dados atualizam\\
+    características, POD e recomendação
+};
+\begin{pgfonlayer}{background}
+\node[layer, fit=(appTitle)(newseries)(recommendation)(reeval)] (appLayer) {};
+\end{pgfonlayer}
+\node[title] at (appTitle) {Camada de aplicação};
+
+\draw[flow] (pse) -- (recommendation);
+\draw[flow] (newseries) -- (recommendation);
+\draw[flow] (recommendation) -- (reeval);
+\coordinate (rightpath) at ([xshift=1.5cm]reeval.east);
+\draw[feedback]
+    (reeval.east)
+    -- (reeval.east   -| rightpath)
+    -- (forecast.east -| rightpath)
+    -- (forecast.east)
+    node[pos=0.38, right=4pt, align=center, font=\scriptsize\sffamily] {ciclo\\adaptativo};
+
+\end{tikzpicture}}
+\caption{Arquitetura conceitual do \textit{framework} AIPE. A camada de entrada reúne dados transacionais preparados, parâmetros operacionais, características das séries e sinais auxiliares de previsão de demanda. O núcleo de seleção contextual utiliza essas entradas para avaliar políticas candidatas, gerar rótulos de política dominante, realizar validação estatística e treinar o \textit{Policy Selection Engine}. A camada de aplicação utiliza o PSE para recomendar políticas a novas séries loja-produto e reavaliar periodicamente as recomendações conforme novos dados se acumulam.}
+\label{fig:aipe_architecture}
+\end{figure}

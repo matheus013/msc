@@ -1,0 +1,51 @@
+{
+  "module_enabled": false,
+  "real_context_studies_started": 0,
+  "controller_fits_started": 0,
+  "datasets": {
+    "BA": {
+      "state": "completed",
+      "completed_fits": 4350,
+      "planned_fits": 4350,
+      "frozen_source_files": 61,
+      "required_feature_dependencies": {
+        "experiment/src/simulation/pipelines/demand_profiling/nodes.py": "f80cc5e147dc38a64e0a3b975f1e176fe4c1990b9391eac9164e7faf8b95b803",
+        "experiment/src/simulation/research/protocol.py": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a",
+        "experiment/src/simulation/pipelines/policy_selection/nodes.py": "49524dc2ff60afb802a1d1af72758b7d4aa398b1b39473baa248d41f8d417321"
+      },
+      "other_source_differences": {
+        "experiment/src/simulation/research/oracles.py": {
+          "frozen": "c9f02bc942e166d143d866d61c0a042de8e7c5584d795056da664a782f580588",
+          "current": "1a3f2b8cbcd8fac58814ce6b0f48ccfce5a1aadd77c4856e111baf4f1ee48b6e"
+        }
+      }
+    },
+    "M5": {
+      "state": "running",
+      "completed_fits": 51745,
+      "planned_fits": 79890,
+      "frozen_source_files": 61,
+      "required_feature_dependencies": {
+        "experiment/src/simulation/pipelines/demand_profiling/nodes.py": "f80cc5e147dc38a64e0a3b975f1e176fe4c1990b9391eac9164e7faf8b95b803",
+        "experiment/src/simulation/research/protocol.py": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a",
+        "experiment/src/simulation/pipelines/policy_selection/nodes.py": "49524dc2ff60afb802a1d1af72758b7d4aa398b1b39473baa248d41f8d417321"
+      },
+      "other_source_differences": {}
+    }
+  },
+  "synthetic_tests": {
+    "passed": 27,
+    "command": "experiment/.venv/Scripts/python.exe -m pytest experiment/tests/test_context_extension.py -q",
+    "result": "27 passed in 13.62s"
+  },
+  "implementation_sha256": {
+    "experiment/src/aipe_context/__init__.py": "1220aff9972a0fd7b8992957f4285d3c09b32a718b772b017dfec13342af34f5",
+    "experiment/src/aipe_context/contracts.py": "df799440ed9054bc3d89fe8e99bb60f8c6a4f1cac967a2372d843fbea1299256",
+    "experiment/src/aipe_context/selection.py": "d103a14cc0d6cb4fc8537cdedc3f92c1a280c217ba91522355f8ccc66f225d1a",
+    "experiment/scripts/operations/context_extension.py": "f9eeab8122ba39331c9d2f7a7353c20557abf05e2d8fa93de8694ecfbb532330",
+    "experiment/conf/aipe_context_extension_v1.json": "a239664716f3aff668817ab9d32436083432cf7da2a1ab57011f9f4a3d8f37cb",
+    "experiment/tests/test_context_extension.py": "e7bb9ec80c8cfbcd1bb35bd2403fd1f9440aa92b643e97d836822c2053c04fe9",
+    "docs/operations/MODULO_CONTEXTO_OPCIONAL_AIPE.md": "6e236b678d957d0d8ee97e7384a4358dde4fd0e04e7a73b1bcaa9fdf762ae29e",
+    "experiment/README.md": "b8eff0acc9b321e2ea990c6b3068e6ccc78afffb8fda7a82e5efc8ae42586676"
+  }
+}

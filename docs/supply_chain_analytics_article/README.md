@@ -1,28 +1,28 @@
 # Artigo AIPE para Supply Chain Analytics
 
-Manuscrito de trabalho em português: **17 páginas, cinco figuras vetoriais e 13 referências citadas**, sem apêndice. Nenhuma submissão foi realizada.
+Manuscrito de trabalho em português. O AIPE é uma metodologia modular de apoio ao gerente de logística e estoques; o PSE realiza associação por perfil ou estimação por série. Não houve submissão.
 
-O artigo apresenta o AIPE com duas abordagens do PSE: associação por perfil e previsão supervisionada da política por série. Examina seu valor frente à seleção global, o efeito do perfil explícito e a distância a oráculos retrospectivos.
+## Evidência consolidada
 
-- manuscript_ptbr.tex / manuscript_ptbr.pdf: versão atual.
-- aipe_bahia_resultados.tex: síntese das 145 séries e 4.350 ajustes Bahia.
-- m5_pse_20261015.tex: piloto M5 completo, com 30 séries e 1.350 ajustes.
-- figures/: diagrama AIPE, duas figuras Bahia e duas figuras M5.
-- article_sources_ptbr_draft.zip: fontes e figuras efetivamente incluídas.
-- reviews/aipe_revision_2026-10-15/: verificações estruturais e numéricas.
+As duas aplicações usam matrizes separadas: Bahia, com 145 séries, 115 revendedores, 290 casos série–origem e 4.350 ajustes; M5, com uma coorte histórica de 2.408 identificadores de alimentos nas dez lojas, 5.326 casos e 79.890 ajustes. A coorte M5 não corresponde a todas as séries FOODS. Atendimento médio exclui sete testes sem demanda na Bahia e 188 no M5; custo inclui todos os casos. Sementes, séries e origens não são observações independentes.
 
-A comparação da Bahia oferece serviço adicional com custo pontualmente maior. No piloto M5, o preditivo é inferior à global; o recuo ao perfil melhora esse preditivo, mas permanece exploratório. Não se afirma vantagem geral, confirmação externa ou equivalência plena de calibração entre bases.
+O piloto anterior orientou o desenvolvimento. A ampliação permite avaliar as implementações em mais casos, sem constituir confirmação independente automaticamente. Custos são de cenário, não economia financeira realizada. O módulo opcional de atributos adicionais tem protocolo e estudos próprios, separados da matriz de controladores.
 
-O piloto integra o desenvolvimento. A rodada maior M5 foi interrompida e Brasil permanece cancelado; nenhuma delas é apresentada como matriz completa. O PSE preditivo não foi avaliado na Bahia. Custos absolutos das duas bases não são reunidos.
+## Arquivos e reprodução
 
-Compilação e conferência, na raiz:
+- `manuscript_ptbr.tex` / `manuscript_ptbr.pdf`: texto e PDF canônicos.
+- `resultados_unificados_20261017.tex`: tabelas e figuras quantitativas compartilhadas com a dissertação.
+- `figures/aipe_conceito_v3_contexto_ptbr.pdf`: arquitetura com módulo opcional; versões anteriores preservadas.
+- `article_sources_ptbr_draft.zip`: fontes e figuras efetivamente incluídas, com bibliografia e classe.
+- `build_manifest_ptbr.json`: hashes do pacote corrente.
+- `../operations/m5_final_2026-10-17/`: auditoria, evidência agregada e registros da atualização.
 
-    & experiment/.venv/Scripts/python.exe experiment/scripts/literature/build_sca_article.py --ptbr
-    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/verify_article_package.py
-    & experiment/.venv/Scripts/python.exe experiment/scripts/documents/audit_aipe_documents.py
+Na raiz, após conclusão da avaliação canônica:
 
-As figuras M5 são geradas por build_aipe_results_figures.py, em experiment/scripts/documents/, sem ajustar políticas. O texto M5 é compartilhado, byte a byte, com a dissertação.
+```powershell
+& experiment/.venv/Scripts/python.exe experiment/scripts/documents/build_unified_final_results.py
+& experiment/.venv/Scripts/python.exe docs/operations/figure_context_2026-10-17/build_article.py
+& experiment/.venv/Scripts/python.exe experiment/scripts/documents/verify_article_package.py
+```
 
-As versões anteriores, inclusive o manuscrito inglês manuscript.tex, estão preservadas. O texto português atual é a base da próxima tradução, não uma tradução já concluída. A revisão anterior foi arquivada em docs/archive/aipe_revision_2026-10-15/.
-
-Antes da submissão: confirmação independente do protocolo final, harmonização das calibrações, revisão humana, autoria e declarações, tradução e conferência editorial. Dados e modelos permanecem fora do Git e seguem o backup autorizado.
+Geradores antigos baseados no piloto ficam preservados para reproduzir aquela versão; não devem substituir os resultados consolidados. O texto em inglês `manuscript.tex` é histórico e não está sincronizado com esta revisão em português. Antes de submeter: avaliação independente, revisão humana, declarações e autoria, tradução e conferência editorial. Dados e modelos permanecem fora do Git e seguem o backup autorizado.

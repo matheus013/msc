@@ -1,0 +1,22 @@
+{
+  "docs/master_proposal/instanciacao_aipe.tex": {
+    "display_math": true,
+    "cites": true
+  },
+  "docs/master_proposal/lista_siglas_termos.tex": {
+    "display_math": true,
+    "cites": true
+  },
+  "docs/master_proposal/capitulos/conceitos.tex": {
+    "display_math": true,
+    "cites": true
+  },
+  "docs/master_proposal/capitulos/introducao.tex": {
+    "display_math": true,
+    "cites": true
+  },
+  "docs/master_proposal/capitulos/plano_continuidade.tex": {
+    "display_math": true,
+    "cites": true
+  }
+}

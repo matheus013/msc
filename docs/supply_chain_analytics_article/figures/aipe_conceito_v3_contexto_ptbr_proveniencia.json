@@ -1,0 +1,18 @@
+{
+  "kind": "Conceptual vector diagram; optional extension evaluated separately per application",
+  "generator": "experiment\\scripts\\documents\\build_aipe_context_figure.py",
+  "generator_sha256": "8ecc23479a0a3afb3a68a34975023b8b01d202f85ba0db2186bff5ecaa0fe0b7",
+  "minimum_arrow_layout_length": 28.0,
+  "arrow_count": 15,
+  "parallel_routes_separation_layout_units": 32,
+  "preserved": [
+    "aipe_conceito_v2_ptbr.pdf",
+    "aipe_conceito_v2_ptbr.svg",
+    "aipe_conceito_v2_ptbr.png"
+  ],
+  "outputs_sha256": {
+    "aipe_conceito_v3_contexto_ptbr.pdf": "9a71646eadf38a740eba29f15a2b6698cdb82535dea4fd79868454557ac41108",
+    "aipe_conceito_v3_contexto_ptbr.svg": "a6eab85b6363ac17a07979cf329a3cf03755e9d173d4cb2a0b40c2586b4bbde2",
+    "aipe_conceito_v3_contexto_ptbr.png": "7a314b330da45f2e13caf0c7d43c2bbef51ba041e7f6137ad8701d4415d0d24a"
+  }
+}

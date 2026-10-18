@@ -1,0 +1,23 @@
+{
+  "status": "research draft; not submitted",
+  "elsarticle": "3.5 2026-01-09",
+  "sha256": {
+    "manuscript_ptbr.tex": "c9cfcf61e1a337b2db86d5b68f57e6c8346f9cf9df9358c4a54637a0b1117e25",
+    "manuscript_ptbr.bbl": "b0456c801cbf6877abc5516952c887d91c193f91f37cc148106b2d525ecd333c",
+    "references_ptbr.bib": "8c63d9fbf63f3e491288dbc6e928c63478a472da421438a4455dffe17b2ca5f5",
+    "elsarticle.cls": "40af0200a8ad6777126f93bf7be6ab3046fa7c3ef1073307f0809703602e59da",
+    "elsarticle-num.bst": "f04dfa2f78d0198ab8e4055b609dc0b91bdb730743cbbd549d84270f20d11394",
+    "highlights_ptbr.txt": "84cad844ccd5808ec4fcbcd1b2a74398a0e77853a7f0d6f098b5f9f6076dbf3a",
+    "aipe_bahia_resultados.tex": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc",
+    "m5_pse_20261015.tex": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2",
+    "aipe_consequencias_resultados.tex": "cf3689d97b7e70295058da7f31c9e843c0be5dac8d594748b707d50acc452db7",
+    "figures/aipe_conceito_v2_ptbr.pdf": "860c0877af045d63fbfd88a8da31cd2c8557f1dfafc0f7c8c74f705008bddfc5",
+    "figures/aipe_consequencias_comparacao.pdf": "571eacc57b42bb20917901019253969adccb4ecbff4102e9834acc4ef30de331",
+    "figures/aipe_m5_comparacao.pdf": "fb6216c8b3d34f60e04bfcb5b63dcbbf2195e2122dba704ad2377d06f2a85a22",
+    "figures/aipe_m5_falhas.pdf": "2c387ebbe5a07bde7f2031d2bfc31fdb4451c14da1e401748b4fb6cf3bb37bcf",
+    "figures/custo_servico.pdf": "5c92244d77fc38c1983ad2cad04b8c8121fa9f0555de379997d9a78013a31781",
+    "figures/escolhas_perfil.pdf": "3ca0df438de386ebd5d2401a2f11aa8c95cf9839aa9e85afe76a94f94e82adb6",
+    "manuscript_ptbr.pdf": "8739bb00c07ed0b5217e56d99d4c03c9c204f972c77d26b65c683c703ae71c15",
+    "article_sources_ptbr_draft.zip": "b2e104b43b7e4ae5636603ac46a5c88b8869c449063ae458a5490e7a8243698b"
+  }
+}

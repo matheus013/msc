@@ -1,0 +1,30 @@
+{
+  "protected_fragments_and_bibliographies_unchanged": {
+    "supply_chain_analytics_article/aipe_bahia_resultados.tex": true,
+    "supply_chain_analytics_article/m5_pse_20261015.tex": true,
+    "supply_chain_analytics_article/aipe_consequencias_resultados.tex": true,
+    "supply_chain_analytics_article/references_ptbr.bib": true,
+    "master_proposal/bahia_20261015.tex": true,
+    "master_proposal/m5_pse_20261015.tex": true,
+    "master_proposal/consequencias_20261015.tex": true,
+    "master_proposal/referencias.bib": true
+  },
+  "display_equations_unchanged": {
+    "supply_chain_analytics_article/manuscript_ptbr.tex": true,
+    "master_proposal/capitulos/proposta.tex": true
+  },
+  "article_citation_key_set_unchanged": true,
+  "article_pages": 22,
+  "dissertation_pages": 62,
+  "article_references": 17,
+  "article_figures": 6,
+  "article_abstract_words": 199,
+  "compilation_diagnostics": [],
+  "numerical_audit": "passed",
+  "visual_review": "contact sheets for all pages and selected full-size pages inspected",
+  "experiments_started_by_this_revision": 0,
+  "outputs": {
+    "docs\\supply_chain_analytics_article\\manuscript_ptbr.pdf": "8c4765a3145269253e57cdbd1938bcc25c113034277559ad61cc9522c67b048e",
+    "docs\\master_proposal\\tcc.pdf": "709f201c21f0f57995eaead514de3af8c618a7d5feb3e1bfc53bfae952cdc80a"
+  }
+}

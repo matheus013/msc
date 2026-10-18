@@ -8,7 +8,7 @@ import sys
 from simulation.paths import EXPERIMENT_ROOT
 
 SCRIPTS = {
-    "research-v2": "analysis/run_research_v2.py",
+    "research-aipe": "analysis/run_aipe_pipeline.py",
     "research-production": "analysis/run_production_v2.py",
     "research-status": "analysis/research_status.py",
     "research-visualizations": "analysis/generate_research_visualizations.py",

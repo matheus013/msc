@@ -9,14 +9,12 @@ for _key in ['OMP_NUM_THREADS','MKL_NUM_THREADS','OPENBLAS_NUM_THREADS','NUMEXPR
     os.environ[_key]='1'
 import shutil
 import sqlite3
-import sys
 import traceback
-import numpy as np
 import pandas as pd
 
 import run_production_v2 as queue
 from reuse_production_checkpoints import semantic,WithoutDocstrings
-from simulation.research.production import POLICIES,SEEDS,STOCHASTIC,production_config,fits_per_case
+from simulation.research.production import POLICIES, SEEDS, production_config, fits_per_case
 from simulation.research.hybrid import HYBRID_VERSION
 from simulation.research.parallel import ParallelFitPool
 from simulation.research.visualizations import generate_research_visualizations

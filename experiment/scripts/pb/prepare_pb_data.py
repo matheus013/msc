@@ -18,7 +18,6 @@ if __name__ == "__main__":
     _os.chdir(PROJECT_ROOT)
 
 import pandas as pd
-import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 

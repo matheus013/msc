@@ -2,7 +2,6 @@
 
 Uses the same cases and seeds as benchmark_parallel_fits; never starts a census.
 """
-from pathlib import Path
 import argparse
 import json
 from benchmark_parallel_fits import ROOT, jobs_for, trial, compare_results, write_json

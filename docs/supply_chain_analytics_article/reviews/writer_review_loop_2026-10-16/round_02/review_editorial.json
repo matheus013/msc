@@ -1,0 +1,36 @@
+{
+  "round": 2,
+  "reviewer": "editorial",
+  "source_sha256": "7e6f1127d57348806b8339eab6d038818847d7306ce45d31d902e6e4ed22ad62",
+  "editorial_decision": "approve",
+  "scientific_submission_ready": false,
+  "issues": [
+    {
+      "id": "ED-01",
+      "severity": "minor",
+      "location": "manuscript_ptbr.tex:93,95,133,159",
+      "evidence": "R2 define h e p como manutenção por unidade/ciclo e falta por unidade, K por pedido e c por unidade, médias por caso após sementes e exclusão de serviços indefinidos, mu/sigma do prefixo de treino, C* como mínimo viável do portfólio ou ótimo MILP conforme a comparação. Verificado no texto e no PDF.",
+      "requested_change": "Definir os quatro componentes de custo por unidade/pedido/ciclo; definir mu e sigma como estatísticas do treino; explicitar que C* é o custo da referência retrospectiva considerada, identificando cada oráculo. Acrescentar que barras representam médias entre casos definidos. Preservar valores e fórmulas.",
+      "kind": "writing",
+      "status": "resolved"
+    },
+    {
+      "id": "ED-02",
+      "severity": "minor",
+      "location": "manuscript_ptbr.tex:162,164; PDF pp.14,17",
+      "evidence": "As novas chamadas explícitas à Figura 2/Tabela 3 interpretam compromisso e coincidência das origens; a chamada à Figura 4 liga médias/distribuição e motiva a comparação por consequências. Os rótulos agora têm referência no corpo.",
+      "requested_change": "Acrescentar referências explícitas aos três objetos nos parágrafos que já interpretam seus resultados, indicando a comparação relevante. Não repetir os dados apenas para introduzir a chamada.",
+      "kind": "writing",
+      "status": "resolved"
+    },
+    {
+      "id": "ED-03",
+      "severity": "minor",
+      "location": "aipe_consequencias_resultados.tex:8–12; PDF p.18",
+      "evidence": "Tabela 5 usa cabeçalho Atendimento e 0,6897,0,6937,0,6925,0,7172: conversões exatas das percentagens anteriores, alinhadas à escala e nome das Tabelas 3 e 4.",
+      "requested_change": "Uniformizar a escala e o nome da coluna de atendimento nas três tabelas, preferencialmente fração com quatro casas para preservar o padrão existente; alternativamente converter todas para percentagem identificada no cabeçalho. Não alterar valores substantivos nem confundir diferença percentual com pontos percentuais.",
+      "kind": "writing",
+      "status": "resolved"
+    }
+  ]
+}

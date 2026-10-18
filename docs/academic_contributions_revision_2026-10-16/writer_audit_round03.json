@@ -1,0 +1,29 @@
+{
+  "file": "docs\\master_proposal\\capitulos\\introducao.tex",
+  "before_words": 1544,
+  "after_words": 1461,
+  "removed_words": 83,
+  "sha256": "ef49c37fe92bb4295991ed67c10551bdf6f8207bbff4090aaeef8f1b046b3b8a",
+  "gate_counts": {
+    "M1_em_dash": 0,
+    "M11_passive_EN": 0,
+    "M2_antithesis": 0,
+    "M3_M4_M8_M9": 0,
+    "M6_openers": 0,
+    "M5_M16_words": 0,
+    "M10_hype": 0,
+    "M17_fancy": 0,
+    "M18_empty": 0,
+    "M12_wordiness": 0,
+    "M13_qualifiers": 0,
+    "M14_adverbs": 0,
+    "M15_exclamation": 0,
+    "precision_pairs": 0,
+    "PT_passive_candidates": 0,
+    "PT_promotional": 0
+  },
+  "numerals_preserved": true,
+  "citations_preserved": true,
+  "equations_preserved": true,
+  "figures_preserved": true
+}

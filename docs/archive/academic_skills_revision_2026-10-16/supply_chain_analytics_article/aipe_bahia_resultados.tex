@@ -1,0 +1,32 @@
+\section{Resultados na Bahia: PSE por perfil}
+\label{sec:ba2026}
+As sete candidatas foram avaliadas em 290 casos série--origem. O custo médio usa todos os casos e o atendimento os 283 com demanda positiva; sete têm serviço indefinido. Somente EOQCycle e sSCycle superam 0,70 em média; nenhuma supera esse alvo no atendimento ponderado pelas unidades demandadas.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=.92\linewidth]{figures/custo_servico.pdf}
+\caption{Portfólio na Bahia: custo médio em 290 casos e atendimento em 283 com demanda positiva. A fronteira é retrospectiva e descritiva; não é usada para escolher no teste.}\label{fig:cost_service}
+\end{figure}
+
+PPO tem menor custo e menor atendimento. GA--DQN reduz custo em 11,60\% frente ao DQN e eleva atendimento de 0,5718 para 0,6802; frente ao GA, custa 1,32\% mais e atende menos. O híbrido não domina seu componente evolutivo no agregado, e seu esforço adicional impede atribuir o contraste apenas à combinação algorítmica.
+
+\begin{table}[htbp]\centering\small
+\caption{Escolha na validação das demais lojas; teste da loja reservada. Custo em 145 casos por linha; atendimento em 144 casos na origem 17 e 139 na origem 23.}\label{tab:ba2026_selection}
+\begin{tabular}{@{}llrrr@{}}\toprule
+Treino & Seleção & Custo & Atendimento & Abaixo de 0,70\\\midrule
+17 ciclos & Global &180,58&0,5711&101\\
+17 ciclos & PSE por perfil &186,79&0,6475&82\\
+23 ciclos & Global &142,03&0,9073&18\\
+23 ciclos & PSE por perfil &142,03&0,9073&18\\\bottomrule
+\end{tabular}\end{table}
+
+Na primeira origem, a global escolhe GA em todos os casos. O PSE por perfil escolhe GA em 65, sSCycle em 75 e EOQCycle em cinco. Na segunda, ambos escolhem sSCycle nos 145 casos. A Figura~\ref{fig:profile_choices} localiza essa diferenciação: perfis distintos não implicam recomendações distintas em todo período.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/escolhas_perfil.pdf}
+\caption{Escolhas do PSE por perfil na Bahia, com meta 0,70. Há 145 recomendações por origem. A segunda reproduz a seleção global.}\label{fig:profile_choices}
+\end{figure}
+
+Reunindo origens, o custo passa de 161,31 para 164,41, aumento de 1,93\%; o atendimento cresce de 0,7362 para 0,7751, diferença de 3,89 pontos percentuais. O ponderado passa de 0,5750 para 0,6395. Casos abaixo de 0,70 diminuem de 119 para 100 entre 283 definidos. O resultado é serviço adicional com custo pontualmente maior, concentrado na primeira origem.
+
+O bootstrap condicional de 115 lojas produz intervalos de 95\% de $[-0{,}32;4{,}16]\%$ para custo e $[2{,}78;5{,}07]$ pontos para atendimento. Incluir zero no intervalo de custo não prova equivalência. Variar o limiar sem recalibrar o portfólio também não preserva o benefício: em 0,80, o PSE por perfil custa mais e atende ligeiramente menos; em 0,85, ambos escolhem sSCycle em todos os casos; em 0,90 e 0,95, todas as escolhas são contingências na validação.
+\FloatBarrier

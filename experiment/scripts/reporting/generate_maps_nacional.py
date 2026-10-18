@@ -9,7 +9,7 @@ if __name__ == "__main__":
     _os.chdir(PROJECT_ROOT)
 
 import sys; sys.path.insert(0, 'src')
-import glob, os
+import glob
 import pandas as pd
 import numpy as np
 import matplotlib

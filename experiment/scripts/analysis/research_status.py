@@ -13,7 +13,12 @@ def main():
     args=parser.parse_args()
     if not args.run.replace('_','').replace('-','').isalnum():raise ValueError('Invalid run name')
     output=ROOT/'experiment/data/08_reporting/research_v2'/args.run
-    state=json.loads((output/'status.json').read_text(encoding='utf-8'))
+    status=output/'status.json'
+    if not status.exists() and (output/'plan.json').exists():
+        plan=json.loads((output/'plan.json').read_text(encoding='utf-8'))
+        print(json.dumps({k:plan[k] for k in ['state','dataset','planned_fits','reusable_fits','remaining_fits','pending_by_policy','execution']},indent=2))
+        return
+    state=json.loads(status.read_text(encoding='utf-8'))
     print(json.dumps(state,indent=2,ensure_ascii=False))
     database=output/'results.sqlite'
     with sqlite3.connect(database.as_uri()+'?mode=ro',uri=True) as con:

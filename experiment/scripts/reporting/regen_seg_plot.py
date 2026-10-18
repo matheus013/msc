@@ -8,7 +8,7 @@ PROJECT_ROOT = _Path(__file__).resolve().parents[2]
 if __name__ == "__main__":
     _os.chdir(PROJECT_ROOT)
 
-import glob, pandas as pd, numpy as np
+import glob, pandas as pd
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker

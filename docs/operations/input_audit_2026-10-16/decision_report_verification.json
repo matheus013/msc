@@ -1,0 +1,17 @@
+{
+  "manifest_source_and_output_hashes": "passed",
+  "decisions": 2610,
+  "series_origin_cases": 290,
+  "strategies": 9,
+  "fallback_records_verified": 106,
+  "candidate_seed_block_rows": 8700,
+  "validation_alternatives": 2030,
+  "retrospective_outcomes": 2610,
+  "html_download_links_checked": 7,
+  "unit_tests_passed": 4,
+  "visual_browser_check": "not performed: browser policy rejects file URLs; no alternate route attempted",
+  "m5_state": "running",
+  "m5_completed_fits": 32464,
+  "m5_processes": 15,
+  "m5_updated_utc": "2026-10-16T15:49:26.206209+00:00"
+}

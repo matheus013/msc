@@ -1,0 +1,20 @@
+--- docs/master_proposal/capitulos/plano_continuidade.tex baseline
+
++++ docs/master_proposal/capitulos/plano_continuidade.tex revised
+
+@@ -1,6 +1,6 @@
+
+ \mychapter{Continuidade e Validação Final}{cap:plano_continuidade}\lhead{CONTINUIDADE E VALIDAÇÃO FINAL}
+ 
+-A metodologia AIPE está formulada e possui duas aplicações experimentais. A Bahia e o piloto M5 têm matrizes completas. A avaliação unificada amplia os seletores na Bahia e organiza a continuidade do M5. Sua consolidação precede a avaliação final; a rodada parcial não é apresentada como experimento concluído. O piloto já orientou diagnóstico e recuo; integra o conjunto de desenvolvimento. A avaliação nacional está fora do escopo experimental desta versão.
++A metodologia AIPE está formulada e possui duas aplicações experimentais. Seu fechamento deve sustentar a contribuição central de apoio modular e rastreável à escolha de políticas, ligando a evidência sobre seleção contextual, diagnóstico e condições de uso. A Bahia e o piloto M5 têm matrizes completas. A avaliação unificada amplia os seletores na Bahia e organiza a continuidade do M5. Sua consolidação precede a avaliação final; a análise exclui a rodada parcial das conclusões sobre experimentos concluídos. O piloto já orientou diagnóstico e recuo; integra o conjunto de desenvolvimento. A avaliação nacional está fora do escopo experimental desta versão.
+ 
+ \section{Separar desenvolvimento e confirmação}
+ \label{sec:estudos_caso_adicionais}
+@@ -36,4 +36,4 @@
+
+ Redação & Afirmações alinhadas à evidência e revisão dos autores\\\bottomrule
+ \end{tabular}\end{table}
+ 
+-O artigo concentra a arquitetura e sua avaliação operacional; a dissertação mantém fundamentos, formulação e limites mais amplos. Autoria, declarações, disponibilidade de dados e elementos institucionais precisam ser fechados pelos responsáveis antes de submissão ou depósito.
++A comparação com as integrações mais próximas da literatura deverá explicitar o que o AIPE acrescenta em formulação, responsabilidades dos módulos e evidência, sem atribuir originalidade aos métodos constituintes. O artigo concentra a metodologia e sua avaliação operacional; a dissertação mantém fundamentos, formulação e limites mais amplos. Os responsáveis precisam confirmar autoria, declarações, disponibilidade de dados e elementos institucionais antes de submissão ou depósito.

@@ -1,0 +1,47 @@
+--- docs\master_proposal\capitulos\introducao.tex round02
+
++++ docs\master_proposal\capitulos\introducao.tex round03
+
+@@ -2,7 +2,7 @@
+
+ 
+ Uma rede varejista precisa decidir quando e quanto repor em cada loja. O problema se torna mais difícil quando um produto vende regularmente em uma unidade, mas passa vários ciclos sem venda em outra. Uma política que preserva disponibilidade no primeiro caso pode gerar excesso de estoque no segundo. Custos, faltas e variabilidade dos pedidos dependem da relação entre a regra de reposição e o comportamento da demanda \citep{Axsater2006InventoryControl,Syntetos2005Categorization}.
+ 
+-Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular e rastreável de apoio ao gerente de logística e estoques na escolha de políticas de reposição, buscando reduzir custos evitáveis sem deterioração relevante do atendimento. A seleção de políticas conforme o contexto de cada série loja--produto organiza esse apoio. O AIPE organiza a especificação da decisão, a representação do contexto, a construção de evidência comparável, a recomendação e a avaliação de suas consequências. Seu \textit{Policy Selection Engine} (PSE) é o componente que realiza a escolha, por associação a um perfil informado ou por estimação supervisionada. Bahia e M5 constituem aplicações para avaliar o procedimento; não definem sua identidade metodológica.
++Esta dissertação propõe o \textit{Adaptive Inventory Policy Engine} (AIPE), uma metodologia modular e rastreável de apoio ao gerente de logística e estoques na escolha de políticas de reposição, buscando reduzir custos evitáveis sem deterioração relevante do atendimento. A seleção considera o contexto de cada série loja--produto e vincula a recomendação à evidência operacional. Seu \textit{Policy Selection Engine} (PSE) é o componente que realiza a escolha, por associação a um perfil informado ou por estimação supervisionada. Bahia e M5 constituem aplicações para avaliar o procedimento; não definem sua identidade metodológica.
+ 
+ \section{Motivação}
+ 
+@@ -40,9 +40,9 @@
+
+   \item Quais limites da representação, da aprendizagem, do portfólio e do sistema restringem a transferência das recomendações?
+ \end{enumerate}
+ 
+-A primeira pergunta trata da formulação metodológica; a segunda, de sua utilidade operacional; a terceira, de seus limites. A construção do procedimento responde à primeira, mas não demonstra as demais. Encontrar famílias vencedoras diferentes não prova que possam ser previstas nem que valha trocar a referência.
++As perguntas distinguem formulação, utilidade e limites. Construir o procedimento responde à primeira; famílias vencedoras diferentes não demonstram capacidade preditiva nem vantagem em substituir a referência.
+ 
+-As hipóteses empíricas são que existe heterogeneidade operacional aproveitável, que o contexto disponível antes da decisão captura parte dela e que uma regra de intervenção pode reduzir escolhas desfavoráveis. São hipóteses de avaliação, não pressupostos necessários para obter uma recomendação. Os experimentos podem delimitá-las ou contrariá-las. O procedimento registra tanto melhorias quanto deteriorações, permitindo avaliar separadamente a execução da metodologia e seu benefício operacional.
++As hipóteses empíricas são que existe heterogeneidade operacional aproveitável, que o contexto disponível antes da decisão captura parte dela e que uma regra de intervenção pode reduzir escolhas desfavoráveis. Os experimentos podem contrariar essas hipóteses. O registro de melhorias e deteriorações distingue execução e benefício operacional.
+ 
+ \section{Objetivos}
+ 
+@@ -73,7 +73,7 @@
+
+ 
+ A implementação exercita substituições no portfólio e no PSE; a portabilidade dos demais módulos e a rastreabilidade completa da entrega gerencial permanecem pendentes. O diagnóstico é retrospectivo e condicional ao simulador, sem identificar causas de rupturas na empresa. As bases complementares sustentam a avaliação do procedimento, mas as consequências simuladas não comprovam ganho financeiro de implantação. A comparação empírica com integrações próximas da literatura também permanece necessária para delimitar o diferencial do AIPE.
+ 
+-O algoritmo genético (\textit{genetic algorithm}, GA) e a rede Q profunda (\textit{deep Q-network}, DQN) são métodos conhecidos. Também o é a otimização proximal de políticas (\textit{proximal policy optimization}, PPO). Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. O interesse está em entender quando uma alternativa oferece vantagem e se essa informação sustenta uma recomendação verificável.
++O algoritmo genético (\textit{genetic algorithm}, GA) e a rede Q profunda (\textit{deep Q-network}, DQN) são métodos conhecidos. Também o é a otimização proximal de políticas (\textit{proximal policy optimization}, PPO). Sua presença no portfólio não constitui novidade algorítmica; a arquitetura GA--DQN já aparece em \citet{Zabraoui2025GaDQN}. A avaliação investiga quando essa informação sustenta uma recomendação vantajosa.
+ 
+ O procedimento permite avaliar separadamente controladores e seletores. Na Bahia, o PSE por perfil é confrontado com a global; no M5, a avaliação inclui o preditivo e uma extensão exploratória de recuo. O piloto não demonstra vantagem do modelo supervisionado e passa a integrar o desenvolvimento do protocolo final.
+ 
+@@ -86,7 +86,7 @@
+
+ 
+ O simulador avalia políticas sobre históricos preparados. Custos e abastecimento são parâmetros do cenário; roteamento, transporte e integração transacional com sistemas de gestão empresarial (\textit{enterprise resource planning}, ERP) ficam fora do escopo. A recomendação admite cadência parametrizada, compatível com a informação disponível; revisão do PSE, ações de reposição e atualização dos modelos são decisões distintas. A avaliação atual mantém a família fixa em blocos de sete ciclos. Aprendizado por reforço multiagente, como o discutido por \citet{Liu2024HAPPO}, também não é implementado como coordenação da rede.
+ 
+-Os dados proprietários limitam a divulgação pública. A rastreabilidade depende de código, parâmetros e identificação dos artefatos e recortes. Vendas podem não representar toda a demanda quando há falta de estoque, e ciclos ausentes exigem tratamento cuidadoso. Essas limitações impedem interpretar automaticamente a simulação como ganho econômico realizável.
++Dados proprietários limitam a divulgação; código, parâmetros e identificação de artefatos e recortes sustentam a rastreabilidade. Rupturas podem censurar vendas e ciclos ausentes exigem tratamento explícito. A simulação não comprova ganho econômico realizável.
+ 
+ Os capítulos apresentam fundamentos (\ref{cap:tec}), literatura (\ref{cap:rel}), metodologia AIPE (\ref{cap:metod}), desenho experimental (\ref{cap:experimental}), resultados e diagnósticos (\ref{cap:results}), conclusões (\ref{cap:conclusion}) e continuidade (\ref{cap:plano_continuidade}).
+ 

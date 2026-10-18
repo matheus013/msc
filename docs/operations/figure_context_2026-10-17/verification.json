@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "independent_conceptual_review": "CLEAN",
+  "old_figure_pdf_sha256": "860c0877af045d63fbfd88a8da31cd2c8557f1dfafc0f7c8c74f705008bddfc5",
+  "old_figure_preserved": true,
+  "article_figure_page": 6,
+  "thesis_figure_pdf_pages": [
+    14
+  ],
+  "article_pages": 26,
+  "thesis_pages": 68,
+  "article_package_validation": "passed; embedded outline fonts; synchronized sources/figures/archive; no undefined references or overfull boxes",
+  "thesis_compile_diagnostics": [],
+  "no_simulation_execution_or_pipeline_change": true,
+  "new_module_empirically_validated": false,
+  "sha256": {
+    "docs\\supply_chain_analytics_article\\manuscript_ptbr.tex": "353559106b9cd88e5269b533c69da1ff8289f2a7d189701e04f952e09b91ac4d",
+    "docs\\supply_chain_analytics_article\\manuscript_ptbr.pdf": "49541c78c8be96db25f242f4e98a7caa24c0c3f7ac1cc6fd018a1db241cdeb91",
+    "docs\\supply_chain_analytics_article\\figures\\aipe_conceito_v3_contexto_ptbr.pdf": "e09f5f2fffef49e8c28aa82c4ceff3f3a75b32453e1474645ba0f9341bc9747e",
+    "docs\\master_proposal\\figures\\intro_problem_selection.tex": "890078f32db47136d7a1804b3a49a1376746046929e819c004edf34c8f522dee",
+    "docs\\master_proposal\\capitulos\\introducao.tex": "5afd940199f261081875413c9622ca3fcaa47bdcd8b654d7ac667cfc9ab01d99",
+    "docs\\master_proposal\\tcc.pdf": "2e6295ad7ecc83c2cf06cf368077dce0d2e01687b11495338f18aa37e2d26b3f"
+  }
+}

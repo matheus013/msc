@@ -65,6 +65,16 @@ Hiper-heurísticas selecionam ou geram heurísticas, inclusive durante a resolu�
 
 A consequência prática é comparar o seletor com uma referência global forte. A avaliação deve separar o ajuste das políticas da aprendizagem da escolha entre elas. Excluir uma loja do seletor, por exemplo, não elimina informação futura já usada para gerar seus resultados de simulação.
 
+\section{Antecedentes e delimitação da contribuição}
+
+A integração entre classificação de inventário e seleção de política aparece explicitamente em \citet{Mohammaditabar2012Integrated}; classificação baseada em desempenho é objeto de \citet{SheikhZadeh2021PBIC}. Esses antecedentes situam a associação entre perfil e política como uma linha estabelecida. A comparação aqui é conceitual: a revisão dirigida verificou os metadados, mas não reproduziu os métodos nem realizou uma comparação algorítmica sustentada pela leitura integral desses estudos.
+
+\citet{FrancuzBanyai2026Selection} apresentam uma estrutura que combina escolha de família, parâmetros e otimização multiobjetivo. Seu modelo de aprendizado aproxima o simulador para reduzir avaliações; a aplicação usa demanda sintética sazonal e pedidos pendentes. Esse desenho difere de aprender uma recomendação para séries reservadas, mas já cobre integração, múltiplas políticas e eficiência por aproximação. O posicionamento do AIPE depende, portanto, de explicitar a decisão de recomendação e a evidência usada para avaliá-la, além de reunir métodos em uma arquitetura.
+
+\citet{ElmachtoubGrigas2022SPO} fundamentam aprender segundo a consequência da decisão, em vez de apenas erro preditivo. \citet{GeifmanElYaniv2019SelectiveNet} estudam predição com rejeição; \citet{Laroche2019SPIBB}, melhoria de políticas com recuo à referência sob hipóteses próprias. Esses trabalhos sustentam componentes da extensão conservadora, sem fornecer garantias automáticas para nossa seleção de famílias ou para o fill rate de cada série.
+
+O posicionamento do AIPE é, portanto, metodológico e aplicado: articular contexto, evidência operacional, seleção e decisão de intervenção em um procedimento verificável para reposição. Sua utilidade depende da comparação entre implementações e referências. A revisão não estabelece prioridade sobre toda combinação possível desses mecanismos; uma afirmação de novidade universal exigiria cobertura bibliográfica e comparação mais amplas.
+
 \section{Arquiteturas híbridas e posicionamento}
 
 \citet{Zabraoui2025GaDQN} combinam busca genética e aprendizado por reforço em um estudo de inventário com dados do Walmart M5. É uma referência próxima do portfólio adotado aqui. A arquitetura GA--DQN e combinações GA--RL não são apresentadas como invenções desta dissertação. Sua inclusão permite investigar se oferecem vantagem em determinados recortes e como se comparam a regras simples sob condições comuns.
@@ -88,4 +98,4 @@ Esta dissertação & Seleção contextual em varejo brasileiro & Comparar seleç
 \end{tabular}
 \end{table}
 
-O espaço de investigação está na avaliação dessa seleção em séries reais do recorte brasileiro e na integração de um protocolo rastreável. Não se afirma que selecionar políticas seja uma ideia inédita em inventário nem que a revisão esgote a literatura. O resultado deve ser uma evidência verificável sobre o ganho incremental da seleção, inclusive quando for pequeno ou ausente. O capítulo seguinte apresenta os dados, o ambiente e o protocolo para investigar essa questão.
+O espaço de investigação está na formulação do procedimento AIPE e na avaliação de quando suas recomendações agregam valor. A evidência brasileira e pública permite examinar instâncias distintas, sem provar generalização irrestrita. A contribuição não se reduz ao portfólio nem exige inventar um novo controlador; requer justificar as decisões da metodologia e demonstrar seu alcance. O capítulo seguinte define esse procedimento antes de apresentar sua instanciação experimental.

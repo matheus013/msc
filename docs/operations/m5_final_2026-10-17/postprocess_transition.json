@@ -1,0 +1,8 @@
+{
+  "reason": "Equivalent vectorized postprocessing; 60 exact comparisons passed",
+  "former_pid": 29964,
+  "completed_controller_fits": 79890,
+  "controller_fits_to_repeat": 0,
+  "previous_state": "controllers_completed",
+  "utc": "2026-10-17T23:37:16.5130602Z"
+}

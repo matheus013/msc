@@ -1,0 +1,22 @@
+{
+  "editorial_decisions": {
+    "contribution": "minor_revision",
+    "methods": "minor_revision",
+    "editorial": "minor_revision"
+  },
+  "writing_repairs": [
+    "C-W01",
+    "MTH-01",
+    "MTH-02",
+    "MTH-03",
+    "ED-01",
+    "ED-02",
+    "ED-03"
+  ],
+  "experimental_open": [
+    "C-E01",
+    "MTH-04",
+    "MTH-05"
+  ],
+  "writer_next_round": 2
+}

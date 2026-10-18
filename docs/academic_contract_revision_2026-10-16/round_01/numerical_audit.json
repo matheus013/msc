@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "inventory_simulations_trained": 0,
+  "Bahia": {
+    "fits": 4350,
+    "selections_reconciled": 580,
+    "cost_change_percent": 1.9259705457970622,
+    "service_change_pp": 3.8869702985026677,
+    "source_matrices_unchanged_from_prior_audit": true
+  },
+  "M5": {
+    "fits": 1350,
+    "series": 30,
+    "stores": 10,
+    "series_origin_cases": 90,
+    "defined_service_cases": 86,
+    "original_strategies_reconciled": 5,
+    "guarded_strategy_exploratory": true,
+    "predictive_cost_change_percent": 13.921809262797623,
+    "predictive_service_change_pp": -4.109149181946014,
+    "fallback_cost_reduction_percent": 12.197692199200528,
+    "proven_perfect_information_optima": 90,
+    "failure_partition": [
+      39,
+      21,
+      15,
+      11,
+      4
+    ]
+  },
+  "shared_M5_text_identical": true,
+  "input_sha256": {
+    "experiment\\data\\08_reporting\\research_v2\\bahia145_cpu16_2026-10-15\\kpis.csv": "2415afc8149f0d76d3d5dc62e00efca84b4da770a0572d875474932e4e3c09a2",
+    "docs\\scientific_writing_review_2026-10-15\\bahia_completed\\selections.csv": "8528adcc9bcf75253ef2564bab9f7017a6b3d0e071b3a8d5d388974af1f5a187",
+    "experiment\\data\\08_reporting\\research_v2\\m5_pse_pilot30_v2_2026-10-15\\kpis.csv": "6c85292f3e87e91db3726add5985ac50f6fbdde56c10c3e27ada4bcc23b7ebda",
+    "experiment\\data\\08_reporting\\research_v2\\m5_pse_pilot30_v2_2026-10-15\\predictions_frozen_before_test.csv": "d653999ad6c8cc414062cf3994889ceccc67ef3949b85258c6d6c87c5f5eb0c0",
+    "experiment\\data\\08_reporting\\research_v2\\m5_pse_pilot30_v2_2026-10-15\\diagnostics_v1\\guarded_predictions_before_scoring.csv": "6b129bf9db63a0dff3c02a310897876a5bd298a73053a9143db36e606b79f779",
+    "experiment\\data\\08_reporting\\research_v2\\m5_pse_pilot30_v2_2026-10-15\\diagnostics_v1\\service_failure_decomposition.csv": "4b6b824c5bb8a615b1a24ce13bc2f43d8f87e204868f98e4d58470ae3bb03370"
+  },
+  "scope": "Numerical reconciliation of completed matrices; not independent confirmation or replication of policy training."
+}

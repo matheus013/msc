@@ -1,0 +1,89 @@
+{
+  "analysis": "post-hoc descriptive diagnosis; no fitting or rule changes",
+  "cases": 5326,
+  "interventions": 679,
+  "new_failures": 19,
+  "recoveries": 43,
+  "failure_unique_series": 19,
+  "interventions_with_feasible_reference": 422,
+  "new_failure_rate_given_intervention_and_feasible_reference": 0.045023696682464455,
+  "failure_stores": 8,
+  "failure_origins": {
+    "78": 18,
+    "64": 1
+  },
+  "failure_reference_policies": {
+    "CappedBaseStock": 11,
+    "GA": 8
+  },
+  "failure_profiles": {
+    "Sparse_High_Impact": 19
+  },
+  "failure_higher_cost_cases": 6,
+  "failure_positive_saving_cases": 13,
+  "failure_net_saving_scenario_units": 1272.4322512658741,
+  "all_cases_net_saving_scenario_units": 81223.15071306823,
+  "failure_share_of_net_saving_percent": 1.5665881464767517,
+  "service_loss_pp": {
+    "count": 19.0,
+    "mean": 6.509452564344369,
+    "std": 2.554946896427166,
+    "min": 2.624788070348205,
+    "25%": 5.0918091839973805,
+    "50%": 6.164200316300617,
+    "75%": 8.127824166834118,
+    "max": 13.397569595432978
+  },
+  "candidate_service_overprediction_pp": {
+    "count": 19.0,
+    "mean": 10.004775725038654,
+    "std": 3.899194347210328,
+    "min": 4.4170313221419395,
+    "25%": 7.658990218076195,
+    "50%": 8.563410661524385,
+    "75%": 11.469136149055547,
+    "max": 21.21495887984849
+  },
+  "reference_service_overprediction_pp": {
+    "count": 19.0,
+    "mean": 2.276438509316602,
+    "std": 4.680375919556717,
+    "min": -6.664212628254507,
+    "25%": 0.36720700739404366,
+    "50%": 1.3300741903744862,
+    "75%": 3.1275314738742566,
+    "max": 17.616511805402524
+  },
+  "predicted_service_advantage_pp": {
+    "count": 19.0,
+    "mean": 1.2188846513776799,
+    "std": 0.710884239200782,
+    "min": 0.27123531569847037,
+    "25%": 0.6512590056769851,
+    "50%": 0.97365900409776,
+    "75%": 1.7815697036880573,
+    "max": 2.4951314824527837
+  },
+  "candidate_failed_same_series_validation_cases": 4,
+  "candidate_worse_same_series_validation_cases": 7,
+  "sources_sha256": {
+    "experiment/src/simulation/pipelines/demand_profiling/nodes.py": "f80cc5e147dc38a64e0a3b975f1e176fe4c1990b9391eac9164e7faf8b95b803",
+    "experiment/src/simulation/research/protocol.py": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\selection\\case_metrics.csv": "3e94571c4fede1c5b80fb45e6ee2cf7c75eeb15d19534a4c5b8a59363c8d638c",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\selection\\predictions_frozen_before_scoring.csv": "3f4495118091383f59334f1efb30603fd7f3668a082fb8865b082977ae9881a1",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\kpis.csv": "59dc596681d1c79ed5ecd55adb84fcc97078856d84fedf00e20d4f3406b0ea8e",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\panels\\M5_M5_50.parquet": "8fcfeb84f8cd0ad7fe357b9dc8c12fbc4987125fbb1af0a9249f410eb41c4353",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\panels\\M5_M5_64.parquet": "f8bd54bdf95eec570eac996fb8cdc67cd2e44269d619eefe7f3a871a6cdfe06e",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\panels\\M5_M5_78.parquet": "11a8f0051632510e33732693dcddec28d0a9aecaf17188374896b5bc50879f32"
+  },
+  "script_sha256": "fa1082bfcd87dc8a0e9c70e72cdbcebb630ab512e158bb78735b3e42fb994aa2",
+  "limits": [
+    "Costs are scenario units, not BRL.",
+    "19 cases were selected by observed test outcomes.",
+    "Repeated products/stores/origins are not independent observations.",
+    "Same-series validation is operationally prior but held-store outcomes were deliberately excluded from fitting; using them changes the information protocol.",
+    "Group descriptions and potential warning signs are not calibrated risk scores or independently validated rules.",
+    "Test demand and actual prediction errors are retrospective and cannot be predecision inputs."
+  ],
+  "source_hashes_unchanged_after_analysis": true
+}

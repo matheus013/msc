@@ -1,0 +1,27 @@
+{
+  "completed_utc": "2026-10-16T16:15:02.776831+00:00",
+  "article_pages": 24,
+  "dissertation_pages": 67,
+  "dissertation_original_pages": 118,
+  "dissertation_reduction_percent": 43.220338983050844,
+  "article_pdf_sha256": "7b91697d9b18147d1c64663a9f8df3569d5044809c9309452727e882ca9c8a9a",
+  "dissertation_pdf_sha256": "c63aa7a64a336b9e550d5587a34990ec76a6a9e30d76c77a3d3d7ea9ed426ae6",
+  "review_manifest_sha256": "6ef254a370a791bbdb0891dfd102af0d5c0e98f0ca67bcb90eac49088df4baf0",
+  "reviewed_files_matching_final_manifest": 36,
+  "independent_reviewers": [
+    "contribution",
+    "methods",
+    "editorial"
+  ],
+  "editorial_closed": true,
+  "scientific_submission_ready": false,
+  "tests_passed": 13,
+  "new_training_or_simulation_started": false,
+  "m5_scientific_files_matching_frozen_plan": 58,
+  "m5_state": "running",
+  "m5_completed_fits": 33021,
+  "m5_processes": 15,
+  "m5_status_updated_utc": "2026-10-16T16:15:01.639447+00:00",
+  "sequential_evaluation_status": "NOT_READY, planning only",
+  "visual_review": "all article and dissertation pages rendered and checked in contact sheets; selected details inspected; acronym-list overflow and introduction orphan repaired"
+}

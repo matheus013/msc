@@ -1,0 +1,69 @@
+{
+  "before_pages": 118,
+  "after_pages": 67,
+  "page_reduction_percent": 43.220338983050844,
+  "before_approx_source_words": 34677,
+  "after_approx_source_words": 15310,
+  "source_word_reduction_percent": 55.84969864751853,
+  "word_count_note": "Approximate Unicode-word count including TeX commands; active chapters, English abstract and recursively active auxiliary TeX only. Inactive protocol/archive files excluded. Page counts are the primary condensation measure.",
+  "chapters": {
+    "resumo.tex": {
+      "before": 342,
+      "after": 288
+    },
+    "introducao.tex": {
+      "before": 2882,
+      "after": 1552
+    },
+    "conceitos.tex": {
+      "before": 5103,
+      "after": 2451
+    },
+    "correlatos.tex": {
+      "before": 2991,
+      "after": 1535
+    },
+    "proposta.tex": {
+      "before": 10411,
+      "after": 2077
+    },
+    "resultados.tex": {
+      "before": 6044,
+      "after": 711
+    },
+    "conclusoes.tex": {
+      "before": 1527,
+      "after": 682
+    },
+    "plano_continuidade.tex": {
+      "before": 2490,
+      "after": 766
+    },
+    "abstract_en.tex": {
+      "before": 0,
+      "after": 272
+    },
+    "instanciacao_aipe.tex": {
+      "before": 0,
+      "after": 2789
+    },
+    "bahia_20261015.tex": {
+      "before": 0,
+      "after": 988
+    },
+    "m5_pse_20261015.tex": {
+      "before": 0,
+      "after": 693
+    },
+    "consequencias_20261015.tex": {
+      "before": 0,
+      "after": 449
+    },
+    "figures/intro_problem_selection.tex": {
+      "before": 0,
+      "after": 57
+    }
+  },
+  "diagnostics": [],
+  "pdf_sha256": "c63aa7a64a336b9e550d5587a34990ec76a6a9e30d76c77a3d3d7ea9ed426ae6"
+}

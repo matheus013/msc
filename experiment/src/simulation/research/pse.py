@@ -17,18 +17,24 @@ from simulation.research.oracles import efficiency_percent
 CASE=['origin','warehouse','store_id','item_id']
 
 
+def feature_transform(with_profile=True):
+    """Fold-local feature contract shared by classification and regression."""
+    transforms=[('numeric',make_pipeline(SimpleImputer(strategy='median',keep_empty_features=True)),FEATURE_COLS)]
+    if with_profile:
+        transforms.append(('profile',OneHotEncoder(handle_unknown='ignore',sparse_output=False),['operational_profile']))
+    return ColumnTransformer(transforms)
+
+
 def fit_predict_fold(train,held,with_profile=True):
     """Fit one fold and expose scores/importances for auditable diagnostics.
 
     Class scores are not calibrated probabilities of operational success.
     """
-    transforms=[('numeric',make_pipeline(SimpleImputer(strategy='median',keep_empty_features=True)),FEATURE_COLS)]
-    if with_profile:transforms.append(('profile',OneHotEncoder(handle_unknown='ignore',sparse_output=False),['operational_profile']))
     encoder=LabelEncoder().fit(train.label)
     learner=DummyClassifier(strategy='most_frequent') if len(encoder.classes_)==1 else XGBClassifier(
         n_estimators=200,max_depth=3,learning_rate=.05,subsample=1,colsample_bytree=1,
         n_jobs=1,random_state=20261015,verbosity=0)
-    preprocessing=ColumnTransformer(transforms)
+    preprocessing=feature_transform(with_profile)
     model=make_pipeline(preprocessing,learner)
     model.fit(train,encoder.transform(train.label))
     prediction=encoder.inverse_transform(model.predict(held).astype(int))

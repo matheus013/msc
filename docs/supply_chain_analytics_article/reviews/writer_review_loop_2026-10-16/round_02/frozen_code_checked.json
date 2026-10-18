@@ -1,0 +1,66 @@
+[
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/research/protocol.py",
+    "sha256": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/research/production.py",
+    "sha256": "aacb9c15fbffe6a8b095e85de6fd77739c9db563f4969c1db8fa62414287f44c"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/core/policies.py",
+    "sha256": "605220d21342f0651dba614026492ba5494ccffe6b98cef356135eba40fd10f2"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/core/rl_torch.py",
+    "sha256": "f7d2cb2b6cdb3dfc7f427579c435c484ae925dc562dab9293531a6c440117146"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/research/hybrid.py",
+    "sha256": "39c3591be58139fe0fcbfb2b1d35ab743ce70b7eb2c717866e111e365094b729"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/core/inventory_env_torch.py",
+    "sha256": "e4b73daa09a26ec22a47605c3c63153ff2c8b91dd4714bb4eb017c2e7fd569fe"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/core/policies_sota.py",
+    "sha256": "8563a3afa0a1740835c4421750bf9b6c167dcabf608646c574958ecde6136b96"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/bahia145_cpu16_2026-10-15/code_snapshot/experiment/src/simulation/core/inventory_env.py",
+    "sha256": "1e9256792f8dd79dbe4508e8621e9e6ebb52fbb3f3eee2d62388454eeb5207ae"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/research/protocol.py",
+    "sha256": "f8a32f52a67df801f74235877a41a894e0bd10a0949e5cc8b88614157a29504a"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/research/production.py",
+    "sha256": "aacb9c15fbffe6a8b095e85de6fd77739c9db563f4969c1db8fa62414287f44c"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/core/policies.py",
+    "sha256": "605220d21342f0651dba614026492ba5494ccffe6b98cef356135eba40fd10f2"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/core/rl_torch.py",
+    "sha256": "f7d2cb2b6cdb3dfc7f427579c435c484ae925dc562dab9293531a6c440117146"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/research/hybrid.py",
+    "sha256": "39c3591be58139fe0fcbfb2b1d35ab743ce70b7eb2c717866e111e365094b729"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/core/inventory_env_torch.py",
+    "sha256": "e4b73daa09a26ec22a47605c3c63153ff2c8b91dd4714bb4eb017c2e7fd569fe"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/core/policies_sota.py",
+    "sha256": "dd1189e4b01b151c055a08ff7c5cc1954a88fa5b732767e44e803760a63fd39f"
+  },
+  {
+    "path": "experiment/data/08_reporting/research_v2/m5_pse_pilot30_v2_2026-10-15/code_snapshot/experiment/src/simulation/core/inventory_env.py",
+    "sha256": "1e9256792f8dd79dbe4508e8621e9e6ebb52fbb3f3eee2d62388454eeb5207ae"
+  }
+]

@@ -1,6 +1,6 @@
 \mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
 
-A seleção de políticas de reposição exige distinguir três objetos: o processo de demanda, a regra que produz pedidos e o critério usado para comparar seus resultados. Este capítulo define esses objetos e apresenta os métodos de previsão e inferência utilizados no trabalho. A descrição operacional dos experimentos fica no Capítulo~\ref{cap:metod}.
+A seleção de políticas de reposição exige distinguir três objetos: o processo de demanda, a regra que produz pedidos e o critério usado para comparar seus resultados. Este capítulo define esses objetos e apresenta os métodos de previsão e inferência utilizados no trabalho. A descrição operacional dos experimentos fica no Capítulo~\ref{cap:experimental}.
 
 \section{Formulação do Problema de Reposição}
 \label{sec:formulacao_problema}
@@ -72,7 +72,7 @@ DQN aproxima a função de valor $Q_\theta(s,a)$ por uma rede neural, usando mem
 
 PPO atualiza uma política por gradiente com uma razão de probabilidades limitada por \textit{clipping}~\citep{Schulman2017PPO}. Pode ser formulado com ações contínuas ou discretas; essa propriedade precisa ser informada para cada implementação. Comportamentos como pedidos excessivos ou ausência de reposição podem resultar da recompensa, da escala dos estados, da exploração ou do treinamento. A observação de uma trajetória degenerada não identifica isoladamente sua causa.
 
-SARSA atualiza valores seguindo a própria política:
+SARSA (\textit{state--action--reward--state--action}) atualiza valores seguindo a própria política:
 \[
 Q(s,a)\leftarrow Q(s,a)+\eta[r+\gamma Q(s',a')-Q(s,a)].
 \]
@@ -136,7 +136,7 @@ Os quadrantes fornecem uma descrição inicial, não uma prescrição de políti
 
 \section{Métricas de Previsão}
 
-Erros absolutos e quadráticos dependem da escala da série; o MAPE é indefinido quando a demanda observada é zero. O estudo emprega métricas escaladas e sMAPE, com convenções explícitas para denominadores nulos~\citep{Hyndman2006MASE,Makridakis2020M4Competition}. Nenhuma métrica de previsão substitui a avaliação do efeito da decisão sobre custo e serviço.
+Erros absolutos e quadráticos dependem da escala da série; o erro percentual absoluto médio (\textit{mean absolute percentage error}, MAPE) é indefinido quando a demanda observada é zero. O estudo emprega métricas escaladas e sMAPE, com convenções explícitas para denominadores nulos~\citep{Hyndman2006MASE,Makridakis2020M4Competition}. Nenhuma métrica de previsão substitui a avaliação do efeito da decisão sobre custo e serviço.
 
 \subsection{Métricas Utilizadas}
 
@@ -161,12 +161,12 @@ A versão quadrática escalada é
 \end{equation}
 Ela dá maior peso a erros grandes e também requer escala de treino não nula. O RMSSE complementa o diagnóstico; o MASE permanece a referência principal de comparação de previsão no estudo.
 
-O viés médio, $\mathrm{MBE}=\overline D-\overline{\hat D}$, diferencia subestimação de superestimação. O U de Theil compara RMSE do modelo e da previsão ingênua~\citep{Theil1966AppliedEconometrics}. Esses indicadores auxiliam a interpretação, sem determinar a política vencedora. Uma relação entre menor erro e melhor reposição é hipótese empírica: depende da assimetria de custos, do prazo e da regra de decisão.
+O viés médio (\textit{mean bias error}, MBE), $\mathrm{MBE}=\overline D-\overline{\hat D}$, diferencia subestimação de superestimação. O U de Theil compara a raiz do erro quadrático médio (\textit{root mean squared error}, RMSE) do modelo e da previsão ingênua~\citep{Theil1966AppliedEconometrics}. Esses indicadores auxiliam a interpretação, sem determinar a política vencedora. Uma relação entre menor erro e melhor reposição é hipótese empírica: depende da assimetria de custos, do prazo e da regra de decisão.
 
 \section{Testes Estatísticos}
 \label{sec:stat_tests}
 
-A comparação usa observações pareadas porque as políticas atendem às mesmas séries. Testes não paramétricos evitam exigir normalidade dos KPIs, mas não dispensam atenção à independência das unidades. Produtos da mesma loja e lojas expostas às mesmas condições podem ser dependentes. Repetições idênticas não aumentam o tamanho efetivo da amostra.
+A comparação usa observações pareadas porque as políticas atendem às mesmas séries. Testes não paramétricos evitam exigir normalidade dos indicadores, mas não dispensam atenção à independência das unidades. Produtos da mesma loja e lojas expostas às mesmas condições podem ser dependentes. Repetições idênticas não aumentam o tamanho efetivo da amostra.
 
 \subsection{Teste de Wilcoxon}
 

@@ -26,7 +26,9 @@ for name in figures:
     assert (DOC/name).exists()
     text=subprocess.check_output(['pdffonts',str(DOC/name)],text=True)
     assert 'Type 3' not in text, name+' uses bitmap fonts'
-    assert 'Type 1' in text
+    assert any(kind in text for kind in ['Type 1','TrueType']), name+' has no supported outline font'
+    font_rows=text.splitlines()[2:]
+    assert font_rows and all(re.search(r'\s+yes\s+(?:yes|no)\s+(?:yes|no)\s+\d+\s+\d+\s*$',row) for row in font_rows), name+' has an unembedded font'
     fonts[name]=text.splitlines()[2:]
 abstract=main.split(r'\begin{abstract}')[1].split(r'\end{abstract}')[0]
 assert len(abstract.split())<=250

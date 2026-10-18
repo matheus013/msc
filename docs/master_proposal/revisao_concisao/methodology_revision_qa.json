@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "pages": 61,
+  "original_pages": 118,
+  "page_reduction_percent": 48.30508474576271,
+  "pdf_sha256": "8a76334d5d8c438b087deb978a09b34f548594eac72ac94cbd5d5d7c801cf11d",
+  "archived_files_verified": 15,
+  "seven_strategy_table_reconciled": true,
+  "shared_original_m5_text_preserved": true,
+  "latex_diagnostics": [],
+  "visual_review": "All-page contact sheets reviewed; final pages 16,30,32,49 inspected at higher resolution after pagination adjustment.",
+  "scope": "AIPE methodology formulation; experimental instantiation separated; reduced comparison remains exploratory"
+}

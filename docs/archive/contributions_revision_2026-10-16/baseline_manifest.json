@@ -1,0 +1,47 @@
+[
+  {
+    "path": "docs/supply_chain_analytics_article/manuscript_ptbr.tex",
+    "sha256": "e918dff752219856d8ce62754403e4e10da681a4fa81b3b8ee6b1ad607dc7d06",
+    "bytes": 40346
+  },
+  {
+    "path": "docs/supply_chain_analytics_article/highlights_ptbr.txt",
+    "sha256": "d03b4993d24794cf452c7c425c469ad246bc53646e01591fed0134580dba3bea",
+    "bytes": 385
+  },
+  {
+    "path": "docs/master_proposal/capitulos/introducao.tex",
+    "sha256": "27fdd7286c12bf8d27107d6724558aeb3cc263191761db44b6100bd5560142bc",
+    "bytes": 11947
+  },
+  {
+    "path": "docs/master_proposal/capitulos/resumo.tex",
+    "sha256": "52ae14c21828d57d15209b87a524afe5b910a9cd71745b3abd2c12ee2006dcc0",
+    "bytes": 2147
+  },
+  {
+    "path": "docs/master_proposal/abstract_en.tex",
+    "sha256": "dcc1c296913ec01aa04a70de0d18fa30a455845b5d314a675688ad1032ab72c3",
+    "bytes": 2160
+  },
+  {
+    "path": "docs/master_proposal/capitulos/proposta.tex",
+    "sha256": "ce58c5a6d72597bcb0bda09c80888e580b3e8e12da1e411356aba4edde2b3840",
+    "bytes": 16214
+  },
+  {
+    "path": "docs/master_proposal/instanciacao_aipe.tex",
+    "sha256": "a9d685f846c3807d35f1d583db7fa6a2517b336e567fb5ce207aeeae2664931d",
+    "bytes": 21426
+  },
+  {
+    "path": "docs/master_proposal/capitulos/conclusoes.tex",
+    "sha256": "45d8685a25c803431f11d64f1c66cbf84cfe5ff4996513c7b8cf26cb210c61d2",
+    "bytes": 5258
+  },
+  {
+    "path": "docs/master_proposal/capitulos/plano_continuidade.tex",
+    "sha256": "a10bb2382d79b9b498560c6933d45543d73790cfff6e1a756357407fe3ec64d4",
+    "bytes": 5810
+  }
+]

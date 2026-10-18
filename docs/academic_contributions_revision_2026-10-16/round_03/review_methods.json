@@ -1,0 +1,96 @@
+{
+  "reviewer": "contributions_review_methods",
+  "round": 3,
+  "timestamp_utc": "2026-10-16T21:07:13.665744+00:00",
+  "verdict": "CLEAN na regressão focal método/evidência. Zero CRITICAL/MAJOR/MINOR abertos neste escopo; não representa prontidão científica para submissão.",
+  "counts": {
+    "CRITICAL": 0,
+    "MAJOR": 0,
+    "MINOR": 0
+  },
+  "findings": [],
+  "full_introduction_read": true,
+  "checks": {
+    "central_methodology": true,
+    "five_stages": true,
+    "two_pse_approaches": true,
+    "admissible_information": true,
+    "service_scope": true,
+    "partial_traceability": true,
+    "conditional_diagnostics": true,
+    "separate_cohorts": true,
+    "fixed_seven_cycles": true,
+    "noncausal_simulated_economy": true,
+    "development_not_confirmation": true,
+    "no_store_ranking": true,
+    "explicit_referent": true
+  },
+  "source_sha256": {
+    "docs/master_proposal/capitulos/introducao.tex": "6665da0cea3d5d37c04b42154ed2f2805471b61c8a6651e598bafc95a0f63899"
+  },
+  "other_reviewed_sources_unchanged": true,
+  "unchanged_sources_sha256": {
+    "docs/supply_chain_analytics_article/manuscript_ptbr.tex": "aeb42a46ba047cb9a92fdc6bf6d3fc8b9ed9e7c10f9b1e8f4192d554f1bde959",
+    "docs/supply_chain_analytics_article/highlights_ptbr.txt": "6218175d9bc2bb8179072a66a38a51fd94a31ca4c73acb6787592ce87f08974b",
+    "docs/master_proposal/capitulos/resumo.tex": "d03ea020e48add0ee4c241afdf3d06f2a7f85bbbc317c275830adeea047f4df2",
+    "docs/master_proposal/abstract_en.tex": "da79e8bae784548cc613e69cf96a8cda04dac4a622e1fe224d5b566f22ce92cd",
+    "docs/master_proposal/capitulos/proposta.tex": "6dda94accc531f65b12abaa10e20217bcecf4a3ebf6e393814bb35c33f3f8716",
+    "docs/master_proposal/instanciacao_aipe.tex": "8c3f1a3da3c1b3734e5dec80313f8cfd95951673769c841ee74e6b57005fde3f",
+    "docs/master_proposal/capitulos/conclusoes.tex": "2dad4485869322a71ccc6d10c192b15b8f4cfe2168d4e0321321f83499c38a9d",
+    "docs/master_proposal/capitulos/plano_continuidade.tex": "2c2c50460106972267c0f299a8f2554e14be5a436e028c0d8cb04eea523985f3",
+    "docs/supply_chain_analytics_article/aipe_bahia_resultados.tex": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc",
+    "docs/supply_chain_analytics_article/m5_pse_20261015.tex": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2",
+    "docs/supply_chain_analytics_article/aipe_consequencias_resultados.tex": "e8f06ac6c936ac126b0549afe4f200c243227be01b3edfb5c2746582274e8585",
+    "docs/master_proposal/capitulos/resultados.tex": "1057ef2cc5616775c4b6e5d4441626c08a2678e00654cf096a40d53048c21084",
+    "docs/operations/PROTOCOLO_CIENTIFICO_AIPE_R1.md": "2e4d2736ea5548dd57cd2c39d3e55f19f6c46883b6144a0d299dad69443b91e3",
+    "docs/academic_contributions_revision_2026-10-16/CONTRATO.md": "6ee467856ee51c653710bc6dd4ee372186a847a07efd31e41bc5c62ffa9e5960",
+    "docs/academic_contributions_revision_2026-10-16/writer_response.md": "e905b0b8e1cdc1453cb701c51c74a149fd6c1585119e4ac9f06c3bcb1bc48283",
+    "docs/academic_contract_revision_2026-10-16/FECHAMENTO.md": "f74a4f8a61eb29e380563bb5f038276b9e952dea6df26eb622382b2200f85718"
+  },
+  "previous_review_path": "docs/academic_contributions_revision_2026-10-16/round_02/review_methods.json",
+  "previous_review_sha256": "df39bce4a0e22b76293fa175e574d69d5fde8ad4db5a23230542302cf3e23158",
+  "changed_sources_since_round02": [
+    "docs/master_proposal/capitulos/introducao.tex"
+  ],
+  "mechanical_full_intro_counts": {
+    "M1_em_dash": 0,
+    "M11_passive_EN": 0,
+    "M2_antithesis": 0,
+    "M3_M4_M8_M9": 0,
+    "M6_openers": 0,
+    "M5_M16_words": 1,
+    "M10_hype": 0,
+    "M17_fancy": 0,
+    "M18_empty": 0,
+    "M12_wordiness": 0,
+    "M13_qualifiers": 0,
+    "M14_adverbs": 0,
+    "M15_exclamation": 0,
+    "precision_pairs": 0,
+    "PT_passive_candidates": 3,
+    "PT_promotional": 0
+  },
+  "judgment": "A compressão retira repetições sem eliminar os cinco passos, duas abordagens, critérios de informação/serviço ou separação entre execução e benefício. O objetivo conserva o gerente como destinatário e os limites de vendas, coortes, custos, modularidade e entrega gerencial permanecem. A correção final do referente evita a ambiguidade sobre qual informação sustentaria a vantagem.",
+  "scientific_pending": [
+    "Comparação empírica com integrações próximas da literatura e delimitação da originalidade.",
+    "Reserva independente e harmonização das restrições/calibração; resultados do piloto não são confirmação.",
+    "Sensibilidades, entrega de parâmetros finais/trajetórias completas, revisão sequencial e validação humana.",
+    "Margens contextuais e desenho próprios se houver pretensão de não inferioridade formal."
+  ],
+  "limits": "Leitura integral da introdução e diff focal, com releitura da frase final adicional confirmada pelo coordenador. Demais fontes ligadas ao parecer anterior por hashes. Sem nova auditoria dos bancos ou inspeção visual do PDF.",
+  "sources_edited": false,
+  "scientific_execution_started": false,
+  "mechanical_full_intro_hits": {
+    "M5_M16_words": [
+      "utiliz"
+    ],
+    "PT_passive_candidates": [
+      "é chamado",
+      "é confrontado",
+      "é implementado"
+    ]
+  },
+  "mechanical_full_intro_interpretation": "Achados de introdução integral são herdados fora da compressão focal: 1 fragmento lexical inglês sobre português e 3 candidatos PT contextuais; não indicam regressão metodológica. A conclusão CLEAN refere-se à revisão focal método/evidência, não a uma reescrita estilística integral.",
+  "final_map_removal_checked": true,
+  "final_map_removal_judgment": "Removido somente o roteiro de capítulos redundante ao sumário. O parágrafo era navegação documental e não continha definição, resultado ou limite científico. Salvaguardas científicas permanecem; os demais documentos conferem com os hashes da rodada 2. Mantém-se o parecer sem achados abertos."
+}

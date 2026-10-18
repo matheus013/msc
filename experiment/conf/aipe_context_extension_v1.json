@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "enabled": false,
+  "selection": {
+    "model": "consequences",
+    "max_context_features": 3,
+    "max_evaluations": 16,
+    "inner_folds": 3,
+    "trees": 32,
+    "min_samples_leaf": 3,
+    "max_categories": 16,
+    "max_source_records": 1000000,
+    "min_category_count": 3,
+    "max_missing_fraction": 0.4,
+    "min_relative_cost_improvement": 0.0,
+    "max_service_drop": 0.0,
+    "max_failure_rate_increase": 0.0,
+    "service_target": 0.7,
+    "random_state": 20261017
+  },
+  "datasets": {
+    "BA": {
+      "run": "experiment/data/08_reporting/research_v2/aipe_ba145_unified_2026-10-15",
+      "cutoffs_file": null,
+      "records_file": null,
+      "features": [
+        {"name": "idade", "kind": "numeric", "mode": "candidate", "level": "store", "description": "Idade do revendedor, com data de referência histórica comprovada", "source": "data/source/seller; cadastro sem vigência histórica ainda comprovada", "availability_verified": false, "availability_evidence": ""},
+        {"name": "segmento", "kind": "categorical", "mode": "candidate", "level": "store", "description": "Segmento comercial vigente na decisão, sem usar faturamento futuro", "source": "data/source/seller e data/source/segmentacao; apuração temporal pendente", "availability_verified": false, "availability_evidence": ""},
+        {"name": "filial", "kind": "categorical", "mode": "candidate", "level": "store", "description": "Filial conhecida na decisão", "source": "data/source/seller; data de vínculo pendente", "availability_verified": false, "availability_evidence": ""},
+        {"name": "estrutura", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Estrutura organizacional; confirmar significado e vigência", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""},
+        {"name": "genero", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Gênero cadastral; suporte desequilibrado na coorte atual", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""},
+        {"name": "ciclos_inativos", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Indicador cadastral de atividade, significado e vigência pendentes", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""},
+        {"name": "status", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Status cadastral; constante na coorte atual", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""},
+        {"name": "praca", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Praça; constante na coorte atual", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""},
+        {"name": "gerente_regional", "kind": "categorical", "mode": "excluded", "level": "store", "description": "Grupo regional; constante na coorte atual", "source": "data/source/seller", "availability_verified": false, "availability_evidence": ""}
+      ]
+    },
+    "M5": {
+      "run": "experiment/data/08_reporting/research_v2/aipe_m5_2408_unified_2026-10-15",
+      "cutoffs_file": null,
+      "records_file": null,
+      "features": [
+        {"name": "snap_fraction", "kind": "numeric", "mode": "candidate", "level": "warehouse", "description": "Fração de dias com SNAP no estado e janela declarados; calendário conhecido na decisão", "source": "data/m5_walmart/calendar.csv; agregação e disponibilidade histórica a documentar", "availability_verified": false, "availability_evidence": ""},
+        {"name": "event_count", "kind": "numeric", "mode": "candidate", "level": "warehouse", "description": "Eventos no calendário da janela declarada e conhecidos na decisão", "source": "data/m5_walmart/calendar.csv; agregação e disponibilidade histórica a documentar", "availability_verified": false, "availability_evidence": ""}
+      ]
+    }
+  }
+}

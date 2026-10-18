@@ -1,0 +1,100 @@
+\mychapter{AIPE: Metodologia Proposta}{cap:metod}\lhead{METODOLOGIA AIPE}
+
+O \textit{Adaptive Inventory Policy Engine} (AIPE) é a metodologia proposta nesta dissertação para organizar a seleção contextual de políticas de reposição. Seu objeto é a decisão sobre qual família aplicar a uma série loja--produto. O procedimento vincula a escolha à informação disponível, à exigência de atendimento e às consequências operacionais. Uma recomendação pode conservar a referência quando faltar evidência para substituí-la.
+
+A metodologia define entradas, etapas, critérios e saídas. A implementação computacional executa o procedimento; Bahia e M5 são aplicações para avaliar sua utilidade. Assim, a proposta não se confunde com um simulador, um classificador ou a lista de algoritmos comparados. Tampouco pressupõe que contextualizar sempre produza economia.
+
+\section{Objeto, entradas e saídas}
+\label{sec:visao_geral_aipe}\label{sec:formulacao}
+Uma instância do AIPE é especificada pelas unidades de decisão, históricos e contexto, portfólio de políticas, ambiente de estoque, regra operacional de comparação e desenho de avaliação. A regra declara custos, serviço e desempates. O desenho informa como separar construção e avaliação da recomendação. Esses elementos precisam estar definidos antes de interpretar os resultados.
+
+Para a unidade $i$ e o instante $o$, a informação $H_{i,o}$ reúne somente observações disponíveis até a escolha. Obtêm-se características $x_{i,o}=\phi(H_{i,o})$ e, quando disponível, um perfil $g_{i,o}$. Perfil derivado das mesmas características é uma representação resumida, não uma fonte independente de informação. Um perfil informado externamente exige origem e disponibilidade documentadas.
+
+A saída compreende a família recomendada, os parâmetros de aplicação e um registro que identifica contexto, referência, suporte da escolha, restrição de serviço e versão do procedimento. Se nenhuma candidata for viável, essa condição deve ser registrada. Escolher a menos desfavorável não certifica atendimento do alvo.
+
+\section{Princípios e contribuição investigada}
+O AIPE distingue seleção da família e calibração de parâmetros; exige comparação operacional compatível; impede informação futura na recomendação; e avalia o benefício incremental frente a uma referência competitiva. Esses princípios se apoiam em seleção de algoritmos e avaliação de modelos \citep{Rice1976AlgorithmSelection,Kerschke2019AutomatedAlgorithmSelection,CawleyTalbot2010}.
+
+A contribuição investigada é sua articulação em um procedimento de seleção para reposição que explicita duas abordagens do PSE, a decisão de intervir e o diagnóstico das perdas. Não se reivindica a invenção de seleção contextual, rejeição de recomendações ou controle de estoques. O valor da articulação deve ser examinado por sua coerência, utilidade operacional e transferência entre aplicações; a integração de módulos de software, sozinha, não demonstra contribuição científica.
+
+A aplicação requer históricos com cobertura identificável, candidatas executáveis sob convenções comuns e uma definição de serviço. Se vendas estiverem censuradas ou custos forem ilustrativos, a validade da recomendação permanece condicionada a essas limitações. A adaptação refere-se à escolha conforme o contexto e à reavaliação documentada; não significa troca contínua de controlador já validada em produção.
+
+\section{Procedimento metodológico}
+\label{sec:procedimento_aipe}
+O procedimento tem cinco etapas, apresentadas na Figura~\ref{fig:aipe_procedimento}. Uma avaliação observada pode motivar uma nova versão; não deve ser reutilizada como confirmação independente dessa revisão.
+
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[font=\small,node distance=0.4cm,
+etapa/.style={draw=blue!60!black,rounded corners,fill=blue!4,text width=11.4cm,align=left,inner sep=7pt},
+seta/.style={-{Latex[length=2mm]},thick,blue!60!black}]
+\node[etapa] (a) {\textbf{1. Especificar a decisão}\\Unidade, ambiente, custos, serviço, referência e separação dos dados.};
+\node[etapa,below=of a] (b) {\textbf{2. Representar o contexto}\\Preparar históricos e obter características ou perfis disponíveis antes da escolha.};
+\node[etapa,below=of b] (c) {\textbf{3. Construir evidência comparável}\\Calibrar candidatas no treino e medir consequências na validação.};
+\node[etapa,below=of c] (d) {\textbf{4. Recomendar pelo PSE}\\Associar perfil ou estimar por série; aplicar o critério de intervenção declarado.};
+\node[etapa,below=of d] (e) {\textbf{5. Avaliar e diagnosticar}\\Comparar com a referência em dados reservados e localizar perdas recuperáveis.};
+\draw[seta] (a)--(b);\draw[seta] (b)--(c);\draw[seta] (c)--(d);\draw[seta] (d)--(e);
+\end{tikzpicture}
+\caption{Procedimento do AIPE. Revisões motivadas pelo diagnóstico exigem nova avaliação independente.}\label{fig:aipe_procedimento}
+\end{figure}
+
+\subsection{Especificar a decisão}
+Definem-se unidade, horizonte, dinâmica de estoque e instante da recomendação. A exigência de serviço informa se vale para cada série, perfil ou conjunto. Média por série, atendimento ponderado por unidades e restrição individual são objetivos diferentes.
+
+A referência recebe o mesmo acesso ao passado. Uma referência global mantém a família, mas pode ajustar parâmetros para cada unidade. O desenho deve representar o uso pretendido: novas lojas com histórico, períodos futuros e outra população exigem separações distintas. Uma avaliação que exclui lojas não demonstra, sozinha, transferência para produtos novos.
+
+\subsection{Representar o contexto}
+Preparam-se os históricos e calculam-se características ou perfis anteriores à escolha. Elegibilidade, preenchimentos, escalas e codificações respeitam o corte temporal. Ausência de venda, registro e procura não são equivalentes sem justificativa.
+
+A representação é examinada por seu apoio à decisão. Seu objetivo não é maximizar descritores nem produzir grupos artificialmente equilibrados. Perfis raros, variáveis indisponíveis e regras que concentram quase todas as séries em uma categoria integram o diagnóstico de suporte.
+
+\subsection{Construir evidência comparável}
+Cada família recebe parâmetros ajustados com os dados admitidos para calibração. A validação registra custo, atendimento e esforço sob condições comuns. Estoque inicial, pedidos em trânsito, tratamento terminal e serviço precisam ter a mesma interpretação para todas as candidatas.
+
+Preserva-se a matriz de consequências, em vez de guardar somente a vencedora. Sua identidade pode mudar com janela, semente e empates sem relevância operacional. A matriz permite construir associações por perfil, rótulos ou alvos de custo e serviço. Vencer na validação não prova vantagem futura.
+
+\subsection{Recomendar pelo PSE}
+O \textit{Policy Selection Engine} (PSE) é o componente de seleção do AIPE. Duas abordagens respondem à mesma decisão:
+\[
+ \text{por perfil: }\widehat p_i=m(g_i),\qquad
+ \text{preditiva: }\widehat p_i=f(x_i,g_i)\text{ ou }f(x_i).
+\]
+A primeira consulta uma associação entre perfil informado e família. A segunda estima uma recomendação por série, com perfil opcional. PSE não é sinônimo de classificador.
+
+O preditivo pode aprender a identidade da vencedora ou estimar suas consequências. Nesta última implementação, prevê custo $\widehat C_{i,p}$ e serviço $\widehat F_{i,p}$ para cada candidata $p$ e escolhe, por exemplo,
+\[
+ \widehat p_i=\arg\min_{p:\widehat F_{i,p}\geq\alpha}\widehat C_{i,p}.
+\]
+Se nenhuma for prevista como viável, aplica-se a contingência declarada. Avaliar erro pela consequência operacional tem fundamento em aprendizado orientado à decisão \citep{ElmachtoubGrigas2022SPO}; não é apresentado como invenção geral do AIPE.
+
+Uma regra de intervenção $a_i$ determina se a candidata substitui a referência:
+\[
+ p_i^{\mathrm{AIPE}}=
+ \begin{cases}\widehat p_i,&a_i=1,\\p_i^{\mathrm{ref}},&a_i=0.\end{cases}
+\]
+A regra pode permitir a escolha direta ou exigir benefício previsto e suporte. Limiares são definidos no desenvolvimento, sem consultar o teste reservado. Recuo e predição seletiva têm antecedentes \citep{GeifmanElYaniv2019SelectiveNet,Laroche2019SPIBB}. A questão investigada é sua utilidade na escolha de famílias de reposição. Confiança de classe e serviço previsto não garantem atendimento realizado.
+
+\subsection{Avaliar e diagnosticar}
+Depois de fixar recomendações, comparam-se custo, serviço, deteriorações e intervenções em dados que não determinaram o ajuste. Acurácia e frequência de vitória são auxiliares: trocar políticas quase empatadas difere de provocar uma ruptura importante.
+
+O diagnóstico distingue erro de escolha com candidata viável, insuficiência do portfólio apesar de possibilidade física e inviabilidade nas condições do sistema. Demanda zero fica separada. Um planejamento com informação perfeita fornece limite retrospectivo, não desempenho operacional disponível sem conhecer o futuro. A constatação de uma limitação deve orientar a revisão do componente correspondente.
+
+\section{Metodologia e instanciação}
+\begin{table}[htbp]\centering\small
+\caption{Compromissos do AIPE e escolhas dependentes da aplicação.}\label{tab:metodo_instancia}
+\begin{tabular}{@{}p{5.6cm}p{7cm}@{}}\toprule
+Compromisso metodológico & Escolha de instanciação\\\midrule
+Contexto anterior à decisão & Descritores, perfil e histórico mínimo\\
+Comparação operacional compatível & Portfólio, ambiente, custos e prazo\\
+Separação entre ajuste, escolha e teste & Janelas e grupos de validação\\
+Referência e contingência explícitas & Família e critério de intervenção\\
+Avaliação incremental rastreável & Métricas, tolerâncias e incerteza\\\bottomrule
+\end{tabular}\end{table}
+
+Trocar base, modelo ou limiar não cria uma nova metodologia: essas escolhas instanciam o procedimento. Usar informação futura ou custos incompatíveis viola seus compromissos. As cinco etapas podem ser aplicadas a outros cenários, mas essa possibilidade de especificação não demonstra generalização empírica para eles.
+
+\section{Critérios de avaliação da contribuição}
+A \textbf{coerência} exige entradas, recomendações e consequências identificáveis, sem antecipação do teste. A \textbf{utilidade} exige comparação com referências fortes, considerando custo, serviço e deteriorações. A \textbf{transferibilidade} exige investigar a persistência das conclusões em outras séries, lojas, períodos e condições.
+
+Essas dimensões não são intercambiáveis. Um procedimento reproduzível pode recomendar mal; um ganho localizado pode não se transferir. Um resultado desfavorável de determinada implementação limita sua utilidade demonstrada, sem resolver a avaliação de todas as implementações possíveis. A arquitetura não fica dispensada de evidência por receber o nome de metodologia.
+
+No uso pretendido, o AIPE reaproveita evidências de outras unidades para recomendar uma família antes de comparar todas novamente. Na avaliação, o portfólio completo é ajustado nas unidades reservadas para medir consequências e oráculos. Essa despesa experimental não demonstra economia computacional de implantação. O próximo capítulo apresenta as escolhas usadas para avaliar o procedimento na Bahia e no piloto M5.

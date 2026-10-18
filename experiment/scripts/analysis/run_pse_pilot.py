@@ -7,7 +7,6 @@ import os
 import shutil
 import sqlite3
 import sys
-import time
 import traceback
 for variable in ['OMP_NUM_THREADS','MKL_NUM_THREADS','OPENBLAS_NUM_THREADS','NUMEXPR_NUM_THREADS']:
     os.environ[variable]='1'

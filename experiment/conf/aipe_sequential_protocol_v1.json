@@ -1,0 +1,45 @@
+{
+  "version": "1.0-planning-only",
+  "evaluation_periods": 7,
+  "validation_periods": 7,
+  "review_cadences": [1, 2],
+  "planning_horizons": [3, 7],
+  "history_windows": [{"mode": "expanding"}, {"mode": "fixed", "periods": 12}],
+  "record_latency_periods": 0,
+  "availability_assumption": "Previous completed periods are available at the next decision; operational latency has not been verified.",
+  "selector_update_every_periods": 0,
+  "controller_recalibration_every_periods": 0,
+  "update_rule": "Zero keeps initial artifacts fixed; positive intervals schedule updates only, requiring admissible training labels and separately persisted artifacts.",
+  "datasets": {
+    "BA": {"run": "aipe_ba145_unified_2026-10-15", "resolution": "commercial_cycle", "action_periods": 1},
+    "M5": {"run": "aipe_m5_2408_unified_2026-10-15", "resolution": "21_days", "action_periods": 1}
+  },
+  "scenario_costs": {
+    "monetary_calibration": false,
+    "holding_per_unit_end_of_native_period": 1.0,
+    "shortage_per_unfulfilled_unit": 5.0,
+    "fixed_per_positive_order": 50.0,
+    "purchase_per_ordered_unit": 0.5,
+    "lead_time_native_periods": 2,
+    "lead_time_convention": "exact",
+    "fill_rate_target": 0.7
+  },
+  "state_contract": {
+    "initial_state_common_across_strategies": true,
+    "carry_inventory_between_reviews": true,
+    "carry_outstanding_orders_between_reviews": true,
+    "reset_eoq_at_review": false,
+    "state_scope": "case, scenario, strategy, seed; separate trajectories after the common initial state"
+  },
+  "required_execution_artifacts": [
+    "serialized_controllers_and_final_parameters",
+    "serialized_selectors_and_training_data_provenance",
+    "admissible_labels_available_at_each_update",
+    "explicit_initial_inventory_and_outstanding_orders",
+    "stateful_policy_switch_adapter",
+    "per_period_actions_receipts_inventory_and_unfulfilled_demand",
+    "disaggregated_costs_and_predecision_recommendations",
+    "verified_record_availability_or_declared_latency_scenario",
+    "frozen_primary_strategy_and_confirmatory_reserve_audit"
+  ]
+}

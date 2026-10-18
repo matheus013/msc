@@ -1,0 +1,204 @@
+\mychapter{Referencial Teórico}{cap:tec}\lhead{REFERENCIAL TEÓRICO}
+
+A seleção de políticas de reposição exige distinguir três objetos: o processo de demanda, a regra que produz pedidos e o critério usado para comparar seus resultados. Este capítulo define esses objetos e apresenta os métodos de previsão e inferência utilizados no trabalho. A descrição operacional dos experimentos fica no Capítulo~\ref{cap:experimental}.
+
+\section{Formulação do Problema de Reposição}
+\label{sec:formulacao_problema}
+\subsection{Política de Reposição: Estado, Ação e Parâmetros}
+\label{sec:estado_acao_parametros}
+
+Uma política $\pi$ transforma o estado observado $\mathbf{s}_t$ em uma quantidade de pedido não negativa:
+\[
+\pi:\mathcal S\rightarrow\mathcal A,\qquad Q_t=\pi(\mathbf{s}_t;\boldsymbol\theta).
+\]
+O estado reúne estoque disponível, pedidos em trânsito e informações de demanda disponíveis até a decisão. Os parâmetros $\boldsymbol\theta$ podem ser limiares e lotes, no caso de regras analíticas, ou pesos de uma rede neural. Meta-heurísticas ajustam parâmetros de uma regra; aprendizado por reforço ajusta a própria representação da decisão. Todas essas alternativas precisam ser avaliadas sob a mesma dinâmica de estoque.
+
+É necessário separar estoque físico de posição de estoque. O primeiro determina o atendimento imediato; a segunda acrescenta os pedidos em trânsito e evita solicitar novamente unidades já encomendadas. Uma previsão de demanda pode integrar o estado, mas não substitui essas informações. Um vetor reduzido também não garante que o processo seja Markoviano: essa propriedade depende de representar informação suficiente para suas transições.
+
+\subsection{Função Objetivo e Dinâmica de Estoque}
+\label{sec:funcao_objetivo}
+
+Para um horizonte finito $T$, o problema conceitual consiste em minimizar o custo esperado:
+\begin{equation}
+\min_\pi\mathbb E\left[\sum_{t=1}^{T}\left(hI_t+c_sS_t+c_o^{\mathrm{fix}}\mathbf1(Q_t>0)+c_o^{\mathrm{var}}Q_t\right)\right].
+\label{eq:obj_inv_control}
+\end{equation}
+$I_t$ é o estoque após atendimento, $S_t$ a demanda perdida, $h$ o custo de manutenção por unidade e ciclo, $c_s$ o custo por unidade não atendida e $c_o^{\mathrm{fix}}$, $c_o^{\mathrm{var}}$ os custos fixo e variável de pedido. A esperança representa incerteza da demanda ou do treinamento; repetir uma trajetória determinística não estima essa distribuição.
+
+Se $B_t$ é o estoque antes da chegada e $A_t$ a quantidade recebida no ciclo, a dinâmica de vendas perdidas é
+\begin{equation}
+S_t=\max(0,D_t-B_t-A_t),\quad
+I_t=\max(0,B_t+A_t-D_t),\quad B_{t+1}=I_t.
+\label{eq:balance}
+\end{equation}
+A demanda não atendida não se acumula como encomenda pendente. A convenção de chegada deve acompanhar a equação: um modelo com prazo efetivo $\ell$ usa $A_t=Q_{t-\ell}$, como na avaliação temporal principal, com entrega efetiva em dois ciclos. Nos estudos históricos, a fila de tamanho $L+1$ correspondia à chegada em $t+L+1$. As convenções são identificadas separadamente na metodologia.
+
+Minimizar custo sem restrição pode favorecer uma política que quase nunca repõe. Por isso, o trabalho acrescenta um nível mínimo de serviço. A escolha do limiar expressa um compromisso operacional e deve anteceder a comparação. Custos e serviço precisam ser apresentados conjuntamente, pois uma economia obtida com menor atendimento não caracteriza dominância.
+
+\section{Famílias de Políticas de Reposição}
+\label{sec:politicas_reposicao}
+\subsection{Políticas Clássicas}
+\label{sec:politicas_classicas}
+
+As políticas clássicas oferecem referências interpretáveis. Sob demanda constante média $\mu$ por ciclo, custo fixo $K$ por pedido e manutenção $h$ por unidade e ciclo, o lote econômico é
+\[
+Q^*=\sqrt{2K\mu/h}.
+\]
+Demanda e manutenção devem usar a mesma unidade temporal. A EOQ define o tamanho do lote; um ponto de pedido separado estabelece quando solicitá-lo. Com estoque de segurança, esse ponto pode ser $s=\mu L+z\sigma\sqrt L$, sob aproximações sobre demanda e prazo. A implementação histórica será distinguida dessa fórmula porque emprega uma demanda acumulada no horizonte.
+
+A política $(s,S)$ observa a posição de estoque $P_t$ e pede $\max(0,S-P_t)$ quando $P_t\leq s$. O limiar inferior evita pedidos a cada pequena redução de estoque; o superior determina a recomposição. A concentração de pedidos em lotes pode amplificar a variabilidade a montante, fenômeno associado ao efeito chicote~\citep{LeePadmanabhanWhang1997Bullwhip}. A intensidade desse efeito depende dos parâmetros e da demanda, não apenas do nome da política.
+
+O modelo do Jornaleiro determina uma quantidade de período único pelo quantil de demanda associado à razão crítica entre falta e excesso. Na aproximação normal, escreve-se $Q^*=\mu+z_\alpha\sigma$. Essa expressão é ótima somente sob as hipóteses do modelo e com $\alpha$ derivado dos custos pertinentes. Usar $z=1{,}28$ como parâmetro fixo em uma regra multiperíodo constitui uma heurística inspirada no modelo, não uma garantia de otimalidade.
+
+Regras analíticas podem receber parâmetros específicos por série e, portanto, não pressupõem necessariamente uma única parametrização para toda a rede. Sua simplicidade é uma vantagem comparativa relevante: um método mais complexo precisa demonstrar ganho além do obtido por calibração adequada de uma referência simples.
+
+\subsection{Parametrização de Políticas via Meta-Heurísticas}
+
+Meta-heurísticas procuram vetores $\boldsymbol\theta$ em um espaço de busca. Cada candidato induz uma política, cuja execução simulada fornece custo e serviço. Essa abordagem dispensa uma expressão diferenciável para o desempenho, mas continua sujeita a sobreajuste ao histórico usado na busca. O objetivo, os limites dos parâmetros e o orçamento de avaliações devem ser controlados na comparação.
+
+O Algoritmo Genético (GA) mantém uma população de candidatos e alterna seleção, cruzamento e mutação~\citep{Holland1992ANAS,Talbi2009Metaheuristics}. Em reposição, cromossomos podem codificar ponto de pedido e lote; a avaliação associa cada vetor à trajetória resultante~\citep{Yuna2023IntermittentMetaheuristics}. Não há garantia geral de ótimo global em orçamento finito.
+
+O Recozimento Simulado (SA) parte de uma solução e explora vizinhos. Uma piora $\Delta C$ pode ser aceita com probabilidade $\exp(-\Delta C/T_k)$, em que $T_k$ é a temperatura~\citep{Kirkpatrick1983SA}. Seu resfriamento controla a passagem de exploração para busca local. O resultado depende da escala da função objetivo, da vizinhança e do número de iterações.
+
+Na Otimização por Enxame de Partículas (PSO), cada posição representa um candidato; velocidade, melhor posição individual e melhor posição coletiva orientam a atualização~\citep{Kennedy1995PSO}. A Evolução Diferencial (DE) gera candidatos pela combinação de diferenças entre vetores e aplica cruzamento e seleção~\citep{Storn1997DE}. Ambos são alternativas para espaços contínuos, mas não constituem, por si, regras operacionais distintas de reposição.
+
+Mesmo quando duas buscas ajustam a mesma regra, seus custos computacionais e soluções podem diferir. A comparação deve identificar qual parte do ganho decorre do algoritmo de busca e qual decorre da regra parametrizada. Otimizar cada série também é diferente de selecionar, entre políticas já calibradas, qual deve ser aplicada a uma nova série.
+
+\subsection{Políticas de Reposição via Aprendizado por Reforço}
+
+O aprendizado por reforço representa o controle como um processo de decisão $\langle\mathcal S,\mathcal A,P,R,\gamma\rangle$. O agente escolhe pedidos, recebe uma recompensa e observa a transição do inventário. Com recompensa $r_t=-C_t$, busca maximizar o retorno descontado $\sum_t\gamma^t r_t$~\citep{SuttonBarto2018RL}. Uma restrição de serviço não é automaticamente satisfeita por essa recompensa: precisa de tratamento explícito ou verificação posterior.
+
+DQN aproxima a função de valor $Q_\theta(s,a)$ por uma rede neural, usando memória de experiências e rede-alvo~\citep{Mnih2015DQN}. Sua aplicação requer ações discretizadas. A resolução dessa discretização limita os lotes disponíveis; episódios adicionais sobre a mesma série aumentam interações simuladas, mas não acrescentam novas realizações independentes de demanda.
+
+PPO atualiza uma política por gradiente com uma razão de probabilidades limitada por \textit{clipping}~\citep{Schulman2017PPO}. Pode ser formulado com ações contínuas ou discretas; essa propriedade precisa ser informada para cada implementação. Comportamentos como pedidos excessivos ou ausência de reposição podem resultar da recompensa, da escala dos estados, da exploração ou do treinamento. A observação de uma trajetória degenerada não identifica isoladamente sua causa.
+
+SARSA (\textit{state--action--reward--state--action}) atualiza valores seguindo a própria política:
+\[
+Q(s,a)\leftarrow Q(s,a)+\eta[r+\gamma Q(s',a')-Q(s,a)].
+\]
+A versão tabular exige discretizar o estado; Expected SARSA substitui o próximo valor pela esperança sobre ações. A adequação de cada representação depende da informação preservada e do tamanho do problema, e não permite concluir antecipadamente que uma família será superior nas séries estudadas.
+
+\subsection{Políticas Híbridas GA-RL}
+\label{sec:ga_rl_arch}
+
+Uma arquitetura híbrida usa a busca evolutiva para obter parâmetros ou experiências iniciais e depois ajusta uma política por reforço. No GA--DQN, transições geradas com a política do GA podem preencher a memória do agente antes do refinamento. Trata-se de uma hipótese de melhoria da inicialização; seu benefício exige comparação com os componentes isolados e controle dos respectivos orçamentos.
+
+
+
+A inicialização não elimina o risco de sobreajuste. Se busca e aprendizado observarem a mesma trajetória usada na avaliação, o resultado descreve adaptação ao histórico, não generalização. Além disso, avaliações completas de candidatos do GA e transições armazenadas no DQN são quantidades diferentes. O trabalho trata o híbrido como candidato do portfólio; o problema de pesquisa é a seleção contextual entre candidatos.
+
+\section{Demanda Intermitente}
+
+Uma série intermitente alterna ciclos sem demanda e ocorrências positivas, cujos tamanhos também podem variar~\citep{Croston1972ForecastingIntermittentDemand,Boylan2008Intermittent}. Frequência e magnitude são dimensões distintas. Para $D_t\geq0$, definem-se
+\begin{align}
+n_+&=|\{t:D_t>0\}|,\label{eq:n_pos}\\
+\mu&=T^{-1}\sum_tD_t,\qquad \sigma^2=(T-1)^{-1}\sum_t(D_t-\mu)^2.\label{eq:mu_sigma}
+\end{align}
+A média sobre todos os ciclos descreve o volume por período, mas pode ocultar longos intervalos sem venda. Uma sequência com valores positivos estáveis e muitos zeros é operacionalmente diferente de outra igualmente esparsa, porém com grandes picos.
+
+\subsection[Taxonomia ADI e CV quadrado]{Taxonomia ADI e CV$^2$}
+\label{sec:sb_taxa}
+
+A classificação de \citet{Syntetos2005Categorization} combina intervalo médio entre demandas e variação dos tamanhos positivos:
+\begin{align}
+\mathrm{ADI}&=T/n_+,\label{eq:adi}\\
+\mathrm{CV}_+^2&=(\sigma_+/\mu_+)^2.\label{eq:cv2}
+\end{align}
+Aqui, $\mu_+$ e $\sigma_+$ são calculados apenas nas observações positivas, diferentemente da média e variância da Equação~\ref{eq:mu_sigma}. Os limiares 1,32 e 0,49 delimitam quatro categorias, resumidas na Tabela~\ref{tab:sb_quad}~\citep{Syntetos2009InventoryForecastingReview}.
+
+\begin{table}[htbp]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\caption{Quadrantes de Syntetos-Boylan: limiares e interpretações.}
+\label{tab:sb_quad}
+\begin{tabular}{llll}
+\toprule
+Regime & ADI & CV$^2$ & Interpretação operacional \\
+\midrule
+\textit{Smooth} (Regular) & $< 1{,}32$ & $< 0{,}49$ & Alta frequência, demanda estável. \\
+\textit{Erratic} (Errático) & $< 1{,}32$ & $\geq 0{,}49$ & Alta frequência, magnitude irregular. \\
+\textit{Intermittent} (Intermitente) & $\geq 1{,}32$ & $< 0{,}49$ & Muitos zeros, magnitude relativamente estável. \\
+\textit{Lumpy} (Grumoso) & $\geq 1{,}32$ & $\geq 0{,}49$ & Muitos zeros e magnitude altamente irregular. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A implementação disponível também calcula uma medida de CV$^2$ incluindo zeros. Essa medida é útil como característica, mas não reproduz exatamente a definição original dos tamanhos positivos. As categorias dos artefatos são mantidas como rótulos operacionais, com essa ressalva; uma comparação entre taxonomias exige recalcular explicitamente ambos os índices.
+
+\subsection{Efeitos na Reposição}
+
+Demanda esparsa dificulta estimar taxas de ocorrência; tamanhos irregulares ampliam o custo de errar lotes e estoques de segurança. Croston separa a estimação dos tamanhos positivos e dos intervalos entre ocorrências. Isso pode melhorar a previsão, mas não estabelece qual regra de reposição minimiza custo sob um prazo e uma restrição de serviço específicos.
+
+
+
+Os quadrantes fornecem uma descrição inicial, não uma prescrição de política. Séries no mesmo quadrante podem diferir em volume, tendências, sequências de zeros e concentração de picos. A hipótese do AIPE é que essas diferenças adicionais possam auxiliar a escolha; sua utilidade precisa ser medida contra uma política global bem calibrada, não inferida da classificação.
+
+\section{Métricas de Previsão}
+
+Erros absolutos e quadráticos dependem da escala da série; o erro percentual absoluto médio (\textit{mean absolute percentage error}, MAPE) é indefinido quando a demanda observada é zero. O estudo emprega métricas escaladas e sMAPE, com convenções explícitas para denominadores nulos~\citep{Hyndman2006MASE,Makridakis2020M4Competition}. Nenhuma métrica de previsão substitui a avaliação do efeito da decisão sobre custo e serviço.
+
+\subsection{Métricas Utilizadas}
+
+Sejam $e_t=D_t-\hat D_t$ os erros em $m$ pontos de avaliação e $d_1,\ldots,d_n$ o treinamento. O MASE compara o erro absoluto com a variação da referência ingênua:
+\begin{equation}
+\mathrm{MASE}=\frac{m^{-1}\sum_t|e_t|}{(n-1)^{-1}\sum_{j=2}^{n}|d_j-d_{j-1}|}.
+\label{eq:mase}
+\end{equation}
+Valores menores que um indicam erro inferior à escala ingênua~\citep{Hyndman2006MASE}. A escala deve vir do treino; séries constantes requerem registro de indefinição ou regularização declarada. A presença de zeros, isoladamente, não impede o cálculo.
+
+O sMAPE usa demanda e previsão simetricamente~\citep{Makridakis1993SMAPE}:
+\begin{equation}
+\mathrm{sMAPE}=\frac{200}{m}\sum_t\frac{|D_t-\hat D_t|}{|D_t|+|\hat D_t|}\,\%.
+\label{eq:smape}
+\end{equation}
+Adota-se contribuição zero quando ambos os termos do denominador são nulos. Seu intervalo é de zero a 200\%, mas pequenas demandas podem produzir valores elevados; por isso é interpretado junto ao MASE.
+
+A versão quadrática escalada é
+\begin{equation}
+\mathrm{RMSSE}=\sqrt{\frac{m^{-1}\sum_te_t^2}{(n-1)^{-1}\sum_{j=2}^{n}(d_j-d_{j-1})^2}}.
+\label{eq:rmsse}
+\end{equation}
+Ela dá maior peso a erros grandes e também requer escala de treino não nula. O RMSSE complementa o diagnóstico; o MASE permanece a referência principal de comparação de previsão no estudo.
+
+O viés médio (\textit{mean bias error}, MBE), $\mathrm{MBE}=\overline D-\overline{\hat D}$, diferencia subestimação de superestimação. O U de Theil compara a raiz do erro quadrático médio (\textit{root mean squared error}, RMSE) do modelo e da previsão ingênua~\citep{Theil1966AppliedEconometrics}. Esses indicadores auxiliam a interpretação, sem determinar a política vencedora. Uma relação entre menor erro e melhor reposição é hipótese empírica: depende da assimetria de custos, do prazo e da regra de decisão.
+
+\section{Testes Estatísticos}
+\label{sec:stat_tests}
+
+A comparação usa observações pareadas porque as políticas atendem às mesmas séries. Testes não paramétricos evitam exigir normalidade dos indicadores, mas não dispensam atenção à independência das unidades. Produtos da mesma loja e lojas expostas às mesmas condições podem ser dependentes. Repetições idênticas não aumentam o tamanho efetivo da amostra.
+
+\subsection{Teste de Wilcoxon}
+
+Para diferenças $\Delta_i=X_i^A-X_i^B$, a soma de postos com sinal é
+\begin{equation}
+W=\sum_{i:\Delta_i\neq0}\operatorname{sgn}(\Delta_i)R_i,
+\label{eq:wilcoxon}
+\end{equation}
+em que $R_i$ é o posto de $|\Delta_i|$. O teste de \citet{Wilcoxon1945SignedRank} avalia uma hipótese de localização sob condições sobre a distribuição das diferenças. Sua leitura como teste da mediana requer, em particular, simetria. Empates e diferenças nulas devem receber tratamento documentado.
+
+\subsection{Teste de Friedman e Nemenyi}
+
+Com $K$ políticas avaliadas nas mesmas $N$ instâncias, o teste de \citet{Friedman1940Ranks} compara postos médios:
+\begin{equation}
+\chi_F^2=\frac{12N}{K(K+1)}\sum_{j=1}^{K}\left(\bar r_j-\frac{K+1}{2}\right)^2.
+\label{eq:friedman}
+\end{equation}
+A rejeição não identifica sozinha os pares diferentes. O procedimento de Nemenyi usa uma diferença crítica~\citep{Nemenyi1963PostHoc}:
+\begin{equation}
+\mathrm{DC}=q_\alpha\sqrt{\frac{K(K+1)}{6N}}.
+\label{eq:cd}
+\end{equation}
+Postos separados por mais que DC são distinguidos sob as condições do procedimento. Um posto favorável em custo não representa necessariamente serviço aceitável; as métricas e os limiares precisam permanecer visíveis.
+
+\subsection{Tamanho de Efeito}
+
+A diferença padronizada de médias é reportada como descrição complementar~\citep{Cohen1988StatisticalPower}:
+\begin{equation}
+d=\frac{\bar X_A-\bar X_B}{s_{\mathrm{pooled}}},\qquad
+s_{\mathrm{pooled}}=\sqrt{\frac{(N_A-1)s_A^2+(N_B-1)s_B^2}{N_A+N_B-2}}.
+\label{eq:cohens_d}
+\end{equation}
+Essa forma não utiliza a covariância do pareamento; medidas baseadas nas diferenças podem ser mais apropriadas para inferência pareada. Faixas convencionais de efeito pequeno, médio ou grande não substituem a diferença de custo em unidades operacionais e sua repercussão no serviço.
+
+O conjunto de testes, efeitos e gráficos descreve a heterogeneidade observada. Não transforma uma escolha retrospectiva de vencedor em evidência de generalização. Essa distinção orienta o protocolo de validação do próximo capítulo: a avaliação de uma política e a avaliação do mecanismo que a seleciona são etapas diferentes.

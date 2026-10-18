@@ -45,6 +45,17 @@ def test_zero_lead_time_allows_same_cycle_ordering():
     assert result['cost']==pytest.approx(51.5)
 
 
+def test_fractional_pipeline_does_not_create_phantom_fixed_order_cost():
+    # Bahia: the solver returned q=2.86e-7 with y=7.88e-9 for a second
+    # order. Executing that residual incorrectly incurred another fixed 50.
+    cfg=config();cfg['SIMULATION']['initial_pipeline']=[12.126781251816649,0.]
+    result=perfect_information_plan([3.,102.,12.,0.,0.,9.,0.],cfg)
+    assert result['proven_optimal']
+    assert result['cost']==pytest.approx(560.992875,abs=1e-5)
+    assert sum(q>0 for q in result['orders'])==1
+    assert result['service']==pytest.approx(result['max_service'],abs=1e-7)
+
+
 def test_grid_calibration_respects_explicit_risk_weights(monkeypatch):
     import torch
     import simulation.core.policies_sota as sota

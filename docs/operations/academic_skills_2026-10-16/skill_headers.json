@@ -1,0 +1,167 @@
+[
+  {
+    "repo": "andrehuang/academic-writing-agents",
+    "path": "skills/academic/SKILL.md",
+    "frontmatter": "\nname: academic\ndescription: >-\n  Academic writing multi-agent orchestrator. TRIGGER when: user is editing\n  .tex files, reviewing thesis/paper chapters, drafting academic content,\n  checking writing quality, or analyzing research positioning. Coordinates\n  specialist agents in parallel for review, research, drafting, polishing,\n  figure work, bibliography auditing, and literature surveys.\nallowed-tools: Agent, Read, Glob, Grep, Edit, Write, Bash, WebSearch, WebFetch\nargument-hint: [task-description]\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-download/SKILL.md",
+    "frontmatter": "\nname: sci-download\ndescription: >\n  \u5b66\u672f\u8bba\u6587 PDF \u4e0b\u8f7d\u3002\u652f\u6301 8 \u4e2a\u6570\u636e\u6e90\uff1aElsevier\u3001Springer Nature\u3001IEEE Xplore\u3001\n  arXiv\u3001Unpaywall\u3001Semantic Scholar\u3001PubMed Central\u3001\u77e5\u7f51(CNKI)\u3002\n  \u81ea\u52a8\u6839\u636e DOI \u524d\u7f00\u8def\u7531\u5230\u5bf9\u5e94\u6570\u636e\u6e90\uff0c\u672a\u77e5 DOI \u81ea\u52a8\u5c1d\u8bd5 Unpaywall \u2192 Semantic Scholar\u3002\nauthor: Shuo Zhao\nlicense: MIT\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved.\ntriggers:\n  - \u4e0b\u8f7d\u8bba\u6587\n  - \u4e0b\u8f7d\u6587\u732e\n  - download paper\n  - download PDF\n  - DOI\n  - 10.1016\n  - 10.1038\n  - 10.1007\n  - 10.1109\n  - arXiv download\n  - ScienceDirect\n  - Elsevier\n  - Springer\n  - IEEE\n  - Unpaywall\n  - PubMed Central\n  - PMC\n  - \u77e5\u7f51\n  - CNKI\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-extract/SKILL.md",
+    "frontmatter": "\nname: sci-extract\ndescription: Read an academic paper end to end and extract professional research insights, figures, metadata, and critique. Use this skill whenever the user shares a scientific paper, review paper, survey paper, systematic review, meta-analysis, scoping review, arXiv link, DOI, PDF, or pasted paper text and asks to read, summarize, analyze, extract, digest, review, critique, or explain it. For original research papers, produce a modified Heilmeier analysis. For review literature, produce a field-map extraction covering scope, taxonomy, evidence quality, consensus, controversies, gaps, and future directions. Do NOT use this skill for non-academic articles, blog posts, or ne"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-figure/SKILL.md",
+    "frontmatter": "\nname: sci-figure\ndescription: Extracts figures and sub-figures from academic PDF papers. Supports Fig/Figure, Scheme, Chart, Supplementary Figure, Extended Data Figure (Nature), and Chinese equivalents (\u56fe/\u65b9\u6848/\u793a\u610f\u56fe/\u9644\u56fe/\u8865\u5145\u56fe). Sub-figure label recognition supports (a)/(A)/a)/(i)/(1)/a. formats. High-quality PNG output at configurable DPI. Use when user asks to \"extract figure\", \"\u622a\u53d6\u6587\u732e\u56fe\u7247\", \"\u63d0\u53d6\u5b50\u56fe\", \"get figure from paper\", \"Scheme\", \"\u65b9\u6848\u56fe\", \"\u8865\u5145\u56fe\", \"Supplementary Figure\", or \"Extended Data\".\nauthor: Shuo Zhao         \nlicense: AGPL-3.0-or-later\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved.\ntriggers:\n  - \u63d0\u53d6\u56fe\u7247\n  - \u622a\u53d6\u6587\u732e\u56fe\u7247\n  - \u63d0\u53d6\u5b50\u56fe\n  - \u63d0\u53d6\u9644\u56fe\n  - \u8865\u5145\u56fe\n  - \u65b9\u6848\u56fe\n  - \u793a\u610f\u56fe\n  - \u56fe\u7247\u63d0\u53d6\n  - extract figure\n  - extra"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-html/SKILL.md",
+    "frontmatter": "\nname: sci-html\ndescription: Generate academic presentation-style HTML slide decks and browser reports from PDFs, structured text, Markdown, paper summaries, outlines, or research notes. Use whenever the user wants to convert a scientific paper PDF directly into an interactive HTML report, clickable web presentation, shareable browser deck, or PPT-like HTML output with figures, structured insights, section pages, and offline deck-directory output. In the Aut_Sci_Write suite, choose this skill when the user wants HTML/web output; choose sci-ppt when they explicitly need a .pptx file.\nauthor: Shuo Zhao\nlicense: MIT\ncopyright: Copyright (c) 2026 Shuo Zhao. All rights reserved.\ntriggers:\n  - htm"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-polish/SKILL.md",
+    "frontmatter": "\nname: sci-polish\ndescription: >\n  Two-stage academic paper polishing skill. Stage A reduces AI detection traces\n  (targeting GPTZero, Turnitin, Originality.ai). Stage B performs 8-dimension\n  quality improvement (grammar, tone, coherence, conciseness, terminology,\n  structure, argument clarity, journal compliance). Use whenever the user asks\n  to polish, proofread, humanize, reduce AI rate, improve writing quality, or\n  prepare a paper for submission.\nauthor: Shuo Zhao\nlicense: MIT\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved.\ntriggers:\n  - \u6da6\u8272\u8bba\u6587\n  - polish paper\n  - reduce AI detection\n  - \u964dAI\u7387\n  - de-AI\n  - humanize paper\n  - academic polish\n  - \u8bba\u6587\u6da6\u8272\n  - \u5b66\u672f\u6539\u5199\n  - improve writing\n  - pr"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-ppt/SKILL.md",
+    "frontmatter": "\nname: sci-ppt\ndescription: Generate professional academic PowerPoint (PPTX) presentations from paper PDFs, structured outlines, or plain text. Use for thesis defense, seminar reports, literature presentations, and graduate school applications. Supports automatic figure extraction, LaTeX formula rendering, and bilingual (Chinese/English) layouts.\nauthor: Shuo Zhao         \nlicense: MIT\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved.   \ntriggers:\n  - \u751f\u6210PPT\n  - \u505aPPT\n  - \u5236\u4f5cPPT\n  - \u6f14\u793a\u6587\u7a3f\n  - pptx\n  - \u6c47\u62a5\n  - \u8bba\u6587\u8f6cPPT\n  - \u7b54\u8fa9PPT\n  - \u5f00\u9898\u62a5\u544a\n  - \u7ec4\u4f1a\u6c47\u62a5\n  - \u63a8\u514d\u6c47\u62a5\n  - \u5b66\u672f\u6c47\u62a5\n  - make presentation\n  - create slides\n  - paper to ppt\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-review/SKILL.md",
+    "frontmatter": "\nname: sci-review\ndescription: Specialized workflows for drafting, refining, and responding to academic literature reviews and peer review feedback. Use this skill for literature review outlines, research-gap synthesis, reviewer rebuttals, response letters, and academic writing tone repair.\nauthor: Shuo Zhao\nlicense: MIT\ncopyright: Copyright 2026 Shuo Zhao. All rights reserved.\ntriggers:\n  - literature review\n  - respond to reviewers\n  - rebuttal\n  - research gap\n  - paper writing\n  - refine abstract\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-search/SKILL.md",
+    "frontmatter": "\nname: sci-search\ndescription: Academic paper search and metrics analysis. Searches arXiv, PubMed, Web of Science, Springer Nature, Scopus, Semantic Scholar, and OpenAlex simultaneously with journal impact factor data. Triggers on requests to search for papers or find literature.\nauthor: Shuo Zhao         \nlicense: MIT\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved. \ntriggers:\n  - \u641c\u7d22\u6587\u732e\n  - \u67e5\u6587\u732e\n  - \u627e\u8bba\u6587\n  - \u6700\u65b0\u8bba\u6587\n  - \u76f8\u5173\u6587\u732e\n  - \u6587\u732e\u68c0\u7d22\n  - \u5f71\u54cd\u56e0\u5b50\n  - \u671f\u520a\u5206\u533a\n  - Web of Science\n  - WoS\n  - SCI\u68c0\u7d22\n  - arXiv\n  - PubMed\n  - Springer\n  - Springer Nature\n  - Scopus\n  - Elsevier\n  - Semantic Scholar\n  - OpenAlex\n  - find papers\n  - search papers\n  - literature search\n  - impact factor\n"
+  },
+  {
+    "repo": "ShZhao27208/Aut_Sci_Write",
+    "path": "skills/sci-zotero/SKILL.md",
+    "frontmatter": "\nname: sci-zotero\ndescription: Interact with your Zotero library to sync references, add citations by DOI/ISBN/PMID, and manage PDFs. Triggers on Zotero-related requests.\nauthor: Shuo Zhao         \nlicense: MIT\ncopyright: \u00a9 2026 Shuo Zhao. All rights reserved.  \ntriggers:\n  - Zotero\n  - zotero\n  - \u540c\u6b65\u6587\u732e\n  - \u6587\u732e\u7ba1\u7406\n  - add citation\n  - sync zotero\n"
+  },
+  {
+    "repo": "hanlulong/econ-writing-skill",
+    "path": "skills/econ-write/SKILL.md",
+    "frontmatter": "\nname: econ-write\ndescription: \"Expert economics paper writing assistant synthesizing advice from 50+ top guides by Cochrane, McCloskey, Shapiro, Head, Bellemare, Goldin, Glaeser, Kremer, and other leading economists. USE THIS SKILL whenever the user writes, edits, reviews, rewrites, or structures any economics paper, thesis, job market paper, abstract, introduction, conclusion, results section, literature review, or referee response. Also handles LaTeX formatting, presentations, and paper audits. Covers all paper types (applied, theory, structural, mixed) and all sections.\"\n"
+  },
+  {
+    "repo": "WantongC/journal-adapt-writing-skill",
+    "path": "skill/SKILL.md",
+    "frontmatter": "\nname: journal-adapt\ndescription: \"Dynamic academic writing skill generator. Combines optional static writing skills with target-journal, field-top, or user-provided reference corpora, then revises a manuscript with a reviewable temporary skill. Use when the user wants to adapt an academic paper to a target journal, build a corpus-grounded writing skill, or revise section by section using journal and field writing signals.\"\nargument-hint: \"e.g. 'build a dynamic writing skill for my manuscript using these journal papers' or 'help me revise my paper for JEEM'\"\nuser-invocable: true\n"
+  },
+  {
+    "repo": "lishix520/academic-paper-skills",
+    "path": "composer/SKILL.md",
+    "frontmatter": "\nname: academic-paper-composer\ndescription: Systematic writing framework for philosophy and interdisciplinary academic papers from optimized outline to submission-ready manuscript. Use when users want to: (1) write a paper from a detailed outline, (2) ensure quality control during writing, (3) maintain consistency across chapters, (4) prepare a submission-ready manuscript, or (5) systematically execute a planned paper. Triggered by phrases like 'write the paper from this outline,' 'compose the full manuscript,' 'execute the outline,' or when users have completed strategic planning (academic-paper-strategist skill) and are ready to write. Takes optimized outline as input; outputs complete man"
+  },
+  {
+    "repo": "lishix520/academic-paper-skills",
+    "path": "strategist/SKILL.md",
+    "frontmatter": "\nname: academic-paper-strategist\ndescription: Systematic strategic planning framework for philosophy and interdisciplinary academic papers targeting preprint platforms (PhilArchive, arXiv, PhilSci-Archive). Use when users want to: (1) plan a paper on a specific topic, (2) identify research gaps and assess originality, (3) develop optimized paper outlines, (4) prepare for preprint submission, or (5) understand platform requirements and writing standards. Triggered by phrases like 'plan a paper on,' 'help me design a paper about,' 'identify research gaps in,' 'is this idea original,' or when users need structured research planning. The skill guides through three phases: Platform Analysis (iden"
+  },
+  {
+    "repo": "SNL-UCSB/paper-writing-skill",
+    "path": "SKILL.md",
+    "frontmatter": "\nname: paper-writing\ndescription: \"Research paper writing assistant that enforces Arpit Gupta's editorial principles, voice profile, and writing workflow. MANDATORY TRIGGERS: Use this skill whenever the user mentions writing a paper, drafting a section, revising a section, editing a paper, reviewing a draft, rewriting an introduction, writing an evaluation, polishing prose, compressing text, or any task involving .tex files, Overleaf, conference submissions, or paper deadlines. Also trigger when the user mentions any paper by name (NetBurst, NetForge, BQT+, TurboTest, etc.) in a writing context. This skill should activate for ANY research writing task \u2014 sections, abstracts, rebuttals, camera"
+  },
+  {
+    "repo": "blader/humanizer",
+    "path": "SKILL.md",
+    "frontmatter": "\nname: humanizer\ndescription: |\n  Rewrite AI-sounding text so it reads like the writer without changing what it says.\n  Use when editing or reviewing prose for AI tells: not-X-but-Y contrasts, one-line\n  closers, staged openers, forced triads, dashes everywhere, inflated claims, sales\n  language, stock AI words, bold labels, or filler. Based on Wikipedia's \"Signs of AI writing.\"\nlicense: MIT\nmetadata:\n  version: \"3.1.0\"\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/gap-to-topic/SKILL.md",
+    "frontmatter": "\nname: gap-to-topic\ndescription: Turn a research area into a go/no-go decision dossier for candidate thesis/proposal topics (zero or multiple justified options) \u2014 a 3-gate verdict (is the gap open? is it a contribution? is it feasible?) with the evidence laid out so the researcher can verify it. Use when the user asks \"is this gap worth pursuing\", \"help me pick a thesis topic\", \"is this idea already taken\", \"find me a defensible research gap\", \"vet this research idea before I commit\", or \"should I do this\". NOT a literature review (use `literature-triage-matrix` for a comparison matrix) and NOT a study design (use `research-design-helper` once a topic is chosen). Produces a `.research/topic_"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/literature-triage-matrix/SKILL.md",
+    "frontmatter": "\nname: literature-triage-matrix\ndescription: \"Turn a list of papers (Zotero collection, Obsidian cluster, manual list) into a compact comparison matrix written to .research/literature_matrix.md, instead of generic per-paper summaries. Use when the user asks to \\\"make a literature matrix\\\", \\\"compare these papers by method/data/limitations\\\", or \\\"decide which papers are central to my review\\\". If the user says \\\"extract the claims from these papers\\\": cross-paper comparison matrix \u2192 this skill; claims from their own manuscript draft \u2192 `paper-memory-builder`; per-cited-paper Key Findings \u2192 `paper-summarize`. This skill compares a KNOWN paper set; to turn a research area into a go/no-go decisi"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/notebooklm-brief-verifier/SKILL.md",
+    "frontmatter": "\nname: notebooklm-brief-verifier\ndescription: Compare a downloaded NotebookLM brief against the source bundle research-hub uploaded, and report missed sources, unsupported claims, contradictions, and recommended follow-up prompts. Use when the user asks to \"verify this NotebookLM brief\", \"check if the brief missed anything\", or \"compare downloaded notes to the cluster papers\".\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/paper-memory-builder/SKILL.md",
+    "frontmatter": "\nname: paper-memory-builder\ndescription: Convert a paper draft + figures + Zotero metadata into reusable .paper/claims.yml and .paper/figures.yml files so the academic-writing-skills skill can do writing, revision, and audit passes without re-reading the manuscript every time. Use when the user asks to \"build paper memory\", \"extract claims from this manuscript\", \"extract claims, supporting evidence, and figure key numbers\", or \"prepare this paper for AI-assisted writing\". NOT for summarizing cited papers in a literature cluster \u2014 that's `paper-summarize`. This skill is for the user's own manuscript draft only.\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/paper-summarize/SKILL.md",
+    "frontmatter": "\nname: paper-summarize\ndescription: \"After research-hub ingests a cluster of cited papers, fill the per-paper Key Findings + Methodology + Relevance sections in BOTH Obsidian markdown and the Zotero child note. Use when the user says \\\"fill the TODO Key Findings/Methodology blocks left by research-hub auto\\\", \\\"I just ran auto and don't know what these papers are about\\\", or \\\"summarize the papers in cluster X\\\". Invokes a supported LLM CLI on each paper's abstract. NOT for summarizing the user's own manuscript draft \u2014 that's `paper-memory-builder`. NOT for cluster-level briefs \u2014 that's `research-hub notebooklm generate`. This skill is per-cited-paper only. If the user says \\\"extract claims "
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-context-compressor/SKILL.md",
+    "frontmatter": "\nname: research-context-compressor\ndescription: Inspect a research repository and write a compact `.research/` workspace manifest (project_manifest.yml, experiment_matrix.yml, data_dictionary.yml) so future AI sessions can orient themselves without rescanning the whole repo. Use when the user asks to \"compress this project context\", \"create a research manifest\", or \"save the project context for future agents\".\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-design-helper/SKILL.md",
+    "frontmatter": "\nname: research-design-helper\ndescription: Guide a researcher through 5 Socratic segments \u2014 research question sharpening, expected mechanism, identifiability check, validation plan, risk register \u2014 and produce `.research/design_brief.md`. Use when the user asks to \"frame this research question\", \"design my study\", \"help me think through what model to build\", \"sharpen my hypothesis\", \"is my research question sharp enough to be falsifiable?\", or \"before I start coding, walk me through the design\". Runs AFTER a topic is chosen \u2014 it designs the study for a given question; to decide whether a research gap is worth pursuing at all (open / a contribution / feasible), use `gap-to-topic`. Does NOT wr"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-hub-multi-ai/SKILL.md",
+    "frontmatter": "\nname: research-hub-multi-ai\ndescription: Research-domain router that writes `.coord/multi_ai_plan.md` when one round needs two or more bounded delegates and touches `.research/`, `.paper/`, Zotero, Obsidian, or NotebookLM artifacts. Supported leaves are `codex-delegate` and `antigravity-delegate`; long-context, CJK, judgment, and review work stay with the primary model. Use the generic agent-collab task splitter for non-research work.\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-hub/SKILL.md",
+    "frontmatter": "\nname: research-hub\ndescription: Operate research-hub workflows for literature discovery, source ingest into Zotero/Obsidian/NotebookLM, dashboard inspection, and vault maintenance. Use when the user asks to find papers and organize them, build a knowledge base, ingest a folder of PDFs, upload to NotebookLM, generate research briefs, inspect clusters, or maintain a research vault. NOT for auditing or cleaning up an existing Zotero library \u2014 that's `zotero-library-curator` (read-only audit) plus `zotero-skills` (for CRUD).\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-project-orienter/SKILL.md",
+    "frontmatter": "\nname: research-project-orienter\ndescription: Read the .research/ manifest files at a project root and produce a single orientation memo (research question, datasets, current stage, key entrypoints, evidence artifacts, open questions). Use when the user asks to \"orient me in this project\", \"what is this repo about\", or \"build a context map for this paper\" \u2014 and the project already has .research/ manifests (or trigger research-context-compressor first).\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/research-workflow-orchestrator/SKILL.md",
+    "frontmatter": "\nname: research-workflow-orchestrator\ndescription: Run a resumable end-to-end research workflow that automates low-risk work, pauses at explicit human decision gates, records provenance, and routes each stage to the appropriate research-hub skill or MCP tool.\n"
+  },
+  {
+    "repo": "WenyuChiou/research-hub",
+    "path": "skills/zotero-library-curator/SKILL.md",
+    "frontmatter": "\nname: zotero-library-curator\ndescription: Audit and curate a Zotero library \u2014 find duplicate DOIs, orphan items missing required tags, propose collection rebinds, identify bloated or under-used collections, generate tag hygiene reports, emit preview-only cleanup plans. Use when the user asks to \"audit Zotero\", \"find duplicates\", \"tag hygiene report\", \"which collections are bloated or under-used\", or \"propose a Zotero cleanup plan\". Defers all CRUD operations to the standalone `zotero-skills` skill or `research-hub zotero` CLI. Includes a backup-first reminder before any apply/CRUD handoff suggestion.\ncompatibility: Portable `SKILL.md` instructions for agentskills.io-style hosts. Depends on "
+  },
+  {
+    "repo": "WenyuChiou/academic-writing-skills",
+    "path": "skills/academic-writing-skills/SKILL.md",
+    "frontmatter": "\nname: academic-writing-skills\ndescription: Plan, outline, draft, review, revise, or proofread academic manuscripts, journal articles, theses, conference papers, abstracts, supplementary materials, and submission packages across disciplines and study designs. Use for extended-outline development, section or paragraph drafting, developmental editing, top-to-bottom and bottom-up integrity checks, reviewer-style revision, method and evidence alignment, terminology control, repetition and flow review, observable stock or AI-like prose patterns, citation consistency, natural scholarly prose, claim-scope control, cross-file synchronization, change-impact review, or final submission readiness.\n"
+  },
+  {
+    "repo": "WenyuChiou/academic-writing-skills",
+    "path": "skills/paper-review/SKILL.md",
+    "frontmatter": "\nname: paper-review\ndescription: Conduct reviewer-style, evidence-safe reviews of academic manuscripts across disciplines using progressive method, domain, review-round, and optional reviewer overlays. Use when the user asks for a critique, scientific review, priority comments, top-to-bottom review, revision-round assessment, prior-comment regression check, or review memo rather than ordinary drafting. Infer the smallest applicable module set from the conversation and manuscript; ask only when unresolved domain or review-profile ambiguity would materially change the review. Includes optional psychometrics and SEM, computational and LLM, water and CNHS, flood and hydrodynamics, and explicit E"
+  },
+  {
+    "repo": "WenyuChiou/zotero-skills",
+    "path": "skills/zotero-skills/SKILL.md",
+    "frontmatter": "\nname: zotero-skills\ndescription: \"Full CRUD on a Zotero library: search, add, update, tag, trash/restore, delete, merge duplicates, and attach PDFs. Writes use pyzotero's Web API even though the separately configured zotero MCP server's tools are read only: call credentials_status() to check for a key (never open ~/.claude/.env or config.json yourself). Merges duplicates (no native merge endpoint) by moving children, unioning collections/tags/relations, then trashing the duplicate. Attaches a PDF via a short, safe, zot_-prefixed filename so pyzotero's attachment_simple does not fail silently on long paths with spaces. Guides the search for a missing PDF (Downloads, Zotero storage, then, wit"
+  },
+  {
+    "repo": "WenyuChiou/codex-delegate",
+    "path": "skills/codex-delegate/SKILL.md",
+    "frontmatter": "\nname: codex-delegate\ndescription: Delegates implementation-heavy or repetitive coding work (batch edits, boilerplate, multi-file refactors with clear patterns, test scaffolding) from Claude to OpenAI Codex CLI. Use when token cost outweighs judgment cost. Trigger phrases include \"delegate to codex\", \"let codex do this\", \"batch refactor across files\", \"scaffold tests for\". Avoid for architecture, security review, or root-cause debugging.\nlicense: MIT\ncompatibility: Designed for Claude Code. Marketplace plugins use ${CLAUDE_PLUGIN_ROOT}/scripts/run_codex.sh; direct agentskills.io-compatible installations bundle scripts under <skill-root>/scripts/. Resolve paths for the installed host rather t"
+  },
+  {
+    "repo": "WenyuChiou/antigravity-delegate",
+    "path": "skills/antigravity-delegate/SKILL.md",
+    "frontmatter": "\nname: antigravity-delegate\ndescription: \"Delegate lane for Google Antigravity CLI (agy) - bounded, non-honesty-critical mechanical subtasks via a brief file, an alternative cheap executor alongside codex-delegate and claude-cheap. Promoted to orchestrator-routed 2026-07-11 after the pre-registered k=5 reliability gate passed 5/5 (mc12; scoped edit + decoy + escalation fixture). Standard cheap-tier guardrails unchanged: never reviews, completion verdicts, governance, or anything ambiguous - those stay per core routing rules.\"\n"
+  }
+]

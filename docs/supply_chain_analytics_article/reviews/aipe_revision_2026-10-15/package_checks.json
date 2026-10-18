@@ -1,43 +1,48 @@
 {
   "status": "passed",
-  "pages": 17,
-  "abstract_whitespace_words": 218,
-  "cited_references": 13,
+  "pages": 26,
+  "abstract_whitespace_words": 238,
+  "cited_references": 17,
   "highlight_characters": [
-    74,
-    71,
-    67,
+    75,
     70,
-    74
+    66,
+    73,
+    67
   ],
   "figures": [
-    "figures/aipe_conceito_v2_ptbr.pdf",
-    "figures/custo_servico.pdf",
-    "figures/escolhas_perfil.pdf",
-    "figures/aipe_m5_comparacao.pdf",
-    "figures/aipe_m5_falhas.pdf"
+    "figures/aipe_conceito_v3_contexto_ptbr.pdf",
+    "figures/aipe_unificado_custo_servico_20261017.pdf",
+    "figures/aipe_unificado_diferencas_20261017.pdf",
+    "figures/aipe_unificado_falhas_20261017.pdf",
+    "figures/aipe_unificado_distribuicao_20261017.pdf",
+    "figures/aipe_contexto_incremental_20261017.pdf"
   ],
   "figure_fonts": {
-    "figures/aipe_conceito_v2_ptbr.pdf": [
-      "RTOYBR+NimbusSanL-Bold               Type 1            Custom           yes yes yes     10  0",
-      "ZKXFNJ+NimbusSanL-Regu               Type 1            Custom           yes yes yes     11  0",
-      "ASZHDD+CMSY10                        Type 1            Builtin          yes yes yes     12  0"
+    "figures/aipe_conceito_v3_contexto_ptbr.pdf": [
+      "JIKDYN+NimbusSanL-Bold               Type 1            Custom           yes yes yes     10  0",
+      "UFXNVQ+NimbusSanL-Regu               Type 1            Custom           yes yes yes     11  0"
     ],
-    "figures/custo_servico.pdf": [
-      "HZCAFW+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    "figures/aipe_unificado_custo_servico_20261017.pdf": [
+      "WAWNRQ+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
     ],
-    "figures/escolhas_perfil.pdf": [
-      "TCOYEX+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    "figures/aipe_unificado_diferencas_20261017.pdf": [
+      "FXXUVH+CMSY10                        Type 1            Builtin          yes yes yes     10  0",
+      "WESXPK+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     11  0"
     ],
-    "figures/aipe_m5_comparacao.pdf": [
-      "KSUDGE+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    "figures/aipe_unificado_falhas_20261017.pdf": [
+      "ZYDZZV+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
     ],
-    "figures/aipe_m5_falhas.pdf": [
-      "LLUXMY+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    "figures/aipe_unificado_distribuicao_20261017.pdf": [
+      "OXWGHU+NimbusRomNo9L-Regu            Type 1            Custom           yes yes yes     10  0"
+    ],
+    "figures/aipe_contexto_incremental_20261017.pdf": [
+      "BEIBJT+DejaVuSans-Bold               CID TrueType      Identity-H       yes yes yes     15  0",
+      "BWYIIU+DejaVuSans                    CID TrueType      Identity-H       yes yes yes     22  0"
     ]
   },
   "portable_source_archive": true,
   "no_undefined_references_or_overfull_boxes": true,
-  "manuscript_sha256": "5c33ed52f26c74d40497356bd1a749140287aa6b4e833e080a82f2d207a7f9ca",
+  "manuscript_sha256": "0168230e7cf95aff549fbbbdd616c9089c026d45d153fda7271f53e5358c666a",
   "note": "Structural and artifact checks; scientific audit is recorded separately."
 }

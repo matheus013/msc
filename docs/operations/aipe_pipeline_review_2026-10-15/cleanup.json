@@ -1,0 +1,87 @@
+[
+  {
+    "path": "experiment/src/reporting/cti_adjusted_analysis.py",
+    "removed_import": "from itertools import product as iterproduct",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/src/reporting/profile_policy_analysis.py",
+    "removed_import": "import os",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/src/reporting/profile_policy_analysis.py",
+    "removed_import": "import sys",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/src/simulation/pipelines/policy_selection/nodes.py",
+    "removed_import": "import pickle",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/benchmark_background_profile.py",
+    "removed_import": "from pathlib import Path",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_pse_pilot.py",
+    "removed_import": "import time",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_research_v2.py",
+    "removed_import": "from copy import deepcopy",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_research_v2.py",
+    "removed_import": "import numpy as np",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_scoped_production.py",
+    "removed_import": "import sys",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_scoped_production.py",
+    "removed_import": "import numpy as np",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/analysis/run_scoped_production.py",
+    "removed_import": "from simulation.research.production import POLICIES,SEEDS,STOCHASTIC,production_config,fits_per_case",
+    "replacement": "from simulation.research.production import POLICIES, SEEDS, production_config, fits_per_case"
+  },
+  {
+    "path": "experiment/scripts/analysis/summarize_parallel_validation.py",
+    "removed_import": "from pathlib import Path",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/data_preparation/transform_data_simple.py",
+    "removed_import": "from datetime import datetime",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/pb/plot_pb_results.py",
+    "removed_import": "import numpy as np",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/pb/prepare_pb_data.py",
+    "removed_import": "import numpy as np",
+    "replacement": ""
+  },
+  {
+    "path": "experiment/scripts/reporting/generate_maps_nacional.py",
+    "removed_import": "import glob, os",
+    "replacement": "import glob"
+  },
+  {
+    "path": "experiment/scripts/reporting/regen_seg_plot.py",
+    "removed_import": "import glob, pandas as pd, numpy as np",
+    "replacement": "import glob, pandas as pd"
+  }
+]

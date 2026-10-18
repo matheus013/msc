@@ -1,0 +1,432 @@
+{
+  "status": "all_exact",
+  "source_sha256": "d91f668d20cb69cceff76bddf69240b5994dbc179b171df42d9364a2c45ba42f",
+  "controller_fits": 0,
+  "models_fitted": 0,
+  "tests": [
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "labels",
+      "slow_seconds": 0.43873660001554526,
+      "fast_seconds": 0.022802899999078363
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-False-0.0",
+      "slow_seconds": 0.4740602999809198,
+      "fast_seconds": 0.044755500013707206
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-False-0.02",
+      "slow_seconds": 0.527149899979122,
+      "fast_seconds": 0.04744550000759773
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-False-0.05",
+      "slow_seconds": 0.5191570000024512,
+      "fast_seconds": 0.04342750000068918
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-False-0.1",
+      "slow_seconds": 0.5604670000029728,
+      "fast_seconds": 0.039625000004889444
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-False-inf",
+      "slow_seconds": 0.5391734000004362,
+      "fast_seconds": 0.03868489997694269
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-True-0.0",
+      "slow_seconds": 0.5032173000217881,
+      "fast_seconds": 0.04451009997865185
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-True-0.02",
+      "slow_seconds": 0.5904611000150908,
+      "fast_seconds": 0.036668799992185086
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-True-0.05",
+      "slow_seconds": 0.46533229999477044,
+      "fast_seconds": 0.035702799999853596
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-True-0.1",
+      "slow_seconds": 0.5852805000031367,
+      "fast_seconds": 0.046640000015031546
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "decisions-True-inf",
+      "slow_seconds": 0.509692499996163,
+      "fast_seconds": 0.04293539997888729
+    },
+    {
+      "dataset": "BA",
+      "origin": 17,
+      "operation": "tune_margin",
+      "slow_seconds": 3.5283233000081964,
+      "fast_seconds": 3.773517299996456
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "labels",
+      "slow_seconds": 0.33885270002065226,
+      "fast_seconds": 0.03881660001934506
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-False-0.0",
+      "slow_seconds": 0.48285759999998845,
+      "fast_seconds": 0.03651020000688732
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-False-0.02",
+      "slow_seconds": 0.47881430000416003,
+      "fast_seconds": 0.0405515999882482
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-False-0.05",
+      "slow_seconds": 0.4675173999858089,
+      "fast_seconds": 0.03312000000732951
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-False-0.1",
+      "slow_seconds": 0.4494487000047229,
+      "fast_seconds": 0.0368132000148762
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-False-inf",
+      "slow_seconds": 0.47043899999698624,
+      "fast_seconds": 0.03925979998894036
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-True-0.0",
+      "slow_seconds": 0.4545475000049919,
+      "fast_seconds": 0.034111799992388114
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-True-0.02",
+      "slow_seconds": 0.46176470001228154,
+      "fast_seconds": 0.03332699998281896
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-True-0.05",
+      "slow_seconds": 0.43528870001318865,
+      "fast_seconds": 0.036507500015432015
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-True-0.1",
+      "slow_seconds": 0.509716100001242,
+      "fast_seconds": 0.036328100017271936
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "decisions-True-inf",
+      "slow_seconds": 0.4459130000032019,
+      "fast_seconds": 0.03588779998244718
+    },
+    {
+      "dataset": "BA",
+      "origin": 23,
+      "operation": "tune_margin",
+      "slow_seconds": 3.425920799985761,
+      "fast_seconds": 3.8863494000106584
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "labels",
+      "slow_seconds": 2.4295122000039555,
+      "fast_seconds": 0.042667800007620826
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-False-0.0",
+      "slow_seconds": 2.862901000014972,
+      "fast_seconds": 0.05354039999656379
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-False-0.02",
+      "slow_seconds": 2.8939824999833945,
+      "fast_seconds": 0.0501673000107985
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-False-0.05",
+      "slow_seconds": 2.8938733999966644,
+      "fast_seconds": 0.051949999993667006
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-False-0.1",
+      "slow_seconds": 2.9897456000035163,
+      "fast_seconds": 0.050689600000623614
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-False-inf",
+      "slow_seconds": 3.0372666999755893,
+      "fast_seconds": 0.049868500005686656
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-True-0.0",
+      "slow_seconds": 3.0935792999807745,
+      "fast_seconds": 0.05882959999144077
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-True-0.02",
+      "slow_seconds": 2.9512652000121307,
+      "fast_seconds": 0.04917129999375902
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-True-0.05",
+      "slow_seconds": 2.903259500017157,
+      "fast_seconds": 0.061414800002239645
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-True-0.1",
+      "slow_seconds": 3.0804359999892768,
+      "fast_seconds": 0.0562666000041645
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "decisions-True-inf",
+      "slow_seconds": 2.9613847000000533,
+      "fast_seconds": 0.04979410002124496
+    },
+    {
+      "dataset": "M5",
+      "origin": 50,
+      "operation": "tune_margin",
+      "slow_seconds": 16.098069300001953,
+      "fast_seconds": 0.5977677000046242
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "labels",
+      "slow_seconds": 5.978994700009935,
+      "fast_seconds": 0.05572300002677366
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-False-0.0",
+      "slow_seconds": 7.1720230000209995,
+      "fast_seconds": 0.09693229998811148
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-False-0.02",
+      "slow_seconds": 7.075782400002936,
+      "fast_seconds": 0.0892658999946434
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-False-0.05",
+      "slow_seconds": 7.148595000006026,
+      "fast_seconds": 0.08116070000687614
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-False-0.1",
+      "slow_seconds": 7.469211500021629,
+      "fast_seconds": 0.08592429998680018
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-False-inf",
+      "slow_seconds": 6.918289199995343,
+      "fast_seconds": 0.07405470000230707
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-True-0.0",
+      "slow_seconds": 6.782440899987705,
+      "fast_seconds": 0.08877810000558384
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-True-0.02",
+      "slow_seconds": 6.44467359999544,
+      "fast_seconds": 0.07438649999676272
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-True-0.05",
+      "slow_seconds": 6.768060000002151,
+      "fast_seconds": 0.07431550000910647
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-True-0.1",
+      "slow_seconds": 6.889725100016221,
+      "fast_seconds": 0.07498659999691881
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "decisions-True-inf",
+      "slow_seconds": 6.571510399982799,
+      "fast_seconds": 0.07607150002149865
+    },
+    {
+      "dataset": "M5",
+      "origin": 64,
+      "operation": "tune_margin",
+      "slow_seconds": 35.79879109998001,
+      "fast_seconds": 0.5602770000114106
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "labels",
+      "slow_seconds": 6.331223400018644,
+      "fast_seconds": 0.06444899999769405
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-False-0.0",
+      "slow_seconds": 8.40678140000091,
+      "fast_seconds": 0.09072229999583215
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-False-0.02",
+      "slow_seconds": 7.933867599989753,
+      "fast_seconds": 0.0965522000042256
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-False-0.05",
+      "slow_seconds": 8.120950100012124,
+      "fast_seconds": 0.08089869999093935
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-False-0.1",
+      "slow_seconds": 8.549557200021809,
+      "fast_seconds": 0.0850936999777332
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-False-inf",
+      "slow_seconds": 8.004913200013107,
+      "fast_seconds": 0.08607320001465268
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-True-0.0",
+      "slow_seconds": 8.471609900007024,
+      "fast_seconds": 0.08061299999826588
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-True-0.02",
+      "slow_seconds": 8.379973000002792,
+      "fast_seconds": 0.08269949999521486
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-True-0.05",
+      "slow_seconds": 8.211361000023317,
+      "fast_seconds": 0.09237190001294948
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-True-0.1",
+      "slow_seconds": 8.42227969999658,
+      "fast_seconds": 0.08199850001255982
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "decisions-True-inf",
+      "slow_seconds": 8.374575699999696,
+      "fast_seconds": 0.10012560000177473
+    },
+    {
+      "dataset": "M5",
+      "origin": 78,
+      "operation": "tune_margin",
+      "slow_seconds": 40.171796899987385,
+      "fast_seconds": 0.5272590999957174
+    }
+  ],
+  "raw_matrices_sha256": {
+    "experiment\\data\\08_reporting\\research_v2\\aipe_ba145_unified_2026-10-15\\kpis.csv": "9d2edcf712fd3417b3535f08a1dc1a2badd398ffce312ae09131fa0b1fde5121",
+    "experiment\\data\\08_reporting\\research_v2\\aipe_m5_2408_unified_2026-10-15\\kpis.csv": "59dc596681d1c79ed5ecd55adb84fcc97078856d84fedf00e20d4f3406b0ea8e"
+  }
+}

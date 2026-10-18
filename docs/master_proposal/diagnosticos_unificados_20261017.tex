@@ -1,0 +1,86 @@
+\section{Diagnósticos complementares da avaliação unificada}
+\label{sec:diagnosticos_unificados}
+\begin{table}[htbp]\centering\small
+\caption{Bahia: diferenças pareadas frente à referência global. Intervalos condicionais de 95\%, com 5.000 reamostragens por loja.}
+\label{tab:unificado_delta_ba}
+\begin{tabular}{@{}p{4.4cm}rr@{}}\toprule
+Implementação & Custo: diferença [IC] & Serviço: p.p. [IC]\\\midrule
+PSE por perfil & 3,11 [-0,48; 6,93] & 3,89 [2,79; 5,09]\\
+PSE por classe (XGBoost) & 5,26 [-12,01; 34,38] & -3,58 [-5,59; -1,75]\\
+Classe: floresta de controle & -5,52 [-11,28; 1,07] & -5,46 [-7,92; -3,18]\\
+Consequências & -2,25 [-6,74; 3,28] & -0,86 [-2,57; 0,75]\\
+Consequências sem perfil & 0,34 [-3,53; 5,45] & 0,45 [-0,66; 1,61]\\
+Consequências com recuo & 0,00 [0,00; 0,00] & 0,00 [0,00; 0,00]\\
+\bottomrule\end{tabular}\end{table}
+\begin{table}[htbp]\centering\small
+\caption{Bahia: aproximação do oráculo do portfólio, calculado após agregar sementes. Eficiência somente entre casos comparáveis.}
+\label{tab:unificado_oraculo_ba}
+\begin{tabular}{@{}p{4.4cm}rrr@{}}\toprule
+Implementação & Acertos / comparáveis & Eficiência média & Até 5\%\\\midrule
+Referência global & 58/164 & 68,80\% & 66\\
+PSE por perfil & 61/183 & 69,02\% & 71\\
+PSE por classe (XGBoost) & 67/155 & 71,29\% & 74\\
+Classe: floresta de controle & 55/154 & 66,96\% & 59\\
+Consequências & 57/165 & 68,70\% & 65\\
+Consequências sem perfil & 55/170 & 68,31\% & 65\\
+Consequências com recuo & 58/164 & 68,80\% & 66\\
+\bottomrule\end{tabular}
+\par\footnotesize Comparabilidade exige atendimento de pelo menos 0,70 tanto da implementação quanto do oráculo. Denominadores diferentes não sustentam comparação direta das eficiências condicionais.
+\end{table}
+\begin{table}[htbp]\centering\small
+\caption{Bahia: planejamento com informação perfeita. Comparações por realização da política escolhida; sementes não são observações independentes.}
+\label{tab:unificado_teorico_ba}
+\begin{tabular}{@{}p{4.4cm}rrr@{}}\toprule
+Implementação & Acertos / realizações viáveis & Eficiência média & Casos: todos acertos\\\midrule
+Referência global & 60/252 & 64,51\% & 37\\
+PSE por perfil & 44/219 & 59,89\% & 34\\
+PSE por classe (XGBoost) & 114/251 & 68,17\% & 52\\
+Classe: floresta de controle & 72/199 & 63,31\% & 43\\
+Consequências & 63/202 & 64,05\% & 41\\
+Consequências sem perfil & 59/220 & 63,66\% & 38\\
+Consequências com recuo & 60/252 & 64,51\% & 37\\
+\bottomrule\end{tabular}
+\par\footnotesize 290/290 planos com ótimo certificado; 260 casos com demanda positiva fisicamente permitem atingir a meta; 7 casos sem demanda mantêm atendimento indefinido. Eficiência restringe-se às realizações viáveis com ótimo certificado.
+\end{table}
+\begin{table}[htbp]\centering\small
+\caption{M5: diferenças pareadas frente à referência global. Intervalos condicionais de 95\%, com 5.000 reamostragens por loja.}
+\label{tab:unificado_delta_m5}
+\begin{tabular}{@{}p{4.4cm}rr@{}}\toprule
+Implementação & Custo: diferença [IC] & Serviço: p.p. [IC]\\\midrule
+PSE por perfil & 1,34 [-4,37; 9,32] & 0,22 [0,08; 0,43]\\
+PSE por classe (XGBoost) & 31,86 [12,89; 53,56] & -2,90 [-3,45; -2,36]\\
+Classe: floresta de controle & 32,97 [8,97; 59,28] & -4,28 [-4,91; -3,70]\\
+Consequências & -19,00 [-34,14; -3,40] & -0,18 [-0,52; 0,14]\\
+Consequências sem perfil & -17,69 [-31,97; -2,73] & -0,35 [-0,66; -0,04]\\
+Consequências com recuo & -15,25 [-20,79; -10,01] & 0,32 [0,23; 0,43]\\
+\bottomrule\end{tabular}\end{table}
+\begin{table}[htbp]\centering\small
+\caption{M5: aproximação do oráculo do portfólio, calculado após agregar sementes. Eficiência somente entre casos comparáveis.}
+\label{tab:unificado_oraculo_m5}
+\begin{tabular}{@{}p{4.4cm}rrr@{}}\toprule
+Implementação & Acertos / comparáveis & Eficiência média & Até 5\%\\\midrule
+Referência global & 335/2448 & 66,39\% & 438\\
+PSE por perfil & 344/2471 & 66,18\% & 444\\
+PSE por classe (XGBoost) & 734/2255 & 74,18\% & 883\\
+Classe: floresta de controle & 714/2177 & 73,40\% & 858\\
+Consequências & 681/2456 & 76,39\% & 909\\
+Consequências sem perfil & 697/2440 & 76,62\% & 926\\
+Consequências com recuo & 417/2472 & 69,77\% & 573\\
+\bottomrule\end{tabular}
+\par\footnotesize Comparabilidade exige atendimento de pelo menos 0,70 tanto da implementação quanto do oráculo. Denominadores diferentes não sustentam comparação direta das eficiências condicionais.
+\end{table}
+\begin{table}[htbp]\centering\small
+\caption{M5: planejamento com informação perfeita. Comparações por realização da política escolhida; sementes não são observações independentes.}
+\label{tab:unificado_teorico_m5}
+\begin{tabular}{@{}p{4.4cm}rrr@{}}\toprule
+Implementação & Acertos / realizações viáveis & Eficiência média & Casos: todos acertos\\\midrule
+Referência global & 117/3159 & 46,49\% & 69\\
+PSE por perfil & 98/2991 & 45,35\% & 68\\
+PSE por classe (XGBoost) & 661/5142 & 49,56\% & 207\\
+Classe: floresta de controle & 702/4815 & 49,41\% & 203\\
+Consequências & 324/4160 & 49,36\% & 151\\
+Consequências sem perfil & 358/4246 & 50,07\% & 159\\
+Consequências com recuo & 122/3005 & 47,56\% & 87\\
+\bottomrule\end{tabular}
+\par\footnotesize 5326/5326 planos com ótimo certificado; 4707 casos com demanda positiva fisicamente permitem atingir a meta; 188 casos sem demanda mantêm atendimento indefinido. Eficiência restringe-se às realizações viáveis com ótimo certificado.
+\end{table}

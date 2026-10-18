@@ -1,0 +1,96 @@
+{
+  "reviewer": "/root/contributions_review_position",
+  "round": 3,
+  "timestamp_utc": "2026-10-16T21:07:14.738870+00:00",
+  "verdict": "APPROVED_EDITORIAL_SCOPE",
+  "counts": {
+    "critical": 0,
+    "major": 0,
+    "minor": 0
+  },
+  "findings": [],
+  "submission_ready": false,
+  "scope": "Regressão focal após compressão: introdução completa, diff e resposta do escritor da rodada 3.",
+  "checked": [
+    "Contribuição central metodológica, gerente destinatário, redução de custos evitáveis e preservação contextual do atendimento mantidos.",
+    "Seleção contextual, diagnóstico e aplicações complementares continuam três suportes explícitos da proposta.",
+    "Antecedentes e confronto próximo pendente permanecem; métodos constituintes não recebem novidade algorítmica.",
+    "Objetivos e hipóteses mantêm caráter investigativo; resultado favorável não virou condição presumida do método.",
+    "Modularidade exercitada, rastreabilidade parcial, diagnóstico retrospectivo, simulação, desenvolvimento no piloto e família fixa em sete ciclos continuam delimitados.",
+    "A redução elimina repetição sem apagar cinco etapas, duas abordagens, bases separadas ou diferença entre execução e benefício.",
+    "Reparo final: a frase “A avaliação investiga quando a seleção contextual oferece vantagem operacional” explicita o referente e conserva caráter investigativo, sem alegar vantagem demonstrada.",
+    "Fechamento: removido somente o parágrafo de navegação “Os capítulos apresentam...”, redundante com o sumário; a remoção não altera contribuição, objetivos, evidência ou limites científicos.",
+    "Somente introducao.tex mudou entre as 16 fontes vinculadas na rodada 2."
+  ],
+  "prior_review": {
+    "path": "docs/academic_contributions_revision_2026-10-16/round_02/review_contribution.json",
+    "sha256": "2c74ea4d183459c77990bb9a2e85ba958c6c13a0788723620e9ce4b386f19b7c"
+  },
+  "sources": [
+    {
+      "path": "docs/supply_chain_analytics_article/manuscript_ptbr.tex",
+      "sha256": "aeb42a46ba047cb9a92fdc6bf6d3fc8b9ed9e7c10f9b1e8f4192d554f1bde959"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/aipe_bahia_resultados.tex",
+      "sha256": "7b9f9fe69b3c119b1dbae99ac2f61066ca3217678c0e5426faa863f3d64677cc"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/m5_pse_20261015.tex",
+      "sha256": "1b39ca833eb59bc998ea81a7e55c9953cf1ca1478291d1a506b2d482a0dff9b2"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/aipe_consequencias_resultados.tex",
+      "sha256": "e8f06ac6c936ac126b0549afe4f200c243227be01b3edfb5c2746582274e8585"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/highlights_ptbr.txt",
+      "sha256": "6218175d9bc2bb8179072a66a38a51fd94a31ca4c73acb6787592ce87f08974b"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/introducao.tex",
+      "sha256": "6665da0cea3d5d37c04b42154ed2f2805471b61c8a6651e598bafc95a0f63899"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/proposta.tex",
+      "sha256": "6dda94accc531f65b12abaa10e20217bcecf4a3ebf6e393814bb35c33f3f8716"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/conclusoes.tex",
+      "sha256": "2dad4485869322a71ccc6d10c192b15b8f4cfe2168d4e0321321f83499c38a9d"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/resumo.tex",
+      "sha256": "d03ea020e48add0ee4c241afdf3d06f2a7f85bbbc317c275830adeea047f4df2"
+    },
+    {
+      "path": "docs/master_proposal/abstract_en.tex",
+      "sha256": "da79e8bae784548cc613e69cf96a8cda04dac4a622e1fe224d5b566f22ce92cd"
+    },
+    {
+      "path": "docs/master_proposal/instanciacao_aipe.tex",
+      "sha256": "8c3f1a3da3c1b3734e5dec80313f8cfd95951673769c841ee74e6b57005fde3f"
+    },
+    {
+      "path": "docs/master_proposal/capitulos/plano_continuidade.tex",
+      "sha256": "2c2c50460106972267c0f299a8f2554e14be5a436e028c0d8cb04eea523985f3"
+    },
+    {
+      "path": "docs/supply_chain_analytics_article/REVISAO_DIFERENCIAL_AIPE_2026-10-15.md",
+      "sha256": "517b648d88cda0a442f094f518d11fe14d056ba58c2847cea9ba6608a3cbe33e"
+    },
+    {
+      "path": "docs/academic_contract_revision_2026-10-16/FECHAMENTO.md",
+      "sha256": "f74a4f8a61eb29e380563bb5f038276b9e952dea6df26eb622382b2200f85718"
+    },
+    {
+      "path": "docs/academic_contributions_revision_2026-10-16/CONTRATO.md",
+      "sha256": "6ee467856ee51c653710bc6dd4ee372186a847a07efd31e41bc5c62ffa9e5960"
+    },
+    {
+      "path": "docs/academic_contributions_revision_2026-10-16/writer_response.md",
+      "sha256": "e905b0b8e1cdc1453cb701c51c74a149fd6c1585119e4ac9f06c3bcb1bc48283"
+    }
+  ],
+  "limitations": "Parecer anterior permanece aplicável às fontes intactas; sem nova revisão de literatura, simulação ou inspeção PDF. Aprovação editorial focal não certifica submissão."
+}

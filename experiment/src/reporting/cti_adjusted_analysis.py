@@ -30,7 +30,6 @@ Regras:
 import logging
 from pathlib import Path
 from datetime import datetime
-from itertools import product as iterproduct
 
 import numpy as np
 import pandas as pd
