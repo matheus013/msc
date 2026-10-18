@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "scope": "four-store development pilot; not independent confirmation",
+  "results": [
+    {
+      "strategy": "current",
+      "cases": 2036,
+      "defined_service": 1960,
+      "mean_cost": 700.1589510759675,
+      "mean_service": 0.6742832559634588,
+      "cost_change_percent_vs_global": -1.0644824007974174,
+      "service_change_pp_vs_global": 0.22763965568312391,
+      "interventions": 266,
+      "new_failures": 10,
+      "recoveries": 11,
+      "higher_cost_cases": 80,
+      "lower_service_cases": 70
+    },
+    {
+      "strategy": "simple",
+      "cases": 2036,
+      "defined_service": 1960,
+      "mean_cost": 703.6971481279205,
+      "mean_service": 0.6744324949517121,
+      "cost_change_percent_vs_global": -0.564519704948141,
+      "service_change_pp_vs_global": 0.24256355450844636,
+      "interventions": 181,
+      "new_failures": 6,
+      "recoveries": 8,
+      "higher_cost_cases": 65,
+      "lower_service_cases": 40
+    },
+    {
+      "strategy": "uncertainty",
+      "cases": 2036,
+      "defined_service": 1960,
+      "mean_cost": 707.6922101043425,
+      "mean_service": 0.6720068594066275,
+      "cost_change_percent_vs_global": 0.0,
+      "service_change_pp_vs_global": 0.0,
+      "interventions": 0,
+      "new_failures": 0,
+      "recoveries": 0,
+      "higher_cost_cases": 0,
+      "lower_service_cases": 0
+    }
+  ],
+  "folds": 12,
+  "controller_fits": 0,
+  "inputs_unchanged": true,
+  "protocol_sha256": "9741798d8f76956048dba527db82c4e32c9c04ae6093587cbb528e1aaefb2209",
+  "frozen_predictions_sha256": "d2f8905645fc55d898fe0f988e2762357085abf4480b254fecffb9e23a6b3a03",
+  "script_sha256": "65749dd4eaf3b52e36046efcdfa8a837af57be89943b4fd0d36d78fc1bc9299d",
+  "test_contracts_passed": 4
+}
